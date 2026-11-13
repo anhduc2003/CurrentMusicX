@@ -122,6 +122,8 @@ class AppContainer(context: Context, storageNamespace: String = "", externalPlay
     val youtubeSessions = io.github.currencortex.music.data.youtube.YouTubeSessionStore(
         SecureTokenStore(context, ".youtube$storageSuffix"), appScope)
     val youtubeAccount = io.github.currencortex.music.data.youtube.YouTubeAccountRepository(youtubeSessions)
+    val youtubeHome = io.github.currencortex.music.data.youtube.YouTubeHomeRepository(
+        cookies = { youtubeSessions.snapshot().credential.cookies })
     private val neteaseTransport = NeteaseTransport(neteaseSessions, neteaseEndpoints,
         log = { logger.info("Network", it) })
     val nativeNetease = if (useNativeNetease) NeteaseGateway(neteaseTransport) else null

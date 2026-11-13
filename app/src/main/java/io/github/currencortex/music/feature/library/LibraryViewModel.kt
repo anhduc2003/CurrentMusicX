@@ -44,10 +44,11 @@ class LibraryViewModel(val container: AppContainer) : ViewModel() {
                 refreshRequest, container.primaryLibrary.identity) { id, server, revision, refresh, primary -> listOf(id, server, revision, refresh, primary) }
                 .combine(container.neteaseLibrary.revision) { keys, revision -> keys + revision }
                 .combine(container.neteaseSessions.state.map { it.profile?.uid }.distinctUntilChanged()) { keys, uid -> keys + uid }
+                .combine(container.audioSettings.state.map { it.provider }.distinctUntilChanged()) { keys, provider -> keys + provider }
                 .collectLatest { keys ->
                     prefetchJob?.cancel()
                     // Clear personalized cards when either the project or bound NetEase account changes.
-                    val nextIdentity = keys.take(2) + listOf(keys[4], keys.last())
+                    val nextIdentity = keys.take(2) + listOf(keys[4], keys[6], keys[7])
                     val sameAccount = identity == nextIdentity
                     if (!sameAccount) likes.dismiss()
                     identity = nextIdentity
@@ -73,19 +74,31 @@ class LibraryViewModel(val container: AppContainer) : ViewModel() {
     fun refreshForNewDay() { if (homeDay != LocalDate.now()) refresh() }
     private suspend fun loadHome() = coroutineScope {
         homeDay = LocalDate.now()
-        if (container.accountRepository.token == null && container.nativeNetease == null) { home.value = LibraryHomeState(loaded = true); return@coroutineScope }
+        val useYouTube = container.audioSettings.state.value.provider ==
+            io.github.currencortex.music.data.settings.AudioProvider.YOUTUBE ||
+            container.audioSettings.state.value.provider == io.github.currencortex.music.data.settings.AudioProvider.YOUTUBE_MUSIC
+        if (container.accountRepository.token == null && container.nativeNetease == null && !useYouTube) {
+            home.value = LibraryHomeState(loaded = true); return@coroutineScope
+        }
         suspend fun <T> section(name: String, request: suspend () -> T, update: (LibraryHomeState, T) -> LibraryHomeState) {
             when (val r = appResult { request() }) {
                 is AppResult.Success -> home.update { update(it, r.value).copy(pendingSections = it.pendingSections - name) }
                 is AppResult.Failure -> home.update { it.copy(errors = it.errors + (name to r.kind.message), pendingSections = it.pendingSections - name) }
             }
         }
-        listOf(
-            launch { section("Đề xuất hằng ngày", { container.libraryRepository.daily() }) { s, d -> s.copy(daily = d.songs, forYou = d.forYou) } },
-            launch { section("Danh sách phát đề xuất hằng ngày", { container.neteaseLibrary.recommendedPlaylists() }) { s, d -> s.copy(recommendedPlaylists = d) } },
+        val sections = mutableListOf(
+            launch { section("Đề xuất hằng ngày", { if (useYouTube) container.youtubeHome.daily() else container.libraryRepository.daily() }) { s, d -> s.copy(daily = d.songs, forYou = d.forYou) } },
             launch { section("Nghe gần đây", { container.libraryRepository.recent() }) { s, d -> s.copy(recent = d) } },
             launch { section("Danh sách phát của tôi", { container.primaryLibrary.playlists() }) { s, d -> s.copy(playlists = d) } },
-        ).joinAll()
+        )
+        if (useYouTube) {
+            home.update { it.copy(recommendedPlaylists = emptyList(),
+                errors = it.errors + ("每日推荐歌单" to "YouTube Music không có danh sách phát đề xuất"),
+                pendingSections = it.pendingSections - "Danh sách phát đề xuất hằng ngày") }
+        } else {
+            sections += launch { section("Danh sách phát đề xuất hằng ngày", { container.neteaseLibrary.recommendedPlaylists() }) { s, d -> s.copy(recommendedPlaylists = d) } }
+        }
+        sections.joinAll()
         home.update { it.copy(loading = false, loaded = true, pendingSections = emptySet()) }
     }
     fun toggle(song: Song) = viewModelScope.launch {
