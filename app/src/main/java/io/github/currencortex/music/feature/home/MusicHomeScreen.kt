@@ -63,8 +63,11 @@ import androidx.lifecycle.compose.LifecycleEventEffect
         today = LocalDate.now()
         vm.refreshForNewDay()
     }
-val dailyLoading = (!direct && account.loading) || (home.loading && "Đề xuất hằng ngày" in home.pendingSections)val recommendedPlaylistsLoading = (!direct && account.loading) || "Danh sách phát đề xuất hằng ngày" in home.pendingSections    val homeLoadFailed = home.errors.any { (section, error) ->
-section != "Danh sách phát được đề xuất hằng ngày" || error != ErrorKind.NeteaseBindingRequired.message    }
+    val dailyLoading = (!direct && account.loading) || (home.loading && "每日推荐" in home.pendingSections)
+    val recommendedPlaylistsLoading = (!direct && account.loading) || "每日推荐歌单" in home.pendingSections
+    val homeLoadFailed = home.errors.any { (section, error) ->
+        section != "每日推荐歌单" || error != ErrorKind.NeteaseBindingRequired.message
+    }
     val listState = rememberLazyListState()
     PreloadMusicCovers(home.forYou.take(8).map { it.cover }, 320)
     PreloadMusicCovers(home.playlists.take(4).map { it.cover }, 320)
@@ -86,10 +89,11 @@ section != "Danh sách phát được đề xuất hằng ngày" || error != Err
                 Modifier.testTag("open_home_search").onGloballyPositioned { onSearchBounds(it.boundsInRoot()) }
                     .graphicsLayer { alpha = if (hideSearch) 0f else 1f }, onActivate = onSearch, inputTag = "home_search_field") }
             if (!home.loading && homeLoadFailed) item(key = "retry") {
-                MusicTextAction("Một số nội dung tải thất bại, tải lại", vm::refresh, Modifier.testTag("home_retry"))
+                MusicTextAction("部分内容加载失败，重新加载", vm::refresh, Modifier.testTag("home_retry"))
             }
             item(key = "daily") {
-DailyRecommendationHero(home.daily, dailyLoading, home.errors["Gợi ý hằng ngày"],                    discovery = direct && (!nativeAccount.loggedIn || nativeAccount.stale), playback = playback,
+                DailyRecommendationHero(home.daily, dailyLoading, home.errors["每日推荐"],
+                    discovery = direct && (!nativeAccount.loggedIn || nativeAccount.stale), playback = playback,
                     onPlay = { index ->
                         val song = home.daily.getOrNull(index)
                         if (song != null) {
@@ -98,14 +102,14 @@ DailyRecommendationHero(home.daily, dailyLoading, home.errors["Gợi ý hằng n
                             else play(home.daily, index)
                         }
                     }, onOpen = { navigate("lib/daily") }, onRetry = vm::refresh,
-                    onConnect = { navigate("user/binding") }, dateLabel = "${today.monthValue} tháng ${today.dayOfMonth} ngày", room = request)
+                    onConnect = { navigate("user/binding") }, dateLabel = "${today.monthValue}月${today.dayOfMonth}日", room = request)
             }
             item(key = "personal-roaming") { HomePersonalRoamingEntry { navigate("lib/roaming") } }
             item(key = "shortcuts") { HomeLibraryShortcuts(navigate, request != null) }
             if (!direct && !account.loading && account.account == null) item(key = "login") {
-                MusicTextAction("Đăng nhập để xem đề xuất và thư viện nhạc ›", { navigate("user/login") })
+                MusicTextAction("登录后查看推荐与音乐库 ›", { navigate("user/login") })
             }
-            item(key = "for-you-header") { HomeSectionHeader("Dành cho bạn", "Xem thêm") { navigate("lib/foryou") } }
+            item(key = "for-you-header") { HomeSectionHeader("猜你喜欢", "更多") { navigate("lib/foryou") } }
             if (dailyLoading && home.forYou.isEmpty()) item(key = "for-you-loading") { LoadingArtworkCards(artworkCardWidth) }
             if (home.forYou.isNotEmpty()) item(key = "for-you") { ElasticLazyRow(edgeToEdgeInset = 16.dp) {
                 itemsIndexed(home.forYou.take(8), key = { _, song -> song.id }) { index, song ->
@@ -117,50 +121,58 @@ DailyRecommendationHero(home.daily, dailyLoading, home.errors["Gợi ý hằng n
                 }
             } }
             if (!dailyLoading && home.forYou.isEmpty()) item(key = "for-you-empty") {
-Text(if (home.errors["Đề xuất hằng ngày"] != null) "Đề xuất hiện không khả dụng, hãy thử lại sau" else "Chưa có đề xuất, hãy bắt đầu nghe từ Tuyển chọn hằng ngày",
+                Text(if (home.errors["每日推荐"] != null) "推荐暂时不可用，稍后重试" else "暂无推荐，先从每日精选开始听",
                     fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
             }
-            item(key = "recommended-playlists-header") { SettingsListHeader("Danh sách phát đề xuất hằng ngày") }
+            item(key = "recommended-playlists-header") { SettingsListHeader("每日推荐歌单") }
             if (recommendedPlaylistsLoading && home.recommendedPlaylists.isEmpty())
                 item(key = "recommended-playlists-loading") { LoadingArtworkCards(artworkCardWidth) }
             if (home.recommendedPlaylists.isNotEmpty()) item(key = "recommended-playlists") { ElasticLazyRow(edgeToEdgeInset = 16.dp) {
                 items(home.recommendedPlaylists, key = { it.id }) { playlist ->
                     MusicArtworkCard(playlist.cover, playlist.name,
-                        playlist.description.ifBlank { if (playlist.count > 0) "${playlist.count} bài" else "Đề xuất cho bạn" },
+                        playlist.description.ifBlank { if (playlist.count > 0) "${playlist.count} 首" else "为你推荐" },
                         { navigate("lib/ncmplaylist/${playlist.id}") },
                         Modifier.width(artworkCardWidth).testTag("home_recommended_playlist_${playlist.id}"),
                         onLongClick = { bounds -> playlistPreview = playlist to bounds },
-                        longClickLabel = "Xem trước danh sách phát và thao tác", playlistTransition = true)
+                        longClickLabel = "预览歌单与操作", playlistTransition = true)
                 }
             } }
-if (!recommendedPlaylistsLoading && (home.recommendedPlaylists.isEmpty() || home.errors["Danh sách phát đề xuất hằng ngày"] != null)) item(key = "recommended-playlists-status") {val error = home.errors["Danh sách phát đề xuất hằng ngày"]                when {
-                    !direct && account.account == null -> MusicTextAction("Đăng nhập để xem danh sách phát đề xuất hằng ngày ›", { navigate("user/login") })
+            if (!recommendedPlaylistsLoading && (home.recommendedPlaylists.isEmpty() || home.errors["每日推荐歌单"] != null)) item(key = "recommended-playlists-status") {
+                val error = home.errors["每日推荐歌单"]
+                when {
+                    !direct && account.account == null -> MusicTextAction("登录后查看每日推荐歌单 ›", { navigate("user/login") })
                     error == ErrorKind.NeteaseBindingRequired.message ->
-                        MusicTextAction("Kết nối Nhạc Vân NetEase để nhận danh sách phát đề xuất hằng ngày ›", { navigate("user/binding") })
-                    error != null -> MusicTextAction("Đề xuất danh sách phát hiện không khả dụng, tải lại", vm::refresh, enabled = !home.loading)
-                    home.recommendedPlaylists.isEmpty() -> Text("Hôm nay chưa có danh sách phát đề xuất, hãy quay lại sau",
+                        MusicTextAction("连接网易云音乐，获取每日推荐歌单 ›", { navigate("user/binding") })
+                    error != null -> MusicTextAction("歌单推荐暂时不可用，重新加载", vm::refresh, enabled = !home.loading)
+                    home.recommendedPlaylists.isEmpty() -> Text("今天暂无推荐歌单，稍后再来看看",
                         fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
                 }
             }
-            item(key = "recent-header") { HomeSectionHeader("Phát gần đây", "Tất cả") { navigate("lib/recent") } }
-home.errors["Đã phát gần đây"]?.let { item { Text(it, fontSize = 13.sp) } }            itemsIndexed(home.recent.take(3), key = { _, song -> "recent-${song.id}" }) { index, song ->
+            item(key = "recent-header") { HomeSectionHeader("最近播放", "全部") { navigate("lib/recent") } }
+            home.errors["最近播放"]?.let { item { Text(it, fontSize = 13.sp) } }
+            itemsIndexed(home.recent.take(3), key = { _, song -> "recent-${song.id}" }) { index, song ->
                 SongRow(SongRowUi(song), { play(home.recent, index) }, { vm.container.playerController.add(song, true) }, { vm.container.playerController.add(song) }) {
                     LibrarySongActions(vm, song, navigate)
                 }
             }
-if ("Đã phát gần đây" in home.pendingSections && home.recent.isEmpty()) item { LoadingSongList(count = 2) }if ((!account.loading || direct) && "Đã phát gần đây" !in home.pendingSections && home.recent.isEmpty() && home.errors["Đã phát gần đây"] == null)                item { Text("Nhạc bạn đã nghe sẽ được lưu ở đây", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f)) }
-            item(key = "playlists-header") { HomeSectionHeader("Danh sách phát của tôi", "Quản lý") { navigate("lib/playlists") } }
-home.errors["Danh sách phát của tôi"]?.let { item { Text(it, fontSize = 13.sp) } }if ("Danh sách phát của tôi" in home.pendingSections && home.playlists.isEmpty()) item { LoadingArtworkCards(artworkCardWidth) }            if (home.playlists.isNotEmpty()) item(key = "playlists") { ElasticLazyRow(edgeToEdgeInset = 16.dp) {
+            if ("最近播放" in home.pendingSections && home.recent.isEmpty()) item { LoadingSongList(count = 2) }
+            if ((!account.loading || direct) && "最近播放" !in home.pendingSections && home.recent.isEmpty() && home.errors["最近播放"] == null)
+                item { Text("听过的音乐，会留在这里", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f)) }
+            item(key = "playlists-header") { HomeSectionHeader("我的歌单", "管理") { navigate("lib/playlists") } }
+            home.errors["我的歌单"]?.let { item { Text(it, fontSize = 13.sp) } }
+            if ("我的歌单" in home.pendingSections && home.playlists.isEmpty()) item { LoadingArtworkCards(artworkCardWidth) }
+            if (home.playlists.isNotEmpty()) item(key = "playlists") { ElasticLazyRow(edgeToEdgeInset = 16.dp) {
                 items(home.playlists.take(8), key = { "${it.source}-${it.id}" }) { playlist ->
-                         MusicArtworkCard(playlist.cover.ifBlank { playlist.songs.firstOrNull()?.cover.orEmpty() }, playlist.name, "${playlist.count} bài", {
+                        MusicArtworkCard(playlist.cover.ifBlank { playlist.songs.firstOrNull()?.cover.orEmpty() }, playlist.name, "${playlist.count} 首", {
                             navigate("lib/${if (playlist.source == "netease") "ncmplaylist" else "playlist"}/${playlist.id}")
                         }, Modifier.width(artworkCardWidth).testTag("home_playlist_${playlist.source}_${playlist.id}"),
                             onLongClick = { bounds -> playlistPreview = playlist to bounds },
-                             longClickLabel = "Xem trước danh sách phát và thao tác", playlistTransition = true)
+                            longClickLabel = "预览歌单与操作", playlistTransition = true)
                 }
             } }
-if ((!account.loading || direct) && "Danh sách phát của tôi" !in home.pendingSections && home.playlists.isEmpty() && home.errors["Danh sách phát của tôi"] == null)                 item { Text("Hãy lưu những bản nhạc yêu thích vào danh sách phát của riêng bạn", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f)) }
-             item(key = "refresh") { MusicTextAction(if (home.loading) "Đang cập nhật thư viện nhạc…" else "Làm mới thư viện nhạc", vm::refresh,
+            if ((!account.loading || direct) && "我的歌单" !in home.pendingSections && home.playlists.isEmpty() && home.errors["我的歌单"] == null)
+                item { Text("把喜欢的音乐，收进自己的歌单", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f)) }
+            item(key = "refresh") { MusicTextAction(if (home.loading) "正在更新音乐库…" else "刷新音乐库", vm::refresh,
                 Modifier.fillMaxWidth().testTag("refresh_home"), !home.loading) }
             account.error?.let { item { Text(it, fontSize = 13.sp) } }
         }
@@ -199,9 +211,9 @@ if ((!account.loading || direct) && "Danh sách phát của tôi" !in home.pendi
 
 @Composable private fun HomePersonalRoamingEntry(onOpen: () -> Unit) {
     SettingsGroup {
-         SettingsPreference("Nghe nhạc ngẫu hứng riêng tư", "Phát liên tục những bản nhạc hay theo sở thích của bạn",
+        SettingsPreference("私人漫游", "按你的喜好，连续听点好音乐",
             Modifier.testTag("open_personal_roaming"), onClick = onOpen,
             leading = { Icon(MusicIcons.Headphones, null, Modifier.size(24.dp), tint = MiuixTheme.colorScheme.primary) },
-             trailing = { MusicTransportButton("Mở chế độ nghe nhạc ngẫu hứng riêng tư", onOpen) })
+            trailing = { MusicTransportButton("打开私人漫游", onOpen) })
     }
 }

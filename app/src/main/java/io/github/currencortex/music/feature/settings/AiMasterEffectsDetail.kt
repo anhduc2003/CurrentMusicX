@@ -47,11 +47,11 @@ import top.yukonga.miuix.kmp.basic.Text
 private val MasterGold = Color(0xFFE4CC9F)
 private data class MasterDiyOption(val key: String, val title: String, val subtitle: String, val icon: String)
 private val masterDiyOptions = listOf(
-    MasterDiyOption("en_bass", "Tăng cường âm trầm", "Trầm sâu, mạnh mẽ, tạo cảm giác đắm chìm", "bass"),
-    MasterDiyOption("en_treble", "Tăng cường âm cao", "Trong trẻo, không chói tai, tăng độ xuyên thấu", "treble"),
-    MasterDiyOption("en_vocal", "Tăng cường giọng hát", "Giọng hát rõ nét, tăng cường chi tiết", "vocal"),
-    MasterDiyOption("en_vibe", "Tăng không khí", "Làm mềm ranh giới, khơi gợi cảm xúc", "vibe"),
-    MasterDiyOption("en_live", "Tăng cảm giác trực tiếp", "Định vị âm thanh ba chiều, như đang ở trên sân khấu", "live"),
+    MasterDiyOption("en_bass", "低频增强", "深沉有力，营造沉浸感", "bass"),
+    MasterDiyOption("en_treble", "高频增强", "透亮不刺耳，提升穿透力", "treble"),
+    MasterDiyOption("en_vocal", "人声增强", "人声清晰，增强细节", "vocal"),
+    MasterDiyOption("en_vibe", "提升氛围感", "柔化边界，烘托情绪", "vibe"),
+    MasterDiyOption("en_live", "提升现场感", "立体定位，如临舞台", "live"),
 )
 
 /** Native reconstruction of the original black/gold master page and its transactional DIY sheet. */
@@ -84,11 +84,12 @@ private val masterDiyOptions = listOf(
             .statusBarsPadding().navigationBarsPadding().padding(bottom = LocalMusicBottomInset.current)) {
             Row(Modifier.fillMaxWidth().height(52.dp).padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically) {
-                MasterDetailIcon("Quay lại hiệu ứng âm thanh", "sound_ai_master_back", onBack) {
+                MasterDetailIcon("返回音效", "sound_ai_master_back", onBack) {
                     Icon(Icons.Default.ArrowBack, null, tint = Color.White, modifier = Modifier.size(21.dp))
                 }
                 Spacer(Modifier.weight(1f))
-MasterDetailIcon("Giới thiệu Bậc thầy chỉnh âm AI", "sound_ai_master_info", { information = true }) {                    Icon(Icons.Default.Info, null, tint = Color.White.copy(alpha = .6f), modifier = Modifier.size(21.dp))
+                MasterDetailIcon("AI调音大师说明", "sound_ai_master_info", { information = true }) {
+                    Icon(Icons.Default.Info, null, tint = Color.White.copy(alpha = .6f), modifier = Modifier.size(21.dp))
                 }
             }
             Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())
@@ -101,10 +102,11 @@ MasterDetailIcon("Giới thiệu Bậc thầy chỉnh âm AI", "sound_ai_master_
                         animated = animated)
                 }
                 EffectsArtwork(NativeEffectsAssets.local("ai_master_detail_title.png"), Modifier.width(159.dp).height(26.dp),
-"AI chuyên gia chỉnh âm master", ContentScale.Fit)                Row(Modifier.fillMaxWidth().padding(top = 6.dp, bottom = 20.dp, start = 8.dp, end = 8.dp),
+                    "AI调音大师 master", ContentScale.Fit)
+                Row(Modifier.fillMaxWidth().padding(top = 6.dp, bottom = 20.dp, start = 8.dp, end = 8.dp),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    Text("Mô hình AI phân tích nội dung bài hát, tùy chỉnh hiệu ứng âm thanh riêng", color = Color.White.copy(alpha = .60f), fontSize = 11.sp)
-                    Text("Tùy chọn ›", Modifier.padding(start = 4.dp).clip(CircleShape)
+                    Text("大模型分析歌曲内容，定制专属音效", color = Color.White.copy(alpha = .60f), fontSize = 11.sp)
+                    Text("偏好设置 ›", Modifier.padding(start = 4.dp).clip(CircleShape)
                         .background(Color.White.copy(alpha = .12f)).clickable(role = Role.Button) { preferences = true }
                         .padding(horizontal = 7.dp, vertical = 5.dp).testTag("sound_ai_master_diy_open"),
                         color = Color.White.copy(alpha = .85f), fontSize = 10.sp)
@@ -119,27 +121,27 @@ MasterDetailIcon("Giới thiệu Bậc thầy chỉnh âm AI", "sound_ai_master_
                         Box(Modifier.padding(bottom = 12.dp).size(100.dp).clip(RoundedCornerShape(4.dp))
                             .background(Color(0xFF5C513A)).clickable(enabled = song != null, role = Role.Button,
                                 onClick = if (previewing) onPreviewStop else onPlayback).testTag("sound_ai_master_song_playback")) {
-                            if (song != null && song.cover.isNotBlank()) EffectsArtwork(song.cover, Modifier.fillMaxSize(), "Ảnh bìa bài hát hiện tại")
+                            if (song != null && song.cover.isNotBlank()) EffectsArtwork(song.cover, Modifier.fillMaxSize(), "当前歌曲封面")
                             if (song != null && (using || previewing)) Icon(
                                 if ((using && playing) || previewing) MusicIcons.Pause else Icons.Default.PlayArrow,
                                 null, tint = Color.White, modifier = Modifier.align(Alignment.BottomEnd).padding(5.dp).size(20.dp))
                         }
                     }
-                    Text(song?.name?.let { "《$it》" } ?: "Hiện không phát bài hát nào", Modifier.padding(horizontal = 16.dp),
+                    Text(song?.name?.let { "《$it》" } ?: "暂无正在播放的歌曲", Modifier.padding(horizontal = 16.dp),
                         color = Color.White, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Spacer(Modifier.height(25.dp))
-                    Text("Từ khóa điều chỉnh âm thanh của chuyên gia", color = Color.White.copy(alpha = .60f), fontSize = 11.sp)
-                    Text(state.baseName?.takeIf { it.isNotBlank() } ?: if (state.loading) "Đang khớp" else "",
+                    Text("大师调音关键词", color = Color.White.copy(alpha = .60f), fontSize = 11.sp)
+                    Text(state.baseName?.takeIf { it.isNotBlank() } ?: if (state.loading) "匹配中" else "",
                         Modifier.fillMaxWidth().heightIn(min = 68.dp).padding(top = 6.dp).testTag("sound_ai_master_keyword"),
                         color = MasterGold, fontSize = 43.sp, lineHeight = 54.sp, fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center)
                     Text(state.longText?.takeIf { it.isNotBlank() } ?: state.description?.takeIf { it.isNotBlank() }
-                        ?: if (song == null) "Phát bài hát trên Nhạc Vân NetEase để xem phương án điều chỉnh âm thanh riêng cho bài hát hiện tại" else state.message,
+                        ?: if (song == null) "播放网易云歌曲后，查看当前歌曲的专属调音方案" else state.message,
                         Modifier.fillMaxWidth().padding(horizontal = 30.dp, vertical = 10.dp).testTag("sound_ai_master_description"),
                         color = Color.White.copy(alpha = .50f), fontSize = 12.sp, lineHeight = 18.sp, textAlign = TextAlign.Center)
                     if (state.usedDiy.isNotEmpty() && (using || previewProcessed && previewing)) {
                         Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.Center) {
-                            Text("● Đang áp dụng nhãn DIY", color = MasterGold.copy(alpha = .85f), fontSize = 10.sp)
+                            Text("● DIY 标签应用中", color = MasterGold.copy(alpha = .85f), fontSize = 10.sp)
                         }
                         FlowRow(Modifier.padding(horizontal = 12.dp, vertical = 9.dp), horizontalArrangement = Arrangement.spacedBy(5.dp,
                             Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -152,9 +154,9 @@ MasterDetailIcon("Giới thiệu Bậc thầy chỉnh âm AI", "sound_ai_master_
                     Spacer(Modifier.weight(1f))
                     if (!using && song != null) Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 24.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        MasterPreviewAction("Phát âm thanh gốc", previewing && !previewProcessed, Modifier.weight(1f),
+                        MasterPreviewAction("播放原声", previewing && !previewProcessed, Modifier.weight(1f),
                             "sound_ai_master_preview_original") { if (previewing && !previewProcessed) onPreviewStop() else onPreview(false) }
-                        MasterPreviewAction("Nghe thử hiệu ứng", previewing && previewProcessed, Modifier.weight(1f),
+                        MasterPreviewAction("试听音效", previewing && previewProcessed, Modifier.weight(1f),
                             "sound_ai_master_preview_processed") { if (previewing && previewProcessed) onPreviewStop() else onPreview(true) }
                     }
                     Spacer(Modifier.height(110.dp))
@@ -170,7 +172,7 @@ MasterDetailIcon("Giới thiệu Bậc thầy chỉnh âm AI", "sound_ai_master_
                 .border(if (using) 1.dp else 0.dp, if (using) Color.White.copy(alpha = .25f) else Color.Transparent, CircleShape)
                 .clickable(role = Role.Button, onClick = onToggle).testTag("sound_ai_master_toggle"),
                 horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                Text(if (using) "Hủy sử dụng" else "Dùng ngay", color = if (using) Color.White else Color(0xFF211A0C),
+                Text(if (using) "取消使用" else "立即使用", color = if (using) Color.White else Color(0xFF211A0C),
                     fontSize = 15.sp, fontWeight = FontWeight.Medium)
                 if (!using) { Spacer(Modifier.width(5.dp)); EffectsMembership(4) }
             }
@@ -199,17 +201,18 @@ MasterDetailIcon("Giới thiệu Bậc thầy chỉnh âm AI", "sound_ai_master_
     onDismiss: () -> Unit, onSave: (Set<String>) -> Unit) {
     var draft by remember { mutableStateOf(selected) }
     LaunchedEffect(selected) { draft = selected }
-    io.github.currencortex.music.ui.component.MusicDialog("Tùy chọn DIY", onDismiss, footer = {
+    io.github.currencortex.music.ui.component.MusicDialog("DIY偏好设置", onDismiss, footer = {
         io.github.currencortex.music.ui.component.MusicDialogActions {
-            io.github.currencortex.music.ui.component.MusicDialogButton("Hủy", onDismiss,
-                Modifier.weight(1f).testTag("sound_ai_master_diy_close").semantics { contentDescription = "Đóng tùy chọn" })
-            io.github.currencortex.music.ui.component.MusicDialogButton(if (saving) "Đang lưu" else "Lưu tùy chọn", { onSave(draft) },
+            io.github.currencortex.music.ui.component.MusicDialogButton("取消", onDismiss,
+                Modifier.weight(1f).testTag("sound_ai_master_diy_close").semantics { contentDescription = "关闭偏好设置" })
+            io.github.currencortex.music.ui.component.MusicDialogButton(if (saving) "保存中" else "保存设置", { onSave(draft) },
                 Modifier.weight(1f).testTag("sound_ai_master_diy_save"), enabled = !saving)
         }
     }) {
         val colors = top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
         Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
-Text("Sau khi chọn tùy chọn, Chuyên gia tinh chỉnh âm thanh AI sẽ dựa trên trải nghiệm nghe nhạc tốt nhất và kết hợp với sở thích của bạn để tùy chỉnh hiệu ứng âm thanh phù hợp nhất! (PS: Nhãn tùy chọn sẽ có hiệu lực tùy theo bài hát)",            Modifier.padding(bottom = 18.dp), color = colors.onSurfaceVariantSummary, fontSize = 11.sp, lineHeight = 16.sp)
+        Text("选择偏好后，AI调音大师会在保障好的听歌体验基础上结合偏好为你定制最佳调音效果哟！（PS：偏好标签会基于歌曲生效）",
+            Modifier.padding(bottom = 18.dp), color = colors.onSurfaceVariantSummary, fontSize = 11.sp, lineHeight = 16.sp)
         for (row in 0..2) {
             Row(Modifier.fillMaxWidth().padding(bottom = 9.dp), horizontalArrangement = Arrangement.spacedBy(9.dp)) {
                 for (column in 0..1) {
@@ -222,7 +225,7 @@ Text("Sau khi chọn tùy chọn, Chuyên gia tinh chỉnh âm thanh AI sẽ d�
                             draft = if (checked) draft + option.key else draft - option.key
                         }.testTag("sound_ai_master_diy_${option.icon}") else Modifier),
                         contentAlignment = if (option == null) Alignment.Center else Alignment.TopStart) {
-                        if (option == null) Text("Vui lòng chờ", color = colors.onSurfaceVariantSummary, fontSize = 14.sp)
+                        if (option == null) Text("敬请期待", color = colors.onSurfaceVariantSummary, fontSize = 14.sp)
                         else Column(Modifier.padding(11.dp)) {
                             EffectsArtwork(NativeEffectsAssets.local("ai_master_detail_diy_${option.icon}${if (chosen) "_selected" else ""}.png"),
                                 Modifier.size(28.dp), scale = ContentScale.Fit)
@@ -240,18 +243,18 @@ Text("Sau khi chọn tùy chọn, Chuyên gia tinh chỉnh âm thanh AI sẽ d�
 }
 
 @Composable private fun MasterInformationSheet(onDismiss: () -> Unit) {
-    io.github.currencortex.music.ui.component.MusicDialog("Giới thiệu về bậc thầy chỉnh âm AI", onDismiss, footer = {
-        io.github.currencortex.music.ui.component.MusicDialogButton("Đã hiểu", onDismiss,
-            Modifier.testTag("sound_ai_master_info_close").semantics { contentDescription = "Đóng phần giới thiệu" })
+    io.github.currencortex.music.ui.component.MusicDialog("AI调音大师说明", onDismiss, footer = {
+        io.github.currencortex.music.ui.component.MusicDialogButton("知道了", onDismiss,
+            Modifier.testTag("sound_ai_master_info_close").semantics { contentDescription = "关闭说明" })
     }) {
         Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) {
         listOf(
-            "1. Mô tả chức năng" to "Phân tích động các đặc trưng của bài hát bằng engine AI học sâu như nhịp điệu, nhạc cụ và tần số giọng hát; tự động tạo thông số hiệu ứng âm thanh phù hợp để mang lại trải nghiệm nghe tốt nhất.",
-            "2. Phạm vi bài hát" to "Hệ thống ưu tiên phân tích chuyên sâu nội dung các bài hát phổ biến; những nội dung khác sẽ được xếp hàng để tạo thông số tùy chỉnh. Trong thời gian chờ, hệ thống tự động áp dụng phương án tối ưu hóa hiệu ứng âm thanh chung.",
-            "3. Tùy chọn DIY" to "Các tùy chọn được áp dụng theo bài hát hiện tại; không phải bài hát nào cũng hỗ trợ mọi tùy chọn. Khi hiển thị nhãn DIY đang được áp dụng, một phần hoặc toàn bộ tùy chọn đã có hiệu lực. Tùy chọn DIY không có hiệu lực khi sử dụng âm thanh không gian.",
-            "4. Giới hạn bản quyền" to "Một số bài hát đặc biệt bị chủ sở hữu bản quyền hạn chế, chẳng hạn như album kỹ thuật số trả phí, nên không thể điều chỉnh hiệu ứng âm thanh.",
-            "5. Cài đặt tùy chọn" to "Tùy chọn được lưu trong cài đặt cục bộ của tài khoản NetEase hiện tại và được dùng để tính toán lại thông số hiệu ứng âm thanh cho bài hát hiện tại.",
-      ).forEach { (title, description) ->
+            "1.功能说明" to "通过深度学习的 AI 引擎动态分析歌曲特征（如节奏、乐器、人声频率等），自动生成适配当前歌曲的专业级音效参数，无需手动调节即可获得歌曲的最佳听感",
+            "2.歌曲覆盖范围" to "系统优先深度分析热度高的歌曲内容，其他内容排队生成定制参数中，等待期间将自动应用通用音效优化方案。",
+            "3.DIY偏好" to "偏好标签会结合当前歌曲生效，并非所有歌曲都会应用全部偏好。展示「DIY 标签应用中」时，表示部分或全部偏好已生效。使用空间音频音质时，DIY 偏好不生效。",
+            "4.版权限制" to "部分版权方限制的特殊歌曲（如付费数字专辑）禁用音效调节功能",
+            "5.偏好设置" to "偏好保存在当前网易云账号的本机设置中，用于重新计算当前歌曲的音效参数。",
+        ).forEach { (title, description) ->
             Text(title, color = top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme.onBackground, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
             Text(description, Modifier.padding(top = 7.dp, bottom = 18.dp), color = top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme.onSurfaceVariantSummary, fontSize = 12.sp, lineHeight = 19.sp)
         }

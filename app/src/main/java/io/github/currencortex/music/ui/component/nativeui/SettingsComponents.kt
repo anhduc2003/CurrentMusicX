@@ -110,7 +110,7 @@ private val LocalSettingsPicker=compositionLocalOf<((Rect,List<GlassMenuItem>)->
     CompositionLocalProvider(LocalGlassBackdrop provides backdrop) {
     Row(Modifier.fillMaxWidth().height(SettingsToolbarHeight).padding(horizontal=16.dp).testTag(tag),
         verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(16.dp)) {
-        GlassIconButton({if(onBack!=null)onBack()else dispatcher?.onBackPressed()}"Quay lại",
+        GlassIconButton({if(onBack!=null)onBack()else dispatcher?.onBackPressed()},"返回",
             Modifier.testTag(backTag)) {Icon(MusicIcons.Back,null)}
         Text(title,Modifier.weight(1f).then(titleModifier),fontSize=17.sp,lineHeight=22.sp,fontWeight=FontWeight.SemiBold,
             maxLines=1,overflow=TextOverflow.Ellipsis)

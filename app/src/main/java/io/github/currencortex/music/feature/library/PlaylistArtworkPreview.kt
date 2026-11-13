@@ -50,47 +50,47 @@ import top.yukonga.miuix.kmp.basic.Text
     var infoOpen by remember(playlist.id, playlist.source) { mutableStateOf(false) }
     fun share() {
         val text = buildString {
-            appendLine("《${display.name}》 · ${display.count} bài hát")
+            appendLine("《${display.name}》 · ${display.count} 首歌曲")
             if (display.description.isNotBlank()) appendLine(display.description)
             if (native) appendLine("https://music.163.com/#/playlist?id=${playlist.id}")
-            append("từ CurrentMusic")
+            append("来自 CurrentMusic")
         }
         runCatching {
             context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain")
-                .putExtra(Intent.EXTRA_TEXT, text), "Chia sẻ danh sách phát")
-        }.onFailure { vm.container.errorNotices.show("Hiện chưa thể mở chia sẻ") }
+                .putExtra(Intent.EXTRA_TEXT, text), "分享歌单"))
+        }.onFailure { vm.container.errorNotices.show("暂时无法打开分享") }
     }
     if (infoOpen) SettingsUiScope {
-        MusicDialog("Thông tin danh sách phát", onDismiss = onDismiss) {
+        MusicDialog("歌单信息", onDismiss = onDismiss) {
             Text(display.name, Modifier.testTag("playlist_preview_info_name"), fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
-            Text(if (display.source in setOf("netease", "ncm")) "Nhạc Vân NetEase" else "CurrentMusic", fontSize = 13.sp)
-            Text("${display.count} bài hát", fontSize = 13.sp)
-            Text(display.description.ifBlank { "Chưa có giới thiệu về danh sách phát" },
+            Text(if (display.source in setOf("netease", "ncm")) "网易云音乐" else "CurrentMusic", fontSize = 13.sp)
+            Text("${display.count} 首歌曲", fontSize = 13.sp)
+            Text(display.description.ifBlank { "暂无歌单介绍" },
                 Modifier.heightIn(max = 240.dp).verticalScroll(rememberScrollState()), fontSize = 14.sp)
-            MusicDialogButton("Đóng", onClick = onDismiss)
+            MusicDialogButton("关闭", onClick = onDismiss)
         }
     } else MusicArtworkPreview(
         cover = playlist.cover.ifBlank { playlist.songs.firstOrNull()?.cover.orEmpty() },
         title = playlist.name, anchor = anchor,
         actions = buildList {
-            add(GlassMenuItem("play", "Phát tất cả", MusicIcons.Play, enabled = canPlay, onClick = { onPlay(false) }))
-            if (canSubscribe) add(GlassMenuItem("subscribe", if (subscribed) "Đã lưu vào thư viện" else "Lưu vào thư viện",
+            add(GlassMenuItem("play", "播放全部", MusicIcons.Play, enabled = canPlay, onClick = { onPlay(false) }))
+            if (canSubscribe) add(GlassMenuItem("subscribe", if (subscribed) "已收藏" else "收藏",
                 if (subscribed) Icons.Default.Star else MusicIcons.Star,
                 enabled = target != null && !busy && binding?.bound == true && binding?.stale == false,
                 keepOpen = true, onClick = {
-                    vm.action(if (subscribed) "Đã bỏ lưu danh sách phát" else "Đã lưu danh sách phát") {
+                    vm.action(if (subscribed) "已取消收藏歌单" else "已收藏歌单") {
                         if (subscribed) vm.container.neteaseLibrary.unsubscribe(playlist.id)
                         else vm.container.neteaseLibrary.subscribe(playlist.id)
                         info = target?.copy(nativeSubscribed = !subscribed)
                     }
                 }))
-            add(GlassMenuItem("shuffle", "Phát ngẫu nhiên", MusicIcons.Shuffle, enabled = canPlay, onClick = { onPlay(true) }))
+            add(GlassMenuItem("shuffle", "随机播放", MusicIcons.Shuffle, enabled = canPlay, onClick = { onPlay(true) }))
         },
         destinations = listOf(
-            GlassMenuItem("open_playlist", "Mở danh sách phát", onClick = onOpen),
-            GlassMenuItem("playlist_info", "Thông tin danh sách phát", keepOpen = true, onClick = { infoOpen = true }),
-            GlassMenuItem("share_playlist", "Chia sẻ", onClick = ::share),
+            GlassMenuItem("open_playlist", "打开歌单", onClick = onOpen),
+            GlassMenuItem("playlist_info", "歌单信息", keepOpen = true, onClick = { infoOpen = true }),
+            GlassMenuItem("share_playlist", "分享", onClick = ::share),
         ),
-        onDismiss = onDismiss, previewKind = "Danh sách phát",
+        onDismiss = onDismiss, previewKind = "歌单",
     )
 }

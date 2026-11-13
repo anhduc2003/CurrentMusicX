@@ -18,14 +18,14 @@ import top.yukonga.miuix.kmp.basic.Text
 @Composable internal fun ListenTogetherFateDeleteDialog(report: ListenTogetherFateReport,
     onDismiss: () -> Unit, onConfirm: (Boolean) -> Unit) {
     var deleteRecords by remember(report) { mutableStateOf(false) }
-    MusicDialog("Xóa báo cáo duyên phận?", onDismiss) {
-        Text("Báo cáo duyên phận và dữ liệu xếp hạng với ${report.peer.nickname.ifBlank { "người bạn nghe nhạc này" }} sẽ bị xóa. Sau khi xóa, bạn không thể khôi phục.", fontSize = 14.sp)
-        if (report.openActivity) Text("Huy hiệu Nghe cùng và tiến độ liên quan cũng sẽ bị thu hồi.", fontSize = 14.sp)
-        SettingsToggle("Đồng thời xóa lịch sử Nghe cùng", deleteRecords, { deleteRecords = it },
-            Modifier.testTag("listen_fate_delete_records"), summary = "Mặc định giữ lại lịch sử với họ"
+    MusicDialog("删除缘分报告？", onDismiss) {
+        Text("将删除与${report.peer.nickname.ifBlank { "这位听友" }}的缘分报告及排行数据，删除后无法恢复。", fontSize = 14.sp)
+        if (report.openActivity) Text("关联的一起听徽章及其进度也会被回收。", fontSize = 14.sp)
+        SettingsToggle("同时删除一起听历史", deleteRecords, { deleteRecords = it },
+            Modifier.testTag("listen_fate_delete_records"), summary = "默认保留与 TA 的历史记录")
         MusicDialogActions {
-            MusicDialogButton("Hủy", onDismiss, Modifier.weight(1f).testTag("listen_fate_delete_cancel"))
-            MusicDialogButton("Xác nhận xóa", { onConfirm(deleteRecords) }, Modifier.weight(1f).testTag("listen_fate_delete_confirm"), destructive = true)
+            MusicDialogButton("取消", onDismiss, Modifier.weight(1f).testTag("listen_fate_delete_cancel"))
+            MusicDialogButton("确认删除", { onConfirm(deleteRecords) }, Modifier.weight(1f).testTag("listen_fate_delete_confirm"), destructive = true)
         }
     }
 }

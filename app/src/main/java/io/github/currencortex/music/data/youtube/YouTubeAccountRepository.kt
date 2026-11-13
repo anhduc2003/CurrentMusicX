@@ -106,7 +106,7 @@ class YouTubeAccountRepository(private val sessions: YouTubeSessionStore,
         val name = item["accountName"]?.textOf().orEmpty()
         val email = item["email"]?.textOf().orEmpty()
         val avatar = ((item["accountPhoto"] as? JsonObject)?.get("thumbnails") as? JsonArray)
-            ?.firstOrNull()?.let { (it as? JsonObject)?.get("url")?.jsonPrimitiveOrNull()?.contentOrNull }.orEmpty()
+            ?.firstOrNull()?.let { (it as? JsonObject)?.get("url")?.let { url -> (url as? JsonPrimitive)?.contentOrNull } }.orEmpty()
         if (name.isBlank() && email.isBlank()) return null
         return YouTubeProfile(email.ifBlank { name }, name.ifBlank { email }, email, avatar)
     }

@@ -36,13 +36,13 @@ class LxSourceStore(private val context: Context, private val vault: TokenStore,
             publishTimes()
             ready.complete(Unit)
         } catch (cancelled: CancellationException) { ready.cancel(cancelled); throw cancelled }
-        catch (_: Exception) { ready.completeExceptionally(LxSourceException("Đọc danh sách nguồn nhạc Luoxue thất bại, vui lòng nhập lại")) }
+        catch (_: Exception) { ready.completeExceptionally(LxSourceException("落雪音源列表读取失败，请重新导入")) }
     } }
     fun supported() = runtime.supported()
     suspend fun importFile(uri: Uri): LxSourceInfo = withContext(Dispatchers.IO) {
-        require(uri.scheme == "content") { "Vui lòng chọn tập lệnh nguồn nhạc trong trình chọn tệp của hệ thống" }
+        require(uri.scheme == "content") { "请选择系统文件选择器中的音源脚本" }
         val script = context.contentResolver.openInputStream(uri)?.use { lxReadBounded(it, LX_MAX_SCRIPT_BYTES).toString(Charsets.UTF_8) }
-            ?: throw LxSourceException("Không thể đọc tệp nguồn nhạc")
+            ?: throw LxSourceException("无法读取音源文件")
         importScript(script)
     }
     suspend fun importUrl(value: String): LxSourceInfo = withContext(Dispatchers.IO) {
@@ -53,9 +53,9 @@ class LxSourceStore(private val context: Context, private val vault: TokenStore,
         ready.await()
         lock.withLock {
             val info = lxScriptInfo(script, origin)
-            entries.firstOrNull { it.info.id == info.id }?.let { throw LxSourceException("Nguồn nhạc này đã được nhập, bạn có thể chọn để sử dụng ngay") }
+            entries.firstOrNull { it.info.id == info.id }?.let { throw LxSourceException("该音源已导入，可直接选择使用") }
             require(entries.size < 12 && entries.sumOf { it.script.toByteArray().size } + script.toByteArray().size <= 8 * LX_MAX_SCRIPT_BYTES) {
-                "Đã đạt giới hạn số lượng hoặc tổng dung lượng nguồn nhạc, vui lòng xóa nguồn không sử dụng trước"
+                "音源数量或总大小已达上限，请先移除不使用的音源"
             }
             val capabilities = runtime.inspect(info, script)
             val complete = info.copy(capabilities = capabilities)
@@ -80,27 +80,28 @@ class LxSourceStore(private val context: Context, private val vault: TokenStore,
             val result = try {
                 withTimeout(60_000) {
                     // Fixed NetEase test track. Never changes the selected source, queue or playback.
-val test = Song(2135426631, "5:20AM", "Đao Tương", "5:20AM", durationMs = 142000)                    val audio = source(test, AudioQuality.STANDARD, id)
+                    val test = Song(2135426631, "5:20AM", "刀酱", "5:20AM", durationMs = 142000)
+                    val audio = source(test, AudioQuality.STANDARD, id)
                     val status = http.probeAudio(audio.url)
                     LxSourceHealth(status, android.os.SystemClock.elapsedRealtime(), when (status) {
-                        SourceAvailabilityStatus.AVAILABLE -> "Đã phân tích và đọc được dữ liệu âm thanh"
-                        SourceAvailabilityStatus.LIMITED -> "Địa chỉ âm thanh trả về phản hồi giới hạn tần suất"
-                        SourceAvailabilityStatus.TIMEOUT -> "Địa chỉ âm thanh phản hồi quá thời gian chờ"
-                        else -> "Địa chỉ âm thanh trả về không khả dụng hoặc không phải dữ liệu âm thanh"
+                        SourceAvailabilityStatus.AVAILABLE -> "已解析并读取到音频数据"
+                        SourceAvailabilityStatus.LIMITED -> "音频地址返回限流响应"
+                        SourceAvailabilityStatus.TIMEOUT -> "音频地址响应超时"
+                        else -> "返回的音频地址不可用或不是音频数据"
                     })
                 }
             } catch (_: TimeoutCancellationException) {
                 currentCoroutineContext().ensureActive()
-                LxSourceHealth(SourceAvailabilityStatus.TIMEOUT, android.os.SystemClock.elapsedRealtime(), "Kiểm tra quá thời gian chờ")
+                LxSourceHealth(SourceAvailabilityStatus.TIMEOUT, android.os.SystemClock.elapsedRealtime(), "检测超时")
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: java.net.SocketTimeoutException) {
-                LxSourceHealth(SourceAvailabilityStatus.TIMEOUT, android.os.SystemClock.elapsedRealtime(), "Phản hồi mạng quá thời gian chờ")
+                LxSourceHealth(SourceAvailabilityStatus.TIMEOUT, android.os.SystemClock.elapsedRealtime(), "网络响应超时")
             } catch (error: LxSourceException) {
-                val timedOut = error.message?.contains("quá thời gian chờ") == true
+                val timedOut = error.message?.contains("超时") == true
                 LxSourceHealth(if (timedOut) SourceAvailabilityStatus.TIMEOUT else SourceAvailabilityStatus.UNAVAILABLE,
-                    android.os.SystemClock.elapsedRealtime(), if (timedOut) "Phân tích nguồn nhạc quá thời gian chờ" else "Phân tích nguồn nhạc thất bại")
+                    android.os.SystemClock.elapsedRealtime(), if (timedOut) "音源解析超时" else "音源解析失败")
             } catch (_: Exception) {
-                LxSourceHealth(SourceAvailabilityStatus.UNAVAILABLE, android.os.SystemClock.elapsedRealtime(), "Phân tích nguồn nhạc hoặc kết nối mạng thất bại")
+                LxSourceHealth(SourceAvailabilityStatus.UNAVAILABLE, android.os.SystemClock.elapsedRealtime(), "音源解析或网络连接失败")
             }
             if (result.status != SourceAvailabilityStatus.AVAILABLE) recordPerformance(id, null)
             if (state.value.any { it.id == id }) health.update { it + (id to result) }
@@ -116,7 +117,7 @@ val test = Song(2135426631, "5:20AM", "Đao Tương", "5:20AM", durationMs = 142
             val candidates = lock.withLock {
                 if (smartSwitch) lxOrderedSources(entries, id, System.currentTimeMillis())
                 else listOf(entries.firstOrNull { it.info.id == id }
-                    ?: throw LxSourceException("Vui lòng nhập và chọn nguồn nhạc Luoxue trong mục Nguồn nhạc và mạng trước")
+                    ?: throw LxSourceException("请先在音源与网络中导入并选择落雪音源"))
             }
             lxTrySources(candidates) { source ->
                 val started = android.os.SystemClock.elapsedRealtime()
@@ -125,7 +126,7 @@ val test = Song(2135426631, "5:20AM", "Đao Tương", "5:20AM", durationMs = 142
                         try { withTimeout(12_000) { resolveSource(song, quality, source) } }
                         catch (_: TimeoutCancellationException) {
                             currentCoroutineContext().ensureActive()
-                            throw LxSourceException("Phân tích nguồn nhạc Luoxue quá thời gian chờ, vui lòng thử lại hoặc đổi nguồn nhạc")
+                            throw LxSourceException("落雪音源解析超时，请重试或更换音源")
                         }
                     } else resolveSource(song, quality, source)
                     recordPerformance(source.info.id, android.os.SystemClock.elapsedRealtime() - started)

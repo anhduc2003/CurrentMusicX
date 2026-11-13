@@ -36,8 +36,8 @@ internal fun footprintChartScale(maxMinutes: Double): Double = when {
     maxMinutes < 1080 -> 1080.0
     else -> 1440.0
 }
-private fun tick(minutes: Double): String = if (minutes >= 60 && minutes % 60 == 0.0) "${(minutes/60).toInt()}giờ"
-    else "${if(minutes % 1 == 0.0) minutes.toInt().toString() else minutes.toString()}phút"
+private fun tick(minutes: Double): String = if (minutes >= 60 && minutes % 60 == 0.0) "${(minutes/60).toInt()}小时"
+    else "${if(minutes % 1 == 0.0) minutes.toInt().toString() else minutes.toString()}分钟"
 
 @Composable internal fun ListeningWeekChart(range: ListeningRange, days: Map<LocalDate,Long>, selectedDay: LocalDate,
     today: LocalDate, onDay: (LocalDate)->Unit, breakdowns: Map<LocalDate,ListeningDayBreakdown> = emptyMap()) {
@@ -59,7 +59,7 @@ private fun tick(minutes: Double): String = if (minutes >= 60 && minutes % 60 ==
                 val height=if(ms<=0) 0f else ((ms/60000.0/upper*173.333).toFloat()).coerceIn(32f,183.333f)
                 val animated by animateFloatAsState(height,tween(500),label="duration height")
                 Box(Modifier.width((32*s).dp).fillMaxHeight().zIndex(if(popup==date) 1f else 0f).clickable(enabled=date<=today && days.containsKey(date),role=Role.Button) { popup=if(popup==date)null else date;onDay(date) }
-                    .testTag("listening_bar_$date").semantics { contentDescription="Tháng ${date.monthValue}, ngày ${date.dayOfMonth}, ${compactDuration(ms)}" }) {
+                    .testTag("listening_bar_$date").semantics { contentDescription="${date.monthValue}月${date.dayOfMonth}日，${compactDuration(ms)}" }) {
                     if(ms>0) ListeningDurationBar(FootprintRed,ms>=3600000,if(date==today)light else null,
                         Modifier.align(Alignment.BottomCenter).fillMaxWidth().height((animated*s).dp))
                     else Box(Modifier.align(Alignment.BottomCenter).size((32*s).dp))
@@ -75,8 +75,8 @@ private fun tick(minutes: Double): String = if (minutes >= 60 && minutes % 60 ==
         }
         Row(Modifier.align(Alignment.BottomEnd).padding(end=(14.667f*s).dp).width((270.667f*s).dp).height((16*s).dp),horizontalArrangement=Arrangement.SpaceAround) {
             range.dates.forEach { date -> Box(Modifier.width((27*s).dp),contentAlignment=Alignment.Center) {
-                if(date==today) Box(Modifier.size((16*s).dp).background(FootprintRed,CircleShape),contentAlignment=Alignment.Center) { FootprintText("Nay",size=10f,color=Color.White,weight=FontWeight.Bold) }
-                else FootprintText(listOf("CN","T2","T3","T4","T5","T6","T7")[date.dayOfWeek.value%7],size=9f,color=FootprintMuted)
+                if(date==today) Box(Modifier.size((16*s).dp).background(FootprintRed,CircleShape),contentAlignment=Alignment.Center) { FootprintText("今",size=10f,color=Color.White,weight=FontWeight.Bold) }
+                else FootprintText(listOf("日","一","二","三","四","五","六")[date.dayOfWeek.value%7],size=9f,color=FootprintMuted)
             } }
         }
     }
@@ -97,19 +97,19 @@ private fun tick(minutes: Double): String = if (minutes >= 60 && minutes % 60 ==
                 drawLine(ink,Offset(size.width*.85f,size.height*.5f),Offset(size.width*.85f,size.height*.9f),size.width*.2f,StrokeCap.Round)
             } else if(isTop) coil3.compose.AsyncImage("https://sg.music.163.com/st/listen-home/static/media/top_listen_icon.4fe84421.png", "TOP",
                 Modifier.size((18.303f*s).dp,(7.333f*s).dp))
-            FootprintText(if(date==today)"Hôm nay" else date.toString().replace('-', '.'),size=8f,numeric=date!=today,
+            FootprintText(if(date==today)"今日" else date.toString().replace('-', '.'),size=8f,numeric=date!=today,
                 weight=FontWeight.SemiBold,lineHeight=if(date==today)11.667f else 7.333f,maxLines=1)
         }
         Spacer(Modifier.height(((if(date==today).666f else 3.333f)*s).dp))
-        val values = if (breakdown==null) listOf((if(sleepMode) "Nhạc thư giãn" else "Nghe nhạc") to ms) else
-            listOf("Nghe nhạc" to (breakdown.musicMs ?: 0), "Nghe sách nói" to (breakdown.audiobookMs ?: 0), "Podcast" to (breakdown.podcastMs ?: 0)).filter { it.second > 0 }.ifEmpty { listOf("Nghe nhạc" to 0L) }
+        val values = if (breakdown==null) listOf((if(sleepMode) "助眠" else "听歌") to ms) else
+            listOf("听歌" to (breakdown.musicMs ?: 0), "听书" to (breakdown.audiobookMs ?: 0), "播客" to (breakdown.podcastMs ?: 0)).filter { it.second > 0 }.ifEmpty { listOf("听歌" to 0L) }
         values.forEach { (label,duration) -> Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy((3.333f*s).dp)) {
             FootprintText(label,Modifier.padding(bottom=(.667f*s).dp),size=8f,color=FootprintInk.copy(alpha=.7f))
             Row(Modifier.semantics(mergeDescendants=true) { contentDescription=compactDuration(duration) },verticalAlignment=Alignment.CenterVertically) {
                 val minutes=duration.coerceAtLeast(0)/60000
                 val parts=buildList {
-                    if(minutes>=60) add(minutes/60 to "giờ")
-                    if(minutes<60 || minutes%60!=0L) add(minutes%60 to if(minutes==0L) "phút" else "phút")
+                    if(minutes>=60) add(minutes/60 to "小时")
+                    if(minutes<60 || minutes%60!=0L) add(minutes%60 to if(minutes==0L) "分钟" else "分")
                 }
                 parts.forEach { (value,unit) ->
                     FootprintText(value.toString(),size=12f,weight=FontWeight.Bold,numeric=true,lineHeight=13.333f,maxLines=1)
@@ -136,9 +136,9 @@ private fun tick(minutes: Double): String = if (minutes >= 60 && minutes % 60 ==
                         Box(Modifier.size((36*s).dp).clip(CircleShape)
                             .background(if(ms>=3600000) Brush.verticalGradient(if(sleepMode) listOf(Color(0xFF1356B2),Color(0xFF9ABBED)) else listOf(Color(0xFFFF2222),Color(0xFFFF8080))) else Brush.verticalGradient(List(2) { if(ms>0) (if(sleepMode) FootprintSoftBlue else FootprintSoftRed) else Color.Transparent }))
                             .clickable(enabled=date<=today && days.containsKey(date),role=Role.Button) {popup=if(popup==date)null else date;onDay(date)}
-                            .testTag("listening_day_$date").semantics {contentDescription="Tháng ${date.monthValue}, ngày ${date.dayOfMonth}, ${compactDuration(ms)}"},contentAlignment=Alignment.Center) {
+                            .testTag("listening_day_$date").semantics {contentDescription="${date.monthValue}月${date.dayOfMonth}日，${compactDuration(ms)}"},contentAlignment=Alignment.Center) {
                             if(ms==0L && date<=today) Canvas(Modifier.fillMaxSize()) { drawCircle(ink.copy(alpha=.08f),radius=size.width/2-.5f,style=Stroke(1.dp.toPx(),pathEffect=PathEffect.dashPathEffect(floatArrayOf(2.dp.toPx(),2.dp.toPx())))) }
-                            FootprintText(if(date==today)"Nay" else date.dayOfMonth.toString(),size=14f,numeric=date!=today,weight=FontWeight.SemiBold,
+                            FootprintText(if(date==today)"今" else date.dayOfMonth.toString(),size=14f,numeric=date!=today,weight=FontWeight.SemiBold,
                                 color=if(ms>=3600000)Color.White else if(ms>0) (if(sleepMode) Color(0xFF1356B2) else FootprintRed) else FootprintMuted)
                         }
                         if(popup==date) ChartPopup(date,ms,today,breakdowns[date],Modifier.offset(y=(-42*s).dp).wrapContentSize(unbounded=true),sleepMode)
@@ -147,7 +147,7 @@ private fun tick(minutes: Double): String = if (minutes >= 60 && minutes % 60 ==
             }
         } }
         Row(Modifier.width((298.667f*s).dp).padding(top=(9.667f*s).dp),horizontalArrangement=Arrangement.SpaceAround) {
-            listOf("CN","T2","T3","T4","T5","T6","T7").forEach { FootprintText(it,size=9f,color=FootprintMuted) }
+            listOf("日","一","二","三","四","五","六").forEach { FootprintText(it,size=9f,color=FootprintMuted) }
         }
     }
 }
@@ -155,11 +155,11 @@ private fun tick(minutes: Double): String = if (minutes >= 60 && minutes % 60 ==
 @Composable internal fun ListeningAchievement(fact:ListeningFact) {
     val s=LocalFootprintScale.current
     val image=mapOf(
-        "Fan âm nhạc cuồng nhiệt Làng Mây" to "super_fan_pic.fc4c65dd.png", "Tín đồ âm thanh Làng Mây" to "heavy_enthusiast_pic.9b987c66.png",
-        "Chuyên cần nghe nhạc" to "perfect_attendance_pic.20bac56c.png", "Người mất tích Làng Mây" to "missing_person_pic.1fadb1e8.png",
-        "Bậc thầy tự giác" to "self_discipline_pic.bffd0768.png", "Cú đêm Làng Mây" to "night_owl_pic.b2ebde54.png",
-        "Nhà sưu tập bài hát yêu thích" to "heart_collector_pic.80b6f112.png", "Lữ khách âm nhạc" to "music_wander_pic.ff8943da.png",
-        "Bậc thầy đĩa than" to "vinyl_master_pic.5e50336d.png")[fact.value]
+        "云村超级乐迷" to "super_fan_pic.fc4c65dd.png", "云村发烧友" to "heavy_enthusiast_pic.9b987c66.png",
+        "听歌全勤奖" to "perfect_attendance_pic.20bac56c.png", "云村失踪人口" to "missing_person_pic.1fadb1e8.png",
+        "自律达人" to "self_discipline_pic.bffd0768.png", "云村夜猫子" to "night_owl_pic.b2ebde54.png",
+        "红心收藏家" to "heart_collector_pic.80b6f112.png", "音乐漫游者" to "music_wander_pic.ff8943da.png",
+        "黑胶大师" to "vinyl_master_pic.5e50336d.png")[fact.value]
     Column(Modifier.fillMaxWidth().height((167.667f*s).dp).padding(top=(8.667f*s).dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy((8.667f*s).dp)) {
         if(image!=null) coil3.compose.AsyncImage("https://sg.music.163.com/st/listen-home/static/media/$image",fact.value,Modifier.size((167*s).dp,(136.333f*s).dp))
         else FootprintText(fact.value,size=23f,weight=FontWeight.Bold)

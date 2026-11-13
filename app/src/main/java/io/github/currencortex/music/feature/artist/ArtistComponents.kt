@@ -30,19 +30,27 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 internal fun albumCategory(type: String): String = when (type.trim().lowercase(java.util.Locale.ROOT)) {
-"Album", "album" -> "album""Đĩa đơn", "single" -> "single""ep", "ep/đĩa đơn" -> "ep"    else -> "other"
+    "专辑", "album" -> "album"
+    "单曲", "single" -> "single"
+    "ep", "ep/单曲" -> "ep"
+    else -> "other"
 }
 private fun albumTypeLabel(type: String) = when (albumCategory(type)) {
-"album" -> "album"; "single" -> "đĩa đơn"; "ep" -> "EP"; else -> type}
+    "album" -> "专辑"; "single" -> "单曲"; "ep" -> "EP"; else -> type
+}
 internal fun artistAlbumsForDisplay(albums: List<Album>, filter: String): List<Album> =
     albums.filter { filter == "all" || albumCategory(it.type) == filter }
 
 internal fun artistCount(value: Long): String = when {
-value >= 100_000_000 -> "%.1f trăm triệu".format(java.util.Locale.ROOT, value / 100_000_000.0)value >= 10_000 -> "%.1f vạn".format(java.util.Locale.ROOT, value / 10_000.0)    else -> value.toString()
+    value >= 100_000_000 -> "%.1f亿".format(java.util.Locale.ROOT, value / 100_000_000.0)
+    value >= 10_000 -> "%.1f万".format(java.util.Locale.ROOT, value / 10_000.0)
+    else -> value.toString()
 }
 
 private fun albumDate(album: Album): String = if (album.publishTime > 0)
-Instant.ofEpochMilli(album.publishTime).atZone(ZoneId.of("Asia/Shanghai")).format(DateTimeFormatter.ISO_LOCAL_DATE) else "Ngày phát hành không xác định"private fun albumCaption(album: Album) = listOf(albumDate(album), if (album.size > 0) "${album.size} bài hát" else "")    .filter(String::isNotBlank).joinToString(" · ")
+    Instant.ofEpochMilli(album.publishTime).atZone(ZoneId.of("Asia/Shanghai")).format(DateTimeFormatter.ISO_LOCAL_DATE) else "发行日期未知"
+private fun albumCaption(album: Album) = listOf(albumDate(album), if (album.size > 0) "${album.size} 首" else "")
+    .filter(String::isNotBlank).joinToString(" · ")
 
 @Composable internal fun ArtistHero(artist: Artist?, fans: ArtistFans?, onAbout: () -> Unit) {
     Box(Modifier.fillMaxWidth().height(288.dp).clip(RoundedCornerShape(28.dp)).testTag("artist_hero")) {
@@ -54,10 +62,11 @@ Instant.ofEpochMilli(album.publishTime).atZone(ZoneId.of("Asia/Shanghai")).forma
                     color = Color.White, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 if (artist.description.isNotBlank()) Text(artist.description, fontSize = 13.sp,
                     color = Color.White.copy(alpha = .8f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-Text("${artist.songTotal} bài hát · ${artist.albumTotal} album · ${artist.mvTotal} MV",
+                Text("${artist.songTotal} 首歌曲 · ${artist.albumTotal} 张专辑 · ${artist.mvTotal} 支 MV",
                     fontSize = 12.sp, color = Color.White.copy(alpha = .85f))
-fans?.let { Text("${artistCount(it.fans)} người hâm mộ", fontSize = 13.sp, color = Color.White.copy(alpha = .85f)) }
-Text("Bách khoa nghệ sĩ ›", Modifier.clip(RoundedCornerShape(20.dp))                    .background(Color.White.copy(alpha = .16f)).clickable(role = Role.Button, onClick = onAbout)
+                fans?.let { Text("${artistCount(it.fans)} 粉丝", fontSize = 13.sp, color = Color.White.copy(alpha = .85f)) }
+                Text("艺人百科 ›", Modifier.clip(RoundedCornerShape(20.dp))
+                    .background(Color.White.copy(alpha = .16f)).clickable(role = Role.Button, onClick = onAbout)
                     .testTag("artist_open_about").padding(horizontal = 16.dp, vertical = 12.dp),
                     fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color.White)
             }
@@ -85,7 +94,8 @@ Text("Bách khoa nghệ sĩ ›", Modifier.clip(RoundedCornerShape(20.dp))      
         MusicTransportButton(title, onPlay, Modifier.size(48.dp), prominent = true, enabled = enabled)
         Column(Modifier.padding(start = 12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(title, fontSize = 18.sp, fontWeight = FontWeight.Medium)
-Text("$count bài", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)        }
+            Text("$count 首", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
+        }
     }
 }
 @Composable internal fun ArtistAlbumCard(album: Album, modifier: Modifier, navigate: (String) -> Unit) {
@@ -109,7 +119,8 @@ Text("$count bài", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVa
     val colors = MiuixTheme.colorScheme
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-items(listOf("all" to "Tất cả", "album" to "Album", "single" to "Đĩa đơn", "ep" to "EP", "other" to "Khác")) { (key, title) ->                Text(title, Modifier.clip(RoundedCornerShape(24.dp))
+            items(listOf("all" to "全部", "album" to "专辑", "single" to "单曲", "ep" to "EP", "other" to "其他")) { (key, title) ->
+                Text(title, Modifier.clip(RoundedCornerShape(24.dp))
                     .background(if (key == filter) colors.primary.copy(alpha = .14f) else colors.surfaceContainer)
                     .semantics { selected = key == filter }.clickable(role = Role.Tab) { onFilter(key) }
                     .testTag("artist_album_filter_$key").padding(horizontal = 22.dp, vertical = 14.dp),
@@ -117,10 +128,13 @@ items(listOf("all" to "Tất cả", "album" to "Album", "single" to "Đĩa đơn
             }
         }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-Text(if (more) "Đã tải $loaded / ${maxOf(total, loaded)} ảnh · Hiển thị $visible ảnh" else "Tổng cộng $visible ảnh",                Modifier.weight(1f), fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
-MusicTextAction(if (order == "time") "Sắp xếp theo thời gian ↓" else "Sắp xếp theo độ phổ biến ↓",                { onSort(if (order == "time") "hot" else "time") }, Modifier.testTag("artist_album_sort"))
+            Text(if (more) "已加载 $loaded / ${maxOf(total, loaded)} 张 · 显示 $visible 张" else "共 $visible 张",
+                Modifier.weight(1f), fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+            MusicTextAction(if (order == "time") "按时间排序 ↓" else "按热度排序 ↓",
+                { onSort(if (order == "time") "hot" else "time") }, Modifier.testTag("artist_album_sort"))
         }
-if (more) Text("Lọc theo thể loại chỉ áp dụng cho các album đã tải", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)    }
+        if (more) Text("类型筛选适用于已加载的专辑", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+    }
 }
 @Composable internal fun ArtistMvCard(mv: MvDto, modifier: Modifier, navigate: (String) -> Unit) {
     Column(modifier.clip(RoundedCornerShape(16.dp)).clickable(role = Role.Button) { navigate("lib/mv/${mv.id}") }
@@ -137,18 +151,22 @@ if (more) Text("Lọc theo thể loại chỉ áp dụng cho các album đã t�
     }
 }
 @Composable internal fun ArtistBiographyPreview(state: ArtistUiState, onOpen: () -> Unit) {
-ArtistSectionTitle("Bách khoa nghệ sĩ", "Xem chi tiết", onOpen)    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(MiuixTheme.colorScheme.surfaceContainer)
+    ArtistSectionTitle("艺人百科", "查看详情", onOpen)
+    Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(MiuixTheme.colorScheme.surfaceContainer)
         .clickable(role = Role.Button, onClick = onOpen).testTag("artist_bio_preview").padding(18.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             MusicCover(state.displayArtist?.cover.orEmpty(), Modifier.size(48.dp), 160, cornerRadius = 24.dp)
-Text(state.displayArtist?.name ?: "Bách khoa nghệ sĩ", fontSize = 17.sp, fontWeight = FontWeight.Medium)        }
+            Text(state.displayArtist?.name ?: "艺人百科", fontSize = 17.sp, fontWeight = FontWeight.Medium)
+        }
         val brief = state.biography?.briefDesc?.takeIf { it.isNotBlank() } ?: state.displayArtist?.briefDesc.orEmpty()
         when {
             brief.isNotBlank() -> Text(brief, fontSize = 14.sp, lineHeight = 23.sp, maxLines = 4,
                 overflow = TextOverflow.Ellipsis, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
             state.biographyLoading -> LoadingTextList(2)
-state.biographyError != null -> Text("Phần giới thiệu chưa tải được, nhấn để xem chi tiết và thử lại", fontSize = 14.sp)else -> Text("Xem thông tin cơ bản và hồ sơ nghệ sĩ", fontSize = 14.sp)        }
+            state.biographyError != null -> Text("简介暂未加载，点击查看详情并重试", fontSize = 14.sp)
+            else -> Text("查看基本信息与艺人资料", fontSize = 14.sp)
+        }
         state.overview?.takeIf { it.awardTitle.isNotBlank() || it.awardCount > 0 }?.let { ArtistAwards(it) }
     }
 }
@@ -158,7 +176,8 @@ state.biographyError != null -> Text("Phần giới thiệu chưa tải được
         overview.awardImages.firstOrNull()?.let { MusicCover(it, Modifier.size(48.dp), 160, cornerRadius = 8.dp) }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             if (overview.awardTitle.isNotBlank()) Text(overview.awardTitle, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-if (overview.awardCount > 0) Text("${overview.awardCount} thành tựu", fontSize = 12.sp,                color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
+            if (overview.awardCount > 0) Text("${overview.awardCount} 项成就", fontSize = 12.sp,
+                color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
         }
     }
 }

@@ -71,9 +71,9 @@ internal object ListenTogetherReportSharing {
         return Intent(Intent.ACTION_SEND).apply {
             type = "image/png"
             putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_TITLE, "Báo cáo nghe cùng · CurrentMusicX")
-            putExtra(Intent.EXTRA_TEXT, "Khoảng thời gian nghe nhạc cùng bạn bè này được chia sẻ bởi CurrentMusicX.\n${report.officialUrl()}")
-            clipData = ClipData.newUri(context.contentResolver, "Báo cáo nghe cùng", uri)
+            putExtra(Intent.EXTRA_TITLE, "一起听报告 · CurrentMusicX")
+            putExtra(Intent.EXTRA_TEXT, "和好友一起听的这段时光，由 CurrentMusicX 分享。\n${report.officialUrl()}")
+            clipData = ClipData.newUri(context.contentResolver, "一起听报告", uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
     }
@@ -109,7 +109,7 @@ internal object ListenTogetherReportSharing {
             }
             label("CurrentMusicX", 72f, 100f, 38f, Color.WHITE, true)
             label("LISTEN TOGETHER", 74f, 142f, 21f, 0xDDFFFFFF.toInt())
-            label("Khoảng thời gian nghe cùng", 72f, 245f, 58f, Color.WHITE, true)
+            label("一起听的这段时光", 72f, 245f, 58f, Color.WHITE, true)
             report.endTimeMs?.takeIf { it > 0 }?.let {
                 label(SimpleDateFormat("yyyy.MM.dd", Locale.CHINA).format(Date(it)), 76f, 296f, 26f, 0xEEFFFFFF.toInt())
             }
@@ -117,8 +117,8 @@ internal object ListenTogetherReportSharing {
             canvas.drawRoundRect(RectF(64f, 350f, 1016f, 1000f), 40f, 40f, paint)
             portrait(canvas, self, 460f, 433f, 74f, paint)
             portrait(canvas, peer, 610f, 433f, 74f, paint)
-            val names = listOf(report.self?.nickname?.ifBlank { "Tôi" } ?: "Tôi",
-                report.peer?.nickname?.ifBlank { "Bạn bè" } ?: "Bạn bè").joinToString("  ·  ")
+            val names = listOf(report.self?.nickname?.ifBlank { "我" } ?: "我",
+                report.peer?.nickname?.ifBlank { "好友" } ?: "好友").joinToString("  ·  ")
             paragraph(canvas, names, 96f, 535f, 888, 32f, ink, 2, bold = true, centered = true)
 
             fun stat(labelText: String, value: String, x: Float, top: Float, emphasized: Boolean) {
@@ -128,18 +128,18 @@ internal object ListenTogetherReportSharing {
                 while (font > 27f && run { measure.textSize = font; measure.measureText(value) > 400 }) font -= 1f
                 paragraph(canvas, value, x, top + 44f, 400, font, if (emphasized) coral else ink, 1, bold = true)
             }
-            stat("Lần này đã nghe cùng", count(report.songCount), 110f, 662f, true)
-            stat("Lần này đã đồng hành cùng nhau", duration(report.durationMs), 578f, 662f, true)
+            stat("本次一起听了", count(report.songCount), 110f, 662f, true)
+            stat("本次陪伴彼此", duration(report.durationMs), 578f, 662f, true)
             paint.color = 0xFFEFE4E0.toInt(); paint.strokeWidth = 2f
             canvas.drawLine(110f, 786f, 970f, 786f, paint)
-            stat("Tổng số bài đã nghe cùng", count(report.totalSongCount), 110f, 820f, false)
-            stat("Tổng thời gian đồng hành cùng nhau", duration(report.totalDurationMs), 578f, 820f, false)
+            stat("累计一起听过", count(report.totalSongCount), 110f, 820f, false)
+            stat("累计陪伴彼此", duration(report.totalDurationMs), 578f, 820f, false)
             if (listOf(report.songCount, report.durationMs, report.totalSongCount, report.totalDurationMs).any { it == null }) {
-                paragraph(canvas, "— biểu thị Nhạc Vân NetEase không cung cấp dữ liệu; một số thống kê yêu cầu quyền thành viên.", 110f, 945f, 860, 20f, muted, 1)
+                paragraph(canvas, "— 表示网易云未提供数据，部分统计需会员权限。", 110f, 945f, 860, 20f, muted, 1)
             }
-            label("Mỗi bài hát đều có chúng ta", 72f, 1110f, 34f, Color.WHITE, true)
-            paragraph(canvas, "Dữ liệu từ tính năng nghe cùng của Nhạc Vân NetEase\nQuét mã để xem báo cáo chính thức của Nhạc Vân NetEase", 74f, 1144f, 570, 25f, 0xEEFFFFFF.toInt(), 3)
-            paragraph(canvas, "Được tạo và chia sẻ bởi CurrentMusicX", 74f, 1310f, 570f, 22f, 0xDDFFFFFF.toInt(), 2)
+            label("每一首歌，都有彼此", 72f, 1110f, 34f, Color.WHITE, true)
+            paragraph(canvas, "数据来自网易云一起听\n扫码查看网易云官方报告", 74f, 1144f, 570, 25f, 0xEEFFFFFF.toInt(), 3)
+            paragraph(canvas, "由 CurrentMusicX 生成并分享", 74f, 1310f, 570, 22f, 0xDDFFFFFF.toInt(), 2)
             val qr = qr(report.officialUrl())
             try {
                 paint.color = Color.WHITE
@@ -193,10 +193,10 @@ internal object ListenTogetherReportSharing {
         return Bitmap.createBitmap(pixels, matrix.width, matrix.height, Bitmap.Config.ARGB_8888)
     }
 
-     private fun count(value: Long?) = value?.takeIf { it >= 0 }?.let { "$it bài hát" } ?: "—"
+    private fun count(value: Long?) = value?.takeIf { it >= 0 }?.let { "$it 首歌曲" } ?: "—"
     private fun duration(value: Long?): String {
         if (value == null || value < 0) return "—"
         val minutes = value / 60_000
-         return when { value > 0 && minutes == 0L -> "Dưới 1 phút"; minutes < 60 -> "$minutes phút"; else -> "${minutes / 60} giờ ${minutes % 60} phút" }
+        return when { value > 0 && minutes == 0L -> "小于 1 分钟"; minutes < 60 -> "$minutes 分钟"; else -> "${minutes / 60} 小时 ${minutes % 60} 分钟" }
     }
 }

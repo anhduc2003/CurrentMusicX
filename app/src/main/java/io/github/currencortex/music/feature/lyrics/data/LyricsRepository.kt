@@ -43,7 +43,7 @@ class LyricsRepository(private val ttml: LyricsProvider, private val fallback: L
             val local = try { localLyrics?.invoke(song) }
             catch (e: CancellationException) { throw e }
             catch (e: Exception) {
-                localFailure = if (e is EmbeddedLyricsDecodeException) "Định dạng lời bài hát nhúng trong tệp cục bộ hiện chưa được hỗ trợ" else "Hiện không thể đọc lời bài hát nhúng trong tệp cục bộ"
+                localFailure = if (e is EmbeddedLyricsDecodeException) "本地内嵌歌词格式暂不支持" else "本地内嵌歌词暂时无法读取"
                 issue(LyricsErrorCode.PARSE_ERROR, "$localFailure (${e.javaClass.simpleName})")
                 null
             }
@@ -79,9 +79,7 @@ class LyricsRepository(private val ttml: LyricsProvider, private val fallback: L
             issue(LyricsErrorCode.NETWORK_ERROR, "Automatic matching: ${e.javaClass.simpleName}")
             null
         }
-        fun unavailable() = LyricsResult(error = localFailure ?: if (automaticFailed) "Hiện không thể đọc lời bài hát, vui lòng thử lại sau" else "Chưa có lời bài hát nào",
-
-
+        fun unavailable() = LyricsResult(error = localFailure ?: if (automaticFailed) "歌词暂时无法读取，请稍后重试" else "暂无歌词",
             issues = issues.toList())
         // Automatic selection is a fresh comparison on every load. A previous
         // provider/cache result must not take precedence over the current winner.
@@ -99,8 +97,8 @@ class LyricsRepository(private val ttml: LyricsProvider, private val fallback: L
         }
         // An explicitly selected source must not be overridden by cached AMLL TTML.
         for (key in if (selected == null) keys else emptyList()) {
-                    cache.read(key)?.let { return@withLock remember(parse(it, key), LyricsOrigin("Lời bài hát từng chữ AMLL", "amll", key.songId)) }
-                    cache.read(key)?.let { return@withLock remember(parse(it, key), LyricsOrigin("Lời bài hát từng chữ AMLL", "amll", key.songId)) }
+            try {
+                cache.read(key)?.let { return@withLock remember(parse(it, key), LyricsOrigin("AMLL 逐字歌词", "amll", key.songId)) }
             } catch (e: LyricsException) {
                 issue(e.code, "Cached ${key.cacheName}: ${e.message}")
                 try { cache.remove(key) } catch (e: Exception) { issue(LyricsErrorCode.PARSE_ERROR, "Cache removal: ${e.javaClass.simpleName}") }
@@ -117,8 +115,8 @@ class LyricsRepository(private val ttml: LyricsProvider, private val fallback: L
                     else issue(LyricsErrorCode.NO_LYRICS, "Provider returned an empty document")
                 is LyricsProviderResult.Ttml -> try {
                     val document = parse(result.text, result.key)
-                    return@withLock remember(document, LyricsOrigin("Lời bài hát từng chữ AMLL", "amll", result.key.songId))
-                    return@withLock remember(document, LyricsOrigin("Lời bài hát từng chữ AMLL", "amll", result.key.songId))
+                    try { cache.write(result.key, result.text) } catch (e: Exception) { issue(LyricsErrorCode.PARSE_ERROR, "Cache write: ${e.javaClass.simpleName}") }
+                    return@withLock remember(document, LyricsOrigin("AMLL 逐字歌词", "amll", result.key.songId))
                 } catch (e: LyricsException) { issue(e.code, e.message.orEmpty()) }
             }
         }

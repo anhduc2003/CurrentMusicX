@@ -78,7 +78,7 @@ import java.util.Locale
                 isUsing && scene != "normal" -> "speakerphone_model_${scene}_used_${if (dark) "dark_" else ""}video_url.mp4"
                 else -> "speakerphone_model_normal_${if (isUsing) "used" else "unused"}_${if (dark) "dark_" else ""}video_url.mp4"
             }
-            val title = when (kind) { 0 -> "Chuyên gia điều chỉnh cảm xúc AI"; 1 -> "Bậc thầy điều chỉnh âm thanh AI"; else -> "Hiệu ứng loa ngoài" }
+            val title = when (kind) { 0 -> "AI 情绪调音师"; 1 -> "AI 调音大师"; else -> "外放音效" }
             val target = when (kind) { 0 -> SoundEffectKind.MOOD; 1 -> SoundEffectKind.AI_MASTER; else -> SoundEffectKind.SPEAKER }
             val label = when (kind) { 0 -> "mood"; 1 -> "ai"; else -> "speaker" }
             Box(Modifier.fillMaxWidth().aspectRatio(1.37f).graphicsLayer {
@@ -94,7 +94,7 @@ import java.util.Locale
                     verticalAlignment = Alignment.CenterVertically) {
                     Text(if (kind == 2) "$title · ${speakerScene.label}" else title, Modifier.weight(1f), fontSize = 10.sp,
                         color = if (dark || kind == 2) Color.White else Color(0xFF64512F), maxLines = 1)
-                    Text(if (kind == 2) "Chuyển môi trường ›" else "Xem ›", fontSize = 10.sp,
+                    Text(if (kind == 2) "切换环境 ›" else "查看 ›", fontSize = 10.sp,
                         color = if (dark || kind == 2) Color.White.copy(alpha = .85f) else Color(0xFF64512F))
                 } else EffectsMembership(4, Modifier.align(Alignment.TopEnd).padding(top = 12.dp, end = 16.dp))
                 if (kind == 1 && isUsing && !songCover.isNullOrBlank()) Box(Modifier.align(Alignment.Center).offset(y = (-7).dp).size(85.dp)) {
@@ -106,8 +106,8 @@ import java.util.Locale
                     .padding(horizontal = if (isUsing) 14.dp else 8.dp)
                     .padding(top = 14.dp, bottom = if (isUsing) 14.dp else 20.dp),
                     horizontalAlignment = if (isUsing) Alignment.Start else Alignment.CenterHorizontally) {
-                    if (isUsing && isReady) Text(if (kind == 2) "Loa ngoài · ${speakerScene.label}" else
-                        song?.let { "${if (playing) "Đang phát" else "Đang nghe"}《$it》" } ?: "Đã bật · Tự động khớp sau khi phát", fontSize = 15.sp,
+                    if (isUsing && isReady) Text(if (kind == 2) "外放 · ${speakerScene.label}" else
+                        song?.let { "${if (playing) "正在播放" else "在听"}《$it》" } ?: "已开启 · 播放后自动匹配", fontSize = 15.sp,
                         fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis,
                         color = if (dark || kind == 2) Color.White else Color(0xFF64512F))
                     else if (kind == 0) EffectsArtwork(NativeEffectsAssets.local("emotion_title_icon_${side}_url.png"),
@@ -125,13 +125,13 @@ import java.util.Locale
                             color = if (dark || kind == 2 || kind == 1 && !isUsing) Color.White.copy(alpha = .85f) else Color(0xCC64512F))
                         if (!isUsing) Text("›", fontSize = 16.sp,
                             color = if (dark || kind == 1 || kind == 2) Color.White.copy(alpha = .85f) else Color(0xCC64512F))
-                        if (isUsing) NativeEffectsAction(if (isLoading) "Hủy tải" else "Hủy", {
+                        if (isUsing) NativeEffectsAction(if (isLoading) "取消加载" else "取消", {
                             when (kind) { 0 -> onMood(); 1 -> onMaster(); else -> onSpeaker() }
                         }, Modifier.width(66.dp).then(if (focused) Modifier.testTag(
                             when (kind) { 0 -> "sound_original_mood_action"; 1 -> "sound_master_ai_action"; else -> "sound_master_speaker_action" }) else Modifier),
                             enabled = focused)
                     }
-                    if (!isUsing) NativeEffectsAction("Dùng ngay", {
+                    if (!isUsing) NativeEffectsAction("立即使用", {
                         when (kind) { 0 -> onMood(); 1 -> onMaster(); else -> onSpeaker() }
                     }, Modifier.padding(top = 14.dp).width(164.dp).then(if (focused) Modifier.testTag(
                         when (kind) { 0 -> "sound_original_mood_action"; 1 -> "sound_master_ai_action"; else -> "sound_master_speaker_action" }) else Modifier),
@@ -160,14 +160,14 @@ private val MASTER_CARD_EMOTIONS = setOf("ecstatic", "passionate", "energetic", 
             verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(tile?.name ?: "Hiệu ứng âm thanh thông minh", color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                    Text(tile?.name ?: "智能音效", color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.Bold)
                     EffectsMembership(tile?.membership ?: 3)
                 }
-                Text(status ?: tile?.description ?: "Tự động khớp thông số hiệu ứng âm thanh tối ưu dựa trên thể loại nhạc, mang đến trải nghiệm nghe phong phú hơn",
+                Text(status ?: tile?.description ?: "基于曲风自动匹配最佳音效参数，听感更丰富",
                     Modifier.testTag("sound_original_smart_status"), fontSize = 12.sp, color = Color.White.copy(alpha = .8f),
                     maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
-            NativeEffectsAction(if (chosen) (if (loading) "Hủy tải" else "Hủy") else "Dùng", onApply,
+            NativeEffectsAction(if (chosen) (if (loading) "取消加载" else "取消") else "使用", onApply,
                 Modifier.width(60.dp).testTag("sound_original_smart_enabled"), enabled)
         }
     }
@@ -200,14 +200,15 @@ private val MASTER_CARD_EMOTIONS = setOf("ecstatic", "passionate", "energetic", 
             }
             if (tile.description.isNotBlank()) Text(tile.description, fontSize = 12.sp, color = colors.onSurfaceVariantSummary,
                 maxLines = 1, overflow = TextOverflow.Ellipsis)
-fun number(value: Long) = if (value < 10000) value.toString() else String.format(Locale.ROOT, "%.1f vạn", value / 10000.0)            tile.useCount?.let { count -> Text("${number(count)} người dùng" + (tile.trackCount?.let { " | ${number(it)} nội dung" } ?: ""),
+            fun number(value: Long) = if (value < 10000) value.toString() else String.format(Locale.ROOT, "%.1f万", value / 10000.0)
+            tile.useCount?.let { count -> Text("${number(count)}人使用" + (tile.trackCount?.let { " | ${number(it)}条动态" } ?: ""),
                 fontSize = 11.sp, color = colors.onSurfaceVariantSummary) }
         }
         Box(Modifier.widthIn(min = 60.dp).heightIn(min = 32.dp).clip(RoundedCornerShape(24.dp))
             .background((if (chosen) colors.onSurfaceVariantSummary else colors.primary).copy(alpha = .08f))
             .clickable(enabled = enabled, role = Role.Button, onClick = onApply).padding(horizontal = 14.dp, vertical = 6.dp),
             contentAlignment = Alignment.Center) {
-            Text(if (chosen) (if (loading) "Hủy tải" else "Hủy") else "Dùng", fontSize = 13.sp,
+            Text(if (chosen) (if (loading) "取消加载" else "取消") else "使用", fontSize = 13.sp,
                 color = if (enabled) colors.primary else colors.onSurfaceVariantSummary)
         }
     }

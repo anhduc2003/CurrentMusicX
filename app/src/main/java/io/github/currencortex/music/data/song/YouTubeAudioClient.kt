@@ -77,7 +77,7 @@ class YouTubeAudioClient(client: OkHttpClient = OkHttpClient(),
         val title = item["title"]?.textOf().orEmpty()
         if (title.isBlank()) return
         val artists = (item["ownerText"] ?: item["longBylineText"])?.textOf().orEmpty()
-        val duration = timestampOf((item["lengthText"] as? JsonObject)?.get("simpleText")?.jsonPrimitiveOrNull()?.contentOrNull)
+        val duration = timestampOf((item["lengthText"] as? JsonObject)?.get("simpleText")?.let { (it as? JsonPrimitive)?.contentOrNull })
         out += Candidate(videoId, title, artists, duration, "")
     }
 
@@ -100,7 +100,7 @@ class YouTubeAudioClient(client: OkHttpClient = OkHttpClient(),
         columnRuns().filterNot { it.isBlank() || it in SEPARATORS }.joinToString(" ").trim()
 
     private fun JsonObject.runs(): List<String> =
-        ((this["text"] as? JsonObject)?.get("runs") as? JsonArray).orEmpty().mapNotNull { it.jsonPrimitiveOrNull()?.contentOrNull }
+        ((this["text"] as? JsonObject)?.get("runs") as? JsonArray).orEmpty().mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
 
     private fun List<JsonElement>?.timestamp(): Long = this?.flatMap { element ->
         (element as? JsonObject)?.runs().orEmpty()

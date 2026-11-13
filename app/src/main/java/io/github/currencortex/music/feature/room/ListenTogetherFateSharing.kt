@@ -79,9 +79,9 @@ internal object ListenTogetherFateSharing {
         return Intent(Intent.ACTION_SEND).apply {
             type = "image/png"
             putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_TITLE, "Báo cáo duyên phận · CurrentMusicX")
-            putExtra(Intent.EXTRA_TEXT, "Khoảnh khắc cùng nghe nhạc, được chia sẻ bởi CurrentMusicX.\nCổng chính thức của Nhạc Vân NetEase (cần đăng nhập và quyền truy cập):\n${report.officialUrl()}")
-            clipData = ClipData.newUri(context.contentResolver, "Báo cáo duyên phận cùng nghe nhạc", uri)
+            putExtra(Intent.EXTRA_TITLE, "缘分报告 · CurrentMusicX")
+            putExtra(Intent.EXTRA_TEXT, "一起听的音乐时光，由 CurrentMusicX 分享。\n网易云官方入口（需登录及访问权限）：\n${report.officialUrl()}")
+            clipData = ClipData.newUri(context.contentResolver, "一起听缘分报告", uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
     }
@@ -130,39 +130,39 @@ internal object ListenTogetherFateSharing {
             }
             fun card(bounds: RectF) { paint.color = Color.WHITE; canvas.drawRoundRect(bounds, 36f, 36f, paint) }
             text("CurrentMusicX", 72f, 62f, 936, 38f, primary, bold = true)
-            text("Báo cáo duyên phận với TA", 72f, 145f, 936, 56f, bold = true)
-            text("Những bài hát ta từng cùng nghe ghi dấu những tháng ngày đồng hành.", 76f, 225f, 928, 25f, muted)
+            text("和 TA 的缘分报告", 72f, 145f, 936, 56f, bold = true)
+            text("那些一起听过的歌，记录着彼此的陪伴。", 76f, 225f, 928, 25f, muted)
 
             card(RectF(64f, 286f, 1016f, 818f))
             portrait(canvas, self, 465f, 382f, 68f, paint)
             portrait(canvas, peer, 605f, 382f, 68f, paint)
-            val names = listOf(report.self.nickname, report.peer.nickname).joinToString("  ·  ") { it.ifBlank { "Người dùng Nhạc Vân NetEase" } }
+            val names = listOf(report.self.nickname, report.peer.nickname).joinToString("  ·  ") { it.ifBlank { "网易云用户" } }
             text(names, 96f, 483f, 888, 31f, lines = 2, bold = true, centered = true)
-            text("Tổng thời gian đồng hành", 110f, 594f, 860, 24f, muted)
+            text("累计陪伴彼此", 110f, 594f, 860, 24f, muted)
             fitted(duration(report.totalDurationMs), 110f, 637f, 860, 46f, primary)
-            text("Đã cùng nghe", 110f, 724f, 400, 23f, muted)
-            text("Cùng thả tim", 578f, 724f, 400, 23f, muted)
+            text("一起听过", 110f, 724f, 400, 23f, muted)
+            text("共同红心", 578f, 724f, 400, 23f, muted)
             fitted(count(report.totalSongCount), 110f, 760f, 400, 30f)
             fitted(count(report.commonRedSongCount), 578f, 760f, 400, 30f)
 
             card(RectF(64f, 846f, 1016f, 1452f))
-            text("Lần đầu cùng nghe", 110f, 882f, 400, 24f, muted)
-            text("Số ngày quen nhau", 578f, 882f, 400, 24f, muted)
+            text("首次一起听", 110f, 882f, 400, 24f, muted)
+            text("相识天数", 578f, 882f, 400, 24f, muted)
             fitted(date(report.firstListenTimeMs, "yyyy.MM.dd HH:mm"), 110f, 920f, 400, 34f)
-             fitted(report.daysSinceFirstListen?.let { "$it ngày" } ?: "—", 578f, 920f, 400, 34f)
+            fitted(report.daysSinceFirstListen?.let { "$it 天" } ?: "—", 578f, 920f, 400, 34f)
             paint.color = 0xFFEBEFF5.toInt(); paint.strokeWidth = 2f
             canvas.drawLine(110f, 985f, 970f, 985f, paint)
-             text("Ngày cùng nghe muộn nhất", 110f, 1012f, 860, 24f, muted)
+            text("一起听到最晚的那天", 110f, 1012f, 860, 24f, muted)
             fitted(date(report.latestLateNightTimeMs, "yyyy.MM.dd  HH:mm"), 110f, 1050f, 860, 34f)
-             text("Bài hát nghe cùng nhiều nhất", 110f, 1130f, 860, 24f, muted)
+            text("一起听得最多的歌", 110f, 1130f, 860, 24f, muted)
             text(report.mostPlayedSongName.ifBlank { "—" }, 110f, 1168f, 860, 36f, lines = 2, bold = true)
-             text("Lần đồng hành dài nhất", 110f, 1300f, 860, 24f, muted)
+            text("一次最长的陪伴", 110f, 1300f, 860, 24f, muted)
             fitted(duration(report.longestDurationMs), 110f, 1340f, 860, 40f, primary)
-             text("— biểu thị Nhạc Vân NetEase không cung cấp dữ liệu này.", 110f, 1410f, 860, 20f, muted)
+            text("— 表示网易云未提供该项数据。", 110f, 1410f, 860, 20f, muted)
 
-             text("Âm nhạc lưu dấu những tháng ngày đồng hành.", 74f, 1530f, 570f, 32f, bold = true)
-             text("Dữ liệu từ tính năng Cùng nghe của Nhạc Vân NetEase\nCổng chính thức của Nhạc Vân NetEase\nCần đăng nhập và quyền truy cập", 76f, 1590f, 570f, 24f, muted, lines = 3)
-             text("Được tạo và chia sẻ bởi CurrentMusicX", 76f, 1725f, 570f, 21f, muted)
+            text("音乐，让陪伴有迹可循。", 74f, 1530f, 570, 32f, bold = true)
+            text("数据来自网易云一起听\n网易云官方入口\n需登录及访问权限", 76f, 1590f, 570, 24f, muted, lines = 3)
+            text("由 CurrentMusicX 生成并分享", 76f, 1725f, 570, 21f, muted)
             val qr = qr(report.officialUrl())
             try {
                 paint.color = Color.WHITE
@@ -202,11 +202,11 @@ internal object ListenTogetherFateSharing {
         return Bitmap.createBitmap(pixels, matrix.width, matrix.height, Bitmap.Config.ARGB_8888)
     }
 
-     private fun count(value: Long?): String = value?.let { "$it bài hát" } ?: "—"
+    private fun count(value: Long?): String = value?.let { "$it 首歌曲" } ?: "—"
     private fun duration(value: Long?): String {
         if (value == null) return "—"
         val minutes = value / 60_000
-         return when { value > 0 && minutes == 0L -> "Dưới 1 phút"; minutes < 60 -> "$minutes phút"; else -> "${minutes / 60} giờ ${minutes % 60} phút" }
+        return when { value > 0 && minutes == 0L -> "小于 1 分钟"; minutes < 60 -> "$minutes 分钟"; else -> "${minutes / 60} 小时 ${minutes % 60} 分钟" }
     }
     private fun date(value: Long?, pattern: String): String = value?.takeIf { it > 0 }
         ?.let { SimpleDateFormat(pattern, Locale.CHINA).format(Date(it)) } ?: "—"

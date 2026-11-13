@@ -75,8 +75,8 @@ internal fun listeningToday(source: ListeningSource, clock: Clock = Clock.system
                             val years = (today.year downTo first).map { year ->
                                 val annual = if (year == range.start.year) history else
                                     container.todayListening.history(LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31))
-                                 ListeningFact("$year năm", listeningDuration(annual.durationMs),
-                                     if (annual.detailedDurationMs == 0L && annual.durationMs > 0) "Hiện chưa có dữ liệu chi tiết bài hát" else "Đã nghe ${annual.songCount} bài hát"
+                                ListeningFact("$year 年", listeningDuration(annual.durationMs),
+                                    if (annual.detailedDurationMs == 0L && annual.durationMs > 0) "歌曲明细暂无数据" else "收听 ${annual.songCount} 首歌曲")
                             }
                             display.copy(yearFacts = years)
                         }
@@ -130,7 +130,7 @@ internal fun listeningToday(source: ListeningSource, clock: Clock = Clock.system
         onOpenCloudSongs = { cloudSongsToday=it }, onMonthlyAction = { action ->
             when (action) {
                 is ListeningMonthlyAction.Song -> onPlay(io.github.currencortex.music.data.song.Song(action.id,
-                     action.name.ifBlank { "Bài hát" },action.artist,cover=action.cover))
+                    action.name.ifBlank { "歌曲" },action.artist,cover=action.cover))
                 is ListeningMonthlyAction.Artist -> onNavigate("lib/artist/${action.id}")
                 is ListeningMonthlyAction.Playlist -> onNavigate("lib/ncmplaylist/${action.id}")
                 is ListeningMonthlyAction.Genre -> onNavigate("lib/style/${action.id}")
@@ -142,9 +142,9 @@ internal fun listeningToday(source: ListeningSource, clock: Clock = Clock.system
                         else -> error("Unhandled monthly action")
                     }
                     try { uriHandler.openUri(url) } catch (_: IllegalArgumentException) {
-                         android.widget.Toast.makeText(context,"Tạm thời không thể mở nội dung này",android.widget.Toast.LENGTH_SHORT).show()
+                        android.widget.Toast.makeText(context,"暂时无法打开该内容",android.widget.Toast.LENGTH_SHORT).show()
                     } catch (_: android.content.ActivityNotFoundException) {
-                         android.widget.Toast.makeText(context,"Không tìm thấy ứng dụng có thể mở nội dung này",android.widget.Toast.LENGTH_SHORT).show()
+                        android.widget.Toast.makeText(context,"未找到可打开该内容的应用",android.widget.Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -172,12 +172,12 @@ internal fun ListeningHistoryReport.toDisplay(): ListeningDisplay {
         songCount = if (detailedDurationMs == 0L && durationMs > 0) null else songCount,
         tracks = songs.map { ListeningTrack(it.key, it.name, it.artists, it.cover, it.durationMs) },
         facts = buildList {
-             busiest?.let { add(ListeningFact("Khung giờ nghe nhạc nhiều nhất", "%02d:00 – %02d:00".format(it, (it + 1) % 24), listeningDuration(hourlyMs[it]))) }
-             if (detailedDurationMs > 0) add(ListeningFact("Nghe nhạc ban đêm", "${night * 100 / detailedDurationMs}%", "22:00 – 06:00 · ${listeningDuration(night)}"))
+            busiest?.let { add(ListeningFact("最常听歌的时段", "%02d:00 – %02d:00".format(it, (it + 1) % 24), listeningDuration(hourlyMs[it]))) }
+            if (detailedDurationMs > 0) add(ListeningFact("夜间收听", "${night * 100 / detailedDurationMs}%", "22:00 – 06:00 · ${listeningDuration(night)}"))
         }, listenedDays = listeningDays,
         note = buildString {
-             append("Chỉ thống kê lượt phát thực tế trên thiết bị này.")
-             firstRecordedDay?.let { append("Bản ghi hiện có bắt đầu từ $it.") }
-             if (detailedDurationMs < durationMs) append("Một phần bản ghi lịch sử chỉ có thời lượng, thông tin chi tiết về bài hát và khung giờ vẫn chưa đầy đủ.")
+            append("仅统计这台设备的实际播放。")
+            firstRecordedDay?.let { append("现存记录始于 $it。") }
+            if (detailedDurationMs < durationMs) append("部分历史记录只有时长，歌曲与时段明细尚不完整。")
         })
 }

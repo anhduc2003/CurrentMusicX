@@ -49,14 +49,14 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 ) {
     val colors = MiuixTheme.colorScheme
     val title = when (state.page) {
-        ListenArchivePage.RANKING -> "Xếp hạng nghe cùng"
-        ListenArchivePage.REPORT -> "Nghe cùng TA"
-        else -> "Lịch sử nghe cùng"
+        ListenArchivePage.RANKING -> "一起听排行"
+        ListenArchivePage.REPORT -> "和 TA 的一起听"
+        else -> "一起听记录"
     }
     MusicSubpage(title, "listen_archive_screen", onBack, backTag = "listen_archive_back",
         actions = {
             if (state.page != ListenArchivePage.HISTORY || state.peerFilter != null)
-                MusicTextAction("Tất cả bản ghi", { onHistory(null) }, Modifier.testTag("listen_archive_all"))
+                MusicTextAction("全部记录", { onHistory(null) }, Modifier.testTag("listen_archive_all"))
         }) { topInset ->
         LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp).testTag("listen_archive_list"),
             contentPadding = musicScrollPadding(PaddingValues(top = topInset + 8.dp, bottom = 24.dp)),
@@ -69,16 +69,16 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             }
             if (state.loading) item(key = "loading") {
                 val label = when (state.page) {
-                    ListenArchivePage.RANKING -> "Đang tải xếp hạng nghe cùng…"
-                    ListenArchivePage.REPORT -> "Đang tạo báo cáo nghe cùng lần này…"
-                    else -> "Đang tải lịch sử nghe cùng…"
+                    ListenArchivePage.RANKING -> "正在读取一起听排行…"
+                    ListenArchivePage.REPORT -> "正在生成本次一起听报告…"
+                    else -> "正在读取一起听记录…"
                 }
                 if (hasContent) ListenLoadingLabel(label, Modifier.testTag("listen_archive_loading"))
                 else ListenTogetherSkeleton(label, "listen_archive_loading")
             }
             state.error?.let { error -> item {
-                ArchiveMessage(if (state.permissionRequired) "Cần quyền thành viên Nhạc Vân NetEase" else "Tạm thời không thể tải", error,
-                    if (state.permissionRequired) "Nhạc Vân NetEase giới hạn quyền truy cập dữ liệu này. Hãy thử lại khi tài khoản của bạn có quyền." else null,
+                ArchiveMessage(if (state.permissionRequired) "需要网易云会员权限" else "暂时无法读取", error,
+                    if (state.permissionRequired) "网易云限制了这项数据的访问，请在账号具备权限后重试。" else null,
                     "listen_archive_error", onRetry)
             } }
             if (!state.loading || hasContent) when (state.page) {
@@ -86,8 +86,8 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     val page = state.history
                     if (state.peerFilter == null) {
                         item { Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                            Text("Người thường nghe cùng TA nhất", Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                            MusicTextAction("Xếp hạng", onRanking, Modifier.testTag("listen_archive_ranking"))
+                            Text("和 TA 最常一起听", Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                            MusicTextAction("排行", onRanking, Modifier.testTag("listen_archive_ranking"))
                         } }
                         page?.mostListen?.let { most -> item {
                             SettingsGroup(Modifier.fillMaxWidth().animateItem().testTag("listen_archive_most")) {
@@ -96,16 +96,16 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                                         val self = state.self?.let { current -> current.copy(avatarUrl = most.selfAvatarUrl.ifBlank { current.avatarUrl }) }
                                         ArchivePair(listOfNotNull(self, most.user), Modifier.size(88.dp, 55.dp))
                                         Column(Modifier.weight(1f).padding(start = 16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                                            Text("Bạn và ${most.user.displayName()}", fontSize = 17.sp, fontWeight = FontWeight.SemiBold,
+                                            Text("你和${most.user.displayName()}", fontSize = 17.sp, fontWeight = FontWeight.SemiBold,
                                                 maxLines = 2, overflow = TextOverflow.Ellipsis)
-                                            Text(if (most.online) "Bạn bè đang trực tuyến" else "Người đồng hành nghe cùng", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+                                            Text(if (most.online) "好友在线" else "一起听的陪伴", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
                                         }
                                     }
-                                    ArchiveStats("Đồng hành cùng nhau", durationLabel(most.totalDurationMs), "Đã nghe cùng", countLabel(most.totalSongCount))
-                                    if (most.totalDurationMs == null || most.totalSongCount == null) ArchiveMuted("Chỉ thành viên mới xem được một phần dữ liệu tích lũy")
+                                    ArchiveStats("陪伴彼此", durationLabel(most.totalDurationMs), "一起听过", countLabel(most.totalSongCount))
+                                    if (most.totalDurationMs == null || most.totalSongCount == null) ArchiveMuted("部分累计数据仅会员可查看")
                                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                        MusicTextAction("Xem lịch sử của hai bạn", { onHistory(most.user.userId) }, Modifier.weight(1f).testTag("listen_archive_most_history"))
-                                        if (onFate != null) MusicTextAction("Báo cáo duyên phận", { onFate(most.user, most.ltType) },
+                                        MusicTextAction("查看你们的记录", { onHistory(most.user.userId) }, Modifier.weight(1f).testTag("listen_archive_most_history"))
+                                        if (onFate != null) MusicTextAction("缘分报告", { onFate(most.user, most.ltType) },
                                             Modifier.weight(1f).testTag("listen_archive_most_fate"))
                                     }
                                 }
@@ -113,28 +113,30 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                         } }
                     }
                     val records = page?.records.orEmpty().filter { state.peerFilter == null || it.user.userId == state.peerFilter }
-                    if (activeRoom) item { ArchiveMuted("Đang nghe cùng. Bạn có thể mời bạn bè lại sau khi phiên hiện tại kết thúc.") }
-                    item { Text(if (state.peerFilter == null) "Lịch sử nghe cùng" else "Lịch sử nghe cùng TA",
+                    if (activeRoom) item { ArchiveMuted("正在一起听中，当前会话结束后可再次邀请好友。") }
+                    item { Text(if (state.peerFilter == null) "一起听历史" else "和 TA 的一起听历史",
                         Modifier.padding(top = 4.dp, bottom = 4.dp), fontSize = 16.sp, fontWeight = FontWeight.SemiBold) }
                     if (!state.loading && state.error == null && records.isEmpty()) item {
-                        ArchiveMessage("Chưa có lịch sử nghe cùng", "Sau khi kết thúc nghe cùng, bạn có thể xem bản ghi được Nhạc Vân NetEase lưu tại đây.", tag = "listen_archive_empty")
+                        ArchiveMessage("暂无一起听记录", "一起听结束后，可在这里查看网易云保存的记录。", tag = "listen_archive_empty")
                     }
                     // Keep server ordering and group only consecutive dates; do not reorder sessions locally.
                     records.forEachIndexed { index, record ->
-val date = record.date.ifBlank { dateLabel(record.startTimeMs, "d 'tháng' M") }val previous = records.getOrNull(index - 1)?.let { it.date.ifBlank { dateLabel(it.startTimeMs, "M tháng d ngày") } }                        if (index == 0 || date != previous) item { ArchiveMuted(date.ifBlank { "Chưa có ngày" }) }
+                        val date = record.date.ifBlank { dateLabel(record.startTimeMs, "M月d日") }
+                        val previous = records.getOrNull(index - 1)?.let { it.date.ifBlank { dateLabel(it.startTimeMs, "M月d日") } }
+                        if (index == 0 || date != previous) item { ArchiveMuted(date.ifBlank { "日期未提供" }) }
                         item(key = "record:${record.id}:$index") { Box(Modifier.animateItem()) { HistoryRecordCard(record, activeRoom, { onReport(record.roomId) }, { onInvite(record.user) }) } }
                     }
                     if (page?.hasMore == true) item {
-                        if (state.loadingMore) ListenLoadingLabel("Đang tải thêm bản ghi…", Modifier.fillMaxWidth().padding(12.dp).testTag("listen_archive_more_loading"))
-                        MusicTextAction("Tải thêm", onMore,
+                        if (state.loadingMore) ListenLoadingLabel("正在加载更多记录…", Modifier.fillMaxWidth().padding(12.dp).testTag("listen_archive_more_loading"))
+                        MusicTextAction("加载更多", onMore,
                             Modifier.fillMaxWidth().testTag("listen_archive_more"), enabled = !state.loadingMore && !state.loading)
                     }
                 }
                 ListenArchivePage.RANKING -> {
-                    item { ArchiveMuted("Hiển thị theo dữ liệu đồng hành tích lũy do Nhạc Vân NetEase cung cấp") }
+                    item { ArchiveMuted("按网易云提供的累计陪伴数据展示") }
                     val rankings = state.ranking?.rankings.orEmpty()
                     if (!state.loading && state.error == null && rankings.isEmpty()) item {
-                        ArchiveMessage("Chưa có bảng xếp hạng nghe cùng", "Hiện chưa có dữ liệu xếp hạng để hiển thị.", tag = "listen_archive_empty")
+                        ArchiveMessage("暂无一起听排行", "暂时没有可展示的排行数据。", tag = "listen_archive_empty")
                     }
                     items(rankings) { entry ->
                         SettingsGroup(Modifier.fillMaxWidth().animateItem().testTag("listen_archive_rank_${entry.user.userId}")) {
@@ -147,12 +149,12 @@ val date = record.date.ifBlank { dateLabel(record.startTimeMs, "d 'tháng' M") }
                                         maxLines = 1, overflow = TextOverflow.Ellipsis)
                                 }
                                 ArchiveRule()
-                                ArchiveStats("Đồng hành cùng nhau", durationLabel(entry.totalDurationMs), "Đã nghe cùng nhau", countLabel(entry.totalSongCount))
-                                if (entry.totalDurationMs == null || entry.totalSongCount == null) ArchiveMuted("Chỉ hội viên mới xem được một số dữ liệu tích lũy")
+                                ArchiveStats("陪伴彼此", durationLabel(entry.totalDurationMs), "一起听过", countLabel(entry.totalSongCount))
+                                if (entry.totalDurationMs == null || entry.totalSongCount == null) ArchiveMuted("部分累计数据仅会员可查看")
                                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    MusicTextAction("Xem lịch sử", { onHistory(entry.user.userId) },
+                                    MusicTextAction("查看记录", { onHistory(entry.user.userId) },
                                         Modifier.weight(1f).testTag("listen_archive_rank_history_${entry.user.userId}"))
-                                    if (onFate != null) MusicTextAction("Báo cáo duyên phận", { onFate(entry.user, entry.ltType) },
+                                    if (onFate != null) MusicTextAction("缘分报告", { onFate(entry.user, entry.ltType) },
                                         Modifier.weight(1f).testTag("listen_archive_rank_fate_${entry.user.userId}"))
                                 }
                             }
@@ -169,20 +171,20 @@ val date = record.date.ifBlank { dateLabel(record.startTimeMs, "d 'tháng' M") }
                                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                     if (peer != null) ArchiveAvatar(peer, report.online)
                                     Column(Modifier.weight(1f).padding(start = if (peer != null) 12.dp else 0.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                                        Text(peer?.displayName() ?: "Nghe cùng lần này", fontSize = 18.sp, fontWeight = FontWeight.SemiBold,
+                                        Text(peer?.displayName() ?: "本次一起听", fontSize = 18.sp, fontWeight = FontWeight.SemiBold,
                                             maxLines = 2, overflow = TextOverflow.Ellipsis)
-                                        ArchiveMuted(if (report.online) "Bạn bè đang trực tuyến" else "Đã kết thúc nghe cùng")
+                                        ArchiveMuted(if (report.online) "好友在线" else "一起听已结束")
                                     }
-                                    MusicTextAction(if (activeRoom) "Đang nghe cùng nhau" else "Mời lại", { peer?.let(onInvite) },
+                                    MusicTextAction(if (activeRoom) "正在一起听中" else "再次邀请", { peer?.let(onInvite) },
                                         Modifier.testTag("listen_archive_report_invite"), enabled = peer != null && report.canInvite && !activeRoom)
                                 }
-                                if (activeRoom) ArchiveMuted("Có thể mời bạn bè lần nữa sau khi kết thúc phiên hiện tại.")
+                                if (activeRoom) ArchiveMuted("当前会话结束后可再次邀请好友。")
                                 if (peer != null) onFate?.let { open ->
                                     ArchiveRule()
                                     Row(Modifier.fillMaxWidth().clickable(role = Role.Button) { open(peer, report.ltType) }
                                         .heightIn(min = 48.dp).padding(vertical = 10.dp).testTag("listen_archive_report_fate"),
                                         verticalAlignment = Alignment.CenterVertically) {
-                                        Text("Xem báo cáo duyên phận của bạn và người ấy", Modifier.weight(1f), fontSize = 13.sp,
+                                        Text("查看和 TA 的缘分报告", Modifier.weight(1f), fontSize = 13.sp,
                                             fontWeight = FontWeight.Medium, color = colors.primary)
                                         Icon(MusicIcons.Forward, null, Modifier.size(16.dp), tint = colors.onSurfaceVariantSummary)
                                     }
@@ -193,29 +195,29 @@ val date = record.date.ifBlank { dateLabel(record.startTimeMs, "d 'tháng' M") }
                         item { SettingsGroup(Modifier.fillMaxWidth().animateItem().testTag("listen_archive_report")) {
                             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
                                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                                    Text("Khoảnh khắc đồng hành lần này", Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                                    Text("这一次的陪伴", Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                                     report.endTimeMs?.takeIf { it > 0 }?.let { ArchiveMuted(dateLabel(it, "yyyy.MM.dd")) }
                                 }
                                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                                     ArchivePair(listOfNotNull(report.self, report.peer), Modifier.size(128.dp, 80.dp))
                                 }
-                                ArchiveStats("Lần này đã nghe cùng", countLabel(report.songCount), "Thời gian đồng hành lần này", durationLabel(report.durationMs), emphasized = true)
+                                ArchiveStats("本次一起听了", countLabel(report.songCount), "本次陪伴彼此", durationLabel(report.durationMs), emphasized = true)
                                 ArchiveRule()
-                                ArchiveStats("Tổng số bài đã nghe cùng", countLabel(report.totalSongCount), "Tổng thời gian đồng hành", durationLabel(report.totalDurationMs))
+                                ArchiveStats("累计一起听过", countLabel(report.totalSongCount), "累计陪伴彼此", durationLabel(report.totalDurationMs))
                                 if (listOf(report.durationMs, report.songCount, report.totalDurationMs, report.totalSongCount).any { it == null }) {
-                                    ArchiveMuted("— nghĩa là Nhạc Vân NetEase không cung cấp dữ liệu này; chỉ hội viên mới xem được một số dữ liệu tích lũy.")
+                                    ArchiveMuted("— 表示网易云未提供该项数据，部分累计数据仅会员可查看。")
                                 }
                                 if (report.showCollectButton) GlassActionButton(
-                                    if (state.collecting) "Đang đọc bài hát…" else "Thêm các bài hát lần này vào danh sách phát", onCollect,
+                                    if (state.collecting) "正在读取歌曲…" else "收藏本次歌曲到歌单", onCollect,
                                     Modifier.fillMaxWidth().testTag("listen_archive_collect"), enabled = !state.collecting)
                                 state.collectionError?.let { Text(it, Modifier.testTag("listen_archive_collection_error"), fontSize = 12.sp, color = colors.error) }
-                                GlassActionButton(if (sharing) "Đang tạo báo cáo…" else "Chia sẻ báo cáo nghe cùng", { onShare(report) },
+                                GlassActionButton(if (sharing) "正在生成报告…" else "分享一起听报告", { onShare(report) },
                                     Modifier.fillMaxWidth().testTag("listen_archive_share"), primary = true, enabled = !sharing && !state.loading)
-                                MusicTextAction("Xem báo cáo trên Nhạc Vân NetEase", { onOfficial(report) }, Modifier.testTag("listen_archive_official"))
+                                MusicTextAction("在网易云查看报告", { onOfficial(report) }, Modifier.testTag("listen_archive_official"))
                             }
                         } }
                     } else if (!state.loading && state.error == null) item {
-                        ArchiveMessage("Chưa có báo cáo lần này", "Nhạc Vân NetEase hiện chưa cung cấp dữ liệu nghe cùng lần này.", tag = "listen_archive_empty")
+                        ArchiveMessage("暂无本次报告", "网易云暂未提供这次一起听的数据。", tag = "listen_archive_empty")
                     }
                 }
                 else -> Unit
@@ -231,7 +233,7 @@ val date = record.date.ifBlank { dateLabel(record.startTimeMs, "d 'tháng' M") }
                 record.failMessage).filter(String::isNotBlank).joinToString(" · "),
             Modifier.testTag("listen_archive_open_${record.id}"), enabled = record.roomId.isNotBlank(), onClick = onReport,
             leading = { ArchiveAvatar(record.user, record.online) }, trailing = {
-                MusicTextAction("Mời", onInvite, Modifier.testTag("listen_archive_invite_${record.id}"),
+                MusicTextAction("邀请", onInvite, Modifier.testTag("listen_archive_invite_${record.id}"),
                     enabled = record.canInvite && !activeRoom)
             })
     }
@@ -286,17 +288,17 @@ val date = record.date.ifBlank { dateLabel(record.startTimeMs, "d 'tháng' M") }
             Text(title, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             message?.let { ArchiveMuted(it) }
             detail?.let { ArchiveMuted(it) }
-            onRetry?.let { MusicTextAction("Thử lại", it, Modifier.testTag("listen_archive_retry")) }
+            onRetry?.let { MusicTextAction("重试", it, Modifier.testTag("listen_archive_retry")) }
         }
     }
 }
 
-private fun ListenTogetherParticipant.displayName() = nickname.ifBlank { "Người dùng Nhạc Vân NetEase" }
-private fun countLabel(count: Long?) = count?.let { "$it bài hát" } ?: "—"
+private fun ListenTogetherParticipant.displayName() = nickname.ifBlank { "网易云用户" }
+private fun countLabel(count: Long?) = count?.let { "$it 首歌曲" } ?: "—"
 private fun durationLabel(ms: Long?): String {
     if (ms == null) return "—"
     val minutes = ms.coerceAtLeast(0) / 60_000
-    return when { ms > 0 && minutes == 0L -> "Dưới 1 phút"; minutes < 60 -> "$minutes phút"; else -> "${minutes / 60} giờ ${minutes % 60} phút" }
+    return when { ms > 0 && minutes == 0L -> "小于 1 分钟"; minutes < 60 -> "$minutes 分钟"; else -> "${minutes / 60} 小时 ${minutes % 60} 分钟" }
 }
 private fun dateLabel(ms: Long, pattern: String) = if (ms > 0) SimpleDateFormat(pattern, Locale.CHINA).format(Date(ms)) else ""
 

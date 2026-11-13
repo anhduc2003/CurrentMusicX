@@ -49,7 +49,9 @@ internal val LocalListeningExportDepth = staticCompositionLocalOf<MutableIntStat
 @Composable internal fun ListeningDetailCards(report: ListeningDisplay, period: ListeningPeriod, range: ListeningRange,
     onAction: (ListeningMonthlyAction) -> Unit = {}, onRank: (() -> Unit)? = null) {
     val scale = LocalFootprintScale.current
-val ages = report.facts.filter { it.title.startsWith("Thập niên nghe nhạc · ") }.sortedBy { decadeSortKey(it.title.substringAfter(" · ")) }val languages = report.facts.filter { it.title.startsWith("Ngôn ngữ nghe nhạc · ") }    val title = if (period == ListeningPeriod.MONTH) monthName(range.start.monthValue) else "Tuần này"
+    val ages = report.facts.filter { it.title.startsWith("听歌年代 · ") }.sortedBy { decadeSortKey(it.title.substringAfter(" · ")) }
+    val languages = report.facts.filter { it.title.startsWith("听歌语言 · ") }
+    val title = if (period == ListeningPeriod.MONTH) monthName(range.start.monthValue) else "本周"
     val covers = report.coverUrls.filter(String::isNotBlank).ifEmpty {
         report.tracks.map { it.cover }.filter(String::isNotBlank)
     }
@@ -72,21 +74,21 @@ val ages = report.facts.filter { it.title.startsWith("Thập niên nghe nhạc �
                 null, Modifier.fillMaxSize(), contentScale = ContentScale.FillBounds)
             if (images.isNotEmpty()) AsyncImage("https://p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32242611925/ea7c/9651/21c7/b24cfe74896a333ada1c448e1a2f721b.png",
                 null, Modifier.fillMaxSize(), contentScale = ContentScale.FillBounds)
-            FootprintText("${title}Tường đĩa nhạc", Modifier.align(Alignment.TopStart).padding((22.333f * scale).dp),
+            FootprintText("${title}唱片墙", Modifier.align(Alignment.TopStart).padding((22.333f * scale).dp),
                 size = 34f, color = Color.White, weight = FontWeight.SemiBold,
                 brush = Brush.verticalGradient(listOf(Color.White, Color.White.copy(alpha = .52f))))
-            if (songCount == 0) FootprintText("${title}Chưa nghe bài nào", Modifier.align(Alignment.Center), size = 20f,
+            if (songCount == 0) FootprintText("${title}暂未听歌", Modifier.align(Alignment.Center), size = 20f,
                 color = Color.White, weight = FontWeight.SemiBold)
             Column(Modifier.align(Alignment.BottomEnd).padding(end = (19.667f * scale).dp, bottom = (22.667f * scale).dp),
                 horizontalAlignment = Alignment.End) {
                 Row(verticalAlignment = Alignment.Bottom) {
                     FootprintText(songCount?.toString() ?: "—", size = 51f,
                         color = Color.White, weight = FontWeight.Bold, numeric = true)
-                    FootprintText("bài", Modifier.padding(bottom = (6.667f * scale).dp), size = 29.333f,
+                    FootprintText("首", Modifier.padding(bottom = (6.667f * scale).dp), size = 29.333f,
                         color = Color.White, weight = FontWeight.SemiBold)
                 }
                 Row(Modifier.padding(top = (5 * scale).dp), verticalAlignment = Alignment.CenterVertically) {
-                    FootprintText("${title}Bài hát đã nghe", size = 14f, color = Color.White, weight = FontWeight.SemiBold)
+                    FootprintText("${title}收听歌曲", size = 14f, color = Color.White, weight = FontWeight.SemiBold)
                     if (onRank != null && (songCount ?: 0) > 0) AsyncImage("https://p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/30967217913/297f/f016/b0a6/194ad6a3e8317809a45f526abaa4b1a5.png",
                         null, Modifier.size((13 * scale).dp))
                 }
@@ -139,7 +141,7 @@ val ages = report.facts.filter { it.title.startsWith("Thập niên nghe nhạc �
         ?.takeIf { facts[it].value.any(Char::isDigit) }
     val reveal = rememberListeningTopReveal(facts, title)
     FootprintCard(Modifier.testTag("listening_decades")) {
-        FootprintText("${title}Thập niên nghe nhạc", Modifier.padding(start = (15 * scale).dp, top = (16.667f * scale).dp),
+        FootprintText("${title}听歌年代", Modifier.padding(start = (15 * scale).dp, top = (16.667f * scale).dp),
             size = 34f, color = FootprintPale, weight = FontWeight.Bold)
         Column(Modifier.fillMaxWidth().padding(vertical = (16.667f * scale).dp)) {
             facts.forEachIndexed { index, fact ->
@@ -172,11 +174,11 @@ val ages = report.facts.filter { it.title.startsWith("Thập niên nghe nhạc �
                             val number = fact.value.filter(Char::isDigit)
                             FootprintText(number.ifBlank { fact.value }, size = if (number.isBlank()) 14f else if (isTop) 30f else 24f,
                                 weight = FontWeight.Bold, numeric = number.isNotBlank())
-                            if (number.isNotBlank()) FootprintText("bài", Modifier.padding(start = (2.667f * scale).dp, bottom = (2 * scale).dp),
+                            if (number.isNotBlank()) FootprintText("首", Modifier.padding(start = (2.667f * scale).dp, bottom = (2 * scale).dp),
                                 size = 16f, weight = FontWeight.SemiBold)
                         }
                         if (isTop && fact.detail.isNotBlank()) {
-                            FootprintText("Bài hát tiêu biểu", size = 14f, color = FootprintMuted)
+                            FootprintText("代表曲目", size = 14f, color = FootprintMuted)
                             FootprintText(fact.detail, Modifier.clickable(enabled = fact.songId != null) {
                                 fact.songId?.let { onAction(ListeningMonthlyAction.Song(it, fact.detail, cover = fact.cover)) }
                             }, size = 16f, weight = FontWeight.SemiBold, maxLines = 1)
@@ -193,7 +195,7 @@ val ages = report.facts.filter { it.title.startsWith("Thập niên nghe nhạc �
     val ranked = facts.take(3)
     val reveal = rememberListeningTopReveal(facts, title)
     FootprintCard(Modifier.testTag("listening_languages")) {
-        FootprintText("${title}Ngôn ngữ nghe nhạc", Modifier.padding(start = (15 * scale).dp, top = (16.667f * scale).dp),
+        FootprintText("${title}听歌语言", Modifier.padding(start = (15 * scale).dp, top = (16.667f * scale).dp),
             size = 34f, color = FootprintPale, weight = FontWeight.Bold)
         Column(Modifier.fillMaxWidth().padding(start = (20 * scale).dp, end = (19 * scale).dp,
             top = (38.667f * scale).dp, bottom = (27 * scale).dp),
@@ -236,13 +238,15 @@ val ages = report.facts.filter { it.title.startsWith("Thập niên nghe nhạc �
     val cloudYears = if (isCloud) report.yearFacts.mapNotNull { it.title.take(4).toIntOrNull() }.toSet() else emptySet()
     val entries = report.yearFacts.mapNotNull { fact ->
         fact.title.take(4).toIntOrNull()?.let {
-val hours = Regex("^(\\d+)\\s*giờ").find(fact.value)?.groupValues?.get(1)val count = fact.detail.removePrefix("Nghe ").removeSuffix(" bài hát")            YearCard(it, hours?.let { value -> "$value giờ" } ?: fact.value,
-                count.toLongOrNull()?.let(::formatFootprintCount) ?: count.ifBlank { "Chưa có dữ liệu" })
+            val hours = Regex("^(\\d+)\\s*小时").find(fact.value)?.groupValues?.get(1)
+            val count = fact.detail.removePrefix("收听 ").removeSuffix(" 首歌曲")
+            YearCard(it, hours?.let { value -> "$value 小时" } ?: fact.value,
+                count.toLongOrNull()?.let(::formatFootprintCount) ?: count.ifBlank { "暂无数据" })
         }
     }.sortedByDescending { it.year }.ifEmpty {
         listOf(YearCard(year, report.totalMs?.let { milliseconds ->
-            if (milliseconds >= 3_600_000) "${milliseconds / 3_600_000} giờ" else "${milliseconds / 60_000} phút"
-        } ?: "Chưa có dữ liệu", report.songCount?.let { formatFootprintCount(it.toLong()) } ?: "Chưa có dữ liệu"))
+            if (milliseconds >= 3_600_000) "${milliseconds / 3_600_000} 小时" else "${milliseconds / 60_000} 分钟"
+        } ?: "暂无数据", report.songCount?.let { formatFootprintCount(it.toLong()) } ?: "暂无数据"))
     }
     val paper = FootprintBackground
     // The annual illustration is an opaque light asset. Reverse its neutral luminance
@@ -267,8 +271,8 @@ val hours = Regex("^(\\d+)\\s*giờ").find(fact.value)?.groupValues?.get(1)val c
                 .wrapContentSize(Alignment.TopStart, unbounded = true).size((375 * scale).dp, (174.333f * scale).dp),
                 contentScale = ContentScale.FillBounds, colorFilter = annualFilter)
             Column(Modifier.padding(start = (13.333f * scale).dp, top = (26 * scale).dp), verticalArrangement = Arrangement.spacedBy((10 * scale).dp)) {
-                FootprintText("Dấu ấn nghe nhạc năm", size = 30f, weight = FontWeight.Bold)
-                FootprintText(if (isCloud) "Dữ liệu năm được công bố cùng báo cáo nghe nhạc hằng năm" else "Ghi lại từng năm tháng đồng hành cùng âm nhạc",
+                FootprintText("年度听歌足迹", size = 30f, weight = FontWeight.Bold)
+                FootprintText(if (isCloud) "年数据随每年听歌报告发布" else "记录每一年与音乐相伴的时光",
                     size = 13f, color = FootprintMuted.copy(alpha = .6f))
             }
         }
@@ -291,15 +295,15 @@ val hours = Regex("^(\\d+)\\s*giờ").find(fact.value)?.groupValues?.get(1)val c
                 val bottom = if (entry.count.length < 5) 24f else if (entry.count.length == 5) 20f else 16f
                 val links = if (entry.year in cloudYears) OfficialAnnualReports.filter { it.year == entry.year } else emptyList()
                 Row(Modifier.fillMaxWidth().padding(top = (26 * scale).dp, bottom = ((bottom + if (links.isEmpty()) 30 else 0) * scale).dp)) {
-                    FootprintYearValue("Thời lượng nghe nhạc", entry.duration, "", metricSize, gap, Modifier.weight(1f))
-                    FootprintYearValue("Tổng số bài hát", entry.count, if (entry.count.any(Char::isDigit)) "bài" else "", metricSize, gap, Modifier.weight(1f))
+                    FootprintYearValue("听歌时长", entry.duration, "", metricSize, gap, Modifier.weight(1f))
+                    FootprintYearValue("听歌总数", entry.count, if (entry.count.any(Char::isDigit)) "首" else "", metricSize, gap, Modifier.weight(1f))
                 }
                 if (links.isNotEmpty()) {
                     Box(Modifier.fillMaxWidth().padding(horizontal = (20 * scale).dp).height(scale.dp)
                         .background(FootprintInk.copy(alpha = .06f)))
                     links.forEach { link ->
                         Row(Modifier.fillMaxWidth().clickable(role = Role.Button,
-                            onClickLabel = "Mở ${link.title}", onClick = { uriHandler.openUri(link.url) })
+                            onClickLabel = "打开${link.title}", onClick = { uriHandler.openUri(link.url) })
                             .testTag("listening_annual_link_${link.activity}")
                             .padding(start = (20 * scale).dp, end = (15 * scale).dp, top = (23.333f * scale).dp),
                             horizontalArrangement = Arrangement.spacedBy((13.333f * scale).dp), verticalAlignment = Alignment.CenterVertically) {
@@ -340,41 +344,41 @@ private const val OfficialAnnualHeader = "https://p6.music.126.net/obj/wo3DlcOGw
 private data class AnnualReportLink(val year: Int, val activity: String, val title: String,
     val subtitle: String, val cover: String, val url: String)
 private val OfficialAnnualReports = listOf(
-    AnnualReportLink(2025, "2025_year_report", "Báo cáo nghe nhạc năm 2025", "Luôn có một bài hát dành riêng cho khoảnh khắc này",
+    AnnualReportLink(2025, "2025_year_report", "2025年度听歌报告", "总有一首歌，是为了此刻",
         "https://p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/77379509149/a8d3/c50f/4e39/e4982fb1da61edc234db243f25d2c208.jpg",
         "https://sg.music.163.com/st/year2025?full_screen=true&nm_style=sbt&market=zuji"),
-    AnnualReportLink(2024, "2024_year_report", "Báo cáo nghe nhạc năm 2024", "Cuộc đời là miền hoang dã, âm nhạc cũng vậy",
+    AnnualReportLink(2024, "2024_year_report", "2024年度听歌报告", "人生是旷野，音乐也是",
         "https://sg.music.163.com/st/listen-home/static/media/2024.cc1d5808.png",
         "https://sg.music.163.com/st/year2024?full_screen=true&nm_style=sbt&market=zuji"),
-    AnnualReportLink(2023, "2023_year_report", "Báo cáo nghe nhạc năm 2023", "Cuối cùng chúng ta cũng sẽ gặp nhau trong âm nhạc",
+    AnnualReportLink(2023, "2023_year_report", "2023年度听歌报告", "我们终将在音乐里相遇",
         "https://sg.music.163.com/st/listen-home/static/media/2023.7e4e869f.png",
         "https://sg.music.163.com/st/year2023?full_screen=true&nm_style=sbt&market=foot"),
-    AnnualReportLink(2023, "tenth_year_report", "Báo cáo nghe nhạc 10 năm", "Những điều nổi bật nhất trong 10 năm nghe nhạc của bạn",
+    AnnualReportLink(2023, "tenth_year_report", "十年听歌报告", "你的十年听歌之最",
         "https://sg.music.163.com/st/listen-home/static/media/ten_years.f0bdf2c2.png",
         "https://sg.music.163.com/st/ten-years-anniversary?nm_style=sbt"),
-    AnnualReportLink(2022, "2022_year_report", "Báo cáo nghe nhạc năm 2022", "Mọi cảm xúc đều chân thật",
+    AnnualReportLink(2022, "2022_year_report", "2022年度听歌报告", "每一种情绪都是真的",
         "https://sg.music.163.com/st/listen-home/static/media/2022.2e67b70e.png", "https://sg.music.163.com/c/year2022?nm_style=sbt"),
-    AnnualReportLink(2021, "2021_year_report", "Báo cáo nghe nhạc năm 2021", "Hóa ra âm nhạc vẫn luôn ghi nhớ",
+    AnnualReportLink(2021, "2021_year_report", "2021年度听歌报告", "原来音乐都记得",
         "https://sg.music.163.com/st/listen-home/static/media/2021.5dc19fef.png", "https://sg.music.163.com/c/year2021?nm_style=sbt"),
-    AnnualReportLink(2020, "2020_year_report", "Báo cáo nghe nhạc năm 2020", "Gặp lại chính mình trong dòng thời gian",
+    AnnualReportLink(2020, "2020_year_report", "2020年度听歌报告", "遇见时光里的自己",
         "https://sg.music.163.com/st/listen-home/static/media/2020.6d015e88.png", "https://st.music.163.com/c/year2020?nm_style=sbt"),
-    AnnualReportLink(2019, "2019_year_report", "Báo cáo nghe nhạc năm 2019", "Thế giới của bạn có tôi đồng hành",
+    AnnualReportLink(2019, "2019_year_report", "2019年度听歌报告", "你的世界有我一起",
         "https://sg.music.163.com/st/listen-home/static/media/2019.c1c1189e.png", "https://st.music.163.com/c/year2019report?nm_style=sbt&page=report"),
-    AnnualReportLink(2018, "2018_year_report", "Báo cáo nghe nhạc năm 2018", "Thật tuyệt khi được gặp bạn",
+    AnnualReportLink(2018, "2018_year_report", "2018年度听歌报告", "遇见你真好",
         "https://sg.music.163.com/st/listen-home/static/media/2018.7931cac6.png", "https://st.music.163.com/c/year2018/z/index.html"),
-    AnnualReportLink(2017, "2017_year_report", "Báo cáo nghe nhạc năm 2017", "Đồng hành bên bạn, sưởi ấm mỗi chặng đường",
+    AnnualReportLink(2017, "2017_year_report", "2017年度听歌报告", "陪你温暖同行",
         "https://sg.music.163.com/st/listen-home/static/media/2017.e0426d5f.png", "https://st.music.163.com/c/year2017"),
 )
 
 private fun decadeLines(value: String): String = when {
     '–' in value -> value.split('–').joinToString("\n") { it.trim() }
-     value.endsWith("năm sau") -> value.replace(" năm sau", "\nnăm sau")
+    value.endsWith("年后") -> value.replace(" 年后", "\n年后")
     else -> value
 }
 private fun decadeSortKey(label: String): Int {
-     if (label == "đầu thế kỷ 20") return 1900
+    if (label == "20 世纪初") return 1900
     val value = label.takeWhile(Char::isDigit).toIntOrNull() ?: return Int.MAX_VALUE
-     return if (value < 100 && label.endsWith("thập niên")) 1900 + value else value
+    return if (value < 100 && label.endsWith("年代")) 1900 + value else value
 }
- internal fun monthName(month: Int): String = listOf("tháng Một", "tháng Hai", "tháng Ba", "tháng Tư", "tháng Năm", "tháng Sáu", "tháng Bảy", "tháng Tám", "tháng Chín", "tháng Mười", "tháng Mười Một", "tháng Mười Hai")[month - 1]
+internal fun monthName(month: Int): String = listOf("一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月")[month - 1]
 private fun formatFootprintCount(count: Long): String = NumberFormat.getIntegerInstance(Locale.US).format(count)

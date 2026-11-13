@@ -71,11 +71,11 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         backgroundColor = colors.surfaceContainer, cornerRadius = 32.dp,
         insideMargin = DpSize(16.dp, 0.dp), outsideMargin = DpSize.Zero,
         startAction = {
-            GlassIconButton(::dismiss, "Hủy", Modifier.testTag("${tag}_cancel"), backdrop = backdrop) {
+            GlassIconButton(::dismiss, "取消", Modifier.testTag("${tag}_cancel"), backdrop = backdrop) {
                 Icon(MusicIcons.Close, null, Modifier.size(24.dp))
             }
         }, endAction = {
-            GlassIconButton({ confirmed = draft.toArgb().toLong() and 0xFFFFFFFF; dismiss() }, "Áp dụng màu",
+            GlassIconButton({ confirmed = draft.toArgb().toLong() and 0xFFFFFFFF; dismiss() }, "应用颜色",
                 Modifier.testTag("${tag}_apply"), enabled = hex.length == 6, backdrop = backdrop) {
                 Icon(MusicIcons.Check, null, Modifier.size(24.dp))
             }
@@ -93,7 +93,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     hex = input.removePrefix("#").filter { it in '0'..'9' || it.lowercaseChar() in 'a'..'f' }.take(6).uppercase()
                     if (hex.length == 6) draft = Color(0xFF000000 or hex.toLong(16))
                 }, Modifier.weight(1f).clip(CircleShape).background(colors.surfaceContainerHigh)
-                    .testTag("${tag}_hex").semantics { contentDescription = "Màu HEX" }, singleLine = true,
+                    .testTag("${tag}_hex").semantics { contentDescription = "HEX 颜色" }, singleLine = true,
                     textStyle = TextStyle(color = colors.onSurface, fontSize = 17.sp, lineHeight = 22.sp),
                     cursorBrush = SolidColor(colors.primary),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Ascii,
@@ -104,7 +104,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     } })
                 Box(Modifier.size(36.dp)) {
                     if (draft.toArgb() != Color(defaultColor).toArgb()) SettingsHeaderReset({ pick(Color(defaultColor)) },
-                        "Khôi phục màu mặc định", Modifier.testTag("${tag}_reset")
+                        "恢复默认颜色", Modifier.testTag("${tag}_reset"))
                 }
             }
             if (presets.isNotEmpty()) FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp),
