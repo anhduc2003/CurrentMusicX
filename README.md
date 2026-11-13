@@ -104,7 +104,7 @@ Giao diện sáng và tối, chế độ đen tuyền và chọn màu Monet; ả
 
 ## Nguồn nhạc và lời bài hát
 
-**Cài đặt riêng** nguồn nhạc và nguồn lời bài hát tại 「Cài đặt → 音源与网络」. Thay đổi nguồn lời bài hát sẽ tải lại lời bài hát hiện tại; bộ nhớ đệm được phân tách theo nguồn.
+**Cài đặt riêng** nguồn nhạc và nguồn lời bài hát tại 「Cài đặt → Nguồn nhạc và mạng」. Thay đổi nguồn lời bài hát sẽ tải lại lời bài hát hiện tại; bộ nhớ đệm được phân tách theo nguồn.
 ### Nhạc đến từ đâu
 
 | Nguồn nhạc | Cách sử dụng |

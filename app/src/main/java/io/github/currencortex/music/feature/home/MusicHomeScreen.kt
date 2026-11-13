@@ -117,7 +117,7 @@ DailyRecommendationHero(home.daily, dailyLoading, home.errors["Gợi ý hằng n
                 }
             } }
             if (!dailyLoading && home.forYou.isEmpty()) item(key = "for-you-empty") {
-Text(if (home.errors["每日推荐"] != null) "Đề xuất hiện không khả dụng, hãy thử lại sau" else "Chưa có đề xuất, hãy bắt đầu nghe từ Tuyển chọn hằng ngày",                    fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
+Text(if (home.errors["Đề xuất hằng ngày"] != null) "Đề xuất hiện không khả dụng, hãy thử lại sau" else "Chưa có đề xuất, hãy bắt đầu nghe từ Tuyển chọn hằng ngày",                    fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
             }
             item(key = "recommended-playlists-header") { SettingsListHeader("Danh sách phát đề xuất hằng ngày") }
             if (recommendedPlaylistsLoading && home.recommendedPlaylists.isEmpty())
