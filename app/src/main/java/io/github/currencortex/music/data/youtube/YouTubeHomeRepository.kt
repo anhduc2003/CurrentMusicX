@@ -21,8 +21,8 @@ class YouTubeHomeRepository(private val client: OkHttpClient = OkHttpClient.Buil
             val root = browse() ?: return@withContext Daily(emptyList(), emptyList(), emptyList())
             val shelves = shelves(root)
             val daily = shelves.firstOrNull { it.songs.isNotEmpty() }?.songs.orEmpty()
-            val forYou = shelves.drop(1).flatMap { it.songs }.distinctBy { it.videoId }.ifEmpty { shelves.flatMap { it.songs } }
-            Daily(daily, forYou.distinctBy { it.videoId }, daily.take(20).map { it.artists })
+            val forYou = shelves.drop(1).flatMap { it.songs }.distinctBy { it.id }.ifEmpty { shelves.flatMap { it.songs } }
+            Daily(daily, forYou.distinctBy { it.id }, daily.take(20).map { it.artists })
         } catch (_: Exception) {
             Daily(emptyList(), emptyList(), emptyList())
         }
