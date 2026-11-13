@@ -32,7 +32,7 @@ object DiagnosticExporter {
 
     suspend fun save(context: Context, file: File, destination: Uri) = withContext(Dispatchers.IO) {
         val output = checkNotNull(context.contentResolver.openOutputStream(destination, "wt")) {
-Không thể mở vị trí lưu
+            "Không thể mở vị trí lưu"
         }
         output.use { target -> file.inputStream().use { it.copyTo(target) } }
     }

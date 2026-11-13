@@ -333,7 +333,7 @@ class AppContainer(context: Context, storageNamespace: String = "", externalPlay
                         io.github.currencortex.music.data.settings.LyricsSource.LOCAL ->
                             io.github.currencortex.music.feature.lyrics.data.LyricsProvider {
                                 io.github.currencortex.music.feature.lyrics.data.LyricsProviderResult.Failure(
-io.github.currencortex.music.feature.lyrics.model.LyricsErrorCode.NO_LYRICS, "Không có lời bài hát nhúng trong tệp cục bộ. Bạn có thể nhập tệp lời bài hát trong mục Quản lý lời bài hát"）
+io.github.currencortex.music.feature.lyrics.model.LyricsErrorCode.NO_LYRICS, "Không có lời bài hát nhúng trong tệp cục bộ. Bạn có thể nhập tệp lời bài hát trong mục Quản lý lời bài hát")
                             }
                         io.github.currencortex.music.data.settings.LyricsSource.CURRENT_MUSIC -> projectLyricsProvider
                         else -> nativeLyricsProvider

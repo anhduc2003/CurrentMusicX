@@ -122,10 +122,9 @@ class LevelsViewModel(private val repository: LevelsApi, owners: Flow<RequestSes
         }
     }
     private fun message(error: AppResult.Failure, trial: Boolean): String = when {
-Máy chủ hiện tại chưa hỗ trợ hệ thống cấp bậc
-Câu hỏi hoặc câu trả lời đã hết hiệu lực, vui lòng vào lại thử thách
-Chưa đạt yêu cầu thử thách, vui lòng làm mới cấp bậc rồi thử lại
-Đã vượt qua thử thách, vui lòng xem cấp bậc mới nhất
-        else -> error.message
+        !trial && error.kind == ErrorKind.NotFound -> "Máy chủ hiện tại chưa hỗ trợ hệ thống cấp bậc"
+        error.kind == ErrorKind.NotFound -> "Câu hỏi hoặc câu trả lời đã hết hiệu lực, vui lòng vào lại thử thách"
+        trial -> "Chưa đạt yêu cầu thử thách, vui lòng làm mới cấp bậc rồi thử lại"
+        else -> "Đã vượt qua thử thách, vui lòng xem cấp bậc mới nhất"
     }
 }

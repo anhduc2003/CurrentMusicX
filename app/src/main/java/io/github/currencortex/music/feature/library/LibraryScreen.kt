@@ -40,7 +40,8 @@ Text("Mở thư viện nhạc", fontSize = 11.sp, color = MiuixTheme.colorScheme
         }
         Card(Modifier.fillMaxWidth().testTag("open_local_music"), onClick = { navigate("lib/local") }, showIndication = true) {
             Column(Modifier.padding(14.dp)) {
-Text("Nhạc cục bộ", fontSize = 15.sp, fontWeight = FontWeight.Medium)Text("Quét nhạc trong điện thoại", fontSize = 11.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .55f))            }
+Text("Nhạc cục bộ", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+Text("Quét nhạc trong điện thoại", fontSize = 11.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .55f))            }
         }
     }
 }
@@ -67,8 +68,11 @@ add(GlassMenuItem("song_playlist_${song.id}", "Thêm vào danh sách phát", onC
 add(GlassMenuItem("song_navidrome", "Mở thư viện nhạc Navidrome", onClick = { navigate("navidrome") }))            return@buildList
         }
         if (song.artistIds.isNotEmpty()) song.artistIds.forEachIndexed { index, id ->
-add(GlassMenuItem("song_artist_$id", "Ca sĩ · ${song.artists.split(" / ").getOrNull(index).orEmpty()}",                onClick = { navigate("lib/artist/$id") }))
-} else if (song.artists.isNotBlank()) add(GlassMenuItem("song_artist", "Xem ca sĩ", onClick = { navigate(catalogRoute(false, song.artists)) }))if (song.album.isNotBlank()) add(GlassMenuItem("song_album", "Xem album", onClick = { navigate(catalogRoute(true, song.album)) }))if (song.mv > 0) add(GlassMenuItem("song_mv_${song.id}", "Phát MV", onClick = { navigate("lib/mv/${song.mv}") }))    }
+add(GlassMenuItem("song_artist_$id", "Ca sĩ · ${song.artists.split(" / ").getOrNull(index).orEmpty()}",
+                onClick = { navigate("lib/artist/$id") }))
+} else if (song.artists.isNotBlank()) add(GlassMenuItem("song_artist", "Xem ca sĩ", onClick = { navigate(catalogRoute(false, song.artists)) }))
+if (song.album.isNotBlank()) add(GlassMenuItem("song_album", "Xem album", onClick = { navigate(catalogRoute(true, song.album)) }))
+if (song.mv > 0) add(GlassMenuItem("song_mv_${song.id}", "Phát MV", onClick = { navigate("lib/mv/${song.mv}") }))    }
 }
 
 @Composable fun LibraryDialogs(vm: LibraryViewModel) {

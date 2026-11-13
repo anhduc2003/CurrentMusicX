@@ -37,7 +37,8 @@ object AboutCredits {
                     "Hoàn thiện việc chuyển đổi giữa duyệt lời bài hát và đồng bộ theo phát nhạc: ẩn bản dịch và phiên âm La-tinh khi duyệt, khôi phục hiển thị khi quay lại lời bài hát hiện tại; có thể kéo lại để tiếp tục điều khiển trong lúc bật nảy.\n" +
                     "Bổ sung hiển thị câu khớp cùng ngữ cảnh trước và sau, tô sáng từ khớp và tự bổ sung ngữ cảnh bị thiếu cho tính năng tìm kiếm lời bài hát; đồng thời tối ưu bố cục kết quả tìm kiếm.",
                 githubUrl = "https://github.com/KelierAndes"),
-AboutMember("2711058826", "Mười Ba", "Hiển thị lời bài hát · Tương thích màn hình tràn viền",                detail = "Sửa lỗi phần xem trước lời bài hát trên ảnh bìa ở trang phát nhạc bị cắt ở cạnh dưới do chiều cao dòng cố định; điều chỉnh chiều cao dòng và vùng xem trước theo cỡ chữ và tỷ lệ phóng to phông chữ hệ thống.\n" +
+AboutMember("2711058826", "Mười Ba", "Hiển thị lời bài hát · Tương thích màn hình tràn viền",
+                detail = "Sửa lỗi phần xem trước lời bài hát trên ảnh bìa ở trang phát nhạc bị cắt ở cạnh dưới do chiều cao dòng cố định; điều chỉnh chiều cao dòng và vùng xem trước theo cỡ chữ và tỷ lệ phóng to phông chữ hệ thống.\n" +
                     "Tương thích với điều hướng bằng cử chỉ trên màn hình tràn viền, cho phép nội dung trang kéo dài xuống vùng thanh cử chỉ phía dưới và chừa khoảng cách an toàn của thanh điều hướng cho vùng nhập tin nhắn."
                 githubUrl = "https://github.com/WhiteXero"),
         )),

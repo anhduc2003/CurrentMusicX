@@ -463,7 +463,16 @@ if (actions != null && queue.current != null) MusicDestinationRow("Thao tác bà
                     if (menuHost == null) overlay = PlayerOverlay.ACTIONS
                     else { dismiss(); menuHost(SongMenu(song, {}, {}, {}, extra = { actions(song) }, transport = false)) }
                 })
-MusicDestinationRow("Chất lượng phát nhạc", summary = if (state.song?.privateLibrary == true) state.song?.originalQualityLabel.orEmpty() else state.audioInfo?.label ?: settings.quality.label, onClick = { overlay = PlayerOverlay.QUALITY }, enabled = state.mode == PlayerMode.LOCAL && state.song?.privateLibrary != true)MusicDestinationRow("Nền phát nhạc", summary = if (backgroundImage != null) "Ảnh tùy chỉnh · Làm mờ ${appearance.playerBackgroundBlur.toInt()}%"else if (appearance.playerDynamicBackground) "Nền chuyển động · Theo ảnh bìa bài hát"else "Ảnh bìa kính mờ · làm mờ ${appearance.playerBackgroundBlur.toInt()}%",                    modifier = Modifier.testTag("open_player_background"), onClick = { overlay = PlayerOverlay.BACKGROUND })
+MusicDestinationRow("Chất lượng phát nhạc",
+                    summary = if (state.song?.privateLibrary == true) state.song?.originalQualityLabel.orEmpty()
+                        else state.audioInfo?.label ?: settings.quality.label,
+                    onClick = { overlay = PlayerOverlay.QUALITY },
+                    enabled = state.mode == PlayerMode.LOCAL && state.song?.privateLibrary != true)
+MusicDestinationRow("Nền phát nhạc",
+                    summary = if (backgroundImage != null) "Ảnh tùy chỉnh · Làm mờ ${appearance.playerBackgroundBlur.toInt()}"
+                        else if (appearance.playerDynamicBackground) "Nền chuyển động · Theo ảnh bìa bài hát"
+                        else "Ảnh bìa kính mờ · làm mờ ${appearance.playerBackgroundBlur.toInt()}%",
+                    modifier = Modifier.testTag("open_player_background"), onClick = { overlay = PlayerOverlay.BACKGROUND })
 MusicDestinationRow("Nghe ngẫu nhiên riêng tư", summary = if (roaming.active) roaming.choice.title else "Liên tục đề xuất theo sở thích của bạn",                    modifier = Modifier.testTag("open_player_roaming"), onClick = { overlay = PlayerOverlay.ROAMING })
 if (onEqualizer != null) MusicDestinationRow("Hiệu ứng âm thanh", onClick = { dismiss(); onEqualizer() },                    modifier = Modifier.testTag("open_player_equalizer"))
 MusicDestinationRow("Chế độ phát", summary = playbackMode.label, onClick = { overlay = PlayerOverlay.MODE }, enabled = state.mode == PlayerMode.LOCAL || (together.active && !together.busy))                 MusicDestinationRow("Tắt hẹn giờ", summary = sleepSummary(sleepState), modifier = Modifier.testTag("open_sleep_timer",

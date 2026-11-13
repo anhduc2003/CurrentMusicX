@@ -65,9 +65,9 @@ internal class AdaptiveAudioProcessor(
         dsp = if (configured && format.encoding in listOf(C.ENCODING_PCM_16BIT, C.ENCODING_PCM_FLOAT))
             AdaptiveAudioDsp(format.sampleRate, format.channelCount) else null
         frame = DoubleArray(if (dsp != null) format.channelCount else 0)
+        val message = when {
             !configured -> "Đang chờ định dạng âm thanh"
             dsp == null -> "Mã hóa PCM hiện tại không được hỗ trợ, đã bỏ qua"
-            else -> "Đang chờ xử lý âm thanh"
             else -> "Đang chờ xử lý âm thanh"
         }
         CurrentMusicAudioDiagnostics.record("adaptive.configure rate=${format.sampleRate} channels=${format.channelCount} " +

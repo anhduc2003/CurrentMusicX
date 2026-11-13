@@ -7,7 +7,9 @@ import io.github.currencortex.music.feature.lyrics.model.LyricsDocument
 /** An explicit whole-line notice is evidence; missing lyrics or a passing mention are not. */
 internal fun LyricsDocument.isExplicitPureMusic(): Boolean {
     if (metadata.values["pureMusic"] == listOf("true")) return true
-val notice = Regex("^(?:[này/bản này](?:đầu)?(?:bài hát|bản nhạc|tác phẩm|nhạc phẩm|bản nhạc)?[là/đúng]?)?(?:(?:không có|không)(?:lời|lời bài hát)có)?nhạc không lờitrân trọng?mời[bạn]?thưởng thức$"）)val credit = Regex("^(Lời bài hát|Sáng tác|Phối khí|Sản xuất|Thu âm|Hòa âm|Xử lý master|Guitar|Bass|Bè|OP|SP)\\s*[:：]", RegexOption.IGNORE_CASE)    var found = false
+val notice = Regex("^(?:[này/bản này](?:đầu)?(?:bài hát|bản nhạc|tác phẩm|nhạc phẩm|bản nhạc)?[là/đúng]?)?(?:(?:không có|không)(?:lời|lời bài hát)có)?nhạc không lờitrân trọng?mời[bạn]?thưởng thức$")
+val credit = Regex("^(Lời bài hát|Sáng tác|Phối khí|Sản xuất|Thu âm|Hòa âm|Xử lý master|Guitar|Bass|Bè|OP|SP)\\s*[:：]", RegexOption.IGNORE_CASE)
+var found = false
     for (line in lines) {
         val text = line.text.trim()
         if (text.isEmpty()) continue

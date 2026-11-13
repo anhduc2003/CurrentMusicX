@@ -54,8 +54,10 @@ Instant.ofEpochMilli(album.publishTime).atZone(ZoneId.of("Asia/Shanghai")).forma
                     color = Color.White, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 if (artist.description.isNotBlank()) Text(artist.description, fontSize = 13.sp,
                     color = Color.White.copy(alpha = .8f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-Text("${artist.songTotal} bài hát · ${artist.albumTotal} album · ${artist.mvTotal} MV",                    fontSize = 12.sp, color = Color.White.copy(alpha = .85f))
-fans?.let { Text("${artistCount(it.fans)} người hâm mộ", fontSize = 13.sp, color = Color.White.copy(alpha = .85f)) }Text("Bách khoa nghệ sĩ ›", Modifier.clip(RoundedCornerShape(20.dp))                    .background(Color.White.copy(alpha = .16f)).clickable(role = Role.Button, onClick = onAbout)
+Text("${artist.songTotal} bài hát · ${artist.albumTotal} album · ${artist.mvTotal} MV",
+                    fontSize = 12.sp, color = Color.White.copy(alpha = .85f))
+fans?.let { Text("${artistCount(it.fans)} người hâm mộ", fontSize = 13.sp, color = Color.White.copy(alpha = .85f)) }
+Text("Bách khoa nghệ sĩ ›", Modifier.clip(RoundedCornerShape(20.dp))                    .background(Color.White.copy(alpha = .16f)).clickable(role = Role.Button, onClick = onAbout)
                     .testTag("artist_open_about").padding(horizontal = 16.dp, vertical = 12.dp),
                     fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color.White)
             }

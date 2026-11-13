@@ -447,7 +447,7 @@ fun CurrentMusicApp(container: AppContainer, animateLaunch: Boolean = false, lau
                     is io.github.currencortex.music.core.links.MusicWebLink.Song -> {
                         val song = container.musicRepository.detail(target.id)
                         if (container.playerController.state.value.mode != PlayerMode.LOCAL) {
-Vui lòng thoát khỏi chế độ nghe cùng nhau trước khi mở liên kết bài hát
+                            container.errorNotices.show("Vui lòng thoát khỏi chế độ nghe cùng nhau trước khi mở liên kết bài hát")
                         } else {
                             pendingWebLinkId = request.id
                             playWithPermission {
