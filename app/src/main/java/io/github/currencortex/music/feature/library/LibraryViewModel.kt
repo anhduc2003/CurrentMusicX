@@ -136,7 +136,7 @@ class LibraryViewModel(val container: AppContainer) : ViewModel() {
     fun addToPlaylist(playlist: Playlist) {
         val song = selectedSong.value ?: return
         if (playlist !in availablePlaylists.value) return
-            action("Đã thêm vào danh sách phát") {
+        action("Đã thêm vào danh sách phát") {
             if (playlist.source == "navidrome") container.navidrome.add(playlist.remoteId, song)
             else if (playlist.source == "netease") container.neteaseLibrary.add(playlist.id, song)
             else container.libraryRepository.add(playlist.id, listOf(song))
