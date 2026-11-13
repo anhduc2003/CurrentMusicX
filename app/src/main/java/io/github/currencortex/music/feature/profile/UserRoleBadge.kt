@@ -42,7 +42,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
             val color = MiuixTheme.colorScheme.onSurface.copy(alpha = .45f)
             Icon(Icons.Default.LocationOn, null, Modifier.size(12.dp), tint = color)
-            Text("IP属地：$region", fontSize = 11.sp, color = color, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text("Khu vực IP: $region", fontSize = 11.sp, color = color, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }

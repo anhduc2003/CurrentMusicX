@@ -33,7 +33,7 @@ internal class NeteaseListenTogetherFateRepository(private val transport: Neteas
         val self = ListenTogetherParticipant(owner, data.text("selfNick"),
             if (masked) display?.obj("selfMaskAsset")?.text("assetUrl").orEmpty().https() else data.text("selfAvatar").https(), masked)
         val peer = ListenTogetherParticipant(partnerUid,
-            if (masked) display?.text("peerDisplayName").orEmpty().ifBlank { "匿名听友" } else data.text("partnerNick"),
+            if (masked) display?.text("peerDisplayName").orEmpty().ifBlank { "Người nghe ẩn danh" } else data.text("partnerNick"),
             if (masked) display?.obj("peerMaskAsset")?.text("assetUrl").orEmpty().https() else data.text("partnerAvatar").https(), masked)
         return ListenTogetherFateReport(partnerUid, self, peer, data.stat("totalDuration"), data.stat("totalSongNum"),
             data.stat("commonRedSongNum"), data.timestamp("startListenTime"), data.stat("startListenDayNum"),

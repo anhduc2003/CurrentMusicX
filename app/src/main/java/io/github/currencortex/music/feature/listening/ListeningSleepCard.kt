@@ -49,22 +49,19 @@ import java.time.LocalDate
         AsyncImage("https://sg.music.163.com/st/listen-home/static/media/sleepBgLight.0bdc2643.png",null,
             Modifier.align(Alignment.TopEnd).size((199*s).dp,(162*s).dp),contentScale=ContentScale.FillBounds)
        Column {
-        FootprintText("${chineseMonth(range.start.monthValue)}月助眠记录",Modifier.padding(start=(16*s).dp,top=(16*s).dp),
-            size=34f, color=FootprintPale, weight=FontWeight.SemiBold)
+FootprintText("${chineseMonth(range.start.monthValue)} tháng ghi chép giấc ngủ",Modifier.padding(start=(16*s).dp,top=(16*s).dp),            size=34f, color=FootprintPale, weight=FontWeight.SemiBold)
         Column(Modifier.fillMaxWidth().padding(top=(18*s).dp,end=(24*s).dp),horizontalAlignment=Alignment.End) {
             Row(verticalAlignment=Alignment.Bottom,horizontalArrangement=Arrangement.spacedBy((5*s).dp)) {
-                FootprintText("陪伴入眠",Modifier.padding(bottom=(5*s).dp),size=30f,weight=FontWeight.SemiBold)
-                FootprintText(sleep.listenDays.toString(),size=51f,numeric=true,weight=FontWeight.Bold)
-                FootprintText("天",Modifier.padding(bottom=(5*s).dp),size=30f,weight=FontWeight.SemiBold)
-            }
-            FootprintText(if(sleep.complete && sleep.scene.isNotBlank()) "${sleep.scene}是你本月常用入眠音"
-                else if((sleep.days[today] ?: 0)>0) "今日已打卡" else "今日未打卡",size=14f)
+FootprintText("Đồng hành vào giấc ngủ",Modifier.padding(bottom=(5*s).dp),size=30f,weight=FontWeight.SemiBold)                FootprintText(sleep.listenDays.toString(),size=51f,numeric=true,weight=FontWeight.Bold)
+FootprintText("Ngày",Modifier.padding(bottom=(5*s).dp),size=30f,weight=FontWeight.SemiBold)            }
+            FootprintText(if(sleep.complete && sleep.scene.isNotBlank()) "${sleep.scene} là âm thanh bạn thường dùng để chìm vào giấc ngủ trong tháng này"
+                else if((sleep.days[today] ?: 0)>0) "Hôm nay đã điểm danh" else "Hôm nay chưa điểm danh",size=14f)
         }
         Spacer(Modifier.height((22*s).dp))
         ListeningMonthCalendar(range,sleep.days,selectedDay,today,onDay,sleepMode=true)
         if((sleep.averageDurationMs ?: 0)>0 && (sleep.maximumDurationMs ?: 0)>0) {
             Row(Modifier.fillMaxWidth().padding(vertical=(24*s).dp),horizontalArrangement=Arrangement.SpaceEvenly) {
-                listOf("日均陪伴" to sleep.averageDurationMs!!,"最长陪伴" to sleep.maximumDurationMs!!).forEach { (label,ms) ->
+                listOf("Thời lượng đồng hành trung bình mỗi ngày" to sleep.averageDurationMs!!,"Thời lượng đồng hành dài nhất" to sleep.maximumDurationMs!!).forEach { (label,ms) ->
                     Column(horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy((6*s).dp)) {
                         FootprintDuration(ms,numberSize=30f,unitSize=16f)
                         FootprintText(label,size=14f,color=Color(0xFF1356B2),weight=FontWeight.SemiBold)

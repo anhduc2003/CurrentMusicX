@@ -54,7 +54,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         try {
             if (song.emby != null) {
                 val account = container.emby.state.value
-                if (!account.download) { context.showMusicError("此 Emby 账号不允许下载"); return }
+                if (!account.download) { context.showMusicError("Tài khoản Emby này không được phép tải xuống"); return }
                 manager.start(song, AudioQuality.from(quality), 0, account.server, "emby:" + account.identity,
                     navidromeRevision = account.revision)
             } else if (song.navidrome != null) {
@@ -65,7 +65,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 container.accountRepository.server, container.audioSettings.access().identity,
                 if (container.nativeNetease != null) container.neteaseSessions.state.value.profile?.uid ?: 0L else -1)
         } catch (cancelled: CancellationException) { throw cancelled }
-        catch (_: Exception) { context.showMusicError("无法开始下载，请重试") }
+        catch (_: Exception) { context.showMusicError("Không thể bắt đầu tải xuống, vui lòng thử lại") }
     }
     // Deletes only the URIs this task published; a stale/missing file must not abort the rest.
     fun deleteSaved() {
@@ -82,40 +82,40 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     else { context.contentResolver.delete(uri, null, null); true }
                 }.getOrDefault(false).not() } }
                 if (failed.isEmpty()) withContext(Dispatchers.IO) { manager.hideCompleted(completed.id) }
-                if (failed.isEmpty()) context.showMusicMessage("已删除下载文件", longDuration = true)
-                else context.showMusicError("部分文件删除失败，请重新尝试或到保存位置检查")
+                if (failed.isEmpty()) context.showMusicMessage("Đã xóa tệp đã tải xuống", longDuration = true)
+                else context.showMusicError("Không thể xóa một số tệp, vui lòng thử lại hoặc kiểm tra tại vị trí lưu")
             } catch (cancelled: CancellationException) { throw cancelled }
-              catch (_: Exception) { context.showMusicError("下载记录更新失败，请重试") }
+              catch (_: Exception) { context.showMusicError("Không thể cập nhật lịch sử tải xuống, vui lòng thử lại") }
               finally { deleting = false }
         }
     }
     val folderLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
         if (uri != null) try { manager.setDirectory(uri); if (afterFolder) start() }
         catch (cancelled: CancellationException) { throw cancelled }
-        catch (_: Exception) { context.showMusicError("此文件夹不可写，请重新选择") }
+        catch (_: Exception) { context.showMusicError("Không thể ghi vào thư mục này, vui lòng chọn lại") }
         afterFolder = false
     }
     // Reuse the playback picker so both quality sheets stay visually identical.
     if (choosingQuality) AudioQualitySheet(AudioQuality.from(quality), { quality = it.value },
-        { choosingQuality = false }, enabled = !active, title = "下载音质")
-    else MusicDialog("下载歌曲", onDismiss) {
+        { choosingQuality = false }, enabled = !active, title = "Chất lượng tải xuống")
+    else MusicDialog("Tải bài hát xuống", onDismiss) {
         Column(Modifier.testTag("song_download_dialog").heightIn(max = 360.dp).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(song.name, fontSize = 18.sp)
             Text(song.artists, fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .6f))
-            if (song.privateLibrary) Text(song.originalQualityLabel) else MusicDestinationRow("下载音质", { choosingQuality = true }, summary = AudioQuality.from(quality).label,
+            if (song.privateLibrary) Text(song.originalQualityLabel) else MusicDestinationRow("Chất lượng tải xuống", { choosingQuality = true }, summary = AudioQuality.from(quality).label,
                 enabled = !active && !deleting, modifier = Modifier.testTag("song_download_quality"))
             val location = directory?.let { Uri.decode(it.lastPathSegment.orEmpty()).substringAfter(':') }
-                ?: if (Build.VERSION.SDK_INT >= 29) "Download/CurrentMusic" else "请选择文件夹"
-            MusicDestinationRow("保存位置", { afterFolder = false; folderLauncher.launch(directory) }, summary = location,
+                ?: if (Build.VERSION.SDK_INT >= 29) "Download/CurrentMusic" else "Vui lòng chọn thư mục"
+            MusicDestinationRow("Vị trí lưu", { afterFolder = false; folderLauncher.launch(directory) }, summary = location,
                 enabled = !active && !deleting, modifier = Modifier.testTag("song_download_directory"))
-            Text("原格式保存，内嵌歌曲信息、封面和歌词；同时保存同名封面与 LRC。", fontSize = 12.sp,
+            Text("Lưu ở định dạng gốc, nhúng thông tin bài hát, ảnh bìa và lời bài hát; đồng thời lưu ảnh bìa cùng tên và tệp LRC.", fontSize = 12.sp,
                 color = MiuixTheme.colorScheme.onSurface.copy(alpha = .6f))
             if (active) {
                 val data = info?.progress
                 val received = data?.getLong("received", 0) ?: 0
                 val total = data?.getLong("total", -1) ?: -1
-                Text(data?.getString("phase") ?: "等待下载", Modifier.testTag("song_download_phase"))
+                Text(data?.getString("phase") ?: "Đang chờ tải xuống", Modifier.testTag("song_download_phase"))
                 if (total > 0) {
                     LinearProgressIndicator(progress = (received.toDouble() / total).toFloat().coerceIn(0f, 1f), modifier = Modifier.fillMaxWidth())
                     Text("${downloadSize(received)} / ${downloadSize(total)}", fontSize = 12.sp)
@@ -123,32 +123,31 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             }
             when (info?.state) {
                 WorkInfo.State.SUCCEEDED -> {
-                    Text("下载完成 · ${info?.outputData?.getString("quality").orEmpty()}", Modifier.testTag("song_download_complete"))
+                    Text("Tải xuống hoàn tất · ${info?.outputData?.getString("quality").orEmpty()}", Modifier.testTag("song_download_complete"))
                     Text(info?.outputData?.getString("name").orEmpty(), fontSize = 12.sp)
                     info?.outputData?.getString("warning")?.takeIf { it.isNotBlank() }?.let { Text(it, fontSize = 12.sp) }
-                    MusicDestinationRow("重新下载", ::start, summary = "按当前所选音质保存另一份", enabled = !deleting, chevron = false)
+                    MusicDestinationRow("Tải xuống lại", ::start, summary = "Lưu thêm một bản theo chất lượng đang chọn", enabled = !deleting, chevron = false)
                 }
-                WorkInfo.State.FAILED -> Text(info?.outputData?.getString("error") ?: "下载失败，请重试", Modifier.testTag("song_download_error"))
-                WorkInfo.State.CANCELLED -> Text("已取消下载")
+                WorkInfo.State.FAILED -> Text(info?.outputData?.getString("error") ?: "Tải xuống thất bại, vui lòng thử lại", Modifier.testTag("song_download_error"))
+                WorkInfo.State.CANCELLED -> Text("Đã hủy tải xuống")
                 else -> Unit
             }
         }
-        // Three buttons must still fit the longest label ("打开歌曲") on one line, so the primary
-        // action keeps the extra width instead of splitting the row into equal thirds.
+// Three buttons must still fit the longest label ("Mở bài hát") on one line, so the primary        // action keeps the extra width instead of splitting the row into equal thirds.
         MusicDialogActions(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            MusicDialogButton("关闭", onClick = onDismiss, modifier = Modifier.weight(0.9f))
-            if (saved) MusicDialogButton(if (deleting) "删除中" else "删除", onClick = { deleteSaved() }, enabled = !deleting,
+            MusicDialogButton("Đóng", onClick = onDismiss, modifier = Modifier.weight(0.9f))
+            if (saved) MusicDialogButton(if (deleting) "Đang xóa" else "Xóa", onClick = { deleteSaved() }, enabled = !deleting,
                 destructive = true,
                 modifier = Modifier.weight(0.9f).testTag("song_download_delete"))
-            MusicDialogButton(when { active -> "取消下载"; info?.state == WorkInfo.State.FAILED -> "重试下载"
-                saved -> "打开歌曲"; else -> "开始下载" }, onClick = {
+            MusicDialogButton(when { active -> "Hủy tải xuống"; info?.state == WorkInfo.State.FAILED -> "Thử tải lại"
+                saved -> "Mở bài hát"; else -> "Bắt đầu tải xuống" }, onClick = {
                 when {
                     active -> manager.cancel(song)
                     saved -> try {
                         context.startActivity(Intent(Intent.ACTION_VIEW).setDataAndType(Uri.parse(info?.outputData?.getString("uri")), "audio/*")
                             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION))
                     } catch (cancelled: CancellationException) { throw cancelled }
-                    catch (_: Exception) { context.showMusicError("无法打开文件，请到保存位置查看") }
+                    catch (_: Exception) { context.showMusicError("Không thể mở tệp, vui lòng kiểm tra tại vị trí lưu") }
                     Build.VERSION.SDK_INT < 29 && directory == null -> { afterFolder = true; folderLauncher.launch(null) }
                     else -> start()
                 }

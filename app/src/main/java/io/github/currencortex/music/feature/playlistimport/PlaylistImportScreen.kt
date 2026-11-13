@@ -53,7 +53,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     var permissionError by remember { mutableStateOf<String?>(null) }
     val request = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         allowed = granted
-        permissionError = if (granted) null else "未获得音频权限，可在系统设置中开启。"
+        permissionError = if (granted) null else "Chưa được cấp quyền truy cập âm thanh, bạn có thể bật quyền này trong Cài đặt hệ thống."
         if (granted) vm.scan(context.applicationContext)
     }
     val imagePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
@@ -82,7 +82,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         PlaylistImportMode.IMAGES -> state.images.isNotEmpty() && state.targetId != null && !state.targetsLoading
         PlaylistImportMode.LOCAL -> state.selected.isNotEmpty()
     }
-    MusicSubpage("导入歌单", "playlist_import", onBack, backTag = "playlist_import_back",
+    MusicSubpage("Nhập danh sách phát", "playlist_import", onBack, backTag = "playlist_import_back",
         modifier = Modifier.imePadding()) { topInset ->
         LazyColumn(Modifier.fillMaxSize().testTag("playlist_import_list"),
             contentPadding = musicScrollPadding(PaddingValues(16.dp, topInset + 8.dp, 16.dp, 32.dp)),
@@ -92,17 +92,17 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 .padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 if (connected) Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text("网易云 · ${account.profile?.nickname.orEmpty()}", fontSize = 11.sp,
+                    Text("Nhạc Vân NetEase · ${account.profile?.nickname.orEmpty()}", fontSize = 11.sp,
                         color = colors.onSurfaceVariantSummary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     if (state.mode != PlaylistImportMode.IMAGES) Row(Modifier.fillMaxWidth().heightIn(min = 32.dp),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("加入「我喜欢」", Modifier.weight(1f), fontSize = 13.sp,
+                        Text("Thêm vào mục «Bài hát yêu thích»", Modifier.weight(1f), fontSize = 13.sp,
                             color = colors.onSurfaceVariantSummary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         GlassSwitch(state.importStar, vm::importStar, enabled = editable, modifier = Modifier.testTag("playlist_import_star"))
-                    } else Text("保存到所选歌单", fontSize = 13.sp, color = colors.onSurfaceVariantSummary,
+                    } else Text("Lưu vào danh sách phát đã chọn", fontSize = 13.sp, color = colors.onSurfaceVariantSummary,
                         maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
-                GlassActionButton(if (!connected) "登录网易云后导入" else if (state.busy) "正在提交…" else "开始导入", {
+                GlassActionButton(if (!connected) "Đăng nhập Nhạc Vân NetEase để nhập" else if (state.busy) "Đang gửi…" else "Bắt đầu nhập", {
                     focus.clearFocus(); keyboard?.hide(); if (connected) vm.submit() else onLogin()
                 }, modifier = (if (connected) Modifier.width(132.dp) else Modifier.fillMaxWidth())
                     .testTag(if (connected) "playlist_import_submit" else "playlist_import_login"),
@@ -110,13 +110,13 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             }
         } }
         item("modes") {
-            SettingsSegmentedControl(PlaylistImportMode.entries.map { it.label.removeSuffix("导入") }, state.mode.ordinal, {
+            SettingsSegmentedControl(PlaylistImportMode.entries.map { it.label.removeSuffix("Nhập") }, state.mode.ordinal, {
                 focus.clearFocus(); keyboard?.hide(); vm.mode(PlaylistImportMode.entries[it])
             }, enabled = editable, tag = "playlist_import_modes", role = Role.Tab,
                 itemTag = { "playlist_import_tab_${PlaylistImportMode.entries[it].name}" })
         }
             if (!connected) item {
-                Text(if (account.stale) "网易云登录已过期，请重新登录后导入。" else "登录网易云后即可导入歌单。",
+                Text(if (account.stale) "Phiên đăng nhập Nhạc Vân NetEase đã hết hạn, hãy đăng nhập lại để nhập." else "Đăng nhập Nhạc Vân NetEase để nhập danh sách phát.",
                     fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
             }
             run {
@@ -124,44 +124,44 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     item { PlaylistImportHero(state.mode) }
                     when (state.mode) {
                         PlaylistImportMode.LINKS -> {
-                            item { ImportStep(1, "准备分享链接") }
+                            item { ImportStep(1, "Chuẩn bị liên kết chia sẻ") }
                             item { PlaylistImportGuide() }
-                            item { Spacer(Modifier.height(4.dp)); ImportStep(2, "添加分享链接") }
+                            item { Spacer(Modifier.height(4.dp)); ImportStep(2, "Thêm liên kết chia sẻ") }
                             itemsIndexed(state.links) { index, link ->
-                                ImportLinkField(link, { vm.link(index, it) }, "链接 ${index + 1}", editable,
+                                ImportLinkField(link, { vm.link(index, it) }, "Liên kết ${index + 1}", editable,
                                     onPaste = { clipboard.getText()?.text?.takeIf(String::isNotBlank)?.let { vm.link(index, it) } },
                                     onRemove = if (state.links.size > 1) ({ vm.removeLink(index) }) else null,
                                     modifier = Modifier.fillMaxWidth(), tag = "playlist_import_link_$index")
                             }
                             if (state.links.size < 10) item {
-                                ImportTextAction("＋ 添加其他链接", vm::addLink, editable, Modifier.testTag("playlist_import_add_link"))
+                                ImportTextAction("＋ Thêm liên kết khác", vm::addLink, editable, Modifier.testTag("playlist_import_add_link"))
                             }
-                            item { Text("最多 10 个链接，支持歌单、个人主页和文章。", fontSize = 12.sp, color = colors.onSurfaceVariantSummary) }
+                            item { Text("Tối đa 10 liên kết, hỗ trợ danh sách phát, trang cá nhân và bài viết.", fontSize = 12.sp, color = colors.onSurfaceVariantSummary) }
                         }
                         PlaylistImportMode.TEXT -> item {
                             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                ImportStep(1, "粘贴歌曲文字")
-                                Text("每行一首，使用“歌名 - 歌手”更容易识别。", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+                                ImportStep(1, "Dán thông tin bài hát")
+                                Text("Mỗi dòng một bài hát; định dạng “Tên bài hát - Ca sĩ” giúp nhận diện chính xác hơn.", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
                                 BasicTextField(state.text, vm::text, enabled = editable,
                                     textStyle = TextStyle(fontSize = 15.sp, color = colors.onBackground), cursorBrush = SolidColor(colors.primary),
                                     modifier = Modifier.fillMaxWidth().heightIn(min = 220.dp).clip(RoundedCornerShape(20.dp))
                                         .background(colors.surfaceContainer).padding(18.dp).testTag("playlist_import_text"),
-                                    decorationBox = { inner -> if (state.text.isEmpty()) Text("歌名 - 歌手\n歌名 - 歌手", fontSize = 15.sp, color = colors.onSurfaceVariantSummary); inner() })
-                                Text("支持多首歌曲，网易云会自动匹配。", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+                                    decorationBox = { inner -> if (state.text.isEmpty()) Text("Tên bài hát - Ca sĩ\nTên bài hát - Ca sĩ", fontSize = 15.sp, color = colors.onSurfaceVariantSummary); inner() })
+                                Text("Hỗ trợ nhiều bài hát, Nhạc Vân NetEase sẽ tự động tìm khớp.", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
                             }
                         }
                         PlaylistImportMode.IMAGES -> {
                             item {
                                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    ImportStep(1, "选择歌单图片")
-                                    Text("选择歌单截图或歌曲列表图片，最多 9 张，每张不超过 8 MB。",
+                                    ImportStep(1, "Chọn ảnh danh sách phát")
+                                    Text("Chọn ảnh chụp màn hình danh sách phát hoặc danh sách bài hát, tối đa 9 ảnh, mỗi ảnh không quá 8 MB.",
                                         fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
-                                    Text("点击开始导入后，会将所选图片上传到网易云识别，并将歌曲加入你选择的歌单。",
+                                    Text("Sau khi nhấn Bắt đầu nhập, ảnh đã chọn sẽ được tải lên Nhạc Vân NetEase để nhận diện, rồi các bài hát sẽ được thêm vào danh sách phát bạn chọn.",
                                         fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
                                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                                        Text(if (state.imagesLoading) "正在读取图片…" else "已选择 ${state.images.size} / 9 张",
+                                        Text(if (state.imagesLoading) "Đang tải ảnh…" else "Đã chọn ${state.images.size} / 9 ảnh",
                                             Modifier.weight(1f).testTag("playlist_import_image_count"), fontSize = 14.sp)
-                                        MusicTextAction(if (state.images.isEmpty()) "选择图片" else "重新选择",
+                                        MusicTextAction(if (state.images.isEmpty()) "Chọn ảnh" else "Chọn lại ảnh",
                                             { imagePicker.launch(arrayOf("image/*")) },
                                             Modifier.testTag("playlist_import_pick_images"), enabled = editable)
                                     }
@@ -172,20 +172,20 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                                     horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                     Text("${index + 1}. ${image.fileName}", Modifier.weight(1f), fontSize = 14.sp,
                                         maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                    MusicTextAction("删除", { vm.removeImage(index) },
+                                    MusicTextAction("Xóa", { vm.removeImage(index) },
                                         Modifier.testTag("playlist_import_remove_image_$index"), enabled = editable)
                                 }
                             }
                             item {
                                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                                        Box(Modifier.weight(1f)) { ImportStep(2, "选择目标歌单") }
-                                        MusicTextAction(if (state.targetsLoading) "读取中…" else "刷新", vm::loadTargets,
+                                        Box(Modifier.weight(1f)) { ImportStep(2, "Chọn danh sách phát đích") }
+                                        MusicTextAction(if (state.targetsLoading) "Đang tải…" else "Làm mới", vm::loadTargets,
                                             Modifier.testTag("playlist_import_reload_targets"), enabled = editable && !state.targetsLoading)
                                     }
-                                    Text("请选择一个你可编辑的网易云歌单。", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+                                    Text("Vui lòng chọn một danh sách phát trên Nhạc Vân NetEase mà bạn có thể chỉnh sửa.", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
                                     state.targetsError?.let { Text(it, fontSize = 13.sp, color = colors.error) }
-                                    if (state.targetsLoaded && state.targets.isEmpty()) Text("暂无可编辑的歌单，请先在网易云创建歌单，再返回刷新。",
+                                    if (state.targetsLoaded && state.targets.isEmpty()) Text("Chưa có danh sách phát nào có thể chỉnh sửa. Vui lòng tạo danh sách phát trên Nhạc Vân NetEase trước, rồi quay lại làm mới.",
                                         fontSize = 14.sp, modifier = Modifier.testTag("playlist_import_targets_empty"))
                                     if (state.targets.isNotEmpty()) LazyColumn(Modifier.fillMaxWidth().heightIn(max = 260.dp).selectableGroup()
                                         .testTag("playlist_import_targets")) {
@@ -206,22 +206,22 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                         PlaylistImportMode.LOCAL -> {
                             item {
                                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                    ImportStep(1, "选择本地歌曲")
-                                    Text("扫描后选择要匹配的歌曲。开始导入时仅发送所选歌曲信息，不上传音频文件。",
+                                    ImportStep(1, "Chọn bài hát trên thiết bị")
+                                    Text("Sau khi quét, hãy chọn bài hát cần tìm khớp. Khi bắt đầu nhập, chỉ thông tin về các bài hát đã chọn được gửi đi, tệp âm thanh sẽ không được tải lên.",
                                         fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
                                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                                        MusicTextAction(if (state.scanning) "扫描中…" else if (state.scanned) "重新扫描" else "扫描本地音乐", {
+                                        MusicTextAction(if (state.scanning) "Đang quét…" else if (state.scanned) "Quét lại" else "Quét nhạc trên thiết bị", {
                                             permissionError = null
                                             if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED)
                                                 vm.scan(context.applicationContext) else request.launch(permission)
                                         }, Modifier.weight(1f).testTag("playlist_import_scan"), enabled = editable && !state.scanning)
-                                        if (state.localSongs.isNotEmpty()) MusicTextAction(if (state.selected.size == state.localSongs.size) "取消全选" else "全选",
+                                        if (state.localSongs.isNotEmpty()) MusicTextAction(if (state.selected.size == state.localSongs.size) "Bỏ chọn tất cả" else "Chọn tất cả",
                                             vm::selectAll, enabled = editable)
                                     }
                                     permissionError?.let { Text(it, fontSize = 13.sp, color = colors.error) }
-                                    if (state.scanned) Text("已选择 ${state.selected.size} / ${state.localSongs.size} 首", fontSize = 13.sp,
+                                    if (state.scanned) Text("Đã chọn ${state.selected.size} / ${state.localSongs.size} bài", fontSize = 13.sp,
                                         modifier = Modifier.testTag("playlist_import_local_count"))
-                                    if (state.scanned && state.localSongs.isEmpty()) Text("没有找到本地音乐。", fontSize = 14.sp)
+                                    if (state.scanned && state.localSongs.isEmpty()) Text("Không tìm thấy nhạc trên thiết bị.", fontSize = 14.sp)
                                 }
                             }
                             if (state.localSongs.isNotEmpty()) item {
@@ -247,17 +247,17 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 }
                 if (state.task != null) item {
                     SettingsGroup { Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text(if (state.result?.finished == true) "导入结果" else "导入处理中",
+                        Text(if (state.result?.finished == true) "Kết quả nhập" else "Đang xử lý nhập",
                             fontSize = 18.sp, fontWeight = FontWeight.Medium)
                         state.message?.let { Text(it, fontSize = 14.sp, modifier = Modifier.testTag("playlist_import_status")) }
-                        Text("任务已提交到网易云，离开页面不会撤回任务。", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
-                        if (state.result?.finished != true) MusicDialogButton(if (state.busy) "正在查询进度…" else "刷新进度", vm::refresh,
+                        Text("Tác vụ đã được gửi đến Nhạc Vân NetEase; rời khỏi trang sẽ không hủy tác vụ.", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+                        if (state.result?.finished != true) MusicDialogButton(if (state.busy) "Đang kiểm tra tiến độ…" else "Làm mới tiến độ", vm::refresh,
                             Modifier.testTag("playlist_import_refresh"), enabled = !state.busy)
                         state.result?.playlistIds.orEmpty().forEachIndexed { index, id ->
-                            MusicDestinationRow("打开导入歌单${if (state.result?.playlistIds?.size == 1) "" else " ${index + 1}"}", { onPlaylist(id) },
+                            MusicDestinationRow("Mở danh sách phát đã nhập${if (state.result?.playlistIds?.size == 1) "" else " ${index + 1}"}", { onPlaylist(id) },
                                 Modifier.testTag("playlist_import_result_$id"))
                         }
-                        if (state.result?.finished == true) MusicDialogButton("继续导入", vm::newImport, enabled = !state.busy)
+                        if (state.result?.finished == true) MusicDialogButton("Tiếp tục nhập", vm::newImport, enabled = !state.busy)
                     } }
                 }
                 state.error?.let { error -> item { Text(error, fontSize = 14.sp, color = colors.error, modifier = Modifier.testTag("playlist_import_error")) } }
@@ -280,13 +280,13 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(label, Modifier.weight(1f), fontSize = 12.sp, fontWeight = FontWeight.Medium, color = colors.onSurfaceVariantSummary)
-            ImportTextAction("粘贴", onPaste, enabled)
-            onRemove?.let { ImportTextAction("删除", it, enabled, Modifier.testTag("${tag}_remove")) }
+            ImportTextAction("Dán", onPaste, enabled)
+            onRemove?.let { ImportTextAction("Xóa", it, enabled, Modifier.testTag("${tag}_remove")) }
         }
         BasicTextField(value, onValue, enabled = enabled, singleLine = true,
             modifier = Modifier.fillMaxWidth().heightIn(min = 28.dp).testTag(tag),
             textStyle = TextStyle(color = colors.onBackground, fontSize = 15.sp), cursorBrush = SolidColor(colors.primary),
-            decorationBox = { inner -> if (value.isEmpty()) Text("粘贴链接或整段分享内容", fontSize = 14.sp,
+            decorationBox = { inner -> if (value.isEmpty()) Text("Dán liên kết hoặc toàn bộ nội dung chia sẻ", fontSize = 14.sp,
                 color = colors.onSurfaceVariantSummary.copy(alpha = .65f), maxLines = 1, overflow = TextOverflow.Ellipsis); inner() })
     }
 }

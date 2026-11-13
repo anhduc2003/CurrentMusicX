@@ -15,12 +15,12 @@ data class RoamingCatalog(val modes: List<RoamingChoice>, val scenes: List<Roami
     val choices get() = modes + scenes
     companion object {
         val fallback = RoamingCatalog(listOf(
-            RoamingChoice("DEFAULT", "默认模式", "沿着目前喜好继续聆听"),
-            RoamingChoice("FAMILIAR", "熟悉模式", "喜欢过的歌曲与相似推荐"),
-            RoamingChoice("EXPLORE", "探索模式", "偏好曲风与潜力好歌"),
-            RoamingChoice("PUZZLE_MODE_RCMD", "拼图模式", "边听歌边拼歌曲封面")),
-            listOf("NIGHT_EMO" to "伤感", "EXERCISE" to "运动", "SLEEP_HELP" to "助眠",
-                "RELAX" to "放松", "FOCUS" to "专注", "COMMUTE" to "出行").map { (code, title) ->
+            RoamingChoice("DEFAULT", "Chế độ mặc định", "Tiếp tục nghe theo sở thích hiện tại"),
+            RoamingChoice("FAMILIAR", "Chế độ quen thuộc", "Bài hát bạn từng thích và gợi ý tương tự"),
+            RoamingChoice("EXPLORE", "Chế độ khám phá", "Thể loại yêu thích và những bài hát tiềm năng"),
+            RoamingChoice("PUZZLE_MODE_RCMD", "Chế độ ghép hình", "Vừa nghe nhạc vừa ghép ảnh bìa bài hát")),
+            listOf("NIGHT_EMO" to "Tâm trạng buồn", "EXERCISE" to "Tập thể dục", "SLEEP_HELP" to "Hỗ trợ giấc ngủ",
+                "RELAX" to "Thư giãn", "FOCUS" to "Tập trung", "COMMUTE" to "Di chuyển").map { (code, title) ->
                 RoamingChoice(code, title, scene = true) })
     }
 }

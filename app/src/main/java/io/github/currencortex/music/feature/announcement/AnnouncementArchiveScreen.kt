@@ -36,8 +36,8 @@ import java.time.format.DateTimeFormatter
     var selected by rememberSaveable { mutableStateOf<Int?>(null) }
     // A refreshed catalog cannot leave a detail dialog pointing at a different announcement.
     LaunchedEffect(state.items) { selected = null }
-    MusicSubpage("公告", "announcement_archive", onBack, backTag = "announcement_back", actions = {
-        MusicTextAction(if (state.loading) "加载中" else "刷新", refresh,
+    MusicSubpage("Thông báo", "announcement_archive", onBack, backTag = "announcement_back", actions = {
+        MusicTextAction(if (state.loading) "Đang tải" else "Làm mới", refresh,
             Modifier.testTag("announcement_refresh"), enabled = !state.loading)
     }) { topInset ->
         LazyColumn(Modifier.fillMaxSize().testTag("announcement_list"),
@@ -45,28 +45,28 @@ import java.time.format.DateTimeFormatter
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             if (state.error != null) item {
                 Text(state.error, fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
-                MusicTextAction("重试", refresh, Modifier.testTag("announcement_retry"))
+                 MusicTextAction("Thử lại", refresh, Modifier.testTag("announcement_retry"))
             }
             if (state.loading && state.items.isEmpty()) item {
                 Row(Modifier.fillMaxWidth().padding(vertical = 24.dp), verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     CircularProgressIndicator(size = 20.dp, strokeWidth = 2.dp, modifier = Modifier.size(20.dp))
-                    Text("正在加载公告…", fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
+                     Text("Đang tải thông báo…", fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
                 }
             }
             if (!state.loading && state.error == null && state.items.isEmpty()) item {
-                Text("暂无公告", Modifier.padding(vertical = 24.dp).testTag("announcement_empty"),
+                 Text("Chưa có thông báo", Modifier.padding(vertical = 24.dp).testTag("announcement_empty"),
                     fontSize = 15.sp, color = colors.onSurfaceVariantSummary)
             }
             if (state.items.isNotEmpty()) item {
-                Text("全部公告 · ${state.items.size} 条", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+                 Text("Tất cả thông báo · ${state.items.size} mục", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
             }
             itemsIndexed(state.items, key = { index, item -> "${item.id}:$index" }) { index, item ->
                 SettingsGroup {
                     SettingsPreference(item.title, modifier = Modifier.testTag("announcement_item_${item.id}"),
                         onClick = { selected = index }, footer = {
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        if (item.pinned) Text("置顶", fontSize = 12.sp, color = colors.primary)
+                         if (item.pinned) Text("Đã ghim", fontSize = 12.sp, color = colors.primary)
                         val date = remember(item.createdAt) {
                             if (item.createdAt <= 0) "" else runCatching {
                                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault())

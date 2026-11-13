@@ -91,8 +91,8 @@ internal data class AdminStat(val label: String, val value: String, val hint: St
         .semantics { liveRegion = LiveRegionMode.Polite }, verticalAlignment = Alignment.CenterVertically) {
         Text(message, Modifier.weight(1f).padding(vertical = 8.dp), fontSize = 13.sp,
             color = if (error) MiuixTheme.colorScheme.error else MiuixTheme.colorScheme.onSurface)
-        retry?.let { MusicTextAction("重试", it) }
-        onDismiss?.let { GlassIconButton(it, "关闭提示") { Icon(MusicIcons.Close, null, Modifier.size(16.dp)) } }
+        retry?.let { MusicTextAction("Thử lại", it) }
+        onDismiss?.let { GlassIconButton(it, "Đóng thông báo") { Icon(MusicIcons.Close, null, Modifier.size(16.dp)) } }
     }
 }
 @Composable internal fun AdminEmpty(title: String, summary: String, action: String? = null, click: () -> Unit = {}) {
@@ -105,7 +105,7 @@ internal data class AdminStat(val label: String, val value: String, val hint: St
     }
 }
 @Composable internal fun AdminLoading() {
-    Column(Modifier.fillMaxWidth().padding(12.dp).semantics { contentDescription = "正在加载管理数据" }, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(Modifier.fillMaxWidth().padding(12.dp).semantics { contentDescription = "Đang tải dữ liệu quản trị" }, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         repeat(3) { SettingsGroup { Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             LoadingTextLine(.4f, 24.sp); LoadingTextLine(.8f); LoadingTextLine(.6f)
         } } }
@@ -115,7 +115,7 @@ internal data class AdminStat(val label: String, val value: String, val hint: St
     var expanded by rememberSaveable(tag) { mutableStateOf(false) }
     SettingsGroup {
         MusicDestinationRow(title, { expanded = !expanded }, Modifier.testTag(tag).semantics {
-            stateDescription = if (expanded) "已展开" else "已收起"
+            stateDescription = if (expanded) "Đã mở rộng" else "Đã thu gọn"
         }, summary = subtitle, chevron = true)
         AnimatedVisibility(expanded) { Column(Modifier.fillMaxWidth().padding(start = 18.dp, end = 18.dp, bottom = 18.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp), content = content) }

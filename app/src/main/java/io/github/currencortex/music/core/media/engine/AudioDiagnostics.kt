@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.update
 /** Null means unavailable. Requested values are never promoted to measured values. */
 data class AudioPcmFormat(val sampleRate: Int? = null, val encoding: Int? = null, val channels: Int? = null) {
     val bitDepth: Int? get() = when (encoding) { 3 -> 8; 2 -> 16; 21 -> 24; 22, 4 -> 32; else -> null }
-    fun describe(): String = "${sampleRate?.let { "$it Hz" } ?: "采样率未知"} · ${bitDepth?.let { "$it bit" } ?: "位深未知"}" +
-        (if (encoding == 4) " float" else "") + " · ${channels?.let { "$it ch" } ?: "声道未知"}"
+    fun describe(): String = "${sampleRate?.let { "$it Hz" } ?: "Không rõ tần số lấy mẫu"} · ${bitDepth?.let { "$it bit" } ?: "Không rõ độ sâu bit"}" +
+        (if (encoding == 4) " float" else "") + " · ${channels?.let { "$it ch" } ?: "Không rõ số kênh"}"
 }
 enum class BitPerfectEvidence { INACTIVE, REQUESTED, ANDROID_CONFIGURATION_VERIFIED, UNVERIFIED, FALLBACK }
 data class AudioDiagnosticsSnapshot(
@@ -19,7 +19,7 @@ data class AudioDiagnosticsSnapshot(
     val decoded: AudioPcmFormat = AudioPcmFormat(),
     val requestedRate: Int? = null,
     val output: AudioPcmFormat = AudioPcmFormat(),
-    val formatEvidence: String = "尚未创建音频输出",
+    val formatEvidence: String = "Chưa tạo đầu ra âm thanh",
     val device: String? = null,
     val deviceId: Int? = null,
     val usbCapabilities: String? = null,
@@ -28,7 +28,7 @@ data class AudioDiagnosticsSnapshot(
     val capacityFrames: Int? = null,
     val underruns: Int? = null,
     val latencyMs: Double? = null,
-    val latencyEvidence: String = "系统未提供",
+    val latencyEvidence: String = "Hệ thống không cung cấp",
     val requestedEffects: List<String> = emptyList(),
     val appliedEffects: List<String> = emptyList(),
     val processingBypass: String? = null,
@@ -43,23 +43,23 @@ class AudioDiagnostics {
     fun source(value: AudioPcmFormat) = update { it.copy(source = value) }
     fun decoded(value: AudioPcmFormat) = update { it.copy(decoded = value) }
     fun resetTrack() = update { it.copy(source = AudioPcmFormat(), decoded = AudioPcmFormat(), output = AudioPcmFormat(),
-        backend = null, formatEvidence = "等待解码与输出", appliedEffects = emptyList(), latencyMs = null,
+        backend = null, formatEvidence = "Đang chờ giải mã và đầu ra", appliedEffects = emptyList(), latencyMs = null,
         device = null, deviceId = null, usbCapabilities = null, softwareBufferFrames = null, deviceBufferFrames = null, capacityFrames = null,
         underruns = null, playing = false) }
     fun text(): String = state.value.let { s -> buildString {
-        appendLine("请求模式: ${s.requestedMode.label}"); appendLine("实际后端: ${s.backend ?: "系统未提供"}")
-        appendLine("源声明: ${s.source.describe()}"); appendLine("解码PCM: ${s.decoded.describe()}")
-        appendLine("请求采样率: ${s.requestedRate ?: "跟随音源"}"); appendLine("输出: ${s.output.describe()}")
-        appendLine("格式证据: ${s.formatEvidence}"); appendLine("设备: ${s.device ?: "系统未提供"}")
-        appendLine("USB DAC 声明能力: ${s.usbCapabilities ?: "系统未提供"}")
-        appendLine("软件缓冲帧: ${s.softwareBufferFrames ?: "系统未提供"}")
-        appendLine("设备缓冲帧: ${s.deviceBufferFrames ?: "系统未提供"}")
-        appendLine("缓冲容量帧: ${s.capacityFrames ?: "系统未提供"}"); appendLine("欠载: ${s.underruns ?: "系统未提供"}")
-        appendLine("延迟: ${s.latencyMs?.let { "%.2f ms".format(java.util.Locale.ROOT, it) } ?: "无法验证"} · ${s.latencyEvidence}")
-        appendLine("请求DSP: ${s.requestedEffects.joinToString().ifBlank { "无" }}")
-        appendLine("已观察DSP: ${s.appliedEffects.joinToString().ifBlank { "未观察到处理" }}")
-        appendLine("处理策略: ${s.processingBypass ?: "正常处理链"}"); appendLine("逐位状态: ${s.bitPerfect}")
-        appendLine("最终DAC逐位透明度: 未验证"); appendLine("蓝牙当前编码: 系统未提供")
-        s.fallbackReason?.let { appendLine("回退原因: $it") }
+        appendLine("Chế độ yêu cầu: ${s.requestedMode.label}"); appendLine("Backend thực tế: ${s.backend ?: "Hệ thống không cung cấp"}")
+        appendLine("Khai báo nguồn: ${s.source.describe()}"); appendLine("PCM đã giải mã: ${s.decoded.describe()}")
+        appendLine("Tần số lấy mẫu yêu cầu: ${s.requestedRate ?: "Theo nguồn âm thanh"}"); appendLine("Đầu ra: ${s.output.describe()}")
+        appendLine("Bằng chứng định dạng: ${s.formatEvidence}"); appendLine("Thiết bị: ${s.device ?: "Hệ thống không cung cấp"}")
+        appendLine("Khả năng được khai báo của USB DAC: ${s.usbCapabilities ?: "Hệ thống không cung cấp"}")
+        appendLine("Số khung bộ đệm phần mềm: ${s.softwareBufferFrames ?: "Hệ thống không cung cấp"}")
+        appendLine("Số khung bộ đệm thiết bị: ${s.deviceBufferFrames ?: "Hệ thống không cung cấp"}")
+        appendLine("Sức chứa bộ đệm (khung): ${s.capacityFrames ?: "Hệ thống không cung cấp"}"); appendLine("Lần thiếu dữ liệu: ${s.underruns ?: "Hệ thống không cung cấp"}")
+        appendLine("Độ trễ: ${s.latencyMs?.let { "%.2f ms".format(java.util.Locale.ROOT, it) } ?: "Không thể xác minh"} · ${s.latencyEvidence}")
+        appendLine("DSP được yêu cầu: ${s.requestedEffects.joinToString().ifBlank { "Không có" }}")
+        appendLine("DSP đã quan sát: ${s.appliedEffects.joinToString().ifBlank { "Không quan sát thấy xử lý" }}")
+        appendLine("Chính sách xử lý: ${s.processingBypass ?: "Chuỗi xử lý thông thường"}"); appendLine("Trạng thái bit-perfect: ${s.bitPerfect}")
+        appendLine("Độ trong suốt bit-perfect của DAC cuối: Chưa xác minh"); appendLine("Codec Bluetooth hiện tại: Hệ thống không cung cấp")
+        s.fallbackReason?.let { appendLine("Lý do chuyển về phương án dự phòng: $it") }
     } }
 }

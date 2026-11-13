@@ -43,7 +43,7 @@ class NeteaseSongActionsRepository(private val api: ApiClient, private val now: 
             code == 429 -> ErrorKind.RateLimited
             code == 403 -> ErrorKind.Forbidden
             path == "playmode/intelligence/list" && code == 400 &&
-                (value as? JsonObject)?.get("message")?.jsonPrimitive?.contentOrNull?.contains("歌单不存在") == true -> ErrorKind.NeteaseLikedPlaylistUnavailable
+                (value as? JsonObject)?.get("message")?.jsonPrimitive?.contentOrNull?.contains("Danh sách phát không tồn tại") == true -> ErrorKind.NeteaseLikedPlaylistUnavailable
             else -> ErrorKind.Server
         }, code)
         return value
@@ -235,7 +235,7 @@ class NeteaseSongActionsRepository(private val api: ApiClient, private val now: 
 }
 
 internal fun formatNeteaseCount(count: Long): String = when {
-    count >= 100_000_000 -> "${count / 100_000_000}亿+"
+    count >= 100_000_000 -> "${count / 100_000_000}100 triệu+"
     count >= 10_000 -> "${count / 10_000}w+"
     else -> count.coerceAtLeast(0).toString()
 }

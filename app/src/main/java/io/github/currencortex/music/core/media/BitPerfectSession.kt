@@ -78,7 +78,7 @@ internal class BitPerfectSession private constructor(private val platform: BitPe
         if (closed || failure != null) return
         failure = BitPerfectFailure(code, detail)
         log("failure=${failure!!.message}")
-        report("Bit-perfect 已停止：${failure!!.message}")
+        report("Bit-perfect đã dừng: ${failure!!.message}")
         close()
     }
 
@@ -88,20 +88,20 @@ internal class BitPerfectSession private constructor(private val platform: BitPe
         try {
             val route = track.routedDeviceId
             if (route != null && route != device.id) {
-                invalidate(BitPerfectFailureCode.ROUTE_MISMATCH, "实际音频路由 id=$route 与所选 USB id=${device.id} 不一致")
+                invalidate(BitPerfectFailureCode.ROUTE_MISMATCH, "id định tuyến âm thanh thực tế=$route không khớp với id USB đã chọn=${device.id}")
                 throw failure!!
             }
             val now = nowMs()
             if (forcePolicyCheck || lastPolicyCheck == Long.MIN_VALUE || now - lastPolicyCheck >= 500) {
                 lastPolicyCheck = now
                 if (platform.devices().none { it.id == device.id }) {
-                    invalidate(BitPerfectFailureCode.DISCONNECTED, "USB 输出设备已断开")
+                    invalidate(BitPerfectFailureCode.DISCONNECTED, "Thiết bị đầu ra USB đã bị ngắt kết nối")
                     throw failure!!
                 }
                 val preferred = platform.getPreferred(device)
                 if (!mixer.sameConfiguration(preferred)) {
                     log("preferred=${preferred?.describe() ?: "none"}")
-                    invalidate(BitPerfectFailureCode.MIXER_REVOKED, "系统已撤销或改变逐位输出配置")
+                    invalidate(BitPerfectFailureCode.MIXER_REVOKED, "Hệ thống đã thu hồi hoặc thay đổi cấu hình đầu ra bit-perfect")
                     throw failure!!
                 }
             }
@@ -109,7 +109,7 @@ internal class BitPerfectSession private constructor(private val platform: BitPe
             if (route == null) {
                 val since = waitingSince ?: now.also { waitingSince = it; log("playState=PLAYING routedDevice=unknown; awaiting route") }
                 if (now - since >= 2000) {
-                    invalidate(BitPerfectFailureCode.ROUTE_UNCONFIRMED, "播放已启动，但 Android 未能确认实际 USB 音频路由")
+                    invalidate(BitPerfectFailureCode.ROUTE_UNCONFIRMED, "Đã bắt đầu phát nhưng Android không xác nhận được định tuyến âm thanh USB thực tế")
                     throw failure!!
                 }
                 return
@@ -119,17 +119,17 @@ internal class BitPerfectSession private constructor(private val platform: BitPe
                 // Re-read the track, not just the requested decoder or mixer format.
                 if (!mixer.format.accepts(track.format)) {
                     log("actualTrack=${track.format.describe()}")
-                    invalidate(BitPerfectFailureCode.TRACK_FORMAT, "AudioTrack 实际格式与请求的逐位配置不一致")
+                    invalidate(BitPerfectFailureCode.TRACK_FORMAT, "Định dạng thực tế của AudioTrack không khớp với cấu hình bit-perfect được yêu cầu")
                     throw failure!!
                 }
                 confirmed = true
                 confirmedOutput(track.format)
                 log("finalState=CONFIRMED_ANDROID_API routedDevice=$route actualTrack=${track.format.describe()}; physical DAC bit transparency not measured")
-                report("Bit-perfect · Android 已确认 USB 路由及逐位配置 · ${mixer.format.describe()}")
+                report("Bit-perfect · Android đã xác nhận định tuyến USB và cấu hình bit-perfect · ${mixer.format.describe()}")
             }
         } catch (e: BitPerfectFailure) { throw e }
         catch (e: Exception) {
-            invalidate(BitPerfectFailureCode.PLATFORM_ERROR, "验证音频接口失败（${e.javaClass.simpleName}）")
+            invalidate(BitPerfectFailureCode.PLATFORM_ERROR, "Xác minh giao diện âm thanh thất bại（${e.javaClass.simpleName}）")
             throw failure ?: e
         }
     }
@@ -157,15 +157,15 @@ internal class BitPerfectSession private constructor(private val platform: BitPe
             var track: BitPerfectTrack? = null
             var session: BitPerfectSession? = null
             try {
-                if (platform.sdk < 34) throw BitPerfectFailure(BitPerfectFailureCode.ANDROID_VERSION, "Android 低于 API 34，未提供此逐位输出接口")
-                if (platform.usage != 1) throw BitPerfectFailure(BitPerfectFailureCode.USAGE, "逐位输出需要 USAGE_MEDIA")
+                if (platform.sdk < 34) throw BitPerfectFailure(BitPerfectFailureCode.ANDROID_VERSION, "Android thấp hơn API 34, không cung cấp giao diện đầu ra bit-perfect này")
+                if (platform.usage != 1) throw BitPerfectFailure(BitPerfectFailureCode.USAGE, "Đầu ra bit-perfect yêu cầu USAGE_MEDIA")
                 val devices = platform.devices().filter { it.type == 11 || it.type == 22 }
                 devices.forEach { log("device ${it.describe()}") }
-                if (deviceKey.isEmpty() && devices.size > 1) throw BitPerfectFailure(BitPerfectFailureCode.USB_AMBIGUOUS, "存在多个 USB 输出，请选择目标 DAC")
+                if (deviceKey.isEmpty() && devices.size > 1) throw BitPerfectFailure(BitPerfectFailureCode.USB_AMBIGUOUS, "Có nhiều đầu ra USB, hãy chọn DAC mục tiêu")
                 device = if (deviceKey.isEmpty()) devices.singleOrNull() else devices.firstOrNull { it.key == deviceKey }
-                val selected = device ?: throw BitPerfectFailure(BitPerfectFailureCode.USB_MISSING, "未找到选定的 USB DAC；未创建音频输出")
+                val selected = device ?: throw BitPerfectFailure(BitPerfectFailureCode.USB_MISSING, "Không tìm thấy DAC USB đã chọn; chưa tạo đầu ra âm thanh")
                 val mixers = try { platform.mixers(selected) } catch (e: Exception) {
-                    throw BitPerfectFailure(BitPerfectFailureCode.MIXER_QUERY, "Android 查询 USB MixerAttributes 失败（${e.javaClass.simpleName}）；DAC 硬件能力未知", e)
+                    throw BitPerfectFailure(BitPerfectFailureCode.MIXER_QUERY, "Android truy vấn USB MixerAttributes thất bại（${e.javaClass.simpleName}）；chưa rõ khả năng phần cứng của DAC", e)
                 }
                 log("supportedMixerAttributes.count=${mixers.size}")
                 mixers.forEachIndexed { i, value -> log("supportedMixer[$i]=${value.describe()}") }
@@ -175,26 +175,26 @@ internal class BitPerfectSession private constructor(private val platform: BitPe
                 log("requestedMixer=${mixer.describe()}")
                 accepted = platform.setPreferred(selected, mixer)
                 log("setPreferredMixerAttributes=$accepted")
-                if (!accepted) throw BitPerfectFailure(BitPerfectFailureCode.REQUEST_REJECTED, "Android 明确拒绝设置 Bit-perfect 输出配置")
+                if (!accepted) throw BitPerfectFailure(BitPerfectFailureCode.REQUEST_REJECTED, "Android đã từ chối rõ ràng việc thiết lập cấu hình đầu ra Bit-perfect")
                 val retained = platform.getPreferred(selected)
                 log("getPreferredMixerAttributes=${retained?.describe() ?: "none"}")
-                if (!mixer.sameConfiguration(retained)) throw BitPerfectFailure(BitPerfectFailureCode.PREFERENCE_NOT_RETAINED, "请求返回成功，但 Android 未保留对应逐位配置")
+                if (!mixer.sameConfiguration(retained)) throw BitPerfectFailure(BitPerfectFailureCode.PREFERENCE_NOT_RETAINED, "Yêu cầu trả về thành công nhưng Android không giữ lại cấu hình bit-perfect tương ứng")
                 track = platform.createTrack(mixer)
                 log("audioTrack.initialized=${track.initialized} actualFormat=${track.format.describe()}")
-                if (!track.initialized) throw BitPerfectFailure(BitPerfectFailureCode.TRACK_INITIALIZATION, "AudioTrack 初始化失败")
-                if (!mixer.format.accepts(track.format)) throw BitPerfectFailure(BitPerfectFailureCode.TRACK_FORMAT, "AudioTrack 实际 PCM 格式与请求的 MixerAttributes 不一致")
+                if (!track.initialized) throw BitPerfectFailure(BitPerfectFailureCode.TRACK_INITIALIZATION, "Khởi tạo AudioTrack thất bại")
+                if (!mixer.format.accepts(track.format)) throw BitPerfectFailure(BitPerfectFailureCode.TRACK_FORMAT, "Định dạng PCM thực tế của AudioTrack không khớp với MixerAttributes được yêu cầu")
                 val preferred = track.prefer(selected)
                 log("audioTrack.setPreferredDevice=$preferred targetId=${selected.id} initialRoute=${track.routedDeviceId ?: "unknown"}")
-                if (!preferred) throw BitPerfectFailure(BitPerfectFailureCode.DEVICE_PREFERENCE, "AudioTrack 拒绝所选 USB 输出设备")
+                if (!preferred) throw BitPerfectFailure(BitPerfectFailureCode.DEVICE_PREFERENCE, "AudioTrack từ chối thiết bị đầu ra USB đã chọn")
                 val result = BitPerfectSession(platform, selected, mixer, track, nowMs, log, report, confirmedOutput)
                 session = result
                 result.verify(forcePolicyCheck = true)
-                report("Bit-perfect · Android 已接受逐位配置，等待实际 USB 播放路由")
+                report("Bit-perfect · Android đã chấp nhận cấu hình bit-perfect, đang chờ định tuyến phát USB thực tế")
                 return result
             } catch (e: Exception) {
                 if (session != null) session.close() else cleanup(platform, device, if (accepted) requested else null, track, log)
                 val failure = e as? BitPerfectFailure ?: BitPerfectFailure(BitPerfectFailureCode.PLATFORM_ERROR,
-                    "Android 音频接口异常（${e.javaClass.simpleName}）；未创建可用的逐位输出", e)
+                    "Lỗi giao diện âm thanh Android（${e.javaClass.simpleName}）；chưa tạo đầu ra bit-perfect khả dụng", e)
                 log("finalState=FAILED failure=${failure.message}")
                 throw failure
             }
@@ -212,7 +212,7 @@ internal class BitPerfectSession private constructor(private val platform: BitPe
                 supported.none { it.format.rate == decoded.rate && it.format.encoding == decoded.encoding } -> BitPerfectFailureCode.MIXER_ENCODING
                 else -> BitPerfectFailureCode.MIXER_CHANNELS
             }
-            return BitPerfectFailure(code, "当前 Android 音频系统未报告支持此解码 PCM 格式的 Bit-perfect 输出：${decoded.describe()}。DAC 硬件能力未知；支持配置见音频诊断")
+            return BitPerfectFailure(code, "Hệ thống âm thanh Android hiện tại không báo cáo hỗ trợ đầu ra bit-perfect cho định dạng PCM đã giải mã này: ${decoded.describe()}。Chưa rõ khả năng phần cứng của DAC; xem cấu hình được hỗ trợ trong chẩn đoán âm thanh")
         }
 
         private fun cleanup(platform: BitPerfectPlatform, device: BitPerfectDevice?, mixer: BitPerfectMixer?,

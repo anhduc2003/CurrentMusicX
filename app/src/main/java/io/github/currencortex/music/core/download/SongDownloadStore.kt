@@ -36,8 +36,8 @@ class SongDownloadStore(private val context: Context) {
                         put(MediaStore.MediaColumns.IS_PENDING, 1)
                     })
                 } else {
-                    throw IOException("请先选择下载文件夹")
-                }) ?: throw IOException("无法创建下载文件，请重新选择文件夹")
+                    throw IOException("Vui lòng chọn thư mục tải xuống trước")
+                }) ?: throw IOException("Không thể tạo tệp tải xuống, vui lòng chọn lại thư mục")
                 created.add(uri)
                 // The provider may add a collision suffix. Keep sidecars matched to that audio name.
                 if (index == 0) resolver.query(uri, arrayOf(MediaStore.MediaColumns.DISPLAY_NAME), null, null, null)?.use {
@@ -53,12 +53,12 @@ class SongDownloadStore(private val context: Context) {
                             output.write(buffer, 0, count)
                         }
                     }
-                } ?: throw IOException("下载文件无法写入")
+                } ?: throw IOException("Không thể ghi vào tệp tải xuống")
             }
             currentCoroutineContext().ensureActive()
             if (tree == null) created.forEach { uri ->
                 check(resolver.update(uri, ContentValues().apply { put(MediaStore.MediaColumns.IS_PENDING, 0) }, null, null) == 1) {
-                    "下载文件保存失败"
+                    "Lưu tệp tải xuống thất bại"
                 }
             }
             return SavedSongDownload(created.first(), "$actualBase.${files.first().file.extension}", created.toList())

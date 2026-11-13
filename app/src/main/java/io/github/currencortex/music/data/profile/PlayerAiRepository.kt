@@ -36,20 +36,20 @@ class PlayerAiRepository(private val session: () -> RequestSession,
                 if (type !in setOf("start", "delta", "done", "error")) return
                 try {
                     val value = ApiJson.parseToJsonElement(data).jsonObject
-                    if (type == "error") { terminal = true; close(IOException("AI 暂时不可用，请重试")); eventSource.cancel(); return }
+                    if (type == "error") { terminal = true; close(IOException("AI hiện không khả dụng, vui lòng thử lại")); eventSource.cancel(); return }
                     val text = (value["text"] as? JsonPrimitive)?.contentOrNull.orEmpty().take(50000)
                     val cards = value["cards"]?.let { validMusicAttachments(ApiJson.decodeFromJsonElement<List<PostAttachment>>(it)) }.orEmpty().take(3)
-                    if (!trySend(PlayerAiEvent(type!!, text, cards)).isSuccess) { close(IOException("回答接收中断，请重试")); eventSource.cancel() }
+                    if (!trySend(PlayerAiEvent(type!!, text, cards)).isSuccess) { close(IOException("Quá trình nhận câu trả lời bị gián đoạn, vui lòng thử lại")); eventSource.cancel() }
                     if (type == "done") { terminal = true; close(); eventSource.cancel() }
-                } catch (_: Exception) { close(IOException("AI 返回格式异常，请重试")); eventSource.cancel() }
+                } catch (_: Exception) { close(IOException("Định dạng phản hồi của AI không hợp lệ, vui lòng thử lại")); eventSource.cancel() }
             }
-            override fun onClosed(eventSource: EventSource) { if (!terminal) close(IOException("回答尚未完成，连接已断开")) }
+            override fun onClosed(eventSource: EventSource) { if (!terminal) close(IOException("Câu trả lời chưa hoàn tất, kết nối đã bị ngắt")) }
             override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
                 if (terminal) return
                 close(when (response?.code) {
                     401 -> ApiException(ErrorKind.Unauthorized); 403 -> ApiException(ErrorKind.Forbidden)
                     429 -> ApiException(ErrorKind.RateLimited)
-                    else -> IOException("AI 连接失败，请稍后重试")
+                    else -> IOException("Kết nối AI thất bại, vui lòng thử lại sau")
                 })
             }
         })

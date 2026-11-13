@@ -117,7 +117,7 @@ internal class ListeningWallRenderSession(
             return owned
         }
         val result = SingletonImageLoader.get(context).execute(ImageRequest.Builder(context).data(url).size(size).allowHardware(false).build())
-        val loaded = checkNotNull((result as? SuccessResult)?.image?.toBitmap()) { "图片加载失败" }
+        val loaded = checkNotNull((result as? SuccessResult)?.image?.toBitmap()) { "Tải ảnh thất bại" }
         val owned = checkNotNull(loaded.copy(Bitmap.Config.ARGB_8888, false))
         images[url] = owned
         return owned
@@ -208,13 +208,13 @@ internal class ListeningWallRenderSession(
         } else {
             val ink = Color.parseColor(if (template.dark) "#E4E4E4" else "#232323")
             if (info.nickname.isNotBlank()) text(canvas, "@${info.nickname}", 60f, lineBaseline(81f,54.6f,39f,nicknameFont), 39f, ink, typeface = nicknameFont, maxWidth = 690f)
-            text(canvas, "${title}唱片墙", 60f, lineBaseline(145f,109.2f,78f,titleFont), 78f, ink, typeface = titleFont, maxWidth = 780f)
-            val titleWidth = Paint().apply { typeface = titleFont; textSize = 78f }.measureText("${title}唱片墙").coerceAtMost(780f)
-            val badgeWidth = Paint().apply { typeface = numberFont; textSize = 21f }.measureText("TOP最爱") + 34.2f
+            text(canvas, "${title}Tường đĩa nhạc", 60f, lineBaseline(145f,109.2f,78f,titleFont), 78f, ink, typeface = titleFont, maxWidth = 780f)
+            val titleWidth = Paint().apply { typeface = titleFont; textSize = 78f }.measureText("${title}Tường đĩa nhạc").coerceAtMost(780f)
+            val badgeWidth = Paint().apply { typeface = numberFont; textSize = 21f }.measureText("TOP yêu thích") + 34.2f
             paint.color = ink; paint.style = Paint.Style.STROKE; paint.strokeWidth = 2.1f
             canvas.drawRoundRect(RectF(80f + titleWidth, 179f, 80f + titleWidth + badgeWidth, 222.6f), 30f, 30f, paint)
             paint.style = Paint.Style.FILL
-            text(canvas, "TOP最爱", 97.1f + titleWidth, lineBaseline(186.1f,29.4f,21f,numberFont), 21f, ink, typeface = numberFont)
+            text(canvas, "TOP yêu thích", 97.1f + titleWidth, lineBaseline(186.1f,29.4f,21f,numberFont), 21f, ink, typeface = numberFont)
             if (info.songTitles.isNotEmpty()) {
                 val names = info.songTitles.take(if (scatter) 3 else 5)
                 val bottom = if (scatter) 448f else 545f

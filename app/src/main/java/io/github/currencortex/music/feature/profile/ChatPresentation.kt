@@ -19,7 +19,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 @Composable internal fun ChatSendAction(onClick: () -> Unit, modifier: Modifier = Modifier,
     busy: Boolean, enabled: Boolean) {
     val colors = MiuixTheme.colorScheme
-    GlassIconButton(onClick, if (busy) "发送中" else "发送", modifier, enabled = enabled, surface = false) {
+    GlassIconButton(onClick, if (busy) "Đang gửi" else "Gửi", modifier, enabled = enabled, surface = false) {
         Box(Modifier.size(36.dp).background(colors.primary.copy(alpha = if (enabled) 1f else .10f), CircleShape),
             contentAlignment = Alignment.Center) {
             if (busy) CircularProgressIndicator(Modifier.size(18.dp), size = 18.dp, strokeWidth = 2.dp)
@@ -33,15 +33,15 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     Column(modifier.fillMaxWidth().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Icon(MusicIcons.Headphones, null, Modifier.size(36.dp), tint = MiuixTheme.colorScheme.primary)
-        Text("还没有消息", fontSize = 17.sp, fontWeight = FontWeight.Medium)
-        Text("从一首喜欢的歌聊起", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
+        Text("Chưa có tin nhắn nào", fontSize = 17.sp, fontWeight = FontWeight.Medium)
+        Text("Bắt đầu trò chuyện từ một bài hát bạn yêu thích", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
     }
 }
 
 @Composable internal fun ChatLoadingMessages() {
     MusicPlaceholderScope {
         Column(Modifier.fillMaxWidth().clearAndSetSemantics {
-            contentDescription = "正在加载聊天记录"
+            contentDescription = "Đang tải lịch sử trò chuyện"
             progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
         }, verticalArrangement = Arrangement.spacedBy(24.dp)) {
             for (mine in listOf(false, true)) {

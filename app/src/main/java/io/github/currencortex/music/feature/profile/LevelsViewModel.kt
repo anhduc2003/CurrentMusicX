@@ -122,10 +122,10 @@ class LevelsViewModel(private val repository: LevelsApi, owners: Flow<RequestSes
         }
     }
     private fun message(error: AppResult.Failure, trial: Boolean): String = when {
-        error.status == 404 -> "当前服务器暂不支持等级体系"
-        trial && error.status == 400 -> "题目或答案已失效，请重新进入试炼"
-        trial && error.status == 403 -> "尚未达到试炼要求，请刷新等级后重试"
-        trial && error.status == 409 -> "已通过试炼，请查看最新等级"
+Máy chủ hiện tại chưa hỗ trợ hệ thống cấp bậc
+Câu hỏi hoặc câu trả lời đã hết hiệu lực, vui lòng vào lại thử thách
+Chưa đạt yêu cầu thử thách, vui lòng làm mới cấp bậc rồi thử lại
+Đã vượt qua thử thách, vui lòng xem cấp bậc mới nhất
         else -> error.message
     }
 }

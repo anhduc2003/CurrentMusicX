@@ -25,7 +25,7 @@ class UpdateArtifactCache(root: File, private val maxCompletedFiles: Int = 2,
         require(target.fileName.toString().matches(APK) && managedParent(target.parent)) { "Not a managed update artifact" }
         checkSafe(target, allowMissing = true)
         val state = states.getOrPut(root) { State() }
-        if (!state.active.add(target)) throw IOException("相同安装包正在下载，请稍后重试")
+        if (!state.active.add(target)) throw IOException("Gói cài đặt tương tự đang được tải xuống, vui lòng thử lại sau")
         Lease(target).also { pruneLocked() }
     }
 
@@ -43,7 +43,7 @@ class UpdateArtifactCache(root: File, private val maxCompletedFiles: Int = 2,
         fun completed() = synchronized(lock) {
             check(!closed)
             checkSafe(target, allowMissing = false)
-            check(Files.isRegularFile(target, NOFOLLOW_LINKS)) { "更新文件不存在" }
+            check(Files.isRegularFile(target, NOFOLLOW_LINKS)) { "Tệp cập nhật không tồn tại" }
             Files.setLastModifiedTime(target, FileTime.fromMillis(nowMillis()))
             val recent = states.getValue(root).returned
             recent.remove(target); recent.add(target)
@@ -67,9 +67,9 @@ class UpdateArtifactCache(root: File, private val maxCompletedFiles: Int = 2,
             allowMissing && !Files.exists(path, NOFOLLOW_LINKS))
 
     private fun checkSafe(target: Path, allowMissing: Boolean) {
-        check(directorySafe(root, allowMissing) && directorySafe(target.parent, allowMissing)) { "更新缓存目录无效" }
+        check(directorySafe(root, allowMissing) && directorySafe(target.parent, allowMissing)) { "Thư mục bộ nhớ đệm cập nhật không hợp lệ" }
         for (path in listOf(target, target.resolveSibling("${target.fileName}.part"))) {
-            check(!Files.exists(path, NOFOLLOW_LINKS) || Files.isRegularFile(path, NOFOLLOW_LINKS)) { "更新缓存文件无效" }
+            check(!Files.exists(path, NOFOLLOW_LINKS) || Files.isRegularFile(path, NOFOLLOW_LINKS)) { "Tệp bộ nhớ đệm cập nhật không hợp lệ" }
         }
     }
 

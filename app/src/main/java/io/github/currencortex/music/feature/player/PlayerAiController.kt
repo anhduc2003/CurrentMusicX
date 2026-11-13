@@ -30,7 +30,7 @@ class PlayerAiController(private val repository: PlayerAiRepository, private val
         if (value.busy || value.draft.isBlank()) return
         val expected = owner ?: return
         if (expected != session() || expected.token.isNullOrBlank()) {
-            state.update { it.copy(error = "登录 CurrentMusic 后可向 AI 提问") }; return
+             state.update { it.copy(error = "Hãy đăng nhập CurrentMusic để đặt câu hỏi cho AI") }; return
         }
         val generation = epoch
         state.value = value.copy(turns = value.turns.takeLast(5) + PlayerAiTurn(value.draft), draft = "", busy = true, error = null)
@@ -44,7 +44,7 @@ class PlayerAiController(private val repository: PlayerAiRepository, private val
                 }
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (failure: Exception) { if (generation == epoch && expected == session()) state.update { it.copy(
-                error = if (failure is ApiException) failure.kind.message else failure.message ?: "AI 暂时不可用",
+                 error = if (failure is ApiException) failure.kind.message else failure.message ?: "AI hiện không khả dụng",
                 draft = it.draft.ifBlank { value.draft }) } }
             finally { if (generation == epoch) state.update { it.copy(busy = false) } }
         }

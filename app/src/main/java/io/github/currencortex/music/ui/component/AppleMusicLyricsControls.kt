@@ -28,37 +28,37 @@ import kotlin.math.roundToInt
     val ink = MiuixTheme.colorScheme.onSurface
     Column(modifier.fillMaxWidth().testTag("apple_lyrics_controls")) {
         Row(Modifier.fillMaxWidth().padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("Apple Music 效果", fontSize = 16.sp, color = ink, modifier = Modifier.weight(1f))
-            Text("重置参数", fontSize = 13.sp, color = MiuixTheme.colorScheme.primary,
+            Text("Hiệu ứng Apple Music", fontSize = 16.sp, color = ink, modifier = Modifier.weight(1f))
+            Text("Đặt lại thông số", fontSize = 13.sp, color = MiuixTheme.colorScheme.primary,
                 modifier = Modifier.testTag("apple_lyrics_reset").clickable(role = Role.Button) {
                     onDisplay { it.copy(appleMusic = AppleMusicLyricsOptions()) }
                 }.padding(start = 12.dp, top = 14.dp, bottom = 14.dp))
         }
-        LyricsParameterSlider("歌词间距", options.lineSpacing, AppleMusicLyricsOptions.LINE_SPACING_RANGE,
-            "apple_lyrics_spacing", "调整两句歌词之间的留白", { "${(it * 100).roundToInt()}%" }) { value ->
+        LyricsParameterSlider("Khoảng cách lời bài hát", options.lineSpacing, AppleMusicLyricsOptions.LINE_SPACING_RANGE,
+            "apple_lyrics_spacing", "Điều chỉnh khoảng trống giữa hai dòng lời bài hát", { "${(it * 100).roundToInt()}%" }) { value ->
             onDisplay { it.copy(appleMusic = it.appleMusic.copy(lineSpacing = value)) }
         }
-        LyricsParameterSlider("换行行高", options.lineHeight, AppleMusicLyricsOptions.LINE_HEIGHT_RANGE,
-            "apple_lyrics_line_height", "调整同一句歌词换行后的距离", ::multiplier) { value ->
+        LyricsParameterSlider("Chiều cao dòng khi ngắt dòng", options.lineHeight, AppleMusicLyricsOptions.LINE_HEIGHT_RANGE,
+            "apple_lyrics_line_height", "Điều chỉnh khoảng cách giữa các dòng sau khi lời bài hát được ngắt dòng", ::multiplier) { value ->
             onDisplay { it.copy(appleMusic = it.appleMusic.copy(lineHeight = value)) }
         }
-        LyricsParameterSlider("动画速度", options.animationSpeed, AppleMusicLyricsOptions.ANIMATION_SPEED_RANGE,
-            "apple_lyrics_speed", "数值越大越快；歌曲速度和逐字同步保持不变", ::multiplier) { value ->
+        LyricsParameterSlider("Tốc độ hoạt ảnh", options.animationSpeed, AppleMusicLyricsOptions.ANIMATION_SPEED_RANGE,
+            "apple_lyrics_speed", "Giá trị càng lớn thì tốc độ càng nhanh; tốc độ bài hát và đồng bộ từng từ không thay đổi", ::multiplier) { value ->
             onDisplay { it.copy(appleMusic = it.appleMusic.copy(animationSpeed = value)) }
         }
-        AppleEffectToggle("歌词辉光", display.glow, "lyrics_glow") { enabled ->
+        AppleEffectToggle("Quầng sáng lời bài hát", display.glow, "lyrics_glow") { enabled ->
             onDisplay { it.copy(glow = enabled) }
         }
-        if (display.glow) LyricsParameterSlider("辉光亮度", options.glowIntensity, AppleMusicLyricsOptions.GLOW_INTENSITY_RANGE,
-            "apple_lyrics_glow", "调整中长音与强调处的光晕，不改变文字亮度", { "${(it * 100).roundToInt()}%" }) { value ->
+        if (display.glow) LyricsParameterSlider("Độ sáng quầng sáng", options.glowIntensity, AppleMusicLyricsOptions.GLOW_INTENSITY_RANGE,
+            "apple_lyrics_glow", "Điều chỉnh quầng sáng ở các nốt ngân và đoạn nhấn, không làm thay đổi độ sáng chữ", { "${(it * 100).roundToInt()}%" }) { value ->
             onDisplay { it.copy(appleMusic = it.appleMusic.copy(glowIntensity = value)) }
         }
         if (Build.VERSION.SDK_INT >= 31) {
-            AppleEffectToggle("歌词视图模糊", display.blur, "lyrics_blur") { enabled ->
+            AppleEffectToggle("Làm mờ chế độ xem lời bài hát", display.blur, "lyrics_blur") { enabled ->
                 onDisplay { it.copy(blur = enabled) }
             }
-            if (display.blur) LyricsParameterSlider("模糊强度", options.blurStrength, AppleMusicLyricsOptions.BLUR_STRENGTH_RANGE,
-                "apple_lyrics_blur", "离当前句越远越模糊，0% 为清晰显示",
+            if (display.blur) LyricsParameterSlider("Cường độ làm mờ", options.blurStrength, AppleMusicLyricsOptions.BLUR_STRENGTH_RANGE,
+                "apple_lyrics_blur", "Càng xa câu hiện tại thì càng mờ; 0% là hiển thị rõ nét",
                 { "${(it * 100).roundToInt()}%" }) { value ->
                 onDisplay { it.copy(appleMusic = it.appleMusic.copy(blurStrength = value)) }
             }
@@ -67,8 +67,8 @@ import kotlin.math.roundToInt
 }
 
 @Composable internal fun LyricsSizeSlider(value: Float, onChange: (Float) -> Unit) {
-    LyricsParameterSlider("字号", LyricsTypography.normalize(value), LyricsTypography.MIN_SIZE..LyricsTypography.MAX_SIZE,
-        "lyrics_font_size", "与播放器中的歌词字号同步", { it.roundToInt().toString() }, step = 1f, onCommit = onChange)
+    LyricsParameterSlider("Cỡ chữ", LyricsTypography.normalize(value), LyricsTypography.MIN_SIZE..LyricsTypography.MAX_SIZE,
+        "lyrics_font_size", "Đồng bộ với cỡ chữ lời bài hát trong trình phát", { it.roundToInt().toString() }, step = 1f, onCommit = onChange)
 }
 
 @Composable private fun LyricsParameterSlider(title: String, value: Float, range: ClosedFloatingPointRange<Float>,

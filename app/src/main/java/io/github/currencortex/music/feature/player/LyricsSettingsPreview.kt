@@ -15,13 +15,13 @@ import io.github.currencortex.music.feature.lyrics.ui.rememberLyricsPosition
     val offset = globalOffsetMs - lyrics.songOffsetMs
     val text by remember(lyrics, player.song, song, timeline, clock, offset) { derivedStateOf {
         when {
-            player.song == null || song == null -> "暂无歌词"
-            !lyrics.matches(song) || !lyrics.matches(player.song) || lyrics.loading -> "正在加载歌词"
-            lyrics.document.lines.isEmpty() -> lyrics.error ?: "暂无歌词"
+            player.song == null || song == null -> "Chưa có lời bài hát"
+            !lyrics.matches(song) || !lyrics.matches(player.song) || lyrics.loading -> "Đang tải lời bài hát"
+            lyrics.document.lines.isEmpty() -> lyrics.error ?: "Chưa có lời bài hát"
             else -> {
                 val position = LyricsSynchronizer.lyricPosition(clock.value, offset)
                 lyrics.document.lines.getOrNull(timeline.findCurrentLine(position))?.text?.takeIf(String::isNotBlank)
-                    ?: timeline.interlude(position)?.label ?: "音乐正在继续"
+                    ?: timeline.interlude(position)?.label ?: "Âm nhạc vẫn đang tiếp tục"
             }
         }
     } }

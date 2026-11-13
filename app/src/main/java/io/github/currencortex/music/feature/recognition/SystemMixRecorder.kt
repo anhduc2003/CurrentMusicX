@@ -83,8 +83,8 @@ class SystemMixRecorder : RecognitionRecorder {
 
     companion object {
         private const val MAX_WALL_MILLIS = 17_000L
-        private const val UNSUPPORTED = "当前设备无法读取系统混音，请改用系统录制授权识曲"
-        private const val NO_SIGNAL = "未读取到系统播放的音乐，请先播放歌曲；也可改用系统录制授权识曲"
-        private const val TOO_SHORT = "系统混音片段不足 2 秒，请继续播放音乐，或改用系统录制授权识曲"
+        private const val UNSUPPORTED = "Thiết bị hiện tại không thể đọc bản phối âm thanh hệ thống, vui lòng chuyển sang nhận diện bài hát bằng quyền ghi âm hệ thống"
+        private const val NO_SIGNAL = "Không đọc được nhạc đang phát trên hệ thống, vui lòng phát bài hát trước; bạn cũng có thể chuyển sang nhận diện bài hát bằng quyền ghi âm hệ thống"
+        private const val TOO_SHORT = "Đoạn âm thanh phối trộn hệ thống chưa đủ 2 giây, vui lòng tiếp tục phát nhạc hoặc chuyển sang nhận diện bài hát bằng quyền ghi âm hệ thống"
     }
 }

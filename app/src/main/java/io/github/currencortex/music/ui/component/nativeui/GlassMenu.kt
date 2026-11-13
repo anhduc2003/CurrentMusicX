@@ -501,7 +501,7 @@ private class PopupShape(val frame: () -> GlassPopupFrame, val origin: Offset) :
     Box(Modifier.matchParentSize().onGloballyPositioned { rootOrigin=it.boundsInWindow().topLeft;rootSize=it.size })
     CompositionLocalProvider(LocalGlassMenuTrigger provides trigger) { content() }
     if(visible) Box(Modifier.matchParentSize().testTag(tags.dismiss)
-        .semantics {contentDescription="关闭菜单";onClick {if(path.isNotEmpty())pop()else changeOpen(false);true}}
+        .semantics {contentDescription="Đóng menu";onClick {if(path.isNotEmpty())pop()else changeOpen(false);true}}
         .pointerInput(Unit) {
             awaitEachGesture {
                 val down=awaitFirstDown(false,PointerEventPass.Initial);down.consume()
@@ -647,7 +647,7 @@ private class PopupShape(val frame: () -> GlassPopupFrame, val origin: Offset) :
                 .onGloballyPositioned{if(active)activeRestCoordinates=it}
                 .then(if(!active)Modifier.clearAndSetSemantics{}else Modifier)
                 .then(if(active)Modifier.testTag(tags.panel).semantics {
-                    paneTitle=description?.title ?: level.owner?.label ?: "菜单"
+                     paneTitle=description?.title ?: level.owner?.label ?: "Menu"
                     this[GlassMenuDepthKey]=depth
                     this[GlassMenuPathKey]=path.map{it.id}
                     this[GlassMenuUnfoldKey]=unfold.value

@@ -28,7 +28,7 @@ internal object SignatureGlyphs {
 }
 
 internal fun signatureName(username: String): String = username
-    .replace(Regex("[\\p{Cc}\\p{Zl}\\p{Zp}]+"), " ").trim().ifEmpty { "欢迎聆听" }
+    .replace(Regex("[\\p{Cc}\\p{Zl}\\p{Zp}]+"), " ").trim().ifEmpty { "Chúc bạn nghe nhạc vui vẻ" }
 
 /** Prepared on a worker; draw() only samples the active stroke and paints cached paths. */
 internal class SignatureLaunchRenderer(

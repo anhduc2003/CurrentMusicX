@@ -144,6 +144,6 @@ class NeteaseTransport(val sessions: NeteaseSessionStore, private val endpoints:
     companion object {
         // Shared native routes include large playlists; lyric adapters enforce their tighter caps.
         internal const val MAX_JSON_BYTES = 16 * 1024 * 1024
-        private fun oversized() = ApiException(ErrorKind.Parse, userMessage = "网易云响应超过 16 MB 限制")
+        private fun oversized() = ApiException(ErrorKind.Parse, userMessage = "Phản hồi Nhạc Vân NetEase vượt quá giới hạn 16 MB")
     }
 }

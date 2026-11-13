@@ -20,9 +20,9 @@ import java.io.File
 open class SongDownloadWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val song = try { ApiJson.decodeFromString<Song>(inputData.getString("song") ?: return Result.failure()) }
-            catch (_: Exception) { return Result.failure(workDataOf("error" to "歌曲信息无效")) }
+            catch (_: Exception) { return Result.failure(workDataOf("error" to "Thông tin bài hát không hợp lệ")) }
         return try {
-            setForeground(notification(song, SongDownloadProgress("准备下载")))
+            setForeground(notification(song, SongDownloadProgress("Đang chuẩn bị tải xuống")))
             val engine = createEngine()
             val result = engine.download(song, AudioQuality.from(inputData.getString("quality").orEmpty()),
                 inputData.getString("directory")?.let(Uri::parse), id.toString()) { progress ->
@@ -33,7 +33,7 @@ open class SongDownloadWorker(context: Context, params: WorkerParameters) : Coro
                 "warning" to result.warning, "quality" to result.quality,
                 "files" to result.saved.files.map(Uri::toString).toTypedArray()))
         } catch (e: CancellationException) { throw e }
-          catch (e: Exception) { Result.failure(workDataOf("error" to (e.message ?: "下载失败，请重试").take(300))) }
+          catch (e: Exception) { Result.failure(workDataOf("error" to (e.message ?: "Tải xuống thất bại, vui lòng thử lại").take(300))) }
     }
     protected open suspend fun createEngine(): SongDownloadEngine {
         val container = (applicationContext as CurrentMusicApplication).awaitContainer()
@@ -46,7 +46,7 @@ open class SongDownloadWorker(context: Context, params: WorkerParameters) : Coro
                 val account = container.emby.state.value
                 check(container.emby.accepts(song) && inputData.getString("server") == account.server &&
                     inputData.getString("provider") == "emby:" + account.identity && inputData.getString("navidrome_revision") == account.revision) {
-                    "Emby 账号已变化，请重新开始下载"
+                    "Tài khoản Emby đã thay đổi, vui lòng bắt đầu tải xuống lại"
                 }
                 return
             }
@@ -54,7 +54,7 @@ open class SongDownloadWorker(context: Context, params: WorkerParameters) : Coro
                 val account = container.navidrome.state.value
                 check(container.navidrome.accepts(song) && inputData.getString("server") == account.server &&
                     inputData.getString("provider") == "navidrome:" + account.identity && inputData.getString("navidrome_revision") == account.revision) {
-                    "Navidrome 账号已变化，请重新开始下载"
+                    "Tài khoản Navidrome đã thay đổi, vui lòng bắt đầu tải xuống lại"
                 }
                 return
             }
@@ -63,7 +63,7 @@ open class SongDownloadWorker(context: Context, params: WorkerParameters) : Coro
                 inputData.getString("provider") == container.audioSettings.access().identity &&
                 (inputData.getLong("netease_uid", -1) < 0 || inputData.getLong("netease_uid", -1) ==
                     (container.neteaseSessions.state.value.profile?.uid ?: 0L))) {
-                "账号或音源已变化，请重新开始下载"
+                "Tài khoản hoặc nguồn nhạc đã thay đổi, vui lòng bắt đầu tải xuống lại"
             }
         }
         verifySession()
@@ -73,18 +73,18 @@ open class SongDownloadWorker(context: Context, params: WorkerParameters) : Coro
             detail = { track -> container.musicRepository.detail(track) },
             lyrics = { track -> container.lyricsRepository.load(track).document },
             store = SongDownloadStore(applicationContext),
-            guard = { verifySession(); check(session == if (emby) container.emby.session() else if (nav) container.navidrome.session() else container.musicSession()) { "账号已变化，请重新开始下载" } },
+            guard = { verifySession(); check(session == if (emby) container.emby.session() else if (nav) container.navidrome.session() else container.musicSession()) { "Tài khoản đã thay đổi, vui lòng bắt đầu tải xuống lại" } },
             http = container.navidromeMedia)
     }
     private fun notification(song: Song, progress: SongDownloadProgress): ForegroundInfo {
         val manager = applicationContext.getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(NotificationChannel("song-downloads", "歌曲下载", NotificationManager.IMPORTANCE_LOW))
+        manager.createNotificationChannel(NotificationChannel("song-downloads", "Tải xuống bài hát", NotificationManager.IMPORTANCE_LOW))
         val percent = if (progress.total > 0) (progress.received.toDouble() / progress.total * 100).toInt().coerceIn(0, 100) else 0
         val notification = NotificationCompat.Builder(applicationContext, "song-downloads")
             .setSmallIcon(android.R.drawable.stat_sys_download).setContentTitle(song.name)
             .setContentText(progress.phase).setOnlyAlertOnce(true).setOngoing(true)
             .setProgress(100, percent, progress.total <= 0)
-            .addAction(0, "取消", WorkManager.getInstance(applicationContext).createCancelPendingIntent(id)).build()
+            .addAction(0, "Hủy", WorkManager.getInstance(applicationContext).createCancelPendingIntent(id)).build()
         val notificationId = 0x40000000 or (id.hashCode() and 0x0fffffff)
         return if (Build.VERSION.SDK_INT >= 29) ForegroundInfo(notificationId, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
             else ForegroundInfo(notificationId, notification)

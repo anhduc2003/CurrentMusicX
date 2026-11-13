@@ -9,11 +9,11 @@ internal data class NeteaseUsbPcm(val rate: Int, val channels: Int, val encoding
     val validBits get() = if (precision != 0) precision else when (encoding) { 2 -> 16; 21 -> 24; else -> 32 }
     val wireFormat get() = if (encoding == 21) copy(encoding = 22, precision = 24) else this
     fun validate() {
-        check(rate in 8000..192000 && channels in 1..2) { "[USB_PCM] 当前网易云驱动适配支持 8–192 kHz 单声道或立体声" }
+        check(rate in 8000..192000 && channels in 1..2) { "[USB_PCM] Bộ điều hợp trình điều khiển Nhạc Vân NetEase hỗ trợ đơn âm hoặc âm thanh nổi 8–192 kHz" }
         check(encoding == 2 || encoding == 21 || encoding == 22) {
-            "[USB_PCM] 网易云 USB 输出仅接收 PCM 16/24/32-bit 整数；浮点格式不会被当成整数"
+            "[USB_PCM] Đầu ra USB của Nhạc Vân NetEase chỉ nhận PCM số nguyên 16/24/32-bit; định dạng dấu phẩy động sẽ không được coi là số nguyên"
         }
-        check(precision == 0 || (encoding == 22 && precision == 24)) { "[USB_PCM] 无效的容器有效位数" }
+        check(precision == 0 || (encoding == 22 && precision == 24)) { "[USB_PCM] Số bit hợp lệ của vùng chứa không hợp lệ" }
     }
 }
 
@@ -37,14 +37,14 @@ internal class NeteaseUsbSession private constructor(
     private var closed = false
     private val scratch by lazy { ByteBuffer.allocateDirect(8192).order(ByteOrder.LITTLE_ENDIAN) }
     @Synchronized fun verify() {
-        check(!closed) { "[USB_CLOSED] USB 输出已释放" }
+        check(!closed) { "[USB_CLOSED] Đầu ra USB đã được giải phóng" }
         try {
-            check(connected()) { "[USB_DISCONNECTED] USB DAC 已断开或授权已撤销" }
+            check(connected()) { "[USB_DISCONNECTED] USB DAC đã ngắt kết nối hoặc quyền đã bị thu hồi" }
             driver.verify(handle)
         } catch (e: Throwable) { runCatching { close() }.exceptionOrNull()?.let(e::addSuppressed); throw e }
     }
     @Synchronized fun write(buffer: ByteBuffer, volume: Float = 1f): Int = guarded {
-        check(buffer.isDirect && buffer.remaining() % pcm.frameBytes == 0) { "[USB_BUFFER] PCM 缓冲区未按帧对齐" }
+        check(buffer.isDirect && buffer.remaining() % pcm.frameBytes == 0) { "[USB_BUFFER] Bộ đệm PCM không được căn chỉnh theo khung" }
         val before = buffer.position()
         val gain = usbVolumeGain(volume).toDouble()
         val wire = if (pcm.encoding != 21 && gain == 1.0) buffer else scratch.apply {
@@ -69,7 +69,7 @@ internal class NeteaseUsbSession private constructor(
         val wirePosition = wire.position()
         val bytes = driver.write(handle, wire)
         check(bytes in 0..wire.remaining() && bytes % pcm.wireFormat.frameBytes == 0 && wire.position() == wirePosition && buffer.position() == before) {
-            "[USB_WRITE] 驱动返回无效的已接收字节数"
+            "[USB_WRITE] Trình điều khiển trả về số byte đã nhận không hợp lệ"
         }
         val consumed = bytes / pcm.wireFormat.frameBytes * pcm.frameBytes
         buffer.position(before + consumed)
@@ -92,11 +92,11 @@ internal class NeteaseUsbSession private constructor(
             var handle = 0L
             try {
                 pcm.validate()
-                check(permitted) { "[USB_PERMISSION] 尚未获得所选 USB DAC 的访问授权" }
-                check(connected()) { "[USB_DISCONNECTED] 所选 USB DAC 已断开" }
-                check(fd >= 0) { "[USB_OPEN] 无法打开 USB 设备" }
+                check(permitted) { "[USB_PERMISSION] Chưa được cấp quyền truy cập USB DAC đã chọn" }
+                check(connected()) { "[USB_DISCONNECTED] USB DAC đã chọn đã ngắt kết nối" }
+                check(fd >= 0) { "[USB_OPEN] Không thể mở thiết bị USB" }
                 handle = driver.open(fd, pcm.wireFormat)
-                check(handle != 0L) { "[USB_OPEN] 原生 USB 输出初始化失败" }
+                check(handle != 0L) { "[USB_OPEN] Khởi tạo đầu ra USB gốc thất bại" }
                 return NeteaseUsbSession(driver, connection, connected, handle, pcm)
             } catch (e: Throwable) {
                 runCatching { if (handle != 0L) driver.close(handle) }.exceptionOrNull()?.let(e::addSuppressed)

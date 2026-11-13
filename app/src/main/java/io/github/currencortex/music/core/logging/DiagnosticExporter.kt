@@ -32,7 +32,7 @@ object DiagnosticExporter {
 
     suspend fun save(context: Context, file: File, destination: Uri) = withContext(Dispatchers.IO) {
         val output = checkNotNull(context.contentResolver.openOutputStream(destination, "wt")) {
-            "无法打开保存位置"
+Không thể mở vị trí lưu
         }
         output.use { target -> file.inputStream().use { it.copyTo(target) } }
     }
@@ -41,7 +41,7 @@ object DiagnosticExporter {
         return Intent(Intent.ACTION_SEND).apply {
             type = "application/zip"
             putExtra(Intent.EXTRA_STREAM, uri)
-            clipData = ClipData.newRawUri("应用日志", uri)
+clipData = ClipData.newRawUri("Nhật ký ứng dụng", uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
     }

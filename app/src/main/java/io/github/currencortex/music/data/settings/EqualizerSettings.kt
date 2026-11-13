@@ -8,13 +8,13 @@ import kotlin.math.ln
 import kotlin.math.roundToInt
 
 enum class EqualizerPreset(val label: String, val gains: List<Int>) {
-    FLAT("平直", listOf(0, 0, 0, 0, 0)),
-    BASS("低音", listOf(600, 400, 0, -100, -200)),
-    VOCAL("人声", listOf(-200, -100, 300, 400, 100)),
-    ROCK("摇滚", listOf(500, 200, -200, 300, 500)),
-    POP("流行", listOf(-100, 200, 400, 200, -100)),
-    JAZZ("爵士", listOf(300, 100, -100, 200, 400)),
-    CUSTOM("自定义", emptyList());
+    FLAT("Phẳng", listOf(0, 0, 0, 0, 0)),
+    BASS("Âm trầm", listOf(600, 400, 0, -100, -200)),
+    VOCAL("Giọng hát", listOf(-200, -100, 300, 400, 100)),
+    ROCK("Nhạc rock", listOf(500, 200, -200, 300, 500)),
+    POP("Nhạc pop", listOf(-100, 200, 400, 200, -100)),
+    JAZZ("Jazz", listOf(300, 100, -100, 200, 400)),
+    CUSTOM("Tùy chỉnh", emptyList());
 }
 
 data class EqualizerSettings(val enabled: Boolean = false, val preset: EqualizerPreset = EqualizerPreset.FLAT,

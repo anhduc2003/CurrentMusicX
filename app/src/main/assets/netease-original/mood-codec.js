@@ -47,7 +47,7 @@ case 34:
                 r0 = global;
                 r2 = r0.Error;
                 r1 = a1;
-                r0 = ' 缺失或不是 boolean';
+                r0 = ' Bị thiếu hoặc không phải boolean';
                 r3 = r1 + r0;
                 r1 = r2.prototype;
                 r1 = Object.create(r1, {constructor: {value: r2}});
@@ -236,7 +236,7 @@ case 38:
                 r0 = global;
                 r2 = r0.Error;
                 r1 = a1;
-                r0 = ' 必须为有限数值';
+                r0 = ' Phải là giá trị hữu hạn';
                 r3 = r1 + r0;
                 r1 = r2.prototype;
                 r1 = Object.create(r1, {constructor: {value: r2}});
@@ -612,7 +612,7 @@ case 11:
                 r0 = global;
                 r2 = r0.Error;
                 r1 = a1;
-                r0 = ' 缺失';
+                r0 = ' Bị thiếu';
                 r3 = r1 + r0;
                 r1 = r2.prototype;
                 r1 = Object.create(r1, {constructor: {value: r2}});
@@ -1109,7 +1109,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['chorus'] = r3;
         r1['flanger'] = r2;
         r1['dly'] = r0;
-        r0 = '苦情-pop';
+        r0 = 'pop tình sầu';
         r1['effect_name'] = r0;
         r0 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'alc'];
         r1['order'] = r0;
@@ -1188,7 +1188,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['chorus'] = r3;
         r1['flanger'] = r2;
         r1['dly'] = r0;
-        r0 = '苦情-instru';
+        r0 = 'nhạc không lời tình sầu';
         r1['effect_name'] = r0;
         r0 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'alc'];
         r1['order'] = r0;
@@ -1343,7 +1343,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['chorus'] = r3;
         r1['flanger'] = r2;
         r1['dly'] = r0;
-        r0 = '苦情-rhythm';
+        r0 = 'nhịp điệu tình sầu';
         r1['effect_name'] = r0;
         r0 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'alc'];
         r1['order'] = r0;
@@ -1402,11 +1402,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r14 = {};
         r14['on'] = r0;
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -8, 'freq': 700, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -8, 'freq': 700, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7000, 'curve': 2, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7000, 'curve': 2, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r13 = {};
         r13['f'] = r0;
@@ -1439,7 +1439,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '中性';
+        r2 = 'Trung tính';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r2;
@@ -1501,11 +1501,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r14 = {};
         r14['on'] = r0;
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -8, 'freq': 700, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -8, 'freq': 700, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7000, 'curve': 2, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7000, 'curve': 2, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r13 = {};
         r13['f'] = r0;
@@ -1538,7 +1538,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '中性';
+        r2 = 'Trung tính';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r2;
@@ -1600,11 +1600,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r14 = {};
         r14['on'] = r0;
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -8, 'freq': 700, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -8, 'freq': 700, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7000, 'curve': 2, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7000, 'curve': 2, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r13 = {};
         r13['f'] = r0;
@@ -1637,7 +1637,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '中性';
+        r2 = 'Trung tính';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r2;
@@ -1699,11 +1699,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r14 = {};
         r14['on'] = r0;
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -8, 'freq': 700, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -8, 'freq': 700, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7000, 'curve': 2, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7000, 'curve': 2, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r13 = {};
         r13['f'] = r0;
@@ -1736,7 +1736,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '中性';
+        r2 = 'Trung tính';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r2;
@@ -1793,11 +1793,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r2 = {};
         r2['on'] = r0;
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -2, 'freq': 180, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -2, 'freq': 180, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -2, 'freq': 7000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -2, 'freq': 7000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r13 = {};
         r13['f'] = r0;
@@ -1831,7 +1831,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r4;
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '自信-国风';
+        r2 = 'Tự tin - phong cách Trung Hoa';
         r1['effect_name'] = r2;
         r1['rvb'] = r0;
         r0 = {'presence': 1, 'sshaper': true, 'ambience': 1, 'on': true, 'stereoizer': 1.2};
@@ -1901,7 +1901,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r4;
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '自信-古典';
+        r2 = 'Tự tin - cổ điển';
         r1['effect_name'] = r2;
         r1['rvb'] = r0;
         r0 = {'presence': 1, 'sshaper': true, 'stereoizer': 1, 'on': true, 'ambience': 1};
@@ -1956,11 +1956,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r2 = {};
         r2['on'] = r0;
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -2, 'freq': 180, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -2, 'freq': 180, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -2, 'freq': 7000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -2, 'freq': 7000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r13 = {};
         r13['f'] = r0;
@@ -1994,7 +1994,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r4;
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '自信-去糊';
+        r2 = 'Tự tin - giảm đục âm';
         r1['effect_name'] = r2;
         r1['rvb'] = r0;
         r0 = {'presence': 1.5, 'sshaper': true, 'ambience': 1, 'on': true, 'stereoizer': 1.2};
@@ -2049,11 +2049,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r2 = {};
         r2['on'] = r0;
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -2, 'freq': 180, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -2, 'freq': 180, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -2, 'freq': 7000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -2, 'freq': 7000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r13 = {};
         r13['f'] = r0;
@@ -2087,7 +2087,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r4;
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '自信-电子';
+        r2 = 'Tự tin - nhạc điện tử';
         r1['effect_name'] = r2;
         r1['rvb'] = r0;
         r0 = {'presence': 2, 'sshaper': true, 'ambience': 1, 'on': true, 'stereoizer': 1.5};
@@ -2151,11 +2151,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r16 = {};
         r16['on'] = r1;
         r0 = new Array(3);
-        r2 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -9, 'freq': 700, 'curve': 0, 'name': '滤波器1'};
+        r2 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -9, 'freq': 700, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r2;
-        r2 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': '滤波器2'};
+        r2 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': 'Bộ lọc 2'};
         r0[1] = r2;
-        r2 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': '滤波器3'};
+        r2 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r2;
         r15 = {};
         r15['f'] = r0;
@@ -2189,7 +2189,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r5;
         r1['limiter'] = r4;
         r1['dly'] = r3;
-        r3 = '保底';
+        r3 = 'Cơ bản';
         r1['effect_name'] = r3;
         r3 = ['cmp', 'eq', 'peq', 'rvb', 'se', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly', 'effect_name', 'noise'];
         r1['order'] = r3;
@@ -2254,11 +2254,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r16 = {};
         r16['on'] = r1;
         r0 = new Array(3);
-        r2 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -9, 'freq': 700, 'curve': 0, 'name': '滤波器1'};
+        r2 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -9, 'freq': 700, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r2;
-        r2 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': '滤波器2'};
+        r2 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': 'Bộ lọc 2'};
         r0[1] = r2;
-        r2 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': '滤波器3'};
+        r2 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r2;
         r15 = {};
         r15['f'] = r0;
@@ -2292,7 +2292,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r5;
         r1['limiter'] = r4;
         r1['dly'] = r3;
-        r3 = '保底';
+        r3 = 'Cơ bản';
         r1['effect_name'] = r3;
         r3 = ['cmp', 'eq', 'peq', 'rvb', 'se', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly', 'effect_name', 'noise'];
         r1['order'] = r3;
@@ -2355,11 +2355,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r15 = {};
         r15['on'] = r1;
         r0 = new Array(3);
-        r2 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -9, 'freq': 700, 'curve': 0, 'name': '滤波器1'};
+        r2 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -9, 'freq': 700, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r2;
-        r2 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': '滤波器2'};
+        r2 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': 'Bộ lọc 2'};
         r0[1] = r2;
-        r2 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': '滤波器3'};
+        r2 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r2;
         r14 = {};
         r14['f'] = r0;
@@ -2457,11 +2457,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r16 = {};
         r16['on'] = r1;
         r0 = new Array(3);
-        r2 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -9, 'freq': 700, 'curve': 0, 'name': '滤波器1'};
+        r2 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -9, 'freq': 700, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r2;
-        r2 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': '滤波器2'};
+        r2 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': 'Bộ lọc 2'};
         r0[1] = r2;
-        r2 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': '滤波器3'};
+        r2 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r2;
         r15 = {};
         r15['f'] = r0;
@@ -2495,7 +2495,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r5;
         r1['limiter'] = r4;
         r1['dly'] = r3;
-        r3 = '保底';
+        r3 = 'Đảm bảo';
         r1['effect_name'] = r3;
         r3 = ['cmp', 'eq', 'peq', 'rvb', 'se', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly', 'effect_name', 'noise'];
         r1['order'] = r3;
@@ -2555,11 +2555,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r2 = {};
         r2['on'] = r0;
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -5, 'freq': 700, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -5, 'freq': 700, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r13 = {};
         r13['f'] = r0;
@@ -2593,7 +2593,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '音效配置 3-24 10:16';
+        r2 = 'Cấu hình hiệu ứng âm thanh 3-24 10:16';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc', 'effect_name'];
         r1['order'] = r2;
@@ -2655,11 +2655,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r2 = {};
         r2['on'] = r0;
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -5, 'freq': 700, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -5, 'freq': 700, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r13 = {};
         r13['f'] = r0;
@@ -2693,7 +2693,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '音效配置 3-24 10:16';
+        r2 = 'Cấu hình hiệu ứng âm thanh 3-24 10:16';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc', 'effect_name'];
         r1['order'] = r2;
@@ -2755,11 +2755,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r2 = {};
         r2['on'] = r0;
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -5, 'freq': 700, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -5, 'freq': 700, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r13 = {};
         r13['f'] = r0;
@@ -2793,7 +2793,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '负向';
+        r2 = 'Âm';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc', 'effect_name'];
         r1['order'] = r2;
@@ -2854,11 +2854,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r2 = {};
         r2['on'] = r0;
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -5, 'freq': 700, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 2, 'gain': -5, 'freq': 700, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 2, 'gain': -8, 'freq': 7800, 'curve': 2, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 0, 'band': 3, 'q': 0.5, 'gain': -4, 'freq': 8000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r13 = {};
         r13['f'] = r0;
@@ -2892,7 +2892,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '音效配置 3-24 10:16';
+        r2 = 'Cấu hình hiệu ứng âm thanh 3-24 10:16';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc', 'effect_name'];
         r1['order'] = r2;
@@ -3260,7 +3260,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '活力民谣';
+        r2 = 'Dân ca sôi động';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'alc', 'effect_name', 'noise'];
         r1['order'] = r2;
@@ -3350,7 +3350,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '活力纯音乐';
+        r2 = 'Nhạc không lời sôi động';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r2;
@@ -3440,7 +3440,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '活力';
+        r2 = 'Sôi động';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'alc', 'effect_name', 'noise'];
         r1['order'] = r2;
@@ -3532,7 +3532,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '活力节奏';
+        r2 = 'Nhịp điệu sôi động';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r2;
@@ -3623,7 +3623,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'core': true, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '治愈民谣';
+        r2 = 'Dân ca chữa lành';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc', 'effect_name'];
         r1['order'] = r2;
@@ -3712,7 +3712,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'core': true, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '治愈';
+        r2 = 'Chữa lành';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc', 'effect_name'];
         r1['order'] = r2;
@@ -3801,7 +3801,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.12, 'core': true, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'useable': true, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '治愈';
+         r2 = 'Chữa lành';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc', 'effect_name'];
         r1['order'] = r2;
@@ -3892,7 +3892,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = {'attack': 0.005, 'on': true, 'release': 0.08, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 2, 'threshold': -0.1};
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '治愈';
+         r2 = 'Chữa lành';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc', 'effect_name'];
         r1['order'] = r2;
@@ -3965,7 +3965,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r4;
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '欢快v2-folk se';
+         r2 = 'Vui tươiv2-folk se';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'peq', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly', 'eq', 'rvb', 'se', 'bt', 'noise', 'effect_name'];
         r1['order'] = r2;
@@ -4040,7 +4040,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r4;
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '欢快v2-instrumental se';
+         r2 = 'Vui tươiv2-instrumental se';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc', 'effect_name'];
         r1['order'] = r2;
@@ -4113,7 +4113,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r4;
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '欢快-pop V2 se+pre';
+         r2 = 'Vui tươi-pop V2 se+pre';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r2;
@@ -4188,7 +4188,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r4;
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '欢快v2-rhythm se';
+         r2 = 'Vui tươiv2-rhythm se';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'peq', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly', 'eq', 'rvb', 'se', 'bt', 'noise', 'effect_name'];
         r1['order'] = r2;
@@ -4554,11 +4554,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r10 = {};
         r10['on'] = r1;
         r3 = new Array(3);
-        r2 = {'name': '滤波器1', 'band': 1, 'insert': 3, 'curve': 0, 'gain': -6, 'freq': 600, 'q': 1};
+         r2 = {'name': 'Bộ lọc 1', 'band': 1, 'insert': 3, 'curve': 0, 'gain': -6, 'freq': 600, 'q': 1};
         r3[0] = r2;
-        r2 = {'name': '滤波器2', 'band': 2, 'insert': 3, 'curve': 2, 'gain': -6, 'freq': 7000, 'q': 1};
+         r2 = {'name': 'Bộ lọc 2', 'band': 2, 'insert': 3, 'curve': 2, 'gain': -6, 'freq': 7000, 'q': 1};
         r3[1] = r2;
-        r2 = {'name': '滤波器3', 'band': 3, 'insert': 0, 'curve': 0, 'gain': 0, 'freq': 1000, 'q': 1};
+         r2 = {'name': 'Bộ lọc 3', 'band': 3, 'insert': 0, 'curve': 0, 'gain': 0, 'freq': 1000, 'q': 1};
         r3[2] = r2;
         r2 = {};
         r2['on'] = r0;
@@ -4608,7 +4608,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['chorus'] = r3;
         r1['flanger'] = r2;
         r1['dly'] = r0;
-        r0 = '思念-folk';
+         r0 = 'Nhớ nhung-folk';
         r1['effect_name'] = r0;
         r0 = ['cmp', 'eq', 'peq', 'rvb', 'se', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly'];
         r1['order'] = r0;
@@ -4639,11 +4639,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r10 = {};
         r10['on'] = r1;
         r3 = new Array(3);
-        r2 = {'name': '滤波器1', 'band': 1, 'insert': 3, 'curve': 0, 'gain': -6, 'freq': 600, 'q': 1};
+         r2 = {'name': 'Bộ lọc 1', 'band': 1, 'insert': 3, 'curve': 0, 'gain': -6, 'freq': 600, 'q': 1};
         r3[0] = r2;
-        r2 = {'name': '滤波器2', 'band': 2, 'insert': 3, 'curve': 2, 'gain': -6, 'freq': 7000, 'q': 1};
+         r2 = {'name': 'Bộ lọc 2', 'band': 2, 'insert': 3, 'curve': 2, 'gain': -6, 'freq': 7000, 'q': 1};
         r3[1] = r2;
-        r2 = {'name': '滤波器3', 'band': 3, 'insert': 0, 'curve': 0, 'gain': 0, 'freq': 1000, 'q': 1};
+         r2 = {'name': 'Bộ lọc 3', 'band': 3, 'insert': 0, 'curve': 0, 'gain': 0, 'freq': 1000, 'q': 1};
         r3[2] = r2;
         r2 = {};
         r2['on'] = r0;
@@ -4693,7 +4693,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['chorus'] = r3;
         r1['flanger'] = r2;
         r1['dly'] = r0;
-        r0 = '思念-ins';
+         r0 = 'Nhớ nhung-ins';
         r1['effect_name'] = r0;
         r0 = ['cmp', 'eq', 'peq', 'rvb', 'se', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly'];
         r1['order'] = r0;
@@ -4724,11 +4724,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r10 = {};
         r10['on'] = r1;
         r3 = new Array(3);
-        r2 = {'name': '滤波器1', 'band': 1, 'insert': 3, 'curve': 0, 'gain': -6, 'freq': 600, 'q': 1};
+         r2 = {'name': 'Bộ lọc 1', 'band': 1, 'insert': 3, 'curve': 0, 'gain': -6, 'freq': 600, 'q': 1};
         r3[0] = r2;
-        r2 = {'name': '滤波器2', 'band': 2, 'insert': 3, 'curve': 2, 'gain': -6, 'freq': 7000, 'q': 1};
+         r2 = {'name': 'Bộ lọc 2', 'band': 2, 'insert': 3, 'curve': 2, 'gain': -6, 'freq': 7000, 'q': 1};
         r3[1] = r2;
-        r2 = {'name': '滤波器3', 'band': 3, 'insert': 0, 'curve': 0, 'gain': 0, 'freq': 1000, 'q': 1};
+         r2 = {'name': 'Bộ lọc 3', 'band': 3, 'insert': 0, 'curve': 0, 'gain': 0, 'freq': 1000, 'q': 1};
         r3[2] = r2;
         r2 = {};
         r2['on'] = r0;
@@ -4778,7 +4778,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['chorus'] = r3;
         r1['flanger'] = r2;
         r1['dly'] = r0;
-        r0 = '思念-pop';
+         r0 = 'Nhớ nhung-pop';
         r1['effect_name'] = r0;
         r0 = ['cmp', 'eq', 'peq', 'rvb', 'se', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly'];
         r1['order'] = r0;
@@ -4810,11 +4810,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r10 = {};
         r10['on'] = r1;
         r3 = new Array(3);
-        r2 = {'name': '滤波器1', 'band': 1, 'insert': 3, 'curve': 0, 'gain': -6, 'freq': 600, 'q': 1};
+         r2 = {'name': 'Bộ lọc 1', 'band': 1, 'insert': 3, 'curve': 0, 'gain': -6, 'freq': 600, 'q': 1};
         r3[0] = r2;
-        r2 = {'name': '滤波器2', 'band': 2, 'insert': 3, 'curve': 2, 'gain': -6, 'freq': 7000, 'q': 1};
+         r2 = {'name': 'Bộ lọc 2', 'band': 2, 'insert': 3, 'curve': 2, 'gain': -6, 'freq': 7000, 'q': 1};
         r3[1] = r2;
-        r2 = {'name': '滤波器3', 'band': 3, 'insert': 0, 'curve': 0, 'gain': 0, 'freq': 1000, 'q': 1};
+         r2 = {'name': 'Bộ lọc 3', 'band': 3, 'insert': 0, 'curve': 0, 'gain': 0, 'freq': 1000, 'q': 1};
         r3[2] = r2;
         r2 = {};
         r2['on'] = r0;
@@ -4864,7 +4864,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['chorus'] = r3;
         r1['flanger'] = r2;
         r1['dly'] = r0;
-        r0 = '思念-rhythm';
+         r0 = 'Nhớ nhung-rhythm';
         r1['effect_name'] = r0;
         r0 = ['cmp', 'eq', 'peq', 'rvb', 'se', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly'];
         r1['order'] = r0;
@@ -4959,7 +4959,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r4 = {'attack': 0.005, 'on': true, 'release': 0.1, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 4, 'threshold': -0.1};
         r1['limiter'] = r4;
         r1['dly'] = r3;
-        r3 = '热血-民谣';
+         r3 = 'Nhiệt huyết-dân ca';
         r1['effect_name'] = r3;
         r3 = ['cmp', 'eq', 'se', 'peq', 'rvb', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly', 'noise', 'effect_name'];
         r1['order'] = r3;
@@ -5014,7 +5014,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r4 = {'attack': 0.005, 'on': true, 'release': 0.1, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 4, 'threshold': -0.1};
         r1['limiter'] = r4;
         r1['dly'] = r3;
-        r3 = '热血-纯音乐';
+         r3 = 'Nhiệt huyết-không lời';
         r1['effect_name'] = r3;
         r3 = ['cmp', 'eq', 'se', 'peq', 'rvb', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly', 'noise', 'effect_name'];
         r1['order'] = r3;
@@ -5096,7 +5096,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r4 = {'attack': 0.005, 'on': true, 'release': 0.1, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 4, 'threshold': -0.1};
         r1['limiter'] = r4;
         r1['dly'] = r3;
-        r3 = '热血-流行';
+        r3 = 'Sôi động-Pop';
         r1['effect_name'] = r3;
         r3 = ['cmp', 'eq', 'se', 'peq', 'rvb', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly', 'noise', 'effect_name'];
         r1['order'] = r3;
@@ -5179,7 +5179,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r4 = {'attack': 0.005, 'on': true, 'release': 0.1, 'outputgain': 0, 'infiniteRatio': true, 'ratio': 4, 'threshold': -0.2};
         r1['limiter'] = r4;
         r1['dly'] = r3;
-        r3 = '热血-节奏';
+        r3 = 'Sôi động-Nhịp điệu';
         r1['effect_name'] = r3;
         r3 = ['cmp', 'eq', 'se', 'peq', 'rvb', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly', 'noise', 'effect_name'];
         r1['order'] = r3;
@@ -5246,7 +5246,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r4;
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '轻松';
+        r2 = 'Thư giãn';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r2;
@@ -5316,7 +5316,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r4;
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '轻松';
+        r2 = 'Thư giãn';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r2;
@@ -5385,7 +5385,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r4;
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '轻松';
+        r2 = 'Thư giãn';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r2;
@@ -5453,7 +5453,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r4;
         r1['limiter'] = r3;
         r1['dly'] = r2;
-        r2 = '轻松';
+        r2 = 'Thư giãn';
         r1['effect_name'] = r2;
         r2 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r2;
@@ -5545,7 +5545,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r5;
         r1['limiter'] = r4;
         r1['dly'] = r3;
-        r3 = '浪漫-民谣';
+        r3 = 'Lãng mạn-Dân ca';
         r1['effect_name'] = r3;
         r3 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r3;
@@ -5622,7 +5622,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r5;
         r1['limiter'] = r4;
         r1['dly'] = r3;
-        r3 = '浪漫-纯音乐';
+        r3 = 'Lãng mạn-Nhạc không lời';
         r1['effect_name'] = r3;
         r3 = ['cmp', 'eq', 'se', 'peq', 'rvb', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly', 'noise'];
         r1['order'] = r3;
@@ -5713,7 +5713,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r5;
         r1['limiter'] = r4;
         r1['dly'] = r3;
-        r3 = '浪漫-流行';
+        r3 = 'Lãng mạn-Pop';
         r1['effect_name'] = r3;
         r3 = ['cmp', 'eq', 'se', 'peq', 'rvb', 'bt', 'rotate', 'spspatial', 'alc', 'chorus', 'flanger', 'dly', 'noise', 'effect_name'];
         r1['order'] = r3;
@@ -5803,7 +5803,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['peq'] = r5;
         r1['limiter'] = r4;
         r1['dly'] = r3;
-        r3 = '浪漫-节奏';
+        r3 = 'Lãng mạn-Nhịp điệu';
         r1['effect_name'] = r3;
         r3 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r3;
@@ -5817,11 +5817,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
 factories[931]=function(a0, a1, a2, a3, a4, a5, a6) {
 var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24,r25,r26,r27,r28,r29,r30,r31,r32,r33,r34,r35,r36,r37,r38,r39,r40,r41,r42,r43,r44,r45,r46,r47,r48,r49,r50,r51,r52,r53,r54,r55,r56,r57,r58,r59,r60,r61,r62,r63,r64,r65,r66,r67,r68,r69,r70,r71,r72,r73,r74,r75,r76,r77,r78,r79,r80,r81,r82,r83,r84,r85,r86,r87,r88,r89,r90,r91,r92,r93,r94,r95,r96,r97,r98,r99; // Environment: r3
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -5, 'freq': 500, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -5, 'freq': 500, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -3, 'freq': 7000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -3, 'freq': 7000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r1 = {};
         r1['f'] = r0;
@@ -5887,7 +5887,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['spspatial'] = r5;
         r1['bt'] = r4;
         r1['alc'] = r3;
-        r3 = '悲伤2';
+        r3 = 'Buồn 2';
         r1['effect_name'] = r3;
         r1['eq'] = r2;
         r1['cmp'] = r0;
@@ -5899,11 +5899,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
 factories[932]=function(a0, a1, a2, a3, a4, a5, a6) {
 var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24,r25,r26,r27,r28,r29,r30,r31,r32,r33,r34,r35,r36,r37,r38,r39,r40,r41,r42,r43,r44,r45,r46,r47,r48,r49,r50,r51,r52,r53,r54,r55,r56,r57,r58,r59,r60,r61,r62,r63,r64,r65,r66,r67,r68,r69,r70,r71,r72,r73,r74,r75,r76,r77,r78,r79,r80,r81,r82,r83,r84,r85,r86,r87,r88,r89,r90,r91,r92,r93,r94,r95,r96,r97,r98,r99; // Environment: r3
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -5, 'freq': 500, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -5, 'freq': 500, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -3, 'freq': 7000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -3, 'freq': 7000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r1 = {};
         r1['f'] = r0;
@@ -5969,7 +5969,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['spspatial'] = r5;
         r1['bt'] = r4;
         r1['alc'] = r3;
-        r3 = '悲伤2';
+        r3 = 'Buồn 2';
         r1['effect_name'] = r3;
         r1['eq'] = r2;
         r1['cmp'] = r0;
@@ -5981,11 +5981,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
 factories[933]=function(a0, a1, a2, a3, a4, a5, a6) {
 var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24,r25,r26,r27,r28,r29,r30,r31,r32,r33,r34,r35,r36,r37,r38,r39,r40,r41,r42,r43,r44,r45,r46,r47,r48,r49,r50,r51,r52,r53,r54,r55,r56,r57,r58,r59,r60,r61,r62,r63,r64,r65,r66,r67,r68,r69,r70,r71,r72,r73,r74,r75,r76,r77,r78,r79,r80,r81,r82,r83,r84,r85,r86,r87,r88,r89,r90,r91,r92,r93,r94,r95,r96,r97,r98,r99; // Environment: r3
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -5, 'freq': 500, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -5, 'freq': 500, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -3, 'freq': 7000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -3, 'freq': 7000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r1 = {};
         r1['f'] = r0;
@@ -6051,7 +6051,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['spspatial'] = r5;
         r1['bt'] = r4;
         r1['alc'] = r3;
-        r3 = '悲伤2';
+        r3 = 'Buồn 2';
         r1['effect_name'] = r3;
         r1['eq'] = r2;
         r1['cmp'] = r0;
@@ -6063,11 +6063,11 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
 factories[934]=function(a0, a1, a2, a3, a4, a5, a6) {
 var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24,r25,r26,r27,r28,r29,r30,r31,r32,r33,r34,r35,r36,r37,r38,r39,r40,r41,r42,r43,r44,r45,r46,r47,r48,r49,r50,r51,r52,r53,r54,r55,r56,r57,r58,r59,r60,r61,r62,r63,r64,r65,r66,r67,r68,r69,r70,r71,r72,r73,r74,r75,r76,r77,r78,r79,r80,r81,r82,r83,r84,r85,r86,r87,r88,r89,r90,r91,r92,r93,r94,r95,r96,r97,r98,r99; // Environment: r3
         r0 = new Array(3);
-        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -5, 'freq': 500, 'curve': 0, 'name': '滤波器1'};
+        r1 = {'insert': 3, 'band': 1, 'q': 0.8, 'gain': -5, 'freq': 500, 'curve': 0, 'name': 'Bộ lọc 1'};
         r0[0] = r1;
-        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': '滤波器2'};
+        r1 = {'insert': 3, 'band': 2, 'q': 0.8, 'gain': -1, 'freq': 2500, 'curve': 1, 'name': 'Bộ lọc 2'};
         r0[1] = r1;
-        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -3, 'freq': 7000, 'curve': 2, 'name': '滤波器3'};
+        r1 = {'insert': 3, 'band': 3, 'q': 0.7, 'gain': -3, 'freq': 7000, 'curve': 2, 'name': 'Bộ lọc 3'};
         r0[2] = r1;
         r1 = {};
         r1['f'] = r0;
@@ -6133,7 +6133,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['spspatial'] = r5;
         r1['bt'] = r4;
         r1['alc'] = r3;
-        r3 = '悲伤2';
+         r3 = 'Buồn 2';
         r1['effect_name'] = r3;
         r1['eq'] = r2;
         r1['cmp'] = r0;
@@ -6231,7 +6231,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['flanger'] = r3;
         r1['dly'] = r2;
         r1['noise'] = r0;
-        r0 = '甜蜜2-folk';
+         r0 = 'Ngọt ngào 2-folk';
         r1['effect_name'] = r0;
         r0 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r0;
@@ -6330,7 +6330,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['flanger'] = r3;
         r1['dly'] = r2;
         r1['noise'] = r0;
-        r0 = '甜蜜2 inst';
+         r0 = 'Ngọt ngào 2 inst';
         r1['effect_name'] = r0;
         r0 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r0;
@@ -6428,7 +6428,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['flanger'] = r3;
         r1['dly'] = r2;
         r1['noise'] = r0;
-        r0 = '甜蜜2-pop';
+         r0 = 'Ngọt ngào 2-pop';
         r1['effect_name'] = r0;
         r0 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r0;
@@ -6534,7 +6534,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['flanger'] = r3;
         r1['dly'] = r2;
         r1['noise'] = r0;
-        r0 = '甜蜜2 rythm';
+         r0 = 'Ngọt ngào 2 rythm';
         r1['effect_name'] = r0;
         r0 = ['cmp', 'eq', 'bt', 'peq', 'chorus', 'flanger', 'se', 'rotate', 'spspatial', 'dly', 'rvb', 'noise', 'alc'];
         r1['order'] = r0;
@@ -6988,7 +6988,7 @@ case 34:
                 r0 = global;
                 r2 = r0.Error;
                 r1 = a1;
-                r0 = ' 缺失或不是 boolean';
+                 r0 = ' Thiếu hoặc không phải boolean';
                 r3 = r1 + r0;
                 r1 = r2.prototype;
                 r1 = Object.create(r1, {constructor: {value: r2}});
@@ -7056,7 +7056,7 @@ case 112:
                 r3 = r0.Error;
                 r1 = r3.prototype;
                 r2 = Object.create(r1, {constructor: {value: r3}});
-                r6 = 'template.eq.eqs 中存在非法数值';
+                 r6 = 'Có giá trị không hợp lệ trong template.eq.eqs';
                 r7 = r2;
                 r1 = originalConstruct(r3, [r6, r5]);
                 r1 = r1 instanceof Object ? r1 : r2;
@@ -7065,7 +7065,7 @@ case 144:
                 r2 = r0.Error;
                 r0 = _closure1_slot1;
                 r1 = r0.AEV2_EQ_GAIN_DB_SIZE;
-                r0 = 'template.eq.eqs 长度必须为 ';
+                 r0 = 'Độ dài của template.eq.eqs phải là ';
                 r6 = r0 + r1;
                 r1 = r2.prototype;
                 r1 = Object.create(r1, {constructor: {value: r2}});
@@ -7118,7 +7118,7 @@ case 67:
 case 89:
                 r3 = r2.Error;
                 r2 = r1.templateField;
-                r1 = ' 映射到 AEV2 后不是有限数值';
+                 r1 = ' sau khi ánh xạ sang AEV2 không phải là giá trị hữu hạn';
                 r6 = r2 + r1;
                 r2 = r3.prototype;
                 r2 = Object.create(r2, {constructor: {value: r3}});
@@ -7156,7 +7156,7 @@ case 53:
                 if(r5) { _fun9338_ip = 111; continue _fun9338 }
 case 75:
                 r5 = r1.Error;
-                r1 = ' 映射回模板后不是有限数值';
+                 r1 = ' sau khi ánh xạ trở lại template không phải là giá trị hữu hạn';
                 r8 = r2 + r1;
                 r2 = r5.prototype;
                 r2 = Object.create(r2, {constructor: {value: r5}});
@@ -9835,7 +9835,7 @@ case 696:
                 r4 = r2.Error;
                 r2 = _closure1_slot1;
                 r3 = r2.AEV2_EQ_GAIN_DB_SIZE;
-                r2 = 'base_extra_aev2.eq_gain_db 长度必须为 ';
+                 r2 = 'Độ dài của base_extra_aev2.eq_gain_db phải là ';
                 r16 = r2 + r3;
                 r3 = r4.prototype;
                 r3 = Object.create(r3, {constructor: {value: r4}});
@@ -9848,9 +9848,9 @@ case 742:
                 r2 = r2.Error;
                 r0 = _closure1_slot3;
                 r3 = r0.EMOFX_BASE_EXTRA_FLAT_DEFAULT_SIZE;
-                r0 = 'base_extra_flat 维度必须为 ';
+                 r0 = 'Kích thước của base_extra_flat phải là ';
                 r3 = r0 + r3;
-                r0 = '，当前为 ';
+                 r0 = ', hiện tại là ';
                 r0 = r3 + r0;
                 r16 = r0 + r1;
                 r1 = r2.prototype;
@@ -10191,11 +10191,11 @@ case 1392:
                 r7 = r0.inputs;
                 r7 = r7.base_extra_flat;
                 r9 = r7.size;
-                r7 = 'base_extra_flat 编码长度异常，期望 ';
+                 r7 = 'Độ dài mã hóa của base_extra_flat bất thường, mong đợi ';
                 r9 = r7 + r9;
                 r6 = r6.data;
                 r7 = r6.length;
-                r6 = '，实际 ';
+                 r6 = ', thực tế ';
                 r6 = r9 + r6;
                 r18 = r6 + r7;
                 r7 = r8.prototype;
@@ -10209,10 +10209,10 @@ case 1468:
                 r6 = r0.inputs;
                 r6 = r6.features;
                 r8 = r6.size;
-                r6 = 'features 编码长度异常，期望 ';
+                 r6 = 'Độ dài mã hóa của features bất thường, mong đợi ';
                 r8 = r6 + r8;
                 r6 = r4.length;
-                r4 = '，实际 ';
+                 r4 = ', thực tế ';
                 r4 = r8 + r4;
                 r18 = r4 + r6;
                 r6 = r7.prototype;
@@ -10225,7 +10225,7 @@ case 1539:
                 r7 = r5.Error;
                 r4 = r7.prototype;
                 r6 = Object.create(r4, {constructor: {value: r7}});
-                r18 = 'mel_spectrogram_32 数组中的元素必须全部为有限数值';
+                 r18 = 'Tất cả phần tử trong mảng mel_spectrogram_32 phải là giá trị hữu hạn';
                 r19 = r6;
                 r4 = originalConstruct(r7, [r18, r17]);
                 r4 = r4 instanceof Object ? r4 : r6;
@@ -10239,7 +10239,7 @@ case 1571:
 case 1596:
                 r3 = r2.length;
 case 1601:
-                r2 = 'mel_spectrogram_32 数组长度必须为 32，当前为 ';
+                 r2 = 'Độ dài của mảng mel_spectrogram_32 phải là 32, hiện tại là ';
                 r18 = r2 + r3;
                 r3 = r4.prototype;
                 r3 = Object.create(r3, {constructor: {value: r4}});
@@ -10252,12 +10252,12 @@ case 1631:
                 r4 = r2.Error;
                 r2 = _closure1_slot3;
                 r3 = r2.EMOFX_BASE_EXTRA_FLAT_DEFAULT_SIZE;
-                r2 = 'base_extra_flat 维度必须为 ';
+                 r2 = 'Kích thước của base_extra_flat phải là ';
                 r5 = r2 + r3;
                 r2 = r0.inputs;
                 r2 = r2.base_extra_flat;
                 r3 = r2.size;
-                r2 = '，当前为 ';
+                 r2 = ', hiện tại là ';
                 r2 = r5 + r2;
                 r18 = r2 + r3;
                 r3 = r4.prototype;
@@ -10271,12 +10271,12 @@ case 1709:
                 r3 = r2.Error;
                 r1 = _closure1_slot3;
                 r2 = r1.EMOFX_FEATURE_DEFAULT_SIZE;
-                r1 = 'features 维度必须为 ';
+                 r1 = 'Kích thước của features phải là ';
                 r4 = r1 + r2;
                 r1 = r0.inputs;
                 r1 = r1.features;
                 r2 = r1.size;
-                r1 = '，当前为 ';
+                 r1 = ', hiện tại là ';
                 r1 = r4 + r1;
                 r18 = r1 + r2;
                 r2 = r3.prototype;
@@ -10291,7 +10291,7 @@ case 1787:
                 r1 = r0.inputs;
                 r1 = r1.genre_idx;
                 r2 = r1.size;
-                r1 = 'genre_idx 张量大小必须为 1，当前为 ';
+                r1 = 'Kích thước tensor genre_idx phải là 1, hiện tại là ';
                 r18 = r1 + r2;
                 r2 = r3.prototype;
                 r2 = Object.create(r2, {constructor: {value: r3}});
@@ -10305,7 +10305,7 @@ case 1843:
                 r0 = r0.inputs;
                 r0 = r0.emotion_idx;
                 r1 = r0.size;
-                r0 = 'emotion_idx 张量大小必须为 1，当前为 ';
+                r0 = 'Kích thước tensor emotion_idx phải là 1, hiện tại là ';
                 r18 = r0 + r1;
                 r1 = r2.prototype;
                 r1 = Object.create(r1, {constructor: {value: r2}});
@@ -10568,7 +10568,7 @@ case 0:
                 r2 = a0;
                 r9 = a1;
                 r0 = undefined;
-                r30 = '未知曲风';
+                r30 = 'Thể loại không xác định';
                 r8 = null;
                 if(!(r8 != r9)) { _fun9452_ip = 70; continue _fun9452 }
 case 18:
@@ -11235,7 +11235,7 @@ case 24:
                 if(r7) { _fun9476_ip = 61; continue _fun9476 }
 case 41:
                 r8 = r2.push;
-                r7 = ' 必须为有限数值';
+                r7 = ' phải là giá trị hữu hạn';
                 r7 = r4 + r7;
                 r7 = r8.bind(r2)(r7);
                 _fun9476_ip = 157; continue _fun9476;
@@ -11258,14 +11258,14 @@ case 108:
                 if(!r0) { _fun9476_ip = 157; continue _fun9476 }
 case 111:
                 r1 = r2.push;
-                r0 = ' 必须 <= ';
+                r0 = ' phải <= ';
                 r0 = r4 + r0;
                 r0 = r0 + r5;
                 r0 = r1.bind(r2)(r0);
                 _fun9476_ip = 157; continue _fun9476;
 case 135:
                 r1 = r2.push;
-                r0 = ' 必须 >= ';
+                r0 = ' phải >= ';
                 r0 = r4 + r0;
                 r0 = r0 + r3;
                 r0 = r1.bind(r2)(r0);
@@ -11698,7 +11698,7 @@ case 1270:
                 r3 = r2.Error;
                 r1 = r1.mel_spectrogram_32;
                 r2 = r1.length;
-                r1 = 'mel_spectrogram_32 数组长度必须为 32，当前为 ';
+                r1 = 'Độ dài mảng mel_spectrogram_32 phải là 32, hiện tại là ';
                 r20 = r1 + r2;
                 r2 = r3.prototype;
                 r2 = Object.create(r2, {constructor: {value: r3}});
@@ -11812,7 +11812,7 @@ case 386:
                 if(r2) { _fun9480_ip = 403; continue _fun9480 }
 case 389:
                 r5 = r1.push;
-                r2 = 'key_mode 必须为非空字符串';
+                r2 = 'key_mode phải là chuỗi không rỗng';
                 r2 = r5.bind(r1)(r2);
 case 403:
                 r2 = r0.mel_spectrogram_32;
@@ -11826,7 +11826,7 @@ case 416:
                 if(r2) { _fun9480_ip = 459; continue _fun9480 }
 case 443:
                 r4 = r1.push;
-                r2 = 'mel_spectrogram_32 必须为数组';
+                r2 = 'mel_spectrogram_32 phải là mảng';
                 r2 = r4.bind(r1)(r2);
                 _fun9480_ip = 549; continue _fun9480;
 case 459:
@@ -11850,14 +11850,14 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
                 if(!r2) { _fun9480_ip = 549; continue _fun9480 }
 case 504:
                 r4 = r1.push;
-                r2 = 'mel_spectrogram_32 数组中的元素必须全部为有限数值';
+                r2 = 'Tất cả phần tử trong mảng mel_spectrogram_32 phải là giá trị hữu hạn';
                 r2 = r4.bind(r1)(r2);
                 _fun9480_ip = 549; continue _fun9480;
 case 520:
                 r2 = r1.push;
                 r0 = r0.mel_spectrogram_32;
                 r4 = r0.length;
-                r0 = 'mel_spectrogram_32 数组长度必须为 32，当前为 ';
+                r0 = 'Độ dài mảng mel_spectrogram_32 phải là 32, hiện tại là ';
                 r0 = r0 + r4;
                 r0 = r2.bind(r1)(r0);
 case 549:
@@ -12859,7 +12859,7 @@ case 56:
                 if(r8) { _fun9484_ip = 105; continue _fun9484 }
 case 78:
                 r9 = r3.push;
-                r8 = ' 必须为有限数值，实际值: ';
+                r8 = ' phải là giá trị hữu hạn, giá trị thực tế: ';
                 r8 = r6 + r8;
                 r8 = r8 + r5;
                 r8 = r9.bind(r3)(r8);
@@ -12876,7 +12876,7 @@ case 118:
                 if(r4) { _fun9484_ip = 165; continue _fun9484 }
 case 138:
                 r8 = r3.push;
-                r4 = ' 必须为整数，实际值: ';
+                r4 = ' phải là số nguyên, giá trị thực tế: ';
                 r4 = r6 + r4;
                 r4 = r4 + r5;
                 r4 = r8.bind(r3)(r4);
@@ -12915,7 +12915,7 @@ case 243:
                 r2 = r6 + r2;
                 r8 = r2 + r5;
                 r7 = r1.max;
-                r2 = ' 超出上界 ';
+                r2 = ' vượt quá giới hạn trên ';
                 r2 = r8 + r2;
                 r2 = r2 + r7;
                 r2 = r4.bind(r3)(r2);
@@ -12926,7 +12926,7 @@ case 284:
                 r4 = r6 + r4;
                 r5 = r4 + r5;
                 r4 = r1.min;
-                r1 = ' 超出下界 ';
+                r1 = ' thấp hơn giới hạn dưới ';
                 r1 = r5 + r1;
                 r1 = r1 + r4;
                 r1 = r2.bind(r3)(r1);
@@ -12958,7 +12958,7 @@ case 48:
                 r0 = ' = ';
                 r0 = r8 + r0;
                 r3 = r0 + r10;
-                r0 = ' 不是有效数字';
+                r0 = ' không phải là số hợp lệ';
                 r0 = r3 + r0;
                 r0 = r1.bind(r5)(r0);
                 r0 = false;
@@ -12985,7 +12985,7 @@ case 130:
                 r3 = 4;
                 r3 = r9.bind(r10)(r3);
                 r8 = r8 + r3;
-                r3 = ' 超出范围 [';
+                r3 = ' nằm ngoài phạm vi [';
                 r3 = r8 + r3;
                 r7 = r3 + r7;
                 r3 = ', ';
@@ -13016,7 +13016,7 @@ case 0:
 case 25:
                 r4 = new Array(1);
                 r5 = 'output.aev2';
-                r2 = ' 为 null/undefined';
+                r2 = ' là null/undefined';
                 r2 = r5 + r2;
                 r4[0] = r2;
                 r2 = {};
@@ -13034,7 +13034,7 @@ case 61:
 case 88:
                 r5 = r1.push;
                 r7 = 'output.aev2';
-                r4 = '.eq_gain_db 必须为数组';
+                r4 = '.eq_gain_db phải là mảng';
                 r4 = r7 + r4;
                 r4 = r5.bind(r1)(r4);
 case 110:
@@ -13058,11 +13058,11 @@ case 169:
                 r4 = _closure1_slot2;
                 r7 = r4.AEV2_EQ_GAIN_DB_SIZE;
                 r8 = 'output.aev2';
-                r4 = '.eq_gain_db 长度必须为 ';
+                r4 = 'Độ dài .eq_gain_db phải là ';
                 r4 = r8 + r4;
                 r8 = r4 + r7;
                 r7 = r9.length;
-                r4 = '，当前为 ';
+                r4 = ', hiện tại là ';
                 r4 = r8 + r4;
                 r4 = r4 + r7;
                 r4 = r5.bind(r1)(r4);
@@ -13239,9 +13239,9 @@ case 137:
                 if(r29) { _fun9487_ip = 220; continue _fun9487 }
 case 157:
                 r5 = r0.push;
-                r4 = 'emotion_label 中文标签映射未命中: ';
+                r4 = 'Không tìm thấy ánh xạ nhãn tiếng Trung cho emotion_label: ';
                 r7 = r4 + r7;
-                r4 = '，将尝试 emotion_mapping';
+                r4 = ', sẽ thử emotion_mapping';
                 r4 = r7 + r4;
                 r4 = r5.bind(r0)(r4);
                 r29 = undefined;
@@ -13250,7 +13250,7 @@ case 157:
 case 189:
                 r5 = r0.push;
                 r4 = r2.emotion_label;
-                r7 = 'emotion_label 必须为字符串，实际类型: ';
+                r7 = 'emotion_label phải là chuỗi, kiểu thực tế: ';
                 r4 = typeof r4;
                 r4 = r7 + r4;
                 r4 = r5.bind(r0)(r4);
@@ -13365,7 +13365,7 @@ case 673:
                 _fun9487_ip = 707; continue _fun9487;
 case 691:
                 r7 = r0.push;
-                r5 = 'key_mode 必须为非空字符串';
+                r5 = 'key_mode phải là chuỗi không rỗng';
                 r5 = r7.bind(r0)(r5);
                 r4 = undefined;
 case 707:
@@ -13386,7 +13386,7 @@ case 734:
                 if(r4) { _fun9487_ip = 784; continue _fun9487 }
 case 761:
                 r5 = r0.push;
-                r4 = 'mel_spectrogram_32 不是数组';
+                r4 = 'mel_spectrogram_32 không phải là mảng';
                 r4 = r5.bind(r0)(r4);
                 r5 = undefined;
                 r4 = false;
@@ -13429,7 +13429,7 @@ case 827:
                 _fun9487_ip = 869; continue _fun9487;
 case 851:
                 r34 = r0.push;
-                r33 = 'mel_spectrogram_32 数组中的元素必须全部为有限数值';
+                r33 = 'Các phần tử trong mảng mel_spectrogram_32 phải đều là giá trị hữu hạn';
                 r33 = r34.bind(r0)(r33);
                 r30 = undefined;
                 r6 = false;
@@ -13439,7 +13439,7 @@ case 871:
                 r34 = r0.push;
                 r33 = r2.mel_spectrogram_32;
                 r35 = r33.length;
-                r33 = 'mel_spectrogram_32 数组长度必须为 32，当前为 ';
+                r33 = 'Độ dài mảng mel_spectrogram_32 phải là 32, hiện tại là ';
                 r33 = r33 + r35;
                 r33 = r34.bind(r0)(r33);
                 r30 = undefined;
@@ -13644,7 +13644,7 @@ case 1528:
                 r0 = {};
                 r2 = {};
                 r0['sanitized'] = r2;
-                r2 = ['input 为空或非对象'];
+                 r2 = ['input rỗng hoặc không phải đối tượng'];
                 r0['issues'] = r2;
                 r0['availability'] = r1;
                 return r0;
@@ -13856,7 +13856,7 @@ case 301:
         r4 = r0.Set;
         r2 = r4.prototype;
         r3 = Object.create(r2, {constructor: {value: r4}});
-        r9 = ['正向情绪', '中性情绪', '负面情绪', '负向情绪', '伤感情绪'];
+        r9 = ['Cảm xúc tích cực', 'Cảm xúc trung tính', 'Cảm xúc tiêu cực', 'Cảm xúc tiêu cực', 'Cảm xúc u sầu'];
         r10 = r3;
         r2 = originalConstruct(r4, [r9, r8]);
         r2 = r2 instanceof Object ? r2 : r3;
@@ -13864,42 +13864,42 @@ case 301:
         r4 = r0.Set;
         r2 = r4.prototype;
         r3 = Object.create(r2, {constructor: {value: r4}});
-        r9 = ['无合适业务标签'];
+        r9 = ['Không có nhãn nghiệp vụ phù hợp'];
         r10 = r3;
         r2 = originalConstruct(r4, [r9, r8]);
         r2 = r2 instanceof Object ? r2 : r3;
         var _closure1_slot1 = r2;
         r4 = r0.Map;
         r2 = new Array(15);
-        r3 = ['狂欢', 'ecstatic'];
+        r3 = ['Cuồng nhiệt', 'ecstatic'];
         r2[0] = r3;
-        r3 = ['热血励志', 'passionate'];
+        r3 = ['Nhiệt huyết truyền cảm hứng', 'passionate'];
         r2[1] = r3;
-        r3 = ['活力', 'energetic'];
+        r3 = ['Tràn đầy năng lượng', 'energetic'];
         r2[2] = r3;
-        r3 = ['欢快', 'joyful'];
+        r3 = ['Vui tươi', 'joyful'];
         r2[3] = r3;
-        r3 = ['甜蜜', 'sweet'];
+        r3 = ['Ngọt ngào', 'sweet'];
         r2[4] = r3;
-        r3 = ['自信', 'confident'];
+        r3 = ['Tự tin', 'confident'];
         r2[5] = r3;
-        r3 = ['浪漫', 'romantic'];
+        r3 = ['Lãng mạn', 'romantic'];
         r2[6] = r3;
-        r3 = ['放松', 'relaxed'];
+        r3 = ['Thư giãn', 'relaxed'];
         r2[7] = r3;
-        r3 = ['治愈', 'healing'];
+        r3 = ['Chữa lành', 'healing'];
         r2[8] = r3;
-        r3 = ['平静', 'calm'];
+        r3 = ['Bình yên', 'calm'];
         r2[9] = r3;
-        r3 = ['思念', 'nostalgic'];
+        r3 = ['Nhớ nhung', 'nostalgic'];
         r2[10] = r3;
-        r3 = ['孤独', 'lonely'];
+        r3 = ['Cô đơn', 'lonely'];
         r2[11] = r3;
-        r3 = ['悲伤', 'sad'];
+        r3 = ['Buồn bã', 'sad'];
         r2[12] = r3;
-        r3 = ['苦情', 'bitter'];
+        r3 = ['Đau khổ', 'bitter'];
         r2[13] = r3;
-        r3 = ['抑郁', 'depressed'];
+        r3 = ['Trầm cảm', 'depressed'];
         r2[14] = r3;
         r3 = r4.prototype;
         r3 = Object.create(r3, {constructor: {value: r4}});
@@ -13910,83 +13910,83 @@ case 301:
         var _closure1_slot2 = r2;
         r3 = r0.Map;
         r0 = new Array(39);
-        r2 = ['动感', 'energetic'];
+        r2 = ['Sôi động', 'energetic'];
         r0[0] = r2;
-        r2 = ['高燃', 'passionate'];
+        r2 = ['Bùng cháy', 'passionate'];
         r0[1] = r2;
-        r2 = ['气势汹汹', 'passionate'];
+        r2 = ['hùng hổ', 'passionate'];
         r0[2] = r2;
-        r2 = ['侵略性的', 'passionate'];
+        r2 = ['mang tính công kích', 'passionate'];
         r0[3] = r2;
-        r2 = ['紧张', 'passionate'];
+        r2 = ['căng thẳng', 'passionate'];
         r0[4] = r2;
-        r2 = ['愤怒', 'passionate'];
+        r2 = ['giận dữ', 'passionate'];
         r0[5] = r2;
-        r2 = ['大气', 'passionate'];
+        r2 = ['hào sảng', 'passionate'];
         r0[6] = r2;
-        r2 = ['快乐', 'joyful'];
+        r2 = ['vui vẻ', 'joyful'];
         r0[7] = r2;
-        r2 = ['幸福', 'joyful'];
+        r2 = ['hạnh phúc', 'joyful'];
         r0[8] = r2;
-        r2 = ['轻快', 'joyful'];
+        r2 = ['nhẹ nhàng, vui tươi', 'joyful'];
         r0[9] = r2;
-        r2 = ['清新', 'joyful'];
+        r2 = ['tươi mới', 'joyful'];
         r0[10] = r2;
-        r2 = ['滑稽', 'joyful'];
+        r2 = ['hài hước', 'joyful'];
         r0[11] = r2;
-        r2 = ['阳光', 'joyful'];
+        r2 = ['tươi sáng', 'joyful'];
         r0[12] = r2;
-        r2 = ['赞美', 'joyful'];
+        r2 = ['ngợi ca', 'joyful'];
         r0[13] = r2;
-        r2 = ['抒情', 'romantic'];
+        r2 = ['trữ tình', 'romantic'];
         r0[14] = r2;
-        r2 = ['情歌', 'romantic'];
+        r2 = ['tình ca', 'romantic'];
         r0[15] = r2;
-        r2 = ['调情', 'romantic'];
+        r2 = ['tán tỉnh', 'romantic'];
         r0[16] = r2;
-        r2 = ['爱情', 'romantic'];
+        r2 = ['tình yêu', 'romantic'];
         r0[17] = r2;
-        r2 = ['风流', 'romantic'];
+        r2 = ['đa tình', 'romantic'];
         r0[18] = r2;
-        r2 = ['可爱', 'sweet'];
+        r2 = ['đáng yêu', 'sweet'];
         r0[19] = r2;
-        r2 = ['友情', 'sweet'];
+        r2 = ['tình bạn', 'sweet'];
         r0[20] = r2;
-        r2 = ['亲情', 'sweet'];
+        r2 = ['tình thân', 'sweet'];
         r0[21] = r2;
-        r2 = ['感恩', 'sweet'];
+        r2 = ['biết ơn', 'sweet'];
         r0[22] = r2;
-        r2 = ['温柔', 'sweet'];
+        r2 = ['dịu dàng', 'sweet'];
         r0[23] = r2;
-        r2 = ['正气', 'confident'];
+        r2 = ['chính khí', 'confident'];
         r0[24] = r2;
-        r2 = ['正直', 'confident'];
+        r2 = ['chính trực', 'confident'];
         r0[25] = r2;
-        r2 = ['洒脱', 'confident'];
+        r2 = ['Phóng khoáng', 'confident'];
         r0[26] = r2;
-        r2 = ['自由', 'confident'];
+        r2 = ['Tự do', 'confident'];
         r0[27] = r2;
-        r2 = ['庄严', 'confident'];
+        r2 = ['Trang nghiêm', 'confident'];
         r0[28] = r2;
-        r2 = ['自豪', 'confident'];
+        r2 = ['Tự hào', 'confident'];
         r0[29] = r2;
-        r2 = ['慵懒', 'relaxed'];
+        r2 = ['Lười biếng', 'relaxed'];
         r0[30] = r2;
-        r2 = ['平和', 'calm'];
+        r2 = ['Bình hòa', 'calm'];
         r0[31] = r2;
-        r2 = ['梦幻', 'healing'];
+        r2 = ['Mộng ảo', 'healing'];
         r0[32] = r2;
-        r2 = ['感人', 'healing'];
+        r2 = ['Cảm động', 'healing'];
         r0[33] = r2;
-        r2 = ['憧憬', 'nostalgic'];
+        r2 = ['Mong đợi', 'nostalgic'];
         r0[34] = r2;
-        r2 = ['遗憾', 'nostalgic'];
+        r2 = ['Tiếc nuối', 'nostalgic'];
         r0[35] = r2;
-        r2 = ['黑暗', 'depressed'];
+        r2 = ['Tăm tối', 'depressed'];
         r0[36] = r2;
-        r2 = ['惊悚', 'depressed'];
+        r2 = ['Rùng rợn', 'depressed'];
         r0[37] = r2;
-        r2 = ['烦躁', 'bitter'];
+        r2 = ['Bực bội', 'bitter'];
         r0[38] = r2;
         r2 = r3.prototype;
         r2 = Object.create(r2, {constructor: {value: r3}});
@@ -14033,7 +14033,7 @@ case 30:
 var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24,r25,r26,r27,r28,r29,r30,r31,r32,r33,r34,r35,r36,r37,r38,r39,r40,r41,r42,r43,r44,r45,r46,r47,r48,r49,r50,r51,r52,r53,r54,r55,r56,r57,r58,r59,r60,r61,r62,r63,r64,r65,r66,r67,r68,r69,r70,r71,r72,r73,r74,r75,r76,r77,r78,r79,r80,r81,r82,r83,r84,r85,r86,r87,r88,r89,r90,r91,r92,r93,r94,r95,r96,r97,r98,r99; // Environment: r2
             _fun9501: for(var _fun9501_ip = 0; ; ) switch(_fun9501_ip) {
 case 0:
-                r0 = '未知曲风';
+                r0 = 'Thể loại nhạc không xác định';
                 r2 = _closure1_slot2;
                 r1 = a0;
                 r1 = r2[r1];
@@ -14055,7 +14055,7 @@ case 27:
         r1 = {1000: 'pop-family', 1028: 'pop-family', 1010: 'pop-family', 1252: 'pop-family', 1005: 'pop-family', 1029: 'pop-family', 1044: 'pop-family', 1068: 'pop-family', 1138: 'pop-family', 1262: 'pop-family', 1439: 'pop-family', 79088: 'pop-family', 1003: 'folk-family', 1026: 'folk-family', 10119: 'folk-family', 1001: 'folk-family', 1077: 'folk-family', 1037: 'folk-family', 1012: 'folk-family', 1263: 'folk-family', 1071: 'folk-family', 1043: 'folk-family', 1017: 'rhythm-family', 1015: 'rhythm-family', 1008: 'rhythm-family', 1014: 'rhythm-family', 1041: 'rhythm-family', 152124: 'rhythm-family', 1049: 'rhythm-family', 1022: 'instrumental-family', 1007: 'instrumental-family', 1011: 'instrumental-family', 1006: 'instrumental-family', 1060683: 'instrumental-family'};
         r3['GENRE_TAG_ID_TO_FAMILY'] = r1;
         var _closure1_slot1 = r1;
-        r1 = {1000: '流行', 1001: '中国传统特色', 1003: '民谣', 1005: '其他', 1006: '轻音乐', 1007: '新世纪', 1008: '摇滚', 1010: '原声带', 1011: '爵士', 1012: '世界音乐', 1014: '另类/独立', 1015: '电子', 1017: '嘻哈说唱', 1022: '古典', 1026: '儿童', 1028: 'R&B', 1029: '放克', 1037: '蓝调', 1041: '金属', 1043: '雷鬼', 1044: '宗教', 1049: '实验', 1060683: '纯演奏音乐', 1068: '舞台', 1071: '拉丁音乐', 1077: '乡村', 1138: '有声音频', 1252: '二次元', 1262: '节日音乐', 1263: '世界乐器体裁', 1439: '唱作人', 10119: '国风', 79088: '慢摇DJ', 152124: '朋克'};
+        r1 = {1000: 'Pop', 1001: 'Đặc trưng truyền thống Trung Quốc', 1003: 'Dân ca', 1005: 'Khác', 1006: 'Nhạc nhẹ', 1007: 'New Age', 1008: 'Rock', 1010: 'Nhạc phim', 1011: 'Jazz', 1012: 'Nhạc thế giới', 1014: 'Alternative/Indie', 1015: 'Nhạc điện tử', 1017: 'Hip-hop/Rap', 1022: 'Cổ điển', 1026: 'Thiếu nhi', 1028: 'R&B', 1029: 'Funk', 1037: 'Blues', 1041: 'Metal', 1043: 'Reggae', 1044: 'Nhạc tôn giáo', 1049: 'Thể nghiệm', 1060683: 'Nhạc không lời', 1068: 'Nhạc sân khấu', 1071: 'Nhạc Latin', 1077: 'Nhạc đồng quê', 1138: 'Nội dung âm thanh', 1252: 'ACG', 1262: 'Nhạc lễ hội', 1263: 'Thể loại nhạc cụ thế giới', 1439: 'Ca sĩ kiêm nhạc sĩ', 10119: 'Phong cách Trung Hoa', 79088: 'DJ Slow', 152124: 'Punk'};
         r3['GENRE_TAG_ID_TO_NAME'] = r1;
         var _closure1_slot2 = r1;
         return r0;
@@ -16094,7 +16094,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r3 = 'fallback';
         r2['FALLBACK_DESCRIPTION_KEY'] = r3;
         r1 = r1.DEFAULT_EMOTION;
-        r3 = {'emotion': null, 'keyword': '每种心情都有回响', 'description': '音乐正在播放，声音的每个细节都在为你呈现', 'descriptionKey': 'fallback', 'matchLevel': 'fallback'};
+        r3 = {'emotion': null, 'keyword': 'Mỗi tâm trạng đều có tiếng vọng', 'description': 'Nhạc đang phát, từng chi tiết âm thanh đều được thể hiện cho bạn', 'descriptionKey': 'fallback', 'matchLevel': 'fallback'};
         r3['emotion'] = r1;
         r2['DEFAULT_COPYWRITING'] = r3;
         r1 = {'name': 'stereo_width', 'value': null, 'change': 0.199, 'fx_activation': 0.357, 'rank': 1, 'visual': true, 'intensity': 'medium'};
@@ -16131,24 +16131,24 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
 factories[967]=function(a0, a1, a2, a3, a4, a5, a6) {
 var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24,r25,r26,r27,r28,r29,r30,r31,r32,r33,r34,r35,r36,r37,r38,r39,r40,r41,r42,r43,r44,r45,r46,r47,r48,r49,r50,r51,r52,r53,r54,r55,r56,r57,r58,r59,r60,r61,r62,r63,r64,r65,r66,r67,r68,r69,r70,r71,r72,r73,r74,r75,r76,r77,r78,r79,r80,r81,r82,r83,r84,r85,r86,r87,r88,r89,r90,r91,r92,r93,r94,r95,r96,r97,r98,r99; // Environment: r3
         r16 = {};
-        r0 = '狂欢是迪斯科节奏';
+        r0 = 'Cuồng nhiệt là nhịp điệu disco';
         r16['keyword'] = r0;
-        r0 = {'high_freq+richness': '饱满和声交织清透高频，清晰解析力让音色充满张力，尽享迪斯科狂欢', 'loudness+richness': '厚重和声配合充沛响度增益，强劲声压带来胸腔共鸣，身体随之摇摆', 'rhythm+richness': '饱满和声紧随迪斯科节奏律动，干脆的瞬态响应敲击心口，释放狂欢力量', 'richness+space_size': '多轨和声填满宽广空间混响，饱满的声学纵深让狂欢氛围在舞池中蔓延', 'richness+stereo_width': '宽广立体声场将厚重和声推向两侧，声像张力饱满，双耳尽享派对狂欢', 'richness+vocal_1': '质感人声与多轨和声频段交融，扎实结像力让迪斯科狂欢极具感染力', 'richness+vocal_2': '厚重和声稳稳托举核心人声，中频饱满共鸣带来极致张力，快乐自然蔓延', 'richness+vocal_3': '多层和声紧密包裹质感人声，出色的频段融合让狂欢情绪直达心底', 'richness+vocal_4': '扎实和声与人声产生声学共振，力量层层叠加，热烈派对氛围瞬间点燃', 'richness+vocal_5': '澎湃和声环绕质感人声，厚实声音底盘让满腔狂欢与快乐被稳稳托起', 'high_freq+loudness_1': '清亮高频配合饱满响度，扎实声压让音浪升腾而起，狂欢心绪被瞬间点燃', 'high_freq+loudness_2': '高频泛音清晰配合平稳响度动态，迪斯科狂欢在细腻声压中尽情释放', 'high_freq+rhythm_1': '通透高频紧扣干脆节奏律动，明快瞬态响应声声入耳，让身体自动狂舞', 'high_freq+rhythm_2': '明亮高频随强力鼓点节奏跃出，精准卡点推高声浪，狂欢情绪不断翻涌', 'high_freq+rhythm_3': '清脆高频点缀重拍节奏，清晰的动态响应精准传达热忱，感官随之沸腾', 'high_freq+space_size': '鲜明高频穿透开阔空间混响，自然泛音四处漫溢，打造全景迪斯科舞池', 'high_freq+stereo_width_1': '清亮高频在立体声场极速穿梭，适度声像拉扯让狂欢张力变得更为浓烈', 'high_freq+stereo_width_2': '干净高频在宽广立体声场游走，平稳相位控制让流光音符环绕双耳', 'high_freq+vocal_1': '高频解析力让人声更具穿透力，清亮结像力助情绪冲破听觉界限', 'high_freq+vocal_2': '高频增益提亮人声穿透感，明朗声线搭配干净频段，句句饱含狂欢张力', 'high_freq+vocal_3': '通透的高频人声，饱满声音能量让快乐随音浪迸发，欢愉在空气中弥漫', 'high_freq+vocal_4': '清晰高频伴随核心人声走向高潮，自然高音延展让狂欢在旋律中升温', 'high_freq+vocal_5': '细腻高频人声展现清晰质感，扎实声音力量自然流露，唤醒狂欢细胞', 'loudness+rhythm_1': '饱满响度驱动迪斯科节奏律动，扎实声压叩击感官，狂欢情绪稳步攀升', 'loudness+rhythm_2': '充沛响度拉满节奏张力，有力的低频下潜带来胸腔共振，身体随之摇摆', 'loudness+space_size': '扎实响度填满开阔空间混响，音波震荡自然扩散，饱满狂欢气场笼罩四周', 'loudness+stereo_width': '充沛响度横贯宽广立体声场，全景环绕音浪将澎湃狂欢情绪恰如其分放大', 'loudness+vocal_1': '核心人声随饱满响度呐喊，合理的声压级带来坚实力量感，掀动全场', 'loudness+vocal_2': '质感人声配合平稳的响度增益，厚重声线极具穿透力，将狂欢尽情传达', 'loudness+vocal_3': '充足响度赋予人声扎实爆发力，胸腔共鸣声效让旋律充满炽热派对信念', 'rhythm+space_size': '强劲节奏鼓点填满广阔空间混响，清晰声学纵深让狂欢情绪自然奔涌', 'rhythm+stereo_width': '紧凑节奏在立体声场左右交替，清晰律动全方位席卷，身体被节拍掌控', 'space_size+stereo_width': '开阔空间混响叠加全景立体声场，音浪全方位自然席卷，声学气场饱满', 'space_size+vocal_1': '质感人声在宽广空间混响中回荡，雄浑延音自然扩散，将狂欢氛围拉满', 'space_size+vocal_2': '穿透人声于空间混响中发力，声学共鸣平稳奔腾，炽烈派对情绪感染全场', 'stereo_width+vocal_1': '质感人声在宽广立体声场舒展，精准声像定位让狂欢更具物理听觉冲击', 'stereo_width+vocal_2': '核心人声在宽广立体声场铺展，饱满环绕共鸣将派对热情毫无保留地传递', 'stereo_width+vocal_3': '宽阔立体声场平稳托举饱满人声，声压多维扩散，让狂欢音浪扑面而来', 'rhythm+vocal': '密集鼓点与炽烈人声交锋，律动裹挟歌声推向顶点，身体为狂欢而生'};
+        r0 = {'high_freq+richness': 'Hòa âm dày đan xen âm cao trong trẻo, độ phân giải rõ nét tạo nên âm sắc đầy sức căng, tận hưởng trọn vẹn không khí cuồng nhiệt của disco', 'loudness+richness': 'Hòa âm dày dặn kết hợp âm lượng mạnh mẽ, áp lực âm thanh đầy uy lực tạo cộng hưởng trong lồng ngực, khiến cơ thể đung đưa theo', 'rhythm+richness': 'Hòa âm phong phú cuốn theo nhịp điệu disco, phản hồi tức thời gọn gàng gõ vào lòng, giải phóng sức mạnh cuồng nhiệt', 'richness+space_size': 'Hòa âm đa lớp lấp đầy không gian vang rộng mở, chiều sâu âm học đầy đặn khiến bầu không khí cuồng nhiệt lan tỏa khắp sàn nhảy', 'richness+stereo_width': 'Trường âm thanh nổi rộng đưa hòa âm dày dặn lan sang hai bên, hình ảnh âm thanh căng tràn, để đôi tai tận hưởng trọn vẹn bữa tiệc', 'richness+vocal_1': 'Giọng hát giàu chất cảm hòa quyện với các dải hòa âm đa lớp, khả năng định vị chắc chắn khiến không khí disco cuồng nhiệt đầy sức lan tỏa', 'richness+vocal_2': 'Hòa âm dày dặn nâng đỡ vững vàng giọng hát chủ đạo, cộng hưởng trung âm đầy đặn mang đến sức căng tột độ, niềm vui tự nhiên lan tỏa', 'richness+vocal_3': 'Các lớp hòa âm ôm trọn giọng hát giàu chất cảm, sự hòa quyện dải tần xuất sắc đưa cảm xúc cuồng nhiệt thẳng đến trái tim', 'richness+vocal_4': 'Hòa âm chắc chắn cộng hưởng âm học với giọng hát, sức mạnh chồng lớp, bầu không khí tiệc tùng sôi động bùng cháy tức thì', 'richness+vocal_5': 'Hòa âm dâng trào bao quanh giọng hát giàu chất cảm, nền âm thanh dày dặn nâng đỡ trọn vẹn niềm vui và sự cuồng nhiệt', 'high_freq+loudness_1': 'Âm cao trong trẻo kết hợp âm lượng đầy đặn, áp lực âm chắc chắn khiến sóng âm dâng cao, tâm trạng cuồng nhiệt bùng cháy tức thì', 'high_freq+loudness_2': 'Âm bội cao rõ nét kết hợp dải động âm lượng ổn định, không khí disco cuồng nhiệt bung tỏa qua áp lực âm tinh tế', 'high_freq+rhythm_1': 'Âm cao thông thoáng bám sát nhịp điệu gọn gàng, phản hồi tức thời vui tươi vang rõ từng âm, khiến cơ thể tự động nhảy múa', 'high_freq+rhythm_2': 'Âm cao sáng bật lên theo nhịp trống mạnh mẽ, bắt nhịp chính xác đẩy sóng âm lên cao, cảm xúc cuồng nhiệt liên tục dâng trào', 'high_freq+rhythm_3': 'Âm cao trong trẻo điểm xuyết nhịp mạnh, phản hồi động rõ ràng truyền tải nhiệt huyết chính xác, giác quan cũng sôi sục theo', 'high_freq+space_size': 'Âm cao nổi bật xuyên qua tiếng vang không gian thoáng rộng, âm bội tự nhiên lan tỏa khắp nơi, tạo nên sàn nhảy disco toàn cảnh', 'high_freq+stereo_width_1': 'Âm cao trong trẻo lướt nhanh qua trường âm thanh nổi, độ kéo giãn hình ảnh âm thanh vừa phải khiến sức căng cuồng nhiệt thêm mãnh liệt', 'high_freq+stereo_width_2': 'Âm cao sạch sẽ lan tỏa trong trường âm thanh nổi rộng, kiểm soát pha ổn định khiến nốt nhạc lung linh vờn quanh đôi tai', 'high_freq+vocal_1': 'Độ phân giải âm cao giúp giọng hát xuyên thấu hơn, khả năng định vị trong trẻo đưa cảm xúc vượt khỏi giới hạn thính giác', 'high_freq+vocal_2': 'Tăng âm cao làm giọng hát thêm xuyên thấu, giọng ca sáng rõ kết hợp dải tần sạch sẽ, từng câu đều tràn đầy sức căng cuồng nhiệt', 'high_freq+vocal_3': 'Giọng hát ở dải cao thông thoáng, năng lượng âm thanh đầy đặn khiến niềm vui bùng nổ theo sóng âm, sự hân hoan lan tỏa trong không khí', 'high_freq+vocal_4': 'Âm cao rõ nét đồng hành cùng giọng hát chủ đạo đến cao trào, nốt cao ngân tự nhiên khiến không khí cuồng nhiệt nóng dần theo giai điệu', 'high_freq+vocal_5': 'Giọng hát ở dải cao tinh tế thể hiện chất âm rõ nét, sức mạnh âm thanh vững chắc tự nhiên bộc lộ, đánh thức những tế bào cuồng nhiệt', 'loudness+rhythm_1': 'Âm lượng đầy đặn thúc đẩy nhịp điệu disco, áp lực âm chắc chắn gõ vào giác quan, cảm xúc cuồng nhiệt tăng dần', 'loudness+rhythm_2': 'Âm lượng dồi dào đẩy sức căng nhịp điệu lên cao, âm trầm sâu mạnh mẽ tạo cộng hưởng trong lồng ngực, khiến cơ thể đung đưa theo', 'loudness+space_size': 'Âm lượng chắc chắn lấp đầy tiếng vang không gian rộng mở, sóng âm rung động và lan tỏa tự nhiên, khí thế cuồng nhiệt bao trùm xung quanh', 'loudness+stereo_width': 'Âm lượng dồi dào trải khắp trường âm thanh nổi rộng lớn, sóng âm vòm toàn cảnh khuếch đại cảm xúc cuồng nhiệt dâng trào vừa đủ', 'loudness+vocal_1': 'Giọng hát chủ đạo cất tiếng theo âm lượng đầy đặn, mức áp suất âm hợp lý mang đến sức mạnh vững chắc, khuấy động cả khán phòng', 'loudness+vocal_2': 'Giọng hát giàu chất cảm kết hợp mức tăng âm lượng ổn định, chất giọng dày dặn đầy sức xuyên thấu, truyền tải trọn vẹn không khí cuồng nhiệt', 'loudness+vocal_3': 'Âm lượng dồi dào mang đến sức bùng nổ vững chắc cho giọng hát, hiệu ứng cộng hưởng lồng ngực khiến giai điệu tràn đầy tinh thần tiệc tùng nóng bỏng', 'rhythm+space_size': 'Nhịp trống mạnh mẽ lấp đầy tiếng vang không gian rộng lớn, chiều sâu âm học rõ ràng khiến cảm xúc cuồng nhiệt tự nhiên tuôn trào', 'rhythm+stereo_width': 'Nhịp điệu dồn dập luân phiên trái phải trong trường âm thanh nổi, tiết tấu rõ ràng cuốn đi mọi hướng, cơ thể bị nhịp phách điều khiển', 'space_size+stereo_width': 'Tiếng vang không gian rộng mở kết hợp trường âm thanh nổi toàn cảnh, sóng âm tự nhiên cuốn đi mọi hướng, tạo nên khí thế âm học đầy đặn', 'space_size+vocal_1': 'Giọng hát giàu chất cảm vang vọng trong tiếng vang không gian rộng, âm ngân hùng hậu lan tỏa tự nhiên, đẩy bầu không khí cuồng nhiệt lên cao', 'space_size+vocal_2': 'Giọng hát xuyên thấu cất sức trong tiếng vang không gian, cộng hưởng âm học tuôn chảy ổn định, cảm xúc tiệc tùng mãnh liệt lan tỏa khắp nơi', 'stereo_width+vocal_1': 'Giọng hát giàu chất cảm ngân vang trong trường âm thanh nổi rộng, định vị hình ảnh âm thanh chính xác tạo tác động thính giác sống động hơn', 'stereo_width+vocal_2': 'Giọng hát chủ đạo trải rộng trong trường âm thanh nổi rộng lớn, cộng hưởng vòm đầy đặn truyền tải trọn vẹn nhiệt huyết tiệc tùng', 'stereo_width+vocal_3': 'Trường âm thanh nổi rộng nâng đỡ vững vàng giọng hát đầy đặn, áp lực âm lan tỏa đa chiều, khiến sóng âm cuồng nhiệt ập đến', 'rhythm+vocal': 'Nhịp trống dồn dập đối đáp với giọng hát nóng bỏng, tiết tấu cuốn giọng ca lên đỉnh cao, cơ thể sinh ra để cuồng nhiệt'};
         r16['dimPairs'] = r0;
         r15 = {};
-        r0 = '热血是音浪翻滚';
+        r0 = 'Nhiệt huyết là sóng âm cuộn trào';
         r15['keyword'] = r0;
-        r0 = {'high_freq+richness': '饱满和声交织清透高频，清晰解析力让音色充满张力，热血感随旋律涌现', 'loudness+richness': '厚重和声配合扎实响度，平稳有力的声压带来胸腔共鸣，情绪随之攀升', 'rhythm+richness': '饱满和声紧随节奏律动起伏，干净的瞬态响应敲击心口，释放坚定力量', 'richness+space_size': '多轨和声填满宽广空间混响，饱满的声学纵深让热血情绪从心底稳步升腾', 'richness+stereo_width': '宽广立体声场将厚重和声推向两侧，声像分布均匀，双耳被热血张力充盈', 'richness+vocal_1': '质感人声与多轨和声频段交融，结像力扎实，让每句呐喊都充满向上力量', 'richness+vocal_2': '厚重和声稳稳托举核心人声，中频共鸣饱满，让热忱在坚定的旋律中燃烧', 'richness+vocal_3': '多层和声紧密包裹质感人声，出色的频段融合让副歌情绪张力直达心底', 'richness+vocal_4': '扎实和声与核心人声产生声学共振，力量层层叠加，热血情绪自然释放', 'richness+vocal_5': '澎湃和声环绕质感人声，厚实的声音底盘让满腔热血与斗志被稳稳点燃', 'high_freq+loudness_1': '清亮高频配合饱满响度，扎实声压让音浪升腾而起，心绪被这股力量点燃', 'high_freq+loudness_2': '高频泛音清晰配合平稳响度动态，热血在细腻声压中展现出坚定力量', 'high_freq+rhythm_1': '通透高频紧扣干脆节奏律动，明快的瞬态响应声声入耳，让情绪升温', 'high_freq+rhythm_2': '明亮高频随强力节奏律动跃出，精准卡点推高声浪，热血情绪不断翻涌', 'high_freq+rhythm_3': '清脆高频点缀重拍节奏，清晰的动态响应精准传达热忱，感官随之升温', 'high_freq+space_size': '鲜明高频穿透开阔空间混响，自然泛音四处漫溢，激昂的声学氛围拉满', 'high_freq+stereo_width_1': '清亮高频在立体声场穿梭，适度的声像拉扯让情绪张力变得更为浓烈', 'high_freq+stereo_width_2': '干净高频在宽广立体声场游走，平稳相位控制让激荡锋芒在双耳展现', 'high_freq+vocal_1': '高频解析力让人声更具穿透力，清亮的结像力助情绪冲破听觉界限', 'high_freq+vocal_2': '高频增益提亮人声穿透感，明朗声线搭配干净频段，句句饱含真实张力', 'high_freq+vocal_3': '通透的高频人声，饱满的声音能量让热忱随音浪迸发，激情在空气中弥漫', 'high_freq+vocal_4': '清晰高频伴随核心人声走向高潮，自然的高音延展让热血在旋律中升温', 'high_freq+vocal_5': '高频人声展现出清晰质感，扎实的声音力量自然流露，唤醒心底热爱', 'loudness+rhythm_1': '饱满响度驱动节奏律动，扎实声压铸成重拍叩击感官，情绪随之稳步攀升', 'loudness+rhythm_2': '充沛响度拉满节奏张力，有力的低频下潜带来胸腔共振，热血随之沸腾', 'loudness+space_size': '扎实响度填满开阔空间混响，音波震荡自然扩散，饱满气场笼罩四方', 'loudness+stereo_width': '充沛响度横贯宽广立体声场，环绕音浪将澎湃情绪恰如其分地传递放大', 'loudness+vocal_1': '核心人声随饱满响度呐喊，合理的声压级带来坚实力量感，字句铿锵', 'loudness+vocal_2': '质感人声配合平稳的响度增益，厚重声线极具穿透力，将热血尽情传达', 'loudness+vocal_3': '充足响度赋予人声扎实爆发力，胸腔共鸣声效让歌词充满炽热信念', 'rhythm+space_size': '强劲节奏鼓点填满广阔空间混响，清晰声学纵深让亢奋情绪自然奔涌', 'rhythm+stereo_width': '紧凑节奏在立体声场左右交替，清晰律动全方位席卷，听觉感官被唤醒', 'rhythm+vocal': '质感人声紧扣鼓点节奏呐喊，干脆瞬态让声线与律动相融，推高激昂情绪', 'space_size+stereo_width': '开阔空间混响叠加全景立体声场，音浪全方位自然席卷，声学气场饱满', 'space_size+vocal_1': '质感人声在宽广空间混响中回荡，雄浑延音自然扩散，将激昂氛围拉满', 'space_size+vocal_2': '穿透人声于空间混响中发力，声学共鸣平稳奔腾，炽烈情绪感染全场', 'stereo_width+vocal_1': '质感人声在宽广立体声场舒展，精准声像定位让呐喊更具物理听觉冲击', 'stereo_width+vocal_2': '核心人声在宽广立体声场铺展，饱满环绕共鸣将热情毫无保留地传递', 'stereo_width+vocal_3': '宽阔立体声场平稳托举饱满人声，声压多维扩散，让炽热音浪扑面而来'};
+        r0 = {'high_freq+richness': 'Hòa âm đầy đặn đan xen âm cao trong trẻo, độ phân giải rõ nét tạo nên âm sắc đầy sức căng, nhiệt huyết trào dâng theo giai điệu', 'loudness+richness': 'Hòa âm dày dặn kết hợp âm lượng chắc chắn, áp lực âm ổn định và mạnh mẽ tạo cộng hưởng trong lồng ngực, cảm xúc cũng dâng cao', 'rhythm+richness': 'Hòa âm phong phú cuốn theo nhịp điệu lên xuống, phản hồi tức thời sạch gọn gõ vào lòng, giải phóng sức mạnh kiên định', 'richness+space_size': 'Hòa âm đa lớp lấp đầy tiếng vang không gian rộng, chiều sâu âm học đầy đặn khiến cảm xúc nhiệt huyết vững vàng dâng lên từ đáy lòng', 'richness+stereo_width': 'Trường âm thanh nổi rộng đưa hòa âm dày dặn sang hai bên, hình ảnh âm thanh phân bố đều, đôi tai tràn đầy sức căng nhiệt huyết', 'richness+vocal_1': 'Giọng hát giàu chất cảm hòa quyện với các dải hòa âm đa lớp, khả năng định vị chắc chắn khiến từng câu hô vang đều tràn đầy sức mạnh hướng lên', 'richness+vocal_2': 'Hòa âm dày dặn nâng đỡ vững vàng giọng hát chủ đạo, cộng hưởng trung âm đầy đặn khiến nhiệt huyết bùng cháy trong giai điệu kiên định', 'richness+vocal_3': 'Các lớp hòa âm ôm trọn giọng hát giàu chất cảm, sự hòa quyện dải tần xuất sắc đưa sức căng cảm xúc điệp khúc thẳng đến trái tim', 'richness+vocal_4': 'Hòa âm chắc chắn cộng hưởng âm học với giọng hát chủ đạo, sức mạnh chồng lớp, cảm xúc nhiệt huyết tự nhiên tuôn trào', 'richness+vocal_5': 'Hòa âm dâng trào bao quanh giọng hát giàu chất cảm, nền âm thanh dày dặn thổi bùng nhiệt huyết và ý chí trong lòng', 'high_freq+loudness_1': 'Âm cao trong trẻo kết hợp âm lượng đầy đặn, áp lực âm chắc chắn khiến sóng âm dâng cao, tâm trạng được nguồn sức mạnh này thắp lên', 'high_freq+loudness_2': 'Âm bội cao rõ nét kết hợp dải động âm lượng ổn định, nhiệt huyết thể hiện sức mạnh kiên định qua áp lực âm tinh tế', 'high_freq+rhythm_1': 'Âm cao thông thoáng bám sát nhịp điệu gọn gàng, phản hồi tức thời vui tươi vang rõ từng âm, khiến cảm xúc nóng dần', 'high_freq+rhythm_2': 'Âm cao sáng bật lên theo nhịp điệu mạnh mẽ, bắt nhịp chính xác đẩy sóng âm lên cao, cảm xúc nhiệt huyết liên tục dâng trào', 'high_freq+rhythm_3': 'Âm cao trong trẻo điểm xuyết nhịp mạnh, phản hồi động rõ ràng truyền tải nhiệt huyết chính xác, giác quan cũng nóng lên', 'high_freq+space_size': 'Âm cao nổi bật xuyên qua tiếng vang không gian thoáng rộng, âm bội tự nhiên lan tỏa khắp nơi, bầu không khí âm học hào hùng được đẩy lên cao', 'high_freq+stereo_width_1': 'Âm cao trong trẻo lướt qua trường âm thanh nổi, độ kéo giãn hình ảnh âm thanh vừa phải khiến sức căng cảm xúc thêm mãnh liệt', 'high_freq+stereo_width_2': 'Âm cao sạch sẽ lan tỏa trong trường âm thanh nổi rộng, kiểm soát pha ổn định thể hiện sắc bén sự sôi sục qua đôi tai', 'high_freq+vocal_1': 'Độ phân giải âm cao giúp giọng hát xuyên thấu hơn, khả năng định vị trong trẻo đưa cảm xúc vượt khỏi giới hạn thính giác', 'high_freq+vocal_2': 'Tăng âm cao làm giọng hát thêm xuyên thấu, giọng ca sáng rõ kết hợp dải tần sạch sẽ, từng câu đều tràn đầy sức căng chân thực', 'high_freq+vocal_3': 'Giọng hát ở dải cao thông thoáng, năng lượng âm thanh đầy đặn khiến nhiệt huyết bùng nổ theo sóng âm, đam mê lan tỏa trong không khí', 'high_freq+vocal_4': 'Âm cao rõ nét đồng hành cùng giọng hát chủ đạo đến cao trào, nốt cao ngân tự nhiên khiến nhiệt huyết nóng dần theo giai điệu', 'high_freq+vocal_5': 'Giọng hát dải cao thể hiện chất âm rõ nét, sức mạnh âm thanh vững chắc tự nhiên bộc lộ, đánh thức tình yêu từ đáy lòng', 'loudness+rhythm_1': 'Âm lượng đầy đặn thúc đẩy nhịp điệu, áp lực âm chắc chắn tạo nên những nhịp mạnh gõ vào giác quan, cảm xúc tăng dần ổn định', 'loudness+rhythm_2': 'Âm lượng dồi dào đẩy sức căng nhịp điệu lên cao, âm trầm sâu mạnh mẽ tạo cộng hưởng trong lồng ngực, nhiệt huyết cũng sôi sục', 'loudness+space_size': 'Âm lượng chắc chắn lấp đầy tiếng vang không gian rộng mở, sóng âm rung động và lan tỏa tự nhiên, khí thế đầy đặn bao trùm bốn phía', 'loudness+stereo_width': 'Âm lượng dồi dào trải khắp trường âm thanh nổi rộng lớn, sóng âm vòm truyền tải và khuếch đại cảm xúc dâng trào vừa đủ', 'loudness+vocal_1': 'Giọng hát chủ đạo cất tiếng theo âm lượng đầy đặn, mức áp suất âm hợp lý mang đến sức mạnh vững chắc, từng câu vang dội mạnh mẽ', 'loudness+vocal_2': 'Giọng hát giàu chất cảm kết hợp mức tăng âm lượng ổn định, chất giọng dày dặn đầy sức xuyên thấu, truyền tải trọn vẹn nhiệt huyết', 'loudness+vocal_3': 'Âm lượng dồi dào mang đến sức bùng nổ vững chắc cho giọng hát, hiệu ứng cộng hưởng lồng ngực khiến ca từ tràn đầy niềm tin nóng bỏng', 'rhythm+space_size': 'Nhịp trống mạnh mẽ lấp đầy tiếng vang không gian rộng lớn, chiều sâu âm học rõ ràng khiến cảm xúc phấn chấn tự nhiên tuôn trào', 'rhythm+stereo_width': 'Nhịp điệu dồn dập luân phiên trái phải trong trường âm thanh nổi, tiết tấu rõ ràng cuốn đi mọi hướng, đánh thức các giác quan thính giác', 'rhythm+vocal': 'Giọng hát giàu chất cảm cất tiếng theo sát nhịp trống, âm sắc tức thời gọn gàng hòa quyện giọng ca với tiết tấu, đẩy cảm xúc hào hùng lên cao', 'space_size+stereo_width': 'Tiếng vang không gian rộng mở kết hợp trường âm thanh nổi toàn cảnh, sóng âm tự nhiên cuốn đi mọi hướng, tạo nên khí thế âm học đầy đặn', 'space_size+vocal_1': 'Giọng hát giàu chất cảm vang vọng trong tiếng vang không gian rộng, âm ngân hùng hậu lan tỏa tự nhiên, đẩy bầu không khí hào hùng lên cao', 'space_size+vocal_2': 'Giọng hát xuyên thấu cất sức trong tiếng vang không gian, cộng hưởng âm học tuôn chảy ổn định, cảm xúc mãnh liệt lan tỏa khắp nơi', 'stereo_width+vocal_1': 'Giọng hát giàu chất cảm ngân vang trong trường âm thanh nổi rộng, định vị hình ảnh âm thanh chính xác khiến tiếng hô vang thêm sống động', 'stereo_width+vocal_2': 'Giọng hát chủ đạo trải rộng trong trường âm thanh nổi rộng lớn, cộng hưởng vòm đầy đặn truyền tải trọn vẹn nhiệt huyết', 'stereo_width+vocal_3': 'Trường âm thanh nổi rộng nâng đỡ vững vàng giọng hát đầy đặn, áp lực âm lan tỏa đa chiều, khiến sóng âm nóng bỏng ập đến'};
         r15['dimPairs'] = r0;
         r14 = {};
-        r0 = '活力是向上的光';
+        r0 = 'Sức sống là ánh sáng hướng lên';
         r14['keyword'] = r0;
-        r0 = {'high_freq+richness': '明快和声交织清透高频，高解析力带来灵动听感，身体随轻盈音浪摇摆', 'loudness+richness': '饱满和声配合干脆响度，扎实的动态响应带来极佳弹跳感，注入活力', 'rhythm+richness': '跃动和声紧跟轻快节奏律动，明晰的瞬态响应让人忍不住随之摇摆', 'richness+space_size': '轻快和声融入通透空间混响，明亮的声学纵深让活力情绪随节拍轻跃', 'richness+stereo_width': '灵动和声在立体声场中舒展，均匀的声像分布让活力向双耳轻快蔓延', 'richness+vocal_1': '轻快人声与灵动和声自然交融，极具弹性的频段处理引人随旋律舞动', 'richness+vocal_2': '灵动和声平稳托举清透人声，清晰中频结像让活力伴随轻快节拍流露', 'richness+vocal_3': '轻快和声环绕饱满人声上扬，鲜活的声频能量让快乐情绪随节奏跳跃', 'richness+vocal_4': '跃动和声与清透人声细腻呼应，十足的声学弹性让周身细胞随之苏醒', 'richness+vocal_5': '饱满和声包裹人声向上攀升，扎实而灵动的声音底盘让旋律充满活力', 'high_freq+loudness_1': '清脆高频配合利落响度动态，明快的声压变化让细碎音浪在耳畔跃动', 'high_freq+loudness_2': '清透高频融入轻快响度起伏，平稳且富有弹性的声压让音符如精灵跳动', 'high_freq+rhythm_1': '灵动高频精准契合轻快节奏，干脆的瞬态响应让感官随律动自然振奋', 'high_freq+rhythm_2': '明亮高频随欢快节奏律动弹跳，极佳的动态跟随让身体瞬间被节拍带动', 'high_freq+rhythm_3': '清脆高频点缀明快节奏鼓点，清晰的声学瞬态让周身充满向上跳动的力量', 'high_freq+space_size': '剔透高频在通透空间混响中折射，明亮的声学泛音让欢快氛围瞬间点燃', 'high_freq+stereo_width_1': '灵动高频在立体声场中轻快跳跃，鲜活的声像张力让活力从四面轻盈涌来', 'high_freq+stereo_width_2': '清亮高频在宽广立体声场游走，明快的声音结像让阳光般的活力洒满全场', 'high_freq+vocal_1': '高频解析力让人声清亮上扬，轻快弹韧的音色质感让内心的活力即刻迸发', 'high_freq+vocal_2': '高频增益让人声更为清透欢快，干净利落的频段处理让句句歌词鲜活跃动', 'high_freq+vocal_3': '通透的高频人声伴随旋律上扬，明快的声学能量让鲜活生命力自然绽放', 'high_freq+vocal_4': '高频人声展现出清脆明亮的质感，自然灵动声音解析让快乐在音符间跳跃', 'high_freq+vocal_5': '细腻高频提亮轻快人声，扎实的声学底色摒弃毛刺感，让声声都充满活力', 'loudness+rhythm_1': '扎实响度驱动紧凑节奏律动，干脆的动态响应让重拍落处充满踏舞冲动', 'loudness+rhythm_2': '稳健响度拉满欢快节奏张力，利落的声压控制让身体随律动自然轻摇', 'loudness+space_size': '饱满响度填满明亮空间混响，自然扩散的声压张力让身心被温暖活力包裹', 'loudness+stereo_width': '充沛响度横贯宽广立体声场，饱满的环绕动态让活力向四面八方轻快迸发', 'loudness+vocal_1': '轻快人声配合扎实响度释出，恰到好处的声压级带来明朗且充满弹性听感', 'loudness+vocal_2': '饱满人声配合平稳响度增益，干脆利落的声线极具穿透力，让活力自然绽放', 'loudness+vocal_3': '充足响度赋予人声轻快爆发力，清晰的胸腔共鸣让句句充满鲜活跳动能量', 'rhythm+space_size': '轻快节奏鼓点填满通透空间混响，明亮的声学纵深让向上活力自然蔓延', 'rhythm+stereo_width': '灵动节奏在立体声场左右交替，清晰律动全方位席卷，唤醒轻快的脚步', 'rhythm+vocal': '质感人声紧扣轻快鼓点节奏，极佳瞬态让声线与律动相融，推高向上的活力', 'space_size+stereo_width': '通透空间混响叠加全景立体声场，欢快音浪自然席卷，营造饱满向上的气场', 'space_size+vocal_1': '清透人声在明亮空间混响中回荡，轻盈延音自然扩散，将活力氛围悄然拉满', 'space_size+vocal_2': '欢快人声于空间混响中轻盈发力，平稳的声学共振让向上的情绪感染全场', 'stereo_width+vocal_1': '灵动人声在宽广立体声场舒展，精准声像定位让轻快旋律更具物理听觉弹力', 'stereo_width+vocal_2': '清透人声在宽广立体声场铺展，饱满明亮的环绕共鸣将向上的活力温柔传递', 'stereo_width+vocal_3': '宽阔立体声场平稳托举轻快人声，声响多维扩散，让鲜活跳动能量扑面而来'};
+        r0 = {'high_freq+richness': 'Hòa âm tươi vui đan xen âm cao trong trẻo, độ phân giải cao mang đến cảm giác linh hoạt, cơ thể đung đưa theo những làn sóng âm nhẹ nhàng', 'loudness+richness': 'Hòa âm đầy đặn kết hợp âm lượng gọn gàng, phản hồi động chắc chắn mang đến cảm giác nảy bật tuyệt vời, tiếp thêm sức sống', 'rhythm+richness': 'Hòa âm bừng sức sống theo sát nhịp điệu nhẹ nhàng, phản hồi tức thời rõ nét khiến người ta không khỏi đung đưa theo', 'richness+space_size': 'Hòa âm nhẹ nhàng hòa vào tiếng vang không gian trong trẻo, chiều sâu âm học tươi sáng khiến cảm xúc tràn đầy sức sống khẽ nhảy theo nhịp', 'richness+stereo_width': 'Hòa âm linh hoạt ngân vang trong trường âm thanh nổi, hình ảnh âm thanh phân bố đồng đều khiến sức sống nhẹ nhàng lan đến đôi tai', 'richness+vocal_1': 'Giọng hát nhẹ nhàng hòa quyện tự nhiên với hòa âm linh hoạt, xử lý dải tần giàu độ nảy khiến người nghe muốn nhảy múa theo giai điệu', 'richness+vocal_2': 'Hòa âm linh hoạt nâng đỡ ổn định giọng hát trong trẻo, khả năng định vị trung âm rõ ràng giúp sức sống bộc lộ theo nhịp điệu nhẹ nhàng', 'richness+vocal_3': 'Hòa âm nhẹ nhàng bao quanh giọng hát đầy đặn vút lên, năng lượng âm thanh sống động khiến niềm vui nhảy múa theo nhịp điệu', 'richness+vocal_4': 'Hòa âm bừng sức sống hòa âm tinh tế với giọng hát trong trẻo, độ đàn hồi âm học tràn đầy đánh thức từng tế bào', 'richness+vocal_5': 'Hòa âm đầy đặn bao bọc giọng hát đang vút lên, nền âm thanh chắc chắn mà linh hoạt khiến giai điệu tràn đầy sức sống', 'high_freq+loudness_1': 'Âm cao trong trẻo kết hợp dải động âm lượng gọn gàng, biến đổi áp lực âm tươi vui khiến những làn sóng âm nhỏ nhảy múa bên tai', 'high_freq+loudness_2': 'Âm cao trong trẻo hòa vào nhịp âm lượng nhẹ nhàng, áp lực âm ổn định và giàu độ đàn hồi khiến nốt nhạc nhảy nhót như tinh linh', 'high_freq+rhythm_1': 'Âm cao linh hoạt khớp chính xác với nhịp điệu nhẹ nhàng, phản hồi tức thời gọn gàng khiến giác quan tự nhiên phấn chấn theo tiết tấu', 'high_freq+rhythm_2': 'Âm cao tươi sáng bật nhảy theo nhịp điệu vui vẻ, khả năng bám theo dải động tuyệt vời khiến cơ thể lập tức hòa theo nhịp phách', 'high_freq+rhythm_3': 'Âm cao trong trẻo điểm xuyết nhịp trống tươi vui, phản hồi âm học rõ ràng khiến cơ thể tràn đầy sức mạnh hướng lên', 'high_freq+space_size': 'Âm cao trong vắt khúc xạ trong tiếng vang không gian thông thoáng, âm bội âm học tươi sáng lập tức thắp lên bầu không khí vui vẻ', 'high_freq+stereo_width_1': 'Âm cao linh hoạt nhẹ nhàng nhảy múa trong trường âm thanh nổi, sức căng hình ảnh âm thanh sống động khiến sức sống nhẹ nhàng trào đến từ khắp nơi', 'high_freq+stereo_width_2': 'Âm cao trong trẻo lan tỏa trong trường âm thanh nổi rộng lớn, khả năng định vị âm thanh tươi vui khiến sức sống như nắng tràn ngập khắp nơi', 'high_freq+vocal_1': 'Độ phân giải âm cao giúp giọng hát trong trẻo vút lên, chất âm nhẹ nhàng đàn hồi khiến sức sống nội tâm bùng nổ tức thì', 'high_freq+vocal_2': 'Tăng âm cao khiến giọng hát trong trẻo và vui tươi hơn, xử lý dải tần gọn gàng khiến từng câu ca từ sống động nhảy múa', 'high_freq+vocal_3': 'Giọng hát ở dải cao thông thoáng vút lên theo giai điệu, năng lượng âm học tươi vui khiến sức sống tràn đầy tự nhiên tỏa sáng', 'high_freq+vocal_4': 'Giọng hát dải cao thể hiện chất âm trong trẻo tươi sáng, khả năng phân giải âm thanh linh hoạt tự nhiên khiến niềm vui nhảy múa giữa các nốt nhạc', 'high_freq+vocal_5': 'Âm cao tinh tế làm sáng giọng hát nhẹ nhàng, nền âm học chắc chắn loại bỏ cảm giác chói gắt, khiến từng âm thanh đều tràn đầy sức sống', 'loudness+rhythm_1': 'Âm lượng chắc chắn thúc đẩy nhịp điệu dồn dập, phản hồi động gọn gàng khiến mỗi nhịp mạnh đều khơi dậy mong muốn nhảy múa', 'loudness+rhythm_2': 'Âm lượng ổn định đẩy sức căng nhịp điệu vui tươi lên cao, kiểm soát áp lực âm gọn gàng khiến cơ thể nhẹ nhàng lắc lư theo tiết tấu', 'loudness+space_size': 'Âm lượng đầy đặn lấp đầy tiếng vang không gian tươi sáng, sức căng áp lực âm lan tỏa tự nhiên bao bọc cơ thể bằng sức sống ấm áp', 'loudness+stereo_width': 'Âm lượng dồi dào trải khắp trường âm thanh nổi rộng lớn, dải động vòm đầy đặn khiến sức sống nhẹ nhàng bùng nổ khắp bốn phương', 'loudness+vocal_1': 'Giọng hát nhẹ nhàng cất lên cùng âm lượng chắc chắn, mức áp suất âm vừa đủ mang đến cảm giác nghe tươi sáng và đầy đàn hồi', 'loudness+vocal_2': 'Giọng hát đầy đặn kết hợp mức tăng âm lượng ổn định, chất giọng gọn gàng đầy sức xuyên thấu, khiến sức sống tự nhiên tỏa sáng', 'loudness+vocal_3': 'Âm lượng dồi dào mang đến sức bùng nổ nhẹ nhàng cho giọng hát, cộng hưởng lồng ngực rõ nét khiến từng câu tràn đầy năng lượng sống động', 'rhythm+space_size': 'Nhịp trống nhẹ nhàng lấp đầy tiếng vang không gian thông thoáng, chiều sâu âm học tươi sáng khiến sức sống hướng lên tự nhiên lan tỏa', 'rhythm+stereo_width': 'Nhịp điệu linh hoạt luân phiên trái phải trong trường âm thanh nổi, tiết tấu rõ ràng cuốn đi mọi hướng, đánh thức bước chân nhẹ nhàng', 'rhythm+vocal': 'Giọng hát giàu chất cảm bám sát nhịp trống nhẹ nhàng, phản hồi tức thời tuyệt vời hòa quyện giọng ca với tiết tấu, đẩy sức sống hướng lên cao', 'space_size+stereo_width': 'Tiếng vang không gian thông thoáng kết hợp trường âm thanh nổi toàn cảnh, sóng âm vui tươi tự nhiên cuốn đi, tạo nên khí thế đầy đặn hướng lên', 'space_size+vocal_1': 'Giọng hát trong trẻo vang vọng trong tiếng vang không gian tươi sáng, âm ngân nhẹ nhàng lan tỏa tự nhiên, khẽ khàng đẩy bầu không khí tràn đầy sức sống lên cao', 'space_size+vocal_2': 'Giọng hát vui tươi nhẹ nhàng cất sức trong tiếng vang không gian, cộng hưởng âm học ổn định khiến cảm xúc hướng lên lan tỏa khắp nơi', 'stereo_width+vocal_1': 'Giọng hát linh hoạt ngân vang trong trường âm thanh nổi rộng, định vị hình ảnh âm thanh chính xác khiến giai điệu nhẹ nhàng đàn hồi hơn', 'stereo_width+vocal_2': 'Giọng hát trong trẻo trải rộng trong trường âm thanh nổi rộng lớn, cộng hưởng vòm đầy đặn tươi sáng dịu dàng truyền tải sức sống hướng lên', 'stereo_width+vocal_3': 'Trường âm thanh nổi rộng nâng đỡ vững vàng giọng hát nhẹ nhàng, âm thanh lan tỏa đa chiều, khiến năng lượng sống động nhảy múa ập đến'};
         r14['dimPairs'] = r0;
         r13 = {};
-        r0 = '愉悦是跳跃的鼓点';
+        r0 = 'Vui vẻ là nhịp trống nhảy nhót';
         r13['keyword'] = r0;
-        r0 = {'high_freq+richness': '明快和声交织清透高频，细腻解析力让音符充满弹性，快乐在旋律间闪烁', 'loudness+richness': '饱满和声配合轻快响度起伏，平稳的动态控制让愉悦心情随声学张力蔓延', 'rhythm+richness': '跃动和声紧随轻快节奏，干脆的瞬态律动带来欢快听感，满心欢喜自然流露', 'richness+space_size': '明亮和声融入宽广空间混响，通透的声学纵深让喜悦情绪洒满每个角落', 'richness+stereo_width': '细腻和声被宽广立体声场收拢，均匀的声像分布让轻盈愉悦在双耳萦绕', 'richness+vocal_1': '轻快人声与灵动和声无缝交融，顺滑的频段处理让句句歌词满含清甜欢喜', 'richness+vocal_2': '柔美和声平稳托举清透人声，极佳的声部融合度让快乐层层渐浓，明媚温柔', 'richness+vocal_3': '明丽和声环绕饱满人声上扬，清晰的中频结像让轻快的心情忍不住溢出来', 'richness+vocal_4': '跃动和声与清透人声细腻呼应，十足的声学弹性让鲜活愉悦在耳畔持续萦绕', 'richness+vocal_5': '饱满和声轻盈包裹人声，扎实而灵动的声音底盘让满心愉悦缓缓溢出', 'high_freq+loudness_1': '清透高频配合明快响度渐变，丝滑的声压控制让跳跃音符如星光般闪烁', 'high_freq+loudness_2': '晶莹高频融入轻快响度起伏，柔和的动态张力瞬间点亮好心情，鲜活通透', 'high_freq+rhythm_1': '灵动高频精准契合轻快节奏，明快的瞬态响应让人忍不住随律动轻轻摇曳', 'high_freq+rhythm_2': '明亮高频随欢快节奏跳跃，极佳的动态跟随让快乐情绪随韵律不断上扬', 'high_freq+rhythm_3': '清脆高频点缀明快节奏鼓点，清晰的声学瞬态让鲜活愉悦自然蔓延周身', 'high_freq+space_size': '剔透高频在通透空间混响中折射，明亮的声学泛音让喜悦氛围四散蔓延', 'high_freq+stereo_width_1': '灵动高频在宽广立体声场跳跃，鲜活的声像张力让欢喜情绪轻快扑面而来', 'high_freq+stereo_width_2': '清亮高频在立体声场游走，明快的声音结像让快乐音符精准环绕双耳', 'high_freq+vocal_1': '高频解析力让人声清亮上扬，轻快弹韧的音色质感让甜润情绪直达心底', 'high_freq+vocal_2': '高频增益提亮人声穿透感，干净利落的频段处理让快乐随明媚旋律绽放', 'high_freq+vocal_3': '细腻高频映衬清透人声，灵巧的声频能量让好心情在跳脱的音符间溢满', 'high_freq+vocal_4': '清脆高频伴随核心人声上扬，自然灵动的高音延展让愉悦藏于每个音节', 'high_freq+vocal_5': '丝滑高频消解人声杂质，自然透亮的修音质感让轻快的好心情蹦跳出来', 'loudness+rhythm_1': '扎实响度驱动轻快节奏律动，平稳的动态响应让重拍落处尽是温柔欢喜', 'loudness+rhythm_2': '饱满响度拉满欢快节奏张力，利落的声压控制让活泼快乐的情绪绵延不止', 'loudness+space_size': '明丽响度填满通透空间混响，自然扩散的声压张力让轻快喜悦充盈全场', 'loudness+stereo_width': '明快响度横贯宽广立体声场，饱满的环绕动态让愉悦向四面八方温润包裹', 'loudness+vocal_1': '饱满人声配合平稳响度释出，恰到好处的声压级让好心情随歌声层层溢出', 'loudness+vocal_2': '质感人声配合明快响度增益，干脆利落的声线极具活力，让快乐尽情舒展', 'loudness+vocal_3': '充足响度赋予人声轻快爆发力，清晰的共鸣让欢快明亮的情绪自然绽放', 'rhythm+space_size': '轻快节奏鼓点填满明亮空间混响，通透的声学纵深让温柔喜悦自然漫散', 'rhythm+stereo_width': '灵动节奏在立体声场左右交替，清晰律动全方位席卷，身心随快乐轻摇', 'rhythm+vocal': '质感人声紧扣轻快节奏律动，极佳瞬态让声线与节拍相融，喜悦缓缓攀升', 'space_size+stereo_width': '通透空间混响叠加宽广立体声场，欢快音浪全方位自然席卷，氛围明媚温润', 'space_size+vocal_1': '清透人声在明亮空间混响中回荡，轻盈延音自然扩散，好心情在静静酝酿', 'space_size+vocal_2': '欢快人声于空间混响中轻盈发力，平稳的声学共振让治愈喜悦洒满四周', 'stereo_width+vocal_1': '灵动人声在宽广立体声场舒展，精准声像定位让听觉被轻快明丽温柔环抱', 'stereo_width+vocal_2': '宽阔立体声场平稳托举清透人声，饱满的声频环绕将鲜活愉悦送达心底', 'stereo_width+vocal_3': '质感人声在宽广立体声场铺展，明亮的声音结像让快乐情绪满溢于心间'};
+        r0 = {'high_freq+richness': 'Hòa âm tươi vui đan xen âm cao trong trẻo, khả năng phân giải tinh tế khiến nốt nhạc đầy đàn hồi, niềm vui lấp lánh giữa giai điệu', 'loudness+richness': 'Hòa âm đầy đặn kết hợp nhịp âm lượng nhẹ nhàng, kiểm soát dải động ổn định khiến tâm trạng vui vẻ lan tỏa theo sức căng âm học', 'rhythm+richness': 'Hòa âm bừng sức sống cuốn theo nhịp điệu nhẹ nhàng, tiết tấu tức thời gọn gàng mang đến cảm giác nghe vui tươi, niềm vui tràn đầy tự nhiên bộc lộ', 'richness+space_size': 'Hòa âm tươi sáng hòa vào tiếng vang không gian rộng, chiều sâu âm học thông thoáng khiến cảm xúc hân hoan lan tỏa khắp mọi ngóc ngách', 'richness+stereo_width': 'Hòa âm tinh tế được trường âm thanh nổi rộng lớn gom lại, hình ảnh âm thanh phân bố đồng đều khiến niềm vui nhẹ nhàng vương vấn bên tai', 'richness+vocal_1': 'Giọng hát nhẹ nhàng hòa quyện liền mạch với hòa âm linh hoạt, xử lý dải tần mượt mà khiến từng câu ca từ đong đầy niềm vui ngọt ngào', 'richness+vocal_2': 'Hòa âm dịu dàng nâng đỡ ổn định giọng hát trong trẻo, sự hòa quyện bè hát tuyệt vời khiến niềm vui đậm dần từng lớp, dịu dàng tươi sáng', 'richness+vocal_3': 'Hòa âm rạng rỡ bao quanh giọng hát đầy đặn vút lên, khả năng định vị trung âm rõ nét khiến tâm trạng nhẹ nhàng không khỏi trào dâng', 'richness+vocal_4': 'Hòa âm bừng sức sống hòa âm tinh tế với giọng hát trong trẻo, độ đàn hồi âm học tràn đầy khiến niềm vui sống động vương vấn mãi bên tai', 'richness+vocal_5': 'Hòa âm đầy đặn nhẹ nhàng bao bọc giọng hát, nền âm thanh chắc chắn mà linh hoạt khiến niềm vui trong lòng từ từ trào dâng', 'high_freq+loudness_1': 'Âm cao trong trẻo kết hợp âm lượng tươi vui tăng dần, kiểm soát áp lực âm mượt mà khiến nốt nhạc nhảy nhót lấp lánh như ánh sao', 'high_freq+loudness_2': 'Âm cao trong vắt hòa vào nhịp âm lượng nhẹ nhàng, sức căng động dịu êm lập tức thắp sáng tâm trạng, sống động và thông thoáng', 'high_freq+rhythm_1': 'Âm cao linh hoạt khớp chính xác với nhịp điệu nhẹ nhàng, phản hồi tức thời tươi vui khiến người ta không khỏi khẽ đung đưa theo tiết tấu', 'high_freq+rhythm_2': 'Âm cao tươi sáng nhảy múa theo nhịp điệu vui vẻ, khả năng bám theo dải động tuyệt vời khiến cảm xúc vui sướng liên tục dâng cao theo nhịp điệu', 'high_freq+rhythm_3': 'Âm cao trong trẻo điểm xuyết nhịp trống tươi vui, phản hồi âm học rõ ràng khiến niềm vui sống động tự nhiên lan tỏa khắp người', 'high_freq+space_size': 'Âm cao trong vắt khúc xạ trong tiếng vang không gian thông thoáng, âm bội âm học tươi sáng khiến bầu không khí vui vẻ lan tỏa khắp nơi', 'high_freq+stereo_width_1': 'Âm cao linh hoạt nhảy múa trong trường âm thanh nổi rộng lớn, sức căng hình ảnh âm thanh sống động khiến niềm vui nhẹ nhàng ùa đến', 'high_freq+stereo_width_2': 'Âm cao trong trẻo lan tỏa trong trường âm thanh nổi, khả năng định vị âm thanh tươi vui khiến nốt nhạc hạnh phúc bao quanh đôi tai chính xác', 'high_freq+vocal_1': 'Độ phân giải âm cao giúp giọng hát trong trẻo vút lên, chất âm nhẹ nhàng đàn hồi đưa cảm xúc ngọt ngào thẳng đến trái tim', 'high_freq+vocal_2': 'Tăng âm cao làm giọng hát thêm xuyên thấu, xử lý dải tần gọn gàng khiến niềm vui nở rộ theo giai điệu tươi sáng', 'high_freq+vocal_3': 'Âm cao tinh tế làm nền cho giọng hát trong trẻo, năng lượng âm thanh linh hoạt khiến tâm trạng tốt tràn đầy giữa những nốt nhạc tinh nghịch', 'high_freq+vocal_4': 'Âm cao trong trẻo đồng hành cùng giọng hát chủ đạo vút lên, âm cao tự nhiên linh hoạt khiến niềm vui ẩn chứa trong từng âm tiết', 'high_freq+vocal_5': 'Âm cao mượt mà loại bỏ tạp âm trong giọng hát, chất âm chỉnh sửa tự nhiên trong sáng khiến tâm trạng vui vẻ nhảy nhót', 'loudness+rhythm_1': 'Âm lượng chắc chắn thúc đẩy nhịp điệu nhẹ nhàng, phản hồi động ổn định khiến mỗi nhịp mạnh đều ngập tràn niềm vui dịu dàng', 'loudness+rhythm_2': 'Âm lượng đầy đặn đẩy sức căng nhịp điệu vui tươi lên cao, kiểm soát áp lực âm gọn gàng khiến cảm xúc vui vẻ sôi nổi kéo dài mãi', 'loudness+space_size': 'Âm lượng tươi sáng lấp đầy tiếng vang không gian thông thoáng, sức căng áp lực âm lan tỏa tự nhiên khiến niềm vui nhẹ nhàng tràn ngập khắp nơi', 'loudness+stereo_width': 'Âm lượng tươi vui trải khắp trường âm thanh nổi rộng lớn, dải động vòm đầy đặn dịu dàng bao bọc niềm vui từ mọi phía', 'loudness+vocal_1': 'Giọng hát đầy đặn cất lên cùng âm lượng ổn định, mức áp suất âm vừa đủ khiến tâm trạng tốt trào dâng theo tiếng hát từng lớp', 'loudness+vocal_2': 'Giọng hát giàu chất cảm kết hợp mức tăng âm lượng tươi vui, chất giọng gọn gàng đầy sức sống, để niềm vui thoải mái lan tỏa', 'loudness+vocal_3': 'Âm lượng dồi dào mang đến sức bùng nổ nhẹ nhàng cho giọng hát, cộng hưởng rõ nét khiến cảm xúc tươi sáng vui vẻ tự nhiên nở rộ', 'rhythm+space_size': 'Nhịp trống nhẹ nhàng lấp đầy tiếng vang không gian tươi sáng, chiều sâu âm học thông thoáng khiến niềm vui dịu dàng tự nhiên lan tỏa', 'rhythm+stereo_width': 'Nhịp điệu linh hoạt luân phiên trái phải trong trường âm thanh nổi, tiết tấu rõ ràng cuốn đi mọi hướng, cơ thể nhẹ nhàng lắc lư theo niềm vui', 'rhythm+vocal': 'Giọng hát giàu chất cảm bám sát nhịp điệu nhẹ nhàng, phản hồi tức thời tuyệt vời hòa quyện giọng ca với nhịp phách, niềm vui từ từ dâng cao', 'space_size+stereo_width': 'Tiếng vang không gian thông thoáng kết hợp trường âm thanh nổi rộng lớn, sóng âm vui tươi tự nhiên cuốn đi mọi hướng, bầu không khí tươi sáng dịu êm', 'space_size+vocal_1': 'Giọng hát trong trẻo vang vọng trong tiếng vang không gian tươi sáng, âm ngân nhẹ nhàng lan tỏa tự nhiên, tâm trạng tốt âm thầm ấp ủ', 'space_size+vocal_2': 'Giọng hát vui tươi nhẹ nhàng cất sức trong tiếng vang không gian, cộng hưởng âm học ổn định khiến niềm vui chữa lành lan tỏa khắp nơi', 'stereo_width+vocal_1': 'Giọng hát linh hoạt ngân vang trong trường âm thanh nổi rộng, định vị hình ảnh âm thanh chính xác dịu dàng ôm lấy thính giác bằng nét tươi vui nhẹ nhàng', 'stereo_width+vocal_2': 'Trường âm thanh nổi rộng nâng đỡ vững vàng giọng hát trong trẻo, âm thanh vòm đầy đặn truyền niềm vui sống động đến tận đáy lòng', 'stereo_width+vocal_3': 'Giọng hát giàu chất cảm trải rộng trong trường âm thanh nổi rộng, khả năng định vị âm thanh tươi sáng khiến cảm xúc hạnh phúc tràn ngập trái tim'};
         r13['dimPairs'] = r0;
         r12 = {};
         r0 = '甜蜜悬浮在粉色中';
@@ -16227,7 +16227,7 @@ var r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r2
         r1['bitter'] = r3;
         r1['depressed'] = r2;
         r1['default'] = r0;
-        r0 = {'keyword': '每种心情都有回响', 'description': '音乐正在播放，声音的每个细节都在为你呈现'};
+        r0 = {'keyword': 'Mỗi tâm trạng đều có tiếng vọng', 'description': 'Âm nhạc đang phát, từng chi tiết của âm thanh đều đang được tái hiện cho bạn'};
         r1['fallback'] = r0;
         r0 = a4;
         r0['exports'] = r1;

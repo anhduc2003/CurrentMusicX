@@ -76,7 +76,7 @@ async function publish({github, context, core, releaseDecision, upstreamRun = co
   const previous = (await github.rest.repos.getLatestRelease(repo)).data;
   const notes = (await github.rest.repos.generateReleaseNotes({...repo,tag_name:tag,target_commitish:run.head_sha,
     previous_tag_name:previous.tag_name,configuration_file_path:'.github/release.yml'})).data.body;
-  const body = `## 更新说明\n\n主线 CI 构建 #${run.run_number}，包含自上次正式版 ${previous.tag_name} 以来的改动。\n\n${notes}\n\n## Installation & Verification\n\n提交 ${run.head_sha}。[Android CI](https://github.com/${fullName}/actions/runs/${run.id}) 已通过；本次签名分发前已完成 Release 构建和 Lint。未进行真机验收，不代表正式版稳定性。\n\n使用与正式版相同的签名，可保留数据覆盖安装。切回正式版需等待后续更高版本，不支持降级覆盖。\n\nSHA-256: \`${sha256}\`\n`;
+  const body = `## Ghi chú cập nhật\n\nBản dựng CI nhánh chính #${run.run_number}, bao gồm các thay đổi kể từ bản phát hành chính thức gần nhất ${previous.tag_name}.\n\n${notes}\n\n## Cài đặt & Xác minh\n\nCommit ${run.head_sha}. [Android CI](https://github.com/${fullName}/actions/runs/${run.id}) đã vượt qua; bản dựng Release và Lint đã hoàn tất trước khi phân phối bản ký lần này. Chưa kiểm thử trên thiết bị thật, nên không đồng nghĩa với độ ổn định của bản phát hành chính thức.\n\nSử dụng cùng chữ ký với bản phát hành chính thức, có thể cài đè và giữ lại dữ liệu. Để quay lại bản phát hành chính thức, cần đợi phiên bản cao hơn tiếp theo; không hỗ trợ hạ cấp bằng cách cài đè.\n\nSHA-256: \`${sha256}\`\n`;
   const eligible = async () => {
     const decision = await releaseDecision({github, context, sha: run.head_sha});
     core.info(decision.reason);

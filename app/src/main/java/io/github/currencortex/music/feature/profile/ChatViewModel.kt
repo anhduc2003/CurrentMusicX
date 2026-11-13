@@ -79,14 +79,14 @@ class ChatViewModel(val container: AppContainer) : ViewModel() {
                             } catch (cancelled: CancellationException) { throw cancelled }
                             catch (failure: Exception) {
                                 if (!current(expected)) break
-                                state.update { it.copy(connected = false, error = "连接中断，正在重连") }
+state.update { it.copy(connected = false, error = "Kết nối bị gián đoạn, đang kết nối lại") }
                                 // Polling also covers servers/proxies that cannot keep an SSE stream open.
                                 delay(backoff); backoff = (backoff * 2).coerceAtMost(15_000)
                             }
                         }
                     } catch (cancelled: CancellationException) { throw cancelled }
                     catch (_: Exception) {
-                        if (current(expected)) state.update { it.copy(loading = false, error = "聊天记录加载失败，请重试") }
+if (current(expected)) state.update { it.copy(loading = false, error = "Không thể tải lịch sử trò chuyện, vui lòng thử lại") }
                     } finally {
                         if (current(expected)) state.update { it.copy(connected = false) }
                     }
@@ -155,7 +155,7 @@ class ChatViewModel(val container: AppContainer) : ViewModel() {
     fun upload(resolver: ContentResolver, uri: Uri) {
         if (state.value.uploading || state.value.sending) return
         val expected = session()
-        if (expected.token == null) { state.update { it.copy(actionError = "登录 CurrentMusic 后可发送图片") }; return }
+if (expected.token == null) { state.update { it.copy(actionError = "Đăng nhập CurrentMusic để gửi ảnh") }; return }
         state.update { it.copy(uploading = true, actionError = null) }
         upload = viewModelScope.launch {
             val result = appResult { repository.upload(withContext(Dispatchers.IO) { ProfileViewModel.avatarBytes(resolver, uri) }, expected) }
@@ -168,7 +168,7 @@ class ChatViewModel(val container: AppContainer) : ViewModel() {
         val value = state.value
         if (value.sending || value.uploading || (value.draft.isBlank() && value.image.isBlank() && value.attachments.isEmpty())) return
         val expected = session()
-        if (expected.token == null) { state.update { it.copy(actionError = "登录 CurrentMusic 后即可聊天") }; return }
+if (expected.token == null) { state.update { it.copy(actionError = "Đăng nhập CurrentMusic để trò chuyện") }; return }
         val mentions = chatMentions(value.draft, value.members)
         state.update { it.copy(sending = true, actionError = null) }
         action = viewModelScope.launch {
@@ -179,7 +179,7 @@ class ChatViewModel(val container: AppContainer) : ViewModel() {
                     attachments = if (it.attachments == value.attachments) emptyList() else it.attachments,
                     scrollRequest = it.scrollRequest + 1) }
                 is AppResult.Failure -> if (current(expected)) state.update { it.copy(sending = false,
-                    actionError = "${result.kind.message}，草稿已保留，请确认后重试") }
+actionError = "${result.kind.message}, bản nháp đã được giữ lại, vui lòng xác nhận rồi thử lại") }
             }
         }
     }

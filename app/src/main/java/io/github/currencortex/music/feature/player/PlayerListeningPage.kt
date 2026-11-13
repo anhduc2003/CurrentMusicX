@@ -32,7 +32,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val user = account.account?.let { ProfileUser(id = it.id, username = it.username, nickname = it.nickname,
         avatar = it.avatar, isAdmin = it.isAdmin, isSuper = it.isSuper, title = it.title) }
         ?: netease.profile?.takeIf { netease.loggedIn }?.let { ProfileUser(nickname = it.nickname, avatar = it.avatar) }
-        ?: ProfileUser(nickname = "未登录")
+        ?: ProfileUser(nickname = "Chưa đăng nhập")
     LaunchedEffect(container) {
         while (true) { container.todayListening.refresh(); delay(15_000) }
     }
@@ -42,7 +42,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()
                 .padding(end = maxWidth * .08f).testTag("player_listening_scroll"),
             onPlay, onBinding, onDialogActive) {
-            Text("我的聆听", fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+            Text("Lịch sử nghe nhạc", fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
             Card {
                 Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -57,8 +57,8 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     Row(Modifier.fillMaxWidth().clickable(role = Role.Button, onClick = onListening).testTag("player_open_listening"), horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.Bottom) {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text("今日听歌", fontSize = 14.sp)
-                            Text("本机播放时长", fontSize = 11.sp, color = colors.onSurfaceVariantSummary)
+                            Text("Nghe nhạc hôm nay", fontSize = 14.sp)
+                            Text("Thời lượng phát trên thiết bị này", fontSize = 11.sp, color = colors.onSurfaceVariantSummary)
                         }
                         Text(listeningDuration(today), Modifier.testTag("player_today_listening"),
                             fontSize = 22.sp, fontWeight = FontWeight.SemiBold)

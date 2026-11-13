@@ -62,7 +62,7 @@ internal class DockRenderersFactory(context: Context, private val meter: DockAud
                     val actual = if (mediaFormat.containsKey(android.media.MediaFormat.KEY_PCM_ENCODING))
                         mediaFormat.getInteger(android.media.MediaFormat.KEY_PCM_ENCODING) else androidx.media3.common.C.ENCODING_PCM_16BIT
                     if (actual != format.pcmEncoding) {
-                        val reason = "${outputSettings().mode.label} 已停止：[DECODER_PCM_MISMATCH] 解码器输出 ${pcmLabel(actual)}($actual)，与源声明 ${pcmLabel(format.pcmEncoding)}(${format.pcmEncoding}) 不一致"
+                        val reason = "${outputSettings().mode.label} đã dừng: [DECODER_PCM_MISMATCH] Bộ giải mã xuất ${pcmLabel(actual)}($actual), không khớp với thông tin nguồn khai báo ${pcmLabel(format.pcmEncoding)}(${format.pcmEncoding})"
                         CurrentMusicAudioDiagnostics.record(reason)
                         outputStatus(reason)
                         throw createRendererException(IllegalStateException(reason), format,

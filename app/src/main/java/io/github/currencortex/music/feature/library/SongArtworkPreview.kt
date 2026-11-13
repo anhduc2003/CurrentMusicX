@@ -38,26 +38,26 @@ import io.github.currencortex.music.ui.component.nativeui.*
     val insights = songInsightsMenuItems(vm.container.musicRepository.insights, song, playVersion)
     val more = buildList {
         if (!song.video && song.musicSource != MusicSource.LOCAL) {
-            if (download != null) add(GlassMenuItem("song_download", "下载歌曲", MusicIcons.Download, onClick = { download(song) }))
-            add(GlassMenuItem("song_share", "分享歌曲", onClick = { share(song) }))
+            if (download != null) add(GlassMenuItem("song_download", "Tải bài hát", MusicIcons.Download, onClick = { download(song) }))
+            add(GlassMenuItem("song_share", "Chia sẻ bài hát", onClick = { share(song) }))
         }
         addAll(libraryActions.filterNot { !roomRequest && it.id == like?.id })
         addAll(insights)
     }
     MusicArtworkPreview(song.cover, song.name, anchor,
         actions = buildList {
-            add(GlassMenuItem("play", if (roomRequest) "点歌" else "播放", MusicIcons.Play, enabled = playEnabled, onClick = play))
+            add(GlassMenuItem("play", if (roomRequest) "Yêu cầu bài hát" else "Phát", MusicIcons.Play, enabled = playEnabled, onClick = play))
             if (!roomRequest) {
-                like?.let { add(it.copy(id = "like", label = if (liked) "已喜欢" else "喜欢",
+                like?.let { add(it.copy(id = "like", label = if (liked) "Đã thích" else "Thích",
                     icon = if (liked) Icons.Default.Favorite else MusicIcons.Heart,
                     enabled = it.enabled && !likeBusy, keepOpen = true)) }
-                add(GlassMenuItem("queue", "加入队列", MusicIcons.List, onClick = queue))
+                add(GlassMenuItem("queue", "Thêm vào hàng đợi", MusicIcons.List, onClick = queue))
             }
         }, destinations = buildList {
-            onMultiSelect?.let { add(GlassMenuItem("playlist_multi_select", "多选", onClick = it)) }
-            if (song.artists.isNotBlank()) add(GlassMenuItem("artist", "查看歌手",
+            onMultiSelect?.let { add(GlassMenuItem("playlist_multi_select", "Chọn nhiều", onClick = it)) }
+            if (song.artists.isNotBlank()) add(GlassMenuItem("artist", "Xem ca sĩ",
                 onClick = { navigate(song.artistIds.singleOrNull()?.let { "lib/artist/$it" } ?: catalogRoute(false, song.artists)) }))
-            if (song.album.isNotBlank()) add(GlassMenuItem("album", "查看专辑", onClick = { navigate(catalogRoute(true, song.album)) }))
-            if (more.isNotEmpty()) add(GlassMenuItem("more", "更多操作", children = more))
+            if (song.album.isNotBlank()) add(GlassMenuItem("album", "Xem album", onClick = { navigate(catalogRoute(true, song.album)) }))
+            if (more.isNotEmpty()) add(GlassMenuItem("more", "Thao tác khác", children = more))
         }, onDismiss = onDismiss)
 }

@@ -77,8 +77,8 @@ class ProfileViewModel(val container: AppContainer, private val userId: Long? = 
                 val lists = async { appResult { container.primaryLibrary.playlists() } }
                 val recent = async { appResult { container.libraryRepository.recent() } }
                 val p = lists.await(); val r = recent.await()
-                val errors = listOfNotNull(if (p is AppResult.Failure) "歌单：${p.kind.message}" else null,
-                    if (r is AppResult.Failure) "最近播放：${r.kind.message}" else null)
+                val errors = listOfNotNull(if (p is AppResult.Failure) "Danh sách phát: ${p.kind.message}" else null,
+                    if (r is AppResult.Failure) "Phát gần đây: ${r.kind.message}" else null)
                 state.update { it.copy(sectionErrors = errors) }
                 ProfileDto(user, user.stat,
                     recent = (r as? AppResult.Success)?.value.orEmpty().map { it.dto() },
@@ -109,10 +109,10 @@ class ProfileViewModel(val container: AppContainer, private val userId: Long? = 
         container.authRepository.updateAccount(container.profileRepository.account(user), expected)
         dialog.value = null; avatar.value = null; reload()
     }
-    fun update(nickname: String, bio: String, visible: Boolean?) = action("资料已更新") {
+    fun update(nickname: String, bio: String, visible: Boolean?) = action("Thông tin cá nhân đã được cập nhật") {
         val expected = session(); applyUser(container.profileRepository.update(nickname, bio, visible, expected), expected)
     }
-    fun upload(resolver: ContentResolver, crop: AvatarCrop? = null) = action("头像已更新") {
+    fun upload(resolver: ContentResolver, crop: AvatarCrop? = null) = action("Ảnh đại diện đã được cập nhật") {
         val uri = avatar.value ?: return@action
         val expected = session()
         val previousAvatar = container.accountRepository.state.value.account?.avatar.orEmpty()
@@ -120,18 +120,18 @@ class ProfileViewModel(val container: AppContainer, private val userId: Long? = 
         if (expected != session()) throw ApiException(ErrorKind.Unauthorized)
         applyUser(container.profileRepository.avatar(bytes, expected, previousAvatar), expected)
     }
-    fun password(old: String, new: String) = action("密码已更新，请确认当前会话") {
+    fun password(old: String, new: String) = action("Mật khẩu đã được cập nhật, vui lòng xác nhận phiên hiện tại") {
         container.profileRepository.password(old, new); dialog.value = null
         container.authRepository.restore(container.accountRepository.server); reload()
     }
     fun passwordCode() {
         if (android.os.SystemClock.elapsedRealtime() < passwordCodeUntil.value) return
-        action("验证码已发送，5 分钟内有效") {
+        action("Mã xác minh đã được gửi, có hiệu lực trong 5 phút") {
             container.profileRepository.sendPasswordCode()
             passwordCodeUntil.value = android.os.SystemClock.elapsedRealtime() + 60_000
         }
     }
-    fun passwordWithEmailCode(code: String, new: String) = action("密码已更新，其他设备已下线") {
+    fun passwordWithEmailCode(code: String, new: String) = action("Mật khẩu đã được cập nhật, các thiết bị khác đã đăng xuất") {
         container.profileRepository.passwordWithEmailCode(code, new); dialog.value = null
         container.authRepository.validateRestored(); reload()
     }
@@ -158,8 +158,8 @@ data class DiscoverState(val query: String = "", val submitted: String = "", val
     val total: Int = 0, val stats: SquareStats = SquareStats(), val error: String? = null,
     val loaded: Boolean = false, val nextOffset: Int = 0, val hasMore: Boolean = true,
     val loadingMore: Boolean = false, val failedMore: Boolean = false)
-internal val userSortOptions = listOf("composite" to "综合", "active" to "最近活跃", "level" to "等级", "reg" to "最新注册", "reg_asc" to "最早注册", "name" to "昵称",
-    "days" to "听歌天数", "listen" to "听歌时长", "likes" to "点赞数")
+internal val userSortOptions = listOf("composite" to "Tổng hợp", "active" to "Hoạt động gần đây", "level" to "Cấp độ", "reg" to "Đăng ký mới nhất", "reg_asc" to "Đăng ký sớm nhất", "name" to "Biệt danh",
+    "days" to "Số ngày nghe nhạc", "listen" to "Thời lượng nghe nhạc", "likes" to "Số lượt thích")
 class DiscoverViewModel(val container: AppContainer) : ViewModel() {
     val state = MutableStateFlow(DiscoverState())
     val styles = MutableStateFlow(io.github.currencortex.music.feature.style.StyleCatalogState())
@@ -318,7 +318,7 @@ class DecorationViewModel(val container: AppContainer) : ViewModel() {
         saving = viewModelScope.launch {
             try { when (val r = appResult { container.profileRepository.decorate(id, expected) }) {
                 is AppResult.Success -> {
-                    message.value = if (id.isEmpty()) "已取消佩戴" else "挂件已设置"
+                    message.value = if (id.isEmpty()) "Đã tháo phụ kiện" else "Đã trang bị phụ kiện"
                     state.update { it.copy(preview = null, catalog = it.catalog?.copy(current = r.value.decoration)) }
                     reload()
                 }

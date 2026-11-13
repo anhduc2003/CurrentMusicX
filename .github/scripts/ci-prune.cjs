@@ -82,10 +82,7 @@ async function prune({github,context,core}) {
       if (error.status!==404) errors.push(old.tag+': tag deletion failed (HTTP '+(error.status||'unknown')+')');
     }
   }
-  await core.summary.addHeading('CurrentMusicX CI Release 保留策略')
-    .addRaw('保留：'+plan.keep.tag+'；清理的旧 CI Release：'+plan.remove.length+
-      '；保留 '+plan.skipped+' 个不匹配 CI 模式的 Release（正式版、草稿或其他预发布）。')
-    .write();
+await core.summary.addHeading('CurrentMusicX CI Release Chính sách lưu giữ').addRaw('Giữ lại：'+plan.keep.tag+'；CI Release cũ cần dọn dẹp：'+plan.remove.length+'；Giữ lại '+plan.skipped+' Release không khớp với chế độ CI（bản chính thức, bản nháp hoặc bản phát hành trước khác）。')    .write();
   if (errors.length) throw new Error('Some old CI release cleanup failed: '+errors.join('; '));
   return plan;
 }

@@ -20,10 +20,10 @@ internal class ListenTogetherInvitationResolver(client: OkHttpClient = OkHttpCli
     suspend fun resolve(text: String): ListenTogetherInvitation {
         ListenTogetherInvitation.parse(text)?.let { return it }
         var url = ListenTogetherInvitation.candidate(text).toHttpUrlOrNull()
-            ?: error("请粘贴有效的网易云一起听邀请链接")
+            ?: error("Vui lòng dán liên kết lời mời Nghe cùng Nhạc Vân NetEase hợp lệ")
         repeat(5) {
             check(url.scheme == shortOrigin.scheme && url.host == shortOrigin.host && url.port == shortOrigin.port &&
-                url.username.isEmpty() && url.password.isEmpty()) { "短链接跳转地址不受支持" }
+                url.username.isEmpty() && url.password.isEmpty()) { "Không hỗ trợ địa chỉ chuyển hướng của liên kết rút gọn" }
             val request = Request.Builder().url(url).header("User-Agent", "CurrentMusicX/ListenTogether").build()
             val response = suspendCancellableCoroutine<Response> { continuation ->
                 val call = http.newCall(request)
@@ -36,14 +36,14 @@ internal class ListenTogetherInvitationResolver(client: OkHttpClient = OkHttpCli
                 })
             }
             val target = response.use {
-                check(it.code in setOf(301, 302, 303, 307, 308)) { "无法展开邀请短链接，请复制完整邀请链接" }
-                url.resolve(it.header("Location") ?: error("邀请短链接缺少跳转地址"))
-                    ?: error("邀请短链接跳转地址无效")
+                check(it.code in setOf(301, 302, 303, 307, 308)) { "Không thể mở rộng liên kết mời rút gọn, vui lòng sao chép liên kết mời đầy đủ" }
+                url.resolve(it.header("Location") ?: error("Liên kết mời rút gọn thiếu địa chỉ chuyển hướng"))
+                    ?: error("Địa chỉ chuyển hướng của liên kết mời rút gọn không hợp lệ")
             }
             if (target.scheme == "https" && target.username.isEmpty() && target.password.isEmpty())
                 ListenTogetherInvitation.parse(target.toString())?.let { return it }
             url = target
         }
-        error("邀请短链接跳转次数过多")
+        error("Số lần chuyển hướng liên kết mời rút gọn quá nhiều")
     }
 }

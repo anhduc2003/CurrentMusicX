@@ -10,11 +10,11 @@ class UpdateProxy(endpoint: String = ENDPOINT) {
     private val base = endpoint.toHttpUrlOrNull()?.takeIf { it.toString() in endpoints }
     val configured: Boolean get() = base != null
     fun assetUrl(official: HttpUrl): String {
-        check(configured) { "专用镜像尚未配置" }
+        check(configured) { "Chưa cấu hình mirror chuyên dụng" }
         require(official.scheme == "https" && official.host == "github.com" && official.port == 443 &&
             official.username.isEmpty() && official.password.isEmpty() &&
             official.encodedPath.startsWith("/bileizhen/CurrentMusicX/releases/download/") &&
-            official.query == null && official.fragment == null) { "更新来源不匹配" }
+            official.query == null && official.fragment == null) { "Nguồn cập nhật không khớp" }
         return base.toString()
     }
     companion object {

@@ -17,7 +17,7 @@ data class SmartTuningState(
     val songId: Long? = null,
     val analysis: NeteaseSongAnalysis? = null,
     val loading: Boolean = false,
-    val message: String = "智能调音已关闭，使用手动均衡器",
+    val message: String = "Điều chỉnh âm thanh thông minh đã tắt, sử dụng bộ cân bằng thủ công",
     val gains: List<Int>? = null,
     val active: Boolean = false,
 )
@@ -72,10 +72,10 @@ class SmartTuningController(
                 if (enabled) manualPreview.value = null
                 mutableState.value = when {
                     !enabled -> SmartTuningState(songId = target?.id)
-                    target == null -> SmartTuningState(message = "开始播放网易云歌曲后自动分析")
+                    target == null -> SmartTuningState(message = "Bắt đầu phát bài hát NetEase để tự động phân tích")
                     target.source != MusicSource.NETEASE || target.video || target.id <= 0 ->
-                        SmartTuningState(songId = target.id, message = "此音源暂不支持网易云分析，使用手动均衡器")
-                    else -> SmartTuningState(songId = target.id, loading = true, message = "正在获取网易云歌曲分析")
+                        SmartTuningState(songId = target.id, message = "Nguồn này hiện chưa hỗ trợ phân tích NetEase, sử dụng bộ cân bằng thủ công")
+                    else -> SmartTuningState(songId = target.id, loading = true, message = "Đang tải phân tích bài hát NetEase")
                 }
                 if (!enabled || target == null || target.source != MusicSource.NETEASE || target.video || target.id <= 0) return@collect
                 // Do not wait for a cancelled transport: a late old request cannot delay the next track.
@@ -86,8 +86,8 @@ class SmartTuningController(
                     val valid = analysis?.takeIf { it.songId == target.id }
                     val gains = valid?.let(::localSmartCurve)
                     mutableState.value = SmartTuningState(target.id, valid, message =
-                        if (gains != null) "网易云歌曲分析 · 本机智能调音"
-                        else "未取得可用分析，使用手动均衡器", gains = gains, active = gains != null)
+                        if (gains != null) "Phân tích bài hát NetEase · Điều chỉnh âm thanh thông minh trên thiết bị này"
+                        else "Không tìm thấy phân tích phù hợp, sử dụng bộ cân bằng thủ công", gains = gains, active = gains != null)
                 }
             }
     }

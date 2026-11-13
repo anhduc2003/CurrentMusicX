@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 仅预览，不修改 Issue 或 PR
+        description: Chỉ xem trước, không sửa đổi Issue hoặc PR
         type: boolean
         default: true
 permissions:

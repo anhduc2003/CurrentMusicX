@@ -26,7 +26,7 @@ class LocalLyricsProvider(private val context: Context) {
         val name = displayName(uri)
         // A loose .lrc beside the audio is the common "local lyrics" shape; prefer it over tags.
         sidecarLyricsDocument(uri, name)?.let {
-            return@withContext SavedLyrics(it, LyricsOrigin("本地歌词文件", "local", song.localUri))
+            return@withContext SavedLyrics(it, LyricsOrigin("Tệp lời bài hát cục bộ", "local", song.localUri))
         }
         val candidates = try {
             val resolver = context.contentResolver
@@ -69,7 +69,7 @@ class LocalLyricsProvider(private val context: Context) {
         catch (e: LinkageError) { throw EmbeddedLyricsReadException(e) }
         ensureActive()
         decodeEmbeddedLyricsCandidates(candidates, song.durationMs) { ensureActive() }?.let {
-            SavedLyrics(it, LyricsOrigin("本地内嵌歌词", "local", song.localUri))
+            SavedLyrics(it, LyricsOrigin("Lời bài hát nhúng cục bộ", "local", song.localUri))
         }
     }
 

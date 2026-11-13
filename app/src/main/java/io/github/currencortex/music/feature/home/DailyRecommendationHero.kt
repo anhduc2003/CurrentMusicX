@@ -67,19 +67,19 @@ import kotlinx.coroutines.launch
     val requesting = selected?.let { room?.pending?.invoke(it.id) } == true
     val canPlay = selected != null && !requesting
     val primaryLabel = when {
-        requesting -> "正在提交点歌"
-        room != null -> "为房间点歌"
-        sameSong && playback.showPause -> "暂停推荐歌曲"
-        else -> "播放推荐歌曲"
+        requesting -> "Đang gửi yêu cầu bài hát"
+        room != null -> "Yêu cầu bài hát cho phòng"
+        sameSong && playback.showPause -> "Tạm dừng bài hát được đề xuất"
+        else -> "Phát bài hát được đề xuất"
     }
     Column(modifier.fillMaxWidth().testTag("home_daily_hero")) {
-        SettingsListHeader("每日推荐") {
-            GlassActionButton("全部", onOpen, Modifier.testTag("open_daily"), fillWidth = false, minHeight = 36.dp)
+         SettingsListHeader("Đề xuất hằng ngày") {
+             GlassActionButton("Tất cả", onOpen, Modifier.testTag("open_daily"), fillWidth = false, minHeight = 36.dp)
         }
         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(listOfNotNull(dateLabel.takeIf(String::isNotBlank),
-                    if (loading) "更新中" else if (songs.isNotEmpty()) "${songs.size} 首${if (discovery) "新歌推荐" else "为你精选"}" else null).joinToString(" · "),
+                     if (loading) "Đang cập nhật" else if (songs.isNotEmpty()) "${songs.size} bài${if (discovery) "Đề xuất nhạc mới" else "Được chọn cho bạn"}" else null).joinToString(" · "),
                     fontSize = 11.sp, color = colors.onSurface.copy(alpha = .48f))
             }
         }
@@ -101,21 +101,21 @@ import kotlinx.coroutines.launch
                 }
                 if (sameSong && playback.error != null && room == null) Text(playback.error,
                     Modifier.fillMaxWidth().padding(top = 8.dp), fontSize = 12.sp, textAlign = TextAlign.Center, color = colors.error)
-                if (error != null) MusicTextAction("推荐更新失败，点击重试", onRetry, Modifier.testTag("home_daily_retry"), !loading)
+                 if (error != null) MusicTextAction("Cập nhật đề xuất thất bại, nhấn để thử lại", onRetry, Modifier.testTag("home_daily_retry"), !loading)
             }
             loading -> LoadingRecommendationHero()
             else -> Column(Modifier.fillMaxWidth().padding(vertical = 28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(MusicIcons.List, null, Modifier.size(34.dp), tint = colors.primary.copy(alpha = .55f))
-                Text(if (error != null) "推荐暂时没加载出来" else "今日推荐还没有内容", fontSize = 16.sp)
-                Text(error ?: if (discovery) "连接网易云，发现适合你的音乐" else "稍后刷新，再来听点新歌",
+                 Text(if (error != null) "Chưa tải được đề xuất" else "Hôm nay chưa có đề xuất nào", fontSize = 16.sp)
+                 Text(error ?: if (discovery) "Kết nối với Nhạc Vân NetEase để khám phá nhạc phù hợp với bạn" else "Làm mới sau rồi quay lại nghe nhạc mới nhé",
                     Modifier.padding(horizontal = 12.dp), fontSize = 12.sp, textAlign = TextAlign.Center,
                     color = colors.onSurface.copy(alpha = .55f))
-                MusicTextAction(if (discovery && error == null) "连接网易云 ›" else "重新加载",
+                 MusicTextAction(if (discovery && error == null) "Kết nối với Nhạc Vân NetEase ›" else "Tải lại",
                     if (discovery && error == null) onConnect else onRetry, Modifier.testTag("home_daily_retry"))
             }
         }
-        if (discovery && songs.isNotEmpty()) MusicTextAction("连接网易云，获取你的专属推荐 ›", onConnect,
+         if (discovery && songs.isNotEmpty()) MusicTextAction("Kết nối với Nhạc Vân NetEase để nhận đề xuất dành riêng cho bạn ›", onConnect,
             Modifier.align(Alignment.CenterHorizontally).testTag("home_connect_netease"))
     }
 }
@@ -123,7 +123,7 @@ import kotlinx.coroutines.launch
 @Composable private fun LoadingRecommendationHero() {
     MusicPlaceholderScope {
         Column(Modifier.fillMaxWidth().testTag("home_loading").clearAndSetSemantics {
-            contentDescription = "正在加载每日推荐"
+             contentDescription = "Đang tải đề xuất hằng ngày"
             progressBarRangeInfo = ProgressBarRangeInfo.Indeterminate
         }, horizontalAlignment = Alignment.CenterHorizontally) {
             BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -187,10 +187,10 @@ import kotlinx.coroutines.launch
     val accent = MiuixTheme.colorScheme.primary
     BoxWithConstraints(Modifier.fillMaxWidth().testTag("home_daily_deck")
         .semantics {
-            stateDescription = "第 ${selected + 1} 首，共 ${songs.size} 首"
+             stateDescription = "Bài ${selected + 1} trên tổng số ${songs.size}"
             customActions = listOf(
-                CustomAccessibilityAction("上一首推荐") { if (songs.size > 1) { onSelect(Math.floorMod(selected - 1, songs.size)); true } else false },
-                CustomAccessibilityAction("下一首推荐") { if (songs.size > 1) { onSelect((selected + 1) % songs.size); true } else false })
+                 CustomAccessibilityAction("Đề xuất trước") { if (songs.size > 1) { onSelect(Math.floorMod(selected - 1, songs.size)); true } else false },
+                 CustomAccessibilityAction("Đề xuất tiếp theo") { if (songs.size > 1) { onSelect((selected + 1) % songs.size); true } else false })
         }, contentAlignment = Alignment.Center) {
         val coverSize = (maxWidth / 2.38f).coerceIn(128.dp, 184.dp)
         val gestureDistance = with(density) { (coverSize * .65f).toPx() }
@@ -262,7 +262,7 @@ import kotlinx.coroutines.launch
                     val artwork = Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp))
                         .testTag("home_daily_cover_${songs[index].id}").semantics { contentDescription = songs[index].name }
                         .clickable(enabled = index != selected || canPlay, role = Role.Button,
-                            onClickLabel = if (index == selected) playLabel else "浏览${songs[index].name}") {
+                             onClickLabel = if (index == selected) playLabel else "Duyệt ${songs[index].name}") {
                             if (index == selected) onPlay() else onSelect(index)
                         }
                     DeckArtwork(songs[index].cover, artwork)

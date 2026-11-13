@@ -149,7 +149,7 @@ class PlayerViewModel(internal val container: AppContainer) : ViewModel() {
                         try {
                             when (val result = appResult { netease.heartList(id, playlistId) }) {
                                 is AppResult.Success -> if (epoch == actionEpoch && state.value.mode == PlayerMode.LOCAL) player.queue.appendHeart(result.value.songs, playlistId)
-                                is AppResult.Failure -> if (epoch == actionEpoch) _actions.update { it.copy(error = "心动推荐：${result.kind.message}") }
+                                is AppResult.Failure -> if (epoch == actionEpoch) _actions.update { it.copy(error = "Đề xuất theo tâm trạng: ${result.kind.message}") }
                             }
                         } finally { _heartLoading.value = false }
                     }
@@ -318,7 +318,7 @@ class PlayerViewModel(internal val container: AppContainer) : ViewModel() {
                 state.copy(latest = state.latest.updated(), hot = state.hot.updated(),
                     replies = state.replies.mapValues { (_, replies) -> replies.copy(comments = replies.comments.updated()) },
                     busy = state.busy - comment.id, actionError = (result as? AppResult.Failure)?.let {
-                        if (it.kind in setOf(ErrorKind.Timeout, ErrorKind.Network, ErrorKind.Server)) "操作结果未确认，请刷新后核对" else it.message
+                        if (it.kind in setOf(ErrorKind.Timeout, ErrorKind.Network, ErrorKind.Server)) "Chưa xác nhận kết quả thao tác, vui lòng làm mới để kiểm tra" else it.message
                     })
             }
             if (delete && result is AppResult.Success) loadComments()
@@ -341,13 +341,13 @@ class PlayerViewModel(internal val container: AppContainer) : ViewModel() {
             if (epoch != commentsEpoch) return@launch
             when (result) {
                 is AppResult.Success -> {
-                    commentComposer.value = PlayerCommentComposer(message = "评论已发送")
+                    commentComposer.value = PlayerCommentComposer(message = "Đã gửi bình luận")
                     commentsJob?.cancel(); _comments.update { it.copy(loading = false, sort = CommentSort.LATEST) }; loadComments()
                 }
                 is AppResult.Failure -> commentComposer.update { it.copy(sending = false, error =
                     if (result.kind in setOf(ErrorKind.Timeout, ErrorKind.Network, ErrorKind.Server))
-                        "发送结果未确认，请先刷新评论核对后再重试"
-                    else "发送失败：${result.kind.message}") }
+                        "Chưa xác nhận kết quả gửi, vui lòng làm mới bình luận để kiểm tra trước khi thử lại"
+                    else "Gửi thất bại: ${result.kind.message}") }
             }
         }
     }
@@ -368,7 +368,7 @@ class PlayerViewModel(internal val container: AppContainer) : ViewModel() {
     // Select immediately; recommendations fill the queue later or restore the previous mode on failure.
     fun setPlaybackMode(mode: PlaybackMode) {
         if (together.state.value.active) { together.setQueueMode(mode); return }
-        if (state.value.mode != PlayerMode.LOCAL) { _actions.update { it.copy(error = "请先退出一起听") }; return }
+        if (state.value.mode != PlayerMode.LOCAL) { _actions.update { it.copy(error = "Vui lòng thoát chế độ Nghe cùng nhau trước") }; return }
         if (mode != PlaybackMode.HEART) {
             heartStartRevision++
             heartStartJob?.cancel()

@@ -1,128 +1,128 @@
-# 网易云原生 USB 独占输出适配
+# Bộ điều hợp đầu ra USB độc quyền nguyên bản của Nhạc Vân NetEase
 
-## 来源和边界
+## Nguồn và phạm vi
 
-实际提取自用户 PLR110 的 `com.netease.cloudmusic` 9.6.15 / 9006015，arm64-v8a。
-手机与本地 base.apk SHA-256 均为
+Được trích xuất trực tiếp từ bản 9.6.15 / 9006015 của `com.netease.cloudmusic` trên thiết bị PLR110 của người dùng, arm64-v8a.
+SHA-256 của điện thoại và tệp base.apk cục bộ đều là
 `e2b52565f3ca037277ba9850d61750d28102c03abba02219b9839f0136ed06c9`。
-原 APK 留在临时分析目录，不随项目提交。应用只内置未经修改的
-`libncmusbaudio.so`，SHA-256 为
+APK gốc được giữ trong thư mục phân tích tạm thời, không được đưa vào dự án. Ứng dụng chỉ tích hợp
+`libncmusbaudio.so` chưa chỉnh sửa, có SHA-256 là
 `150daa62df3b2f5a9b9bb5d54a3108e90495e50853c4b5ac7df3f63137f70a7a`。
-原驱动归网易及其组件作者所有，适配不表示网易授权或背书。
+Trình điều khiển gốc thuộc sở hữu của NetEase và tác giả các thành phần; việc điều chỉnh không có nghĩa là NetEase cấp phép hoặc xác nhận.
 
-同包的 `libc++_shared.so` 与项目已内置音效运行库哈希一致：
+Hash của `libc++_shared.so` trong cùng gói trùng khớp với thư viện thời gian chạy hiệu ứng âm thanh đã tích hợp trong dự án:
 `3e6d529147ffd66bd31fab85c8902b526abd1c06e43554ce64b97519e255e4b3`。
-新 JNI 适配器单独链接此共享运行库，原 Oboe 后端继续使用原来的静态运行库。
-启动前校验驱动摘要及全部必需的导出符号；不能兼容其他版本的任意替换库。
+Bộ điều hợp JNI mới được liên kết riêng với thư viện thời gian chạy dùng chung này; backend Oboe gốc tiếp tục dùng thư viện thời gian chạy tĩnh ban đầu.
+Trước khi khởi chạy, xác minh bản tóm tắt của trình điều khiển và tất cả ký hiệu xuất bắt buộc; không thể tương thích với các thư viện thay thế tùy ý thuộc phiên bản khác.
 
-这是独立 USB Host 路径，不调用 Android MixerAttributes，不加载网易云完整播放器、
-FFmpeg、账号模块或网络接口，不绕过签名、登录、付费授权或设备访问授权。
-它与现有严格 Android Bit-perfect 模式并列。
+Đây là đường dẫn USB Host độc lập, không gọi Android MixerAttributes, không tải toàn bộ trình phát của Nhạc Vân NetEase,
+FFmpeg, mô-đun tài khoản hoặc giao diện mạng; không né tránh xác minh chữ ký, đăng nhập, cấp phép trả phí hoặc quyền truy cập thiết bị.
+Chế độ này hoạt động song song với chế độ Android Bit-perfect nghiêm ngặt hiện có.
 
-## 静态逆向证据
+## Bằng chứng phân tích tĩnh
 
-最初的 9.6.15 32 位参考包中，`im0.b.l(UsbDevice)` 先暂停播放器，再调用
-`UsbManager.openDevice()`，把 `getFileDescriptor()` 交给
-`NCMNativeAudioPlayer._useUSBDevice(int)` 并设置设备类型。
-最终实现采用手机实际安装的 arm64 原生库，重新核对其接口：
+Trong gói tham chiếu 32 bit 9.6.15 ban đầu, `im0.b.l(UsbDevice)` tạm dừng trình phát trước, sau đó gọi
+`UsbManager.openDevice()`, chuyển `getFileDescriptor()` cho
+`NCMNativeAudioPlayer._useUSBDevice(int)` và thiết lập loại thiết bị.
+Bản triển khai cuối cùng sử dụng thư viện native arm64 thực tế được cài trên điện thoại và kiểm tra lại giao diện của thư viện:
 
-| arm64 函数 | 地址 | 观察与适配 |
+| Hàm arm64 | Địa chỉ | Quan sát và điều chỉnh |
 | --- | --- | --- |
-| `DeviceManager::CreateDevice(int)` | `0x338ac` | 以授权 FD 包装设备；返回非平凡的 `shared_ptr<AudioDevice>`，保留原始析构器 |
-| `AudioDeviceImpl::IsSupportAudioFormat` | `0x22be8` | 跳过位深 24 的候选；整数 16/32 以原生枚举 1/2 查询 |
-| `AudioDeviceImpl::SelectAudioFormat` | `0x23314` | claim 接口、选 alternate setting、执行 UAC 采样率控制；ring 至少 512 KiB |
-| `AudioDeviceImpl::Push` | `0x28428` | 布尔返回；ring 溢出仍可能返回成功，需要适配层实施背压 |
-| `AudioDeviceImpl::Start` | `0x28a50` | 清空 ring 并启用原驱动启动淡入；不能当作严格逐位输出 |
-| `AudioDeviceImpl::GetXferStatus` | `0x27518` | 查询传输错误；失败停止 |
-| `AudioDeviceImpl::GetLeftDataTime` | `0x2898c` | 队列时长估计，毫秒精度；不是 DAC 硬件时间戳 |
+| `DeviceManager::CreateDevice(int)` | `0x338ac` | Bọc thiết bị bằng FD đã được cấp quyền; trả về `shared_ptr<AudioDevice>` không tầm thường, giữ lại hàm hủy ban đầu |
+| `AudioDeviceImpl::IsSupportAudioFormat` | `0x22be8` | Bỏ qua ứng viên có độ sâu bit 24; truy vấn số nguyên 16/32 bằng enum gốc 1/2 |
+| `AudioDeviceImpl::SelectAudioFormat` | `0x23314` | claim giao diện, chọn alternate setting, thực hiện điều khiển tần số lấy mẫu UAC; ring tối thiểu 512 KiB |
+| `AudioDeviceImpl::Push` | `0x28428` | Trả về boolean; ring tràn vẫn có thể trả về thành công, vì vậy lớp điều hợp cần thực hiện kiểm soát áp lực ngược |
+| `AudioDeviceImpl::Start` | `0x28a50` | Xóa ring và bật hiệu ứng tăng âm lượng khi khởi động của trình điều khiển gốc; không thể xem đây là đầu ra nghiêm ngặt từng bit |
+| `AudioDeviceImpl::GetXferStatus` | `0x27518` | Truy vấn lỗi truyền; dừng khi thất bại |
+| `AudioDeviceImpl::GetLeftDataTime` | `0x2898c` | Ước tính thời lượng hàng đợi, độ chính xác mili giây; không phải dấu thời gian phần cứng DAC |
 
-`AudioFormat` 的 ABI 为 12 字节：channel/bit 各一字节、两字节保留、32 位采样率、
-32 位采样格式。arm64 按两个通用寄存器传递；代码有大小及字段偏移静态断言。
-通过导出函数适配，不修改二进制、不使用对象私有字段偏移。
+ABI của `AudioFormat` dài 12 byte: channel/bit mỗi trường một byte, hai byte dự phòng, tần số lấy mẫu 32 bit,
+định dạng lấy mẫu 32 bit. Trên arm64, dữ liệu được truyền qua hai thanh ghi đa dụng; mã có các khẳng định tĩnh về kích thước và độ lệch trường.
+Thích ứng thông qua các hàm được xuất, không sửa đổi nhị phân, không sử dụng độ lệch trường riêng tư của đối tượng.
 
-## 播放与格式规则
+## Quy tắc phát và định dạng
 
-1. 在设置中选择 USB Host 设备；使用显式、不可导出的 receiver 请求系统 USB 授权。
-2. 以授权设备的 FD 初始化原引擎，FD 单独 dup，完整生命周期保留 Java connection。
-3. 查询格式，必须找到原引擎报告支持的同采样率、同声道格式，协商失败停止。
-4. 先 Start 再 Pause 初始化清空的队列；写入后播放只 Resume，避免 Start 丢掉预缓冲。
-5. 原生单生产者、每次最多 8192 字节，队列达 100 ms 时不消费输入。适配限制为
-   8–192 kHz、1–2 声道、16/32 位线性整数，队列上界低于原引擎保证的最小容量。
-6. 24-bit packed 明确无损左对齐扩展为 signed 32-bit：`b0 b1 b2` → `00 b0 b1 b2`，
-   不经 float、不重采样。设备必须提供同采样率、同声道、4 字节子槽且至少 24 位有效数据的配置。
-   同时接受 24 valid bits / 4 bytes 和 32 valid bits / 4 bytes，不能强制要求 32 有效位。
-   诊断分别记录解码格式、请求格式与转换，绝不将两种容器当成同一格式。
-7. 应用音效、变速、静音跳过、过渡关闭。USB PCM 写入前叠加系统媒体音量与播放器音量，
-   手机音量键可调节、静音输出；首次写入即读取媒体音量，播放期间每 50 ms 更新一次。
-   Android 9 及以上优先采用系统 USB 耳机音量曲线；不可用时采用三次方衰减曲线。
-   查询失败时输出静音，不回到满幅；音频焦点暂停仍由播放服务管理。
-   16/24/32-bit 整数在独立缓冲区衰减，不修改待重试的源 PCM；24-bit 扩展规则保持不变。
-   已提交驱动的音频不重写，音量响应包含现有约 100 ms 队列及设备延迟。
-   原驱动自身的淡入、音量与尾音处理仍存在，此模式**不宣称 Bit-perfect**。
-   严格 Android Bit-perfect 模式继续在播放器静音或衰减时暂停，不应用软件音量。
-8. 进度使用原驱动队列与在途时长估计。零队列估计额外稳定 20 ms 才表示排空，
-   避免毫秒取整让末尾不足一毫秒的 USB 包被过早关闭。
-9. 拔出、权限撤销、写入失败及持续有待输出数据却不前进时，停止并释放。
-   切歌格式变化或 flush 时销毁并重建；没有 AudioTrack 回退。
+1. Chọn thiết bị USB Host trong phần cài đặt; dùng receiver tường minh, không thể xuất để yêu cầu hệ thống cấp quyền USB.
+2. Khởi tạo engine gốc bằng FD của thiết bị đã được cấp quyền, dup riêng FD và giữ Java connection trong toàn bộ vòng đời.
+3. Truy vấn định dạng, bắt buộc tìm được định dạng cùng tần số lấy mẫu và số kênh mà engine gốc báo hỗ trợ; dừng nếu thương lượng thất bại.
+4. Gọi Start rồi Pause để khởi tạo hàng đợi trống; sau khi ghi, chỉ gọi Resume để phát, tránh Start làm mất dữ liệu đệm trước.
+5. Một trình sản xuất gốc, tối đa 8192 byte mỗi lần; không tiêu thụ đầu vào khi hàng đợi đạt 100 ms. Bộ thích ứng giới hạn ở
+   8–192 kHz, 1–2 kênh, số nguyên tuyến tính 16/32 bit; giới hạn trên của hàng đợi thấp hơn dung lượng tối thiểu mà engine gốc đảm bảo.
+6. Chuyển đổi rõ ràng, không mất dữ liệu từ packed 24-bit sang signed 32-bit bằng cách căn trái: `b0 b1 b2` → `00 b0 b1 b2`,
+   không qua float, không lấy mẫu lại. Thiết bị phải cung cấp cấu hình cùng tần số lấy mẫu, cùng số kênh, khe con 4 byte và ít nhất 24 bit dữ liệu hợp lệ.
+   Chấp nhận cả 24 valid bits / 4 bytes và 32 valid bits / 4 bytes, không bắt buộc phải có 32 bit hợp lệ.
+   Chẩn đoán ghi riêng định dạng giải mã, định dạng yêu cầu và phép chuyển đổi; tuyệt đối không coi hai kiểu vùng chứa là cùng một định dạng.
+7. Tắt hiệu ứng âm thanh ứng dụng, thay đổi tốc độ, bỏ qua đoạn im lặng và chuyển tiếp. Trước khi ghi USB PCM, áp dụng kết hợp âm lượng phương tiện hệ thống và âm lượng trình phát,
+   có thể điều chỉnh bằng phím âm lượng điện thoại và xuất âm thanh im lặng; đọc âm lượng phương tiện ngay lần ghi đầu tiên, sau đó cập nhật mỗi 50 ms trong khi phát.
+   Trên Android 9 trở lên, ưu tiên dùng đường cong âm lượng tai nghe USB của hệ thống; nếu không khả dụng, dùng đường cong suy giảm bậc ba.
+   Nếu truy vấn thất bại, xuất âm thanh im lặng, không trở về mức âm lượng tối đa; việc tạm dừng do mất quyền ưu tiên âm thanh vẫn do dịch vụ phát quản lý.
+   Suy giảm số nguyên 16/24/32-bit trong bộ đệm riêng, không sửa đổi PCM nguồn đang chờ thử lại; giữ nguyên quy tắc mở rộng 24-bit.
+   Không ghi lại âm thanh đã được gửi đến driver; độ trễ phản hồi âm lượng bao gồm hàng đợi hiện có khoảng 100 ms và độ trễ của thiết bị.
+   Quá trình tăng âm lượng, điều chỉnh âm lượng và xử lý âm cuối của driver gốc vẫn còn; chế độ này **không tuyên bố Bit-perfect**.
+   Chế độ Bit-perfect nghiêm ngặt của Android tiếp tục tạm dừng khi trình phát tắt tiếng hoặc suy giảm âm lượng, không áp dụng âm lượng phần mềm.
+8. Tiến độ sử dụng hàng đợi của trình điều khiển gốc và thời lượng đang truyền để ước tính. Khi hàng đợi bằng 0, chỉ báo đã xả hết sau khi ổn định thêm 20 ms,
+   tránh việc làm tròn mili giây khiến gói USB cuối chưa đủ một mili giây bị đóng quá sớm.
+9. Dừng và giải phóng khi rút thiết bị, bị thu hồi quyền, ghi thất bại hoặc dữ liệu chờ xuất liên tục mà không tiến triển.
+   Khi đổi bài làm thay đổi định dạng hoặc khi flush, hủy rồi tạo lại; không dùng AudioTrack làm phương án dự phòng.
 
-原库报告的格式与控制请求成功并不等于 DAC 实际时钟或逐位传输已验证。
-错误不归咎为硬件不支持；它可能来自当前原驱动版本或设备配置。
+Định dạng do thư viện gốc báo cáo và yêu cầu điều khiển thành công không đồng nghĩa với việc đã xác minh đồng hồ DAC thực tế hoặc truyền tải từng bit.
+Không quy lỗi cho việc phần cứng không hỗ trợ; lỗi có thể xuất phát từ phiên bản trình điều khiển gốc hiện tại hoặc cấu hình thiết bị.
 
-## 192 kHz / 24-bit 格式选择修正
+## Sửa lỗi chọn định dạng 192 kHz / 24-bit
 
-用户日志显示 USB 授权成功、解码器实际输出 192000 Hz / packed24，但快捷格式检查拒绝请求的 32-bit 配置。
-进一步核对 `FormatType`、`GetStreamingInfo` 和完整网易云播放器：
+Nhật ký người dùng cho thấy ủy quyền USB thành công, bộ giải mã thực tế xuất 192000 Hz / packed24, nhưng kiểm tra định dạng nhanh từ chối cấu hình 32-bit được yêu cầu.
+Đối chiếu thêm `FormatType`, `GetStreamingInfo` và trình phát đầy đủ của Nhạc Vân NetEase:
 
-- `GetStreamingInfo` 分别返回 `validBits` 与 `subslotBytes`；快捷 `IsSupportAudioFormat` 无条件跳过有效位数 24。
-- 网易云完整播放器在快捷检查失败后调用 `GetSuggestAudioFormat`；该建议允许改变位深、声道或采样率。
-  因而“网易云能播放”本身不能证明它正在使用当前音源的采样率和精度。
-- 当前适配按 libusb active configuration 的原始接口顺序调用公开 `getStreamingInterface`、`IsOutput`、
-  `GetInfos`，复现引擎的候选索引顺序。使用已核对的公开返回值 ABI，不读取设备对象私有内存。
-- 独立校验整数 PCM、采样率实际列表成员、声道、容器大小及有效位数。32-bit 音源不允许选 24 有效位；
-  packed24 则可以使用 24 有效位的 4 字节容器。仅当每一项通过后，才交给原引擎协商指定候选。
-- 所有原生候选经 JNI 诊断文本写入统一 `CurrentMusicAudio`，包括接口、alternate、有效位数、子槽、PCM 类型和采样率。
-  原驱动的降级建议仅记录为 `applied=false`，不自动采用。
+- `GetStreamingInfo` trả về riêng `validBits` và `subslotBytes`; `IsSupportAudioFormat` kiểm tra nhanh bỏ qua vô điều kiện số bit hợp lệ 24.
+- Trình phát đầy đủ của Nhạc Vân NetEase gọi `GetSuggestAudioFormat` sau khi kiểm tra nhanh thất bại; đề xuất này có thể thay đổi độ sâu bit, số kênh hoặc tần số lấy mẫu.
+  Vì vậy, việc “Nhạc Vân NetEase phát được” tự nó không chứng minh ứng dụng đang dùng tần số lấy mẫu và độ chính xác của nguồn âm thanh hiện tại.
+- Bộ điều hợp hiện tại gọi các hàm công khai `getStreamingInterface`, `IsOutput`,
+  `GetInfos` theo thứ tự giao diện gốc trong cấu hình active của libusb, tái hiện thứ tự chỉ số ứng viên của engine. Dùng ABI giá trị trả về công khai đã được đối chiếu, không đọc bộ nhớ riêng của đối tượng thiết bị.
+- Xác minh độc lập PCM số nguyên, tần số lấy mẫu là thành viên trong danh sách thực tế, số kênh, kích thước vùng chứa và số bit hợp lệ. Nguồn âm thanh 32-bit không được phép chọn 24 bit hợp lệ;
+  còn packed24 có thể dùng vùng chứa 4 byte với 24 bit hợp lệ. Chỉ sau khi từng mục đều đạt mới giao cho engine gốc thương lượng ứng viên được chỉ định.
+- Mọi ứng viên gốc đều được ghi vào `CurrentMusicAudio` bằng văn bản chẩn đoán JNI, bao gồm giao diện, alternate, số bit hợp lệ, subslot, loại PCM và tần số lấy mẫu.
+  Chỉ ghi nhận đề xuất hạ cấp của trình điều khiển gốc dưới dạng `applied=false`, không tự động áp dụng.
 
-当前日志没有候选列表，尚不能确认用户的设备是否提供 24 valid bits / 4 bytes；新诊断用于进一步确定。
+Nhật ký hiện tại không có danh sách ứng viên nên chưa thể xác nhận thiết bị của người dùng có hỗ trợ 24 valid bits / 4 bytes hay không; chẩn đoán mới sẽ giúp xác định thêm.
 
-该修正通过：1001 项 JVM 测试、14 项 RMX5060 隔离设备测试（包括生产原生选择函数的容器、
-有效位数、采样率、声道及 PCM 类型用例），Debug APK / AndroidTest APK 构建和 Lint。
-这些检查不包含真实 DAC 的配置读取、协商或播放，不能据此宣布用户设备已修复。
+Bản sửa này đã vượt qua: 1001 bài kiểm thử JVM, 14 bài kiểm thử thiết bị cô lập RMX5060 (bao gồm các trường hợp vùng chứa,
+số bit hợp lệ, tần số lấy mẫu, số kênh và loại PCM của hàm chọn gốc dùng trong bản phát hành), quá trình dựng Debug APK / AndroidTest APK và Lint.
+Các kiểm tra này không bao gồm việc đọc cấu hình, thương lượng hoặc phát trên DAC thực, nên không thể dựa vào đó để tuyên bố thiết bị của người dùng đã được khắc phục.
 
-## 验证范围
+## Phạm vi xác minh
 
-### 启动后 USB_TRANSFER 误判修正
+### Sửa lỗi nhận định nhầm USB_TRANSFER sau khi khởi động
 
-上一版在 `stream()` 中以 `GetXferStatus()!=0` 判定失败，这与原引擎的状态枚举不符：
+Phiên bản trước xác định lỗi trong `stream()` bằng `GetXferStatus()!=0`, điều này không phù hợp với enum trạng thái của engine gốc:
 
-| 值 | 原生含义 | 证据 |
+| Giá trị | Ý nghĩa gốc | Bằng chứng |
 | --- | --- | --- |
-| 0 | 空闲／线程停止 | 构造函数及 stopStreamingThread 清零 |
-| 1 | 线程运行 | startStreamingThread 在 `0x2661c` 显式写入 1 |
-| 2 | 全部传输超时 | handleTransferCompleteCallback 在 `0x27a10` 写入 2 |
-| 3 | 传输错误 | 同函数在 `0x27a3c` 写入 3 |
+| 0 | Nhàn rỗi／luồng đã dừng | Hàm tạo và stopStreamingThread đặt về 0 |
+| 1 | Luồng đang chạy | startStreamingThread ghi rõ giá trị 1 tại `0x2661c` |
+| 2 | Tất cả truyền dữ liệu đều hết thời gian chờ | handleTransferCompleteCallback ghi giá trị 2 tại `0x27a10` |
+| 3 | Lỗi truyền dữ liệu | Cùng hàm đó ghi giá trị 3 tại `0x27a3c` |
 
-完整网易云播放器也只在状态 2/3 时分派超时/传输错误通知。当前适配保留 0/1 为正常状态，
-2/3、设备丢失及未知状态继续停止并释放。新增回归检查直接调用生产使用的原生状态判定。
-这不是 libusb 单个 transfer 的状态枚举，也不是 Start/Resume 的成功返回值，两者不能混用。
+Trình phát Nhạc Vân NetEase hoàn chỉnh cũng chỉ gửi thông báo hết thời gian chờ/lỗi truyền dữ liệu khi trạng thái là 2/3. Bộ điều hợp hiện tại giữ nguyên 0/1 là trạng thái bình thường,
+còn 2/3, mất thiết bị và trạng thái không xác định thì vẫn dừng và giải phóng. Bổ sung kiểm tra hồi quy bằng cách gọi trực tiếp hàm xác định trạng thái gốc được dùng trong sản phẩm.
+Đây không phải enum trạng thái của một transfer riêng lẻ trong libusb, cũng không phải giá trị trả về báo thành công của Start/Resume; không thể dùng lẫn hai loại này.
 
-新日志包含 `adapter=ncm-usb-v3-status-init`、`transfer stage=... raw=... state=... detached=...`；
-诊断队列逐次取走，覆盖启动、暂停恢复、写入及进度检查，不再以笼统 USB_TRANSFER 隐藏状态值。
-用户最新日志没有 precision / adapter / supported 信息，应核对所安装的 APK，不能仅凭时间戳认定为最新版。
-v3 状态修正验证：1001 项 JVM 测试、16 项 RMX5060 隔离设备测试及 Lint 通过。
-其中新增运行态 1、超时 2、错误 3、断连与未知状态，以及诊断版本和队列消费回归检查。
-尚未进行真实 DAC 播放验证。
+Nhật ký mới bao gồm `adapter=ncm-usb-v3-status-init`, `transfer stage=... raw=... state=... detached=...`;
+hàng đợi chẩn đoán được lấy ra từng mục, bao quát khởi chạy, tiếp tục sau khi tạm dừng, ghi dữ liệu và kiểm tra tiến độ; không còn dùng USB_TRANSFER chung chung để che giấu giá trị trạng thái.
+Nhật ký mới nhất của người dùng không có thông tin precision / adapter / supported; cần kiểm tra APK đã cài đặt, không thể chỉ dựa vào dấu thời gian để kết luận đó là phiên bản mới nhất.
+Xác minh bản sửa trạng thái v3: 1001 bài kiểm tra JVM, 16 bài kiểm tra thiết bị cách ly RMX5060 và Lint đều đạt.
+Trong đó có các kiểm tra hồi quy mới cho trạng thái đang chạy 1, hết thời gian chờ 2, lỗi 3, ngắt kết nối và trạng thái không xác định, cùng phiên bản chẩn đoán và việc tiêu thụ hàng đợi.
+Chưa xác minh phát nhạc bằng DAC thực tế.
 
-JVM 测试使用可注入 driver 和连接替身验证格式、背压、逐字节保真、授权失败、
-断连、原生错误、暂停恢复、重建及资源释放。设备测试只校验真实库装载、
-导出接口及无 DAC 错误，不申请 USB 权限、不播放、不读取账号或播放队列。
-本机没有 TANCHJIM BUNNY DSP / NICEHCK NK1 MAX，仍需设备用户验证：授权、
-首次播放、192 kHz/24-bit 扩展输出、暂停恢复、切歌、尾音及热拔出。
+Kiểm thử JVM dùng driver có thể tiêm và đối tượng kết nối thay thế để xác minh định dạng, điều tiết ngược, bảo toàn từng byte, lỗi cấp quyền,
+ngắt kết nối, lỗi gốc, tiếp tục sau khi tạm dừng, dựng lại và giải phóng tài nguyên. Kiểm thử thiết bị chỉ xác minh việc tải thư viện thực tế,
+giao diện xuất và không có lỗi khi không kết nối DAC; không yêu cầu quyền USB, không phát nhạc, không đọc tài khoản hoặc hàng đợi phát.
+Thiết bị thử nghiệm không có TANCHJIM BUNNY DSP / NICEHCK NK1 MAX; vẫn cần người dùng thiết bị xác minh: cấp quyền,
+phát lần đầu, đầu ra mở rộng 192 kHz/24-bit, tiếp tục sau khi tạm dừng, chuyển bài, phần âm cuối và rút nóng.
 
-本次验证：完整 Debug APK / AndroidTest APK 构建通过，1001 项 JVM 测试通过；
-Lint 为 0 errors、115 warnings、7 hints。RMX5060（API 36、4 KiB 内存页）隔离包中，
-4 项 USB 驱动测试和 9 项既有 Bit-perfect 测试共 13 项通过。
-其中实际执行了原库摘要校验、加载及导出接口检查；未连接 DAC、未进行 USB 播放。
-原库 ELF 的 LOAD alignment 为 4 KiB，16 KiB 内存页系统兼容性仍需验证，
-不能通过更改 ELF 标记或忽略装载错误来伪称兼容。
-Release 安装包与签名结果另见本次交付记录。模拟测试不视为硬件通过。
+Xác minh lần này: đã xây dựng thành công APK Debug hoàn chỉnh / APK AndroidTest, 1001 bài kiểm tra JVM đạt;
+Lint có 0 lỗi, 115 cảnh báo, 7 gợi ý. Trong gói cách ly trên RMX5060 (API 36, trang bộ nhớ 4 KiB),
+4 bài kiểm tra driver USB và 9 bài kiểm tra Bit-perfect hiện có, tổng cộng 13 bài, đều đạt.
+Trong đó đã thực hiện kiểm tra tổng kiểm tra của thư viện gốc, tải thư viện và giao diện xuất; không kết nối DAC, không phát qua USB.
+LOAD alignment của ELF trong thư viện gốc là 4 KiB; vẫn cần xác minh khả năng tương thích với hệ thống bộ nhớ trang 16 KiB,
+không thể giả vờ tương thích bằng cách thay đổi ELF marker hoặc bỏ qua lỗi tải.
+Xem thêm bản ghi bàn giao lần này để biết gói cài đặt Release và kết quả ký. Kiểm thử mô phỏng không được xem là đã vượt qua kiểm thử phần cứng.

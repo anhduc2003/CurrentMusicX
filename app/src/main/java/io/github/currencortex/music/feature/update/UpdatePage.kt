@@ -79,11 +79,11 @@ internal fun UpdatePageHost(visible: Boolean, state: UpdateState, onDismiss: () 
     val showResult = if (visible) entryCheckFinished else exitCheckFinished
     UpdateContainerTransform(visible, origin, onPresentedChanged) {
         val notes = when (installedNotesState) {
-            InstalledNotesState.Idle, InstalledNotesState.Loading -> "正在加载当前版本的更新说明…"
-            InstalledNotesState.Failed -> "更新说明加载失败，请重试。"
+            InstalledNotesState.Idle, InstalledNotesState.Loading -> "Đang tải ghi chú cập nhật của phiên bản hiện tại…"
+            InstalledNotesState.Failed -> "Tải ghi chú cập nhật thất bại, vui lòng thử lại."
             is InstalledNotesState.Loaded -> installedNotesState.release?.let {
-                stripVersionHeadings(it.version, it.notes).ifBlank { "此版本未附带更新说明。" }
-            } ?: "未找到当前版本的发布记录，可能尚未发布或已被清理。"
+                stripVersionHeadings(it.version, it.notes).ifBlank { "Phiên bản này không có ghi chú cập nhật." }
+            } ?: "Không tìm thấy bản phát hành của phiên bản hiện tại, có thể phiên bản chưa được phát hành hoặc đã bị xóa."
         }
         UpdatePageContent(if (showResult) state else UpdateState.Checking,
             if (showResult) transferState else UpdateTransferState(), notes, onDismiss, onRetry, onIgnore, onOpenRelease,
@@ -111,9 +111,9 @@ fun UpdatePageContent(state: UpdateState, transferState: UpdateTransferState = U
     val installedVersion = installedVersionName.substringBefore('-')
     val displayedVersion = release?.version ?: installedVersionName
     val versionLabel = when {
-        Regex("[0-9]+\\.[0-9]+\\.[0-9]+-ci\\.[1-9][0-9]*").matches(displayedVersion) -> "CI 版"
-        displayedVersion.contains('-') -> "预发布版"
-        else -> "正式版"
+        Regex("[0-9]+\\.[0-9]+\\.[0-9]+-ci\\.[1-9][0-9]*").matches(displayedVersion) -> "Bản CI"
+        displayedVersion.contains('-') -> "Bản xem trước"
+        else -> "Bản chính thức"
     }
     var heroVersion by remember { mutableStateOf(installedVersion) }
     LaunchedEffect(state, versionPreview) {
@@ -238,15 +238,15 @@ fun UpdatePageContent(state: UpdateState, transferState: UpdateTransferState = U
                             Column(Modifier.fillMaxSize().updateNotesEdges(notesScroll)
                                 .verticalScroll(notesScroll).testTag("update_message"),
                                 verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                                Text("软件版本", fontSize = 16.sp, color = pageWhite, fontWeight = FontWeight.Medium)
+                                Text("Phiên bản ứng dụng", fontSize = 16.sp, color = pageWhite, fontWeight = FontWeight.Medium)
                                 Text("CurrentMusic $displayedVersion" +
                                     (release?.let { " · ${updateSize(it.size)}" } ?: ""), fontSize = 12.sp, color = pageMuted)
                                 HorizontalDivider(color = Color.White.copy(alpha = .12f))
                                 Row(Modifier.fillMaxWidth().padding(vertical = 4.dp),
                                     verticalAlignment = Alignment.CenterVertically) {
-                                    Text("更新说明", color = pageWhite, fontSize = 16.sp,
+                                    Text("Ghi chú cập nhật", color = pageWhite, fontSize = 16.sp,
                                         fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
-                                    UpdateGlassButton(glassBackdrop, "update_collapse_notes", "收起更新说明", onClick = { expanded = false }, buttonSize = 44.dp) {
+                                    UpdateGlassButton(glassBackdrop, "update_collapse_notes", "Thu gọn ghi chú cập nhật", onClick = { expanded = false }, buttonSize = 44.dp) {
                                         Canvas(Modifier.size(18.dp)) {
                                             val left = Offset(size.width * .12f, size.height * .34f)
                                             val tip = Offset(size.width * .5f, size.height * .72f)
@@ -259,9 +259,9 @@ fun UpdatePageContent(state: UpdateState, transferState: UpdateTransferState = U
                                 MarkdownText(release?.notes?.ifBlank {
                                     if (release.version == installedVersionName) installedNotes else ""
                                 }?.let { stripVersionHeadings(release.version, it) }
-                                    ?.ifBlank { "新版本已发布。" } ?: installedNotes.ifBlank { "此版本未附带更新说明。" }, compact = true)
+                                    ?.ifBlank { "Phiên bản mới đã được phát hành." } ?: installedNotes.ifBlank { "Phiên bản này không có ghi chú cập nhật." }, compact = true)
                                 if (release == null && onRetryInstalledNotes != null) {
-                                    PageButton("重试加载说明", "update_notes_retry", primary = false, onClick = onRetryInstalledNotes)
+                                    PageButton("Thử tải ghi chú lại", "update_notes_retry", primary = false, onClick = onRetryInstalledNotes)
                                 }
                                 Spacer(Modifier.height(8.dp))
                             }
@@ -270,22 +270,22 @@ fun UpdatePageContent(state: UpdateState, transferState: UpdateTransferState = U
                                 verticalArrangement = if (checking) Arrangement.Center else Arrangement.spacedBy(5.dp)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(when {
-                                        transferState.download is UpdateDownloadState.Ready -> "下载完成"
-                                        transferState.download is UpdateDownloadState.Downloading -> "正在下载更新"
-                                        transferState.download is UpdateDownloadState.Failed -> "下载未完成"
-                                        checking -> "正在检查更新"
-                                        state is UpdateState.Failed -> "暂时无法检查更新"
-                                        release != null -> if (downloadExperience) "下载体验" else "发现新版本"
-                                        settings.channel == UpdateChannel.CI -> "暂无更新的 CI 构建"
-                                        else -> "已是最新版本"
+                                        transferState.download is UpdateDownloadState.Ready -> "Đã tải xuống"
+                                        transferState.download is UpdateDownloadState.Downloading -> "Đang tải bản cập nhật"
+                                        transferState.download is UpdateDownloadState.Failed -> "Tải xuống chưa hoàn tất"
+                                        checking -> "Đang kiểm tra cập nhật"
+                                        state is UpdateState.Failed -> "Tạm thời không thể kiểm tra cập nhật"
+                                        release != null -> if (downloadExperience) "Trải nghiệm tải xuống" else "Có phiên bản mới"
+                                        settings.channel == UpdateChannel.CI -> "Không có bản dựng CI mới"
+                                        else -> "Đã là phiên bản mới nhất"
                                     }, color = pageWhite, fontSize = if (checking) 16.sp else 18.sp,
                                         fontWeight = if (checking) FontWeight.Normal else FontWeight.Medium,
                                         modifier = Modifier.weight(1f))
                                     if (checking) UpdateCheckingSpinner()
                                 }
                                 if (!checking) Text(release?.let { "v${it.version} · ${updateSize(it.size)}" }
-                                    ?: "当前版本 $installedVersionName", color = pageMuted, fontSize = 12.sp)
-                                if (versionLabel == "CI 版") Text("主线自动构建，未经正式版验收；切回正式版需等待后续更高版本。", color = pageMuted, fontSize = 12.sp)
+                                    ?: "Phiên bản hiện tại $installedVersionName", color = pageMuted, fontSize = 12.sp)
+                                if (versionLabel == "Bản CI") Text("Bản dựng tự động từ nhánh chính, chưa qua nghiệm thu bản chính thức; muốn chuyển lại bản chính thức cần chờ phiên bản cao hơn tiếp theo.", color = pageMuted, fontSize = 12.sp)
                                 if (state is UpdateState.Failed) Text(state.reason, color = pageMuted, fontSize = 13.sp,
                                     maxLines = 3, overflow = TextOverflow.Ellipsis)
                             }
@@ -297,13 +297,9 @@ fun UpdatePageContent(state: UpdateState, transferState: UpdateTransferState = U
                                 val downloading = transferState.download is UpdateDownloadState.Downloading
                                 val ready = transferState.download is UpdateDownloadState.Ready
                                 PageButton(when {
-                                    transferState.installing -> "请求安装…"
-                                    downloading -> "取消下载"
-                                    ready -> "点击安装"
-                                    !verifiedUpdate(release) -> "查看发布"
-                                    transferState.download is UpdateDownloadState.Failed -> "重试下载"
-                                    else -> "下载并安装"
-                                }, "update_download", enabled = !transferState.installing) {
+                                    transferState.installing -> "Đang yêu cầu cài đặt…"
+                                    downloading -> "Hủy tải xuống"
+Nhấn để cài đặtXem bản phát hànhTải xuống lạiәнбәTải xuống và cài đặt                                }, "update_download", enabled = !transferState.installing) {
                                     when {
                                         downloading -> confirmCancel = true
                                         ready -> onInstall()
@@ -312,10 +308,8 @@ fun UpdatePageContent(state: UpdateState, transferState: UpdateTransferState = U
                                     }
                                 }
                             } else if (state is UpdateState.Failed || !expanded) {
-                                PageButton(if (state is UpdateState.Failed) "重新检查" else "检查更新", "update_retry", onClick = onRetry)
-                            }
-                            if (!expanded) PageButton("查看更新说明", "update_details", primary = false) { expanded = true }
-                        }
+Kiểm tra lại                            }
+Xem ghi chú cập nhật                        }
                     }
                 }
             }
@@ -324,29 +318,23 @@ fun UpdatePageContent(state: UpdateState, transferState: UpdateTransferState = U
         UpdateGlassMenu(menu, glassBackdrop, onDismiss = { menu = false }, anchor = menuAnchor,
             onPathChanged = { activeMenuPath = it }, onInteractionChanged = { menuDragging = it },
             actions = buildList {
-            add(GlassMenuItem("update_menu_action_0", "更新设置", MusicIcons.Update,
-                contentTag = "update_options_sheet", onEnter = {
+Cập nhật cài đặt                contentTag = "update_options_sheet", onEnter = {
                     menuAutoCheck = settings.autoCheckOnLaunch; menuChannel = settings.channel
                 }, children = listOf(
-                    GlassMenuItem("update_channel", "更新渠道", subtitle = if(menuChannel == UpdateChannel.STABLE) "正式版" else "CI 版",
-                        children = listOf(
-                            GlassMenuItem("update_channel_stable", "正式版", checked = menuChannel == UpdateChannel.STABLE,
-                                keepOpen = true, popOnSelect = true, onClick = {
+Cập nhật kênh                        children = listOf(
+Bản chính thức                                keepOpen = true, popOnSelect = true, onClick = {
                                     if(menuChannel!=UpdateChannel.STABLE) {menuChannel=UpdateChannel.STABLE;onChannel(menuChannel)}
                                 }),
-                            GlassMenuItem("update_channel_ci", "CI 版", checked = menuChannel == UpdateChannel.CI,
-                                keepOpen = true, popOnSelect = true, onClick = {
+Phiên bản CI                                keepOpen = true, popOnSelect = true, onClick = {
                                     if(menuChannel!=UpdateChannel.CI) {menuChannel=UpdateChannel.CI;onChannel(menuChannel)}
                                 })
                         )),
-                    GlassMenuItem("update_auto_check", "启动时自动检查", checked = menuAutoCheck,
-                        checkable = true, keepOpen = true, onClick = {
+Tự động kiểm tra khi khởi động                        checkable = true, keepOpen = true, onClick = {
                             menuAutoCheck = !menuAutoCheck;onAutoCheck(menuAutoCheck)
                             menu = false
                         })
                 )))
-            add(GlassMenuItem("update_menu_action_1", "下载源", MusicIcons.Download,
-                contentTag = "update_options_sheet", subMenuMinWidth = 280.dp,animateSubItems=true, children = orderedMenuSources.map { candidate ->
+Nguồn tải xuống                contentTag = "update_options_sheet", subMenuMinWidth = 280.dp,animateSubItems=true, children = orderedMenuSources.map { candidate ->
                     val health = sourceHealth[candidate] ?: UpdateSourceHealth(UpdateSourceStatus.CHECKING)
                     GlassMenuItem("update_source_${candidate.name}", candidate.menuLabel, checked = candidate == source,
                         leadingContent = { UpdateSourceBadge(candidate,health) },
@@ -358,34 +346,25 @@ fun UpdatePageContent(state: UpdateState, transferState: UpdateTransferState = U
                             }
                         })
                 }))
-            add(GlassMenuItem("update_menu_action_2", "发布记录", MusicIcons.File,
-                onClick = { onOpenRelease(AppMetadata.RELEASES_URL) }))
+Ghi chú phát hành                onClick = { onOpenRelease(AppMetadata.RELEASES_URL) }))
             if (!checking && !transferState.installing &&
                 transferState.download !is UpdateDownloadState.Downloading &&
                 transferState.download !is UpdateDownloadState.Ready)
-                add(GlassMenuItem("update_check_again", "重新检查更新", MusicIcons.Update,
-                    onClick = onRetry))
+Kiểm tra lại các bản cập nhật                    onClick = onRetry))
             if(release != null && transferState.download is UpdateDownloadState.Idle)
-                add(GlassMenuItem("update_menu_action_3", "忽略此版本", MusicIcons.Close,
-                    danger = true, separated = true, onClick = onIgnore))
+Bỏ qua phiên bản này                    danger = true, separated = true, onClick = onIgnore))
         }, toolbar = {
             io.github.currencortex.music.ui.component.nativeui.SettingsTopBar(
-                if(expanded)"更新说明"else "软件更新",onBack={
-                    if (menu) menu = false else if (expanded) expanded = false else onDismiss()
+Ghi chú cập nhật                    if (menu) menu = false else if (expanded) expanded = false else onDismiss()
                 },backTag="update_back",titleModifier=if(titleBackdrop!=null)Modifier.layerBackdrop(titleBackdrop)else Modifier) {
-                UpdateGlassButton(glassBackdrop, "update_menu", "更多", onClick = { menu = !menu },
-                    onBoundsChanged = { menuAnchor = it }) {
+Thêm                    onBoundsChanged = { menuAnchor = it }) {
                     Icon(Icons.Default.MoreVert, null, tint = pageWhite)
                 }
             }
         })
-        if (confirmCancel) UpdateOptionsDialog("取消下载？",
-            summary = "返回页面后仍会在后台下载。取消下载将停止当前任务。",
-            onDismiss = { confirmCancel = false }, backdrop = glassBackdrop, actions = {
-                UpdateDialogAction("取消下载", { confirmCancel = false; onCancel() },
-                    Modifier.weight(1f).testTag("update_confirm_cancel"), destructive = true)
-                UpdateDialogAction("继续下载", { confirmCancel = false }, Modifier.weight(1f).testTag("update_keep_download"))
-            }) {
+Hủy tải xuống?Sau khi quay lại trang, quá trình tải xuống vẫn tiếp tục trong nền. Hủy tải xuống sẽ dừng tác vụ hiện tại.            onDismiss = { confirmCancel = false }, backdrop = glassBackdrop, actions = {
+Hủy tải xuống                    Modifier.weight(1f).testTag("update_confirm_cancel"), destructive = true)
+Tiếp tục tải xuống            }) {
         }
     }
     }
@@ -417,8 +396,7 @@ fun UpdatePageContent(state: UpdateState, transferState: UpdateTransferState = U
         }
         is UpdateDownloadState.Failed -> Text(download.message, fontSize = 12.sp, color = Color(0xFFFFBCB4),
             maxLines = 2, overflow = TextOverflow.Ellipsis)
-        is UpdateDownloadState.Ready -> Text("已校验安装包，安装需经系统确认", fontSize = 12.sp, color = pageMuted)
-        UpdateDownloadState.Idle -> Unit
+Gói cài đặt đã được xác minh; cần hệ thống xác nhận để cài đặt.        UpdateDownloadState.Idle -> Unit
     }
     state.message?.let { Text(it, fontSize = 12.sp, color = pageMuted, maxLines = 2, overflow = TextOverflow.Ellipsis) }
 }

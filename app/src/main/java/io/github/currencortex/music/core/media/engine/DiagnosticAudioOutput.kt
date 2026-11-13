@@ -36,16 +36,16 @@ internal class DiagnosticAudioOutput(private val delegate: AudioOutput, private 
             output = AudioPcmFormat(native?.sampleRate ?: track?.sampleRate ?: delegate.sampleRate.takeIf { it > 0 },
                 native?.pcmEncoding ?: track?.audioFormat, native?.channels ?: track?.channelCount),
             formatEvidence = if (old.bitPerfect == BitPerfectEvidence.ANDROID_CONFIGURATION_VERIFIED) old.formatEvidence else when {
-                native != null -> "Oboe 已打开流的格式；不等同于最终硬件格式"
-                track != null -> "AudioTrack 实际对象格式；系统混音后格式未验证"
-                else -> "输出接口报告；最终硬件格式未验证"
+native != null -> "Định dạng luồng Oboe đã mở; không đồng nghĩa với định dạng phần cứng cuối cùng"
+track != null -> "Định dạng đối tượng AudioTrack thực tế; định dạng sau khi hệ thống trộn chưa được xác minh"
+else -> "Thông tin do giao diện đầu ra báo cáo; định dạng phần cứng cuối cùng chưa được xác minh"
             }, deviceId = deviceId, device = route?.productName?.toString() ?: deviceId?.let(routeName),
             softwareBufferFrames = native?.softwareBufferFrames?.toLong(),
             deviceBufferFrames = native?.deviceBufferFrames ?: track?.bufferSizeInFrames,
             capacityFrames = native?.deviceCapacityFrames ?: track?.bufferCapacityInFrames,
             underruns = native?.underrunCount ?: track?.underrunCount,
             latencyMs = latency?.takeIf { it.isFinite() && it >= 0 },
-            latencyEvidence = if (latency == null) "系统未提供" else "平台时间戳估计，非声学/USB DAC 实测延迟") }
+latencyEvidence = if (latency == null) "Hệ thống không cung cấp" else "Ước tính bằng dấu thời gian nền tảng, không phải độ trễ đo thực tế bằng âm học/USB DAC") }
     }
     override fun write(buffer: ByteBuffer, encodedAccessUnitCount: Int, presentationTimeUs: Long): Boolean {
         val before = buffer.remaining()

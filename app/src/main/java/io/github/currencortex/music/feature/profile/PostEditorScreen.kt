@@ -51,11 +51,11 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         dismissOnBackPress = !state.busy, dismissOnClickOutside = false)) {
         CompositionLocalProvider(LocalGlassBackdrop provides null, LocalMusicBottomInset provides 0.dp, LocalDensity provides appDensity) {
             val focus = LocalFocusManager.current
-            MusicSubpage(if (state.picker) "添加音乐" else "发布动态", "post_editor", onBack = ::close,
+             MusicSubpage(if (state.picker) "Thêm nhạc" else "Đăng bài", "post_editor", onBack = ::close,
                 backTag = "post_editor_close", modifier = Modifier.background(colors.background).imePadding(), actions = {
-                    if (state.picker) GlassActionButton("完成", { vm.picker(false) }, Modifier.testTag("post_picker_done"),
+                     if (state.picker) GlassActionButton("Hoàn tất", { vm.picker(false) }, Modifier.testTag("post_picker_done"),
                         primary = true, fillWidth = false)
-                    else GlassActionButton(if (state.busy) "发布中" else "发布", { focus.clearFocus(); vm.publish() },
+                     else GlassActionButton(if (state.busy) "Đang đăng" else "Đăng", { focus.clearFocus(); vm.publish() },
                         Modifier.testTag("post_publish"), primary = true, fillWidth = false,
                         enabled = !state.busy && state.draft.isNotBlank())
                 }) { topInset ->
@@ -63,7 +63,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     if (state.picker) {
                         PostAttachmentPicker(vm, state, current, Modifier.weight(1f))
                     } else {
-                        SettingsSegmentedControl(listOf("编辑", "预览"), if (preview) 1 else 0, {
+                         SettingsSegmentedControl(listOf("Chỉnh sửa", "Xem trước"), if (preview) 1 else 0, {
                             focus.clearFocus(); preview = it == 1
                         }, Modifier.padding(horizontal = 16.dp, vertical = 8.dp), tag = "post_editor_mode", enabled = !state.busy)
                         LazyColumn(Modifier.weight(1f).fillMaxWidth().testTag("post_editor_content"),
@@ -72,20 +72,20 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                                 SettingsGroup {
                                     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
                                         verticalAlignment = Alignment.CenterVertically) {
-                                        Text(if (preview) "正文预览" else "写下此刻", Modifier.weight(1f),
+                                         Text(if (preview) "Xem trước nội dung" else "Viết điều bạn đang nghĩ", Modifier.weight(1f),
                                             fontSize = 15.sp, fontWeight = FontWeight.Medium)
-                                        Text("${text.text.length} 字", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+                                         Text("${text.text.length} ký tự", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
                                     }
                                     Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 16.dp).heightIn(min = 176.dp)) {
                                         if (preview) {
-                                            if (text.text.isBlank()) Text("还没有内容", color = colors.onSurfaceVariantSummary)
+                                             if (text.text.isBlank()) Text("Chưa có nội dung", color = colors.onSurfaceVariantSummary)
                                             else MarkdownText(text.text, Modifier.testTag("post_preview"), compact = true)
                                         } else BasicTextField(text, { text = it; vm.draft(it.text) },
                                             Modifier.fillMaxWidth().heightIn(min = 176.dp).focusRequester(requester)
-                                                .semantics { contentDescription = "帖子正文" }.testTag("post_draft"), enabled = !state.busy,
+                                                 .semantics { contentDescription = "Nội dung bài đăng" }.testTag("post_draft"), enabled = !state.busy,
                                             textStyle = TextStyle(fontSize = 16.sp, lineHeight = 25.sp, color = colors.onSurface),
                                             cursorBrush = SolidColor(colors.primary), decorationBox = { input ->
-                                                Box { if (text.text.isEmpty()) Text("最近在听什么？", fontSize = 16.sp,
+                                                 Box { if (text.text.isEmpty()) Text("Gần đây bạn đang nghe gì?", fontSize = 16.sp,
                                                     lineHeight = 25.sp, color = colors.onSurfaceVariantSummary); input() }
                                             })
                                     }
@@ -106,32 +106,32 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                             item {
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                     Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                                        Text("分享音乐", Modifier.weight(1f), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                                         Text("Chia sẻ nhạc", Modifier.weight(1f), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
                                         Text("${state.attachments.size}/5", Modifier.testTag("post_attachment_count"),
                                             fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
                                     }
                                     SettingsGroup {
                                         state.attachments.forEach { card ->
                                             PostAttachmentTile(card, Modifier.padding(horizontal = 12.dp).padding(top = 12.dp)) {
-                                                GlassIconButton({ vm.removeAttachment(card) }, "移除${card.name}",
+                                                 GlassIconButton({ vm.removeAttachment(card) }, "Xóa ${card.name}",
                                                     Modifier.testTag("post_remove_${card.type}_${card.id}"), enabled = !state.busy, surface = false) {
                                                     Icon(MusicIcons.Close, null, Modifier.size(18.dp))
                                                 }
                                             }
                                         }
-                                        SettingsPreference("添加音乐", if (state.attachments.isEmpty()) "单曲、专辑、歌手或歌单" else "还可添加 ${5 - state.attachments.size} 项",
+                                         SettingsPreference("Thêm nhạc", if (state.attachments.isEmpty()) "Bài hát, album, nghệ sĩ hoặc danh sách phát" else "Có thể thêm ${5 - state.attachments.size} mục nữa",
                                             Modifier.testTag("post_add_attachment"), enabled = !state.busy && state.attachments.size < 5,
                                             onClick = { focus.clearFocus(); vm.picker(true) },
                                             leading = { Icon(MusicIcons.Add, null, Modifier.size(22.dp), tint = colors.primary) },
                                             trailing = { Icon(MusicIcons.Forward, null, Modifier.size(16.dp), tint = colors.onSurfaceVariantSummary) })
                                         if (state.attachments.isEmpty() && current != null) {
                                             SettingsDivider(50.dp)
-                                            SettingsPreference("附带当前歌曲", current.name, Modifier.testTag("post_attach_current"),
+                                             SettingsPreference("Đính kèm bài hát hiện tại", current.name, Modifier.testTag("post_attach_current"),
                                                 enabled = !state.busy, onClick = { vm.attach(current) },
                                                 leading = { MusicCover(current.pic, Modifier.size(32.dp).clip(RoundedCornerShape(8.dp))) })
                                         }
                                     }
-                                    SettingsHint("关闭后保留草稿")
+                                     SettingsHint("Đóng lại để giữ bản nháp")
                                 }
                             }
                         }
@@ -147,31 +147,31 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val focus = LocalFocusManager.current
     val types = listOf("song", "album", "artist", "playlist")
     Column(modifier.fillMaxWidth()) {
-        SettingsSegmentedControl(listOf("单曲", "专辑", "歌手", "歌单"), types.indexOf(state.attachmentType),
+         SettingsSegmentedControl(listOf("Bài hát", "Album", "Nghệ sĩ", "Danh sách phát"), types.indexOf(state.attachmentType),
             { vm.attachmentType(types[it]) }, Modifier.padding(horizontal = 16.dp, vertical = 8.dp), tag = "post_attachment_type")
         MusicSearchBar(state.attachmentQuery, { focus.clearFocus(); vm.searchAttachments() },
             Modifier.fillMaxWidth().padding(16.dp), onInput = vm::attachmentQuery,
-            placeholder = "搜索${postAttachmentLabel(state.attachmentType)}", inputTag = "post_attachment_query",
+             placeholder = "Tìm kiếm${postAttachmentLabel(state.attachmentType)}", inputTag = "post_attachment_query",
             submitTag = "post_attachment_search", onCancel = { vm.attachmentQuery("") })
-        Text("已添加 ${state.attachments.size}/5 · 点击条目添加或移除", Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
+         Text("Đã thêm ${state.attachments.size}/5 · Nhấn vào mục để thêm hoặc xóa", Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
             fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
         LazyColumn(Modifier.weight(1f).testTag("post_attachment_results"), contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            if (!state.attachmentSearched && current != null) item { Text("正在播放", fontSize = 13.sp) }
+             if (!state.attachmentSearched && current != null) item { Text("Đang phát", fontSize = 13.sp) }
             if (!state.attachmentSearched && current != null) item { AttachmentChoice(current, state, vm) }
-            if (!state.attachmentSearched) item { Text("输入关键词，搜索想分享的音乐内容。", fontSize = 13.sp,
+             if (!state.attachmentSearched) item { Text("Nhập từ khóa để tìm nội dung nhạc muốn chia sẻ.", fontSize = 13.sp,
                 color = MiuixTheme.colorScheme.onSurfaceVariantSummary) }
             items(state.attachmentResults, key = { "${it.type}:${it.id}" }) { AttachmentChoice(it, state, vm) }
             if (state.attachmentLoading) item { LoadingTextList(3, leading = true) }
             if (state.attachmentSearched && !state.attachmentLoading && state.attachmentError == null && state.attachmentResults.isEmpty()) item {
-                Text("没有找到相关内容，换个关键词试试。", Modifier.padding(vertical = 20.dp), fontSize = 14.sp)
+                 Text("Không tìm thấy nội dung phù hợp, hãy thử từ khóa khác.", Modifier.padding(vertical = 20.dp), fontSize = 14.sp)
             }
             state.attachmentError?.let { error -> item {
                 Text(error, fontSize = 13.sp)
-                MusicTextAction("重试", vm::retryAttachments, Modifier.testTag("post_attachment_retry"))
+                 MusicTextAction("Thử lại", vm::retryAttachments, Modifier.testTag("post_attachment_retry"))
             } }
             if (state.attachmentMore && !state.attachmentLoading && state.attachmentError == null) item {
-                MusicTextAction("加载更多", { vm.searchAttachments(true) }, Modifier.testTag("post_attachment_more"))
+                 MusicTextAction("Tải thêm", { vm.searchAttachments(true) }, Modifier.testTag("post_attachment_more"))
             }
         }
         state.message?.let { Text(it, Modifier.padding(horizontal = 20.dp), fontSize = 13.sp, color = MiuixTheme.colorScheme.primary) }
@@ -184,7 +184,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     PostAttachmentTile(card, Modifier.testTag("post_pick_${card.type}_${card.id}").semantics { this.selected = selected },
         onClick = { if (selected) vm.removeAttachment(card) else vm.attach(card) }, enabled = enabled) {
         Icon(if (selected) MusicIcons.Check else MusicIcons.Add,
-            if (selected) "已添加" else if (enabled) "添加" else "最多添加 5 项", Modifier.size(22.dp),
+             if (selected) "Đã thêm" else if (enabled) "Thêm" else "Tối đa 5 mục", Modifier.size(22.dp),
             tint = if (selected) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.onSurface.copy(alpha = if (enabled) .6f else .25f))
     }
 }

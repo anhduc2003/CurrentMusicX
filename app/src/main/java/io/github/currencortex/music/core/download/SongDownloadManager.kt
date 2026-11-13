@@ -20,7 +20,7 @@ class SongDownloadManager(context: Context, namespace: String = "") {
     fun setDirectory(uri: Uri?) {
         if (uri != null) context.contentResolver.takePersistableUriPermission(uri,
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-        check(preferences.edit().putString("directory", uri?.toString()).commit()) { "文件夹设置保存失败" }
+        check(preferences.edit().putString("directory", uri?.toString()).commit()) { "Lưu cài đặt thư mục thất bại" }
         directory.value = uri
     }
     private fun key(song: Song) = "song-download-${song.musicSource.name}-${song.id}"
@@ -40,7 +40,7 @@ class SongDownloadManager(context: Context, namespace: String = "") {
     /** Hide only the deleted download. Pruning WorkManager would erase every completed song. */
     @Synchronized fun hideCompleted(id: java.util.UUID) {
         val next = hidden.value + id.toString()
-        check(preferences.edit().putStringSet("hidden", next).commit()) { "下载记录更新失败" }
+        check(preferences.edit().putStringSet("hidden", next).commit()) { "Cập nhật lịch sử tải xuống thất bại" }
         hidden.value = next
     }
 }

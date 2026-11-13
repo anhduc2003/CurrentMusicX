@@ -10,9 +10,9 @@ import kotlinx.serialization.json.*
 @Serializable data class NeteaseMembership(val userId: Long, val tier: NeteaseMembershipTier,
     val level: Int? = null, val expiresAt: Long = 0) {
     val label: String get() = when (tier) {
-        NeteaseMembershipTier.NONE -> "普通账号"
-        NeteaseMembershipTier.VIP -> "黑胶 VIP"
-        NeteaseMembershipTier.SVIP -> "黑胶 SVIP"
+        NeteaseMembershipTier.NONE -> "Tài khoản thường"
+        NeteaseMembershipTier.VIP -> "VIP đĩa than"
+        NeteaseMembershipTier.SVIP -> "SVIP đĩa than"
     } + (level?.let { " · Lv.$it" } ?: "")
 }
 

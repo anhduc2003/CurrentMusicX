@@ -15,11 +15,11 @@ async function generate({github, context, version, number}) {
     return `- ${title} ([${commit.sha.slice(0, 7)}](${url}/commit/${commit.sha}))`;
   });
   const summary = changes.join('\n');
-  const notes = `## 更新说明\n\n主线 CI 构建 #${number}。以下为自正式版 ${previous.tag_name} 以来的提交记录。\n\n` +
-    (summary.slice(0, 10_000) || '没有新增提交。') +
-    (comparison.total_commits > changes.length ? '\n\n仅列出前 100 项提交。' : '') +
-    (summary.length > 10_000 ? '\n\n说明较长，完整内容请查看下方改动链接。' : '') +
-    `\n\n[查看完整改动](${url}/compare/${previous.tag_name}...${context.sha})\n\nCI 构建未经正式版验收。`;
+  const notes = `## Ghi chú cập nhật\n\nBản dựng CI nhánh chính #${number}. Dưới đây là danh sách commit kể từ bản phát hành chính thức ${previous.tag_name}.\n\n` +
+    (summary.slice(0, 10_000) || 'Không có commit mới.') +
+    (comparison.total_commits > changes.length ? '\n\nChỉ liệt kê 100 commit đầu tiên.' : '') +
+    (summary.length > 10_000 ? '\n\nGhi chú quá dài, vui lòng xem liên kết thay đổi bên dưới để biết nội dung đầy đủ.' : '') +
+    `\n\n[Xem toàn bộ thay đổi](${url}/compare/${previous.tag_name}...${context.sha})\n\nBản dựng CI chưa được nghiệm thu như bản phát hành chính thức.`;
   return {version: `${version}-ci.${number}`, notes};
 }
 

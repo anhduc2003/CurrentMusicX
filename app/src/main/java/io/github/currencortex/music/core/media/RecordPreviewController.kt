@@ -79,7 +79,7 @@ internal class RecordPreviewController(
                     val loading = song?.let { async { delay(90); withTimeout(12_000) { resolve(it) } } }
                     fade(0f, 220); audio.stop()
                     if (song == null) { mutable.value = RecordPreviewState(); return@coroutineScope }
-                    mutable.value = RecordPreviewState(song, "正在准备试听")
+                    mutable.value = RecordPreviewState(song, "Đang chuẩn bị nghe thử")
                     var source = requireNotNull(loading).await()
                     while (isActive) {
                         if (!stillAllowed()) { audio.stop(); mutable.value = RecordPreviewState(); return@coroutineScope }
@@ -91,9 +91,9 @@ internal class RecordPreviewController(
                         audio.play()
                         withTimeout(8_000) { while (!audio.playing) { ensureActive(); delay(16) } }
                         mutable.value = RecordPreviewState(song, when {
-                            audition.fullLength -> "整首试听"
-                            audition.clip.chorus -> "高潮试听"
-                            else -> "片段试听"
+                            audition.fullLength -> "Nghe thử cả bài"
+                            audition.clip.chorus -> "Nghe thử đoạn cao trào"
+                            else -> "Nghe thử một đoạn"
                         }, true)
                         val duration = if (audition.fullLength) audio.durationMs.takeIf { it > 0 } ?: audition.clip.durationMs else audition.clip.durationMs
                         val fadeOut = minOf(400, duration / 4).coerceAtLeast(1)
@@ -104,7 +104,7 @@ internal class RecordPreviewController(
                         fade(0f, fadeOut)
                         finishedNaturally = reachedEnd && stillAllowed() && !audio.failed && (audio.playing || audio.ended)
                         audio.stop()
-                        mutable.value = RecordPreviewState(song, "试听结束")
+                        mutable.value = RecordPreviewState(song, "Đã kết thúc nghe thử")
                         if (!finishedNaturally) break
                         when (mode) {
                             RecordShelfPreviewMode.ONCE -> break
@@ -118,11 +118,11 @@ internal class RecordPreviewController(
                 }
             } catch (_: TimeoutCancellationException) {
                 fade(0f, 180); audio.stop()
-                mutable.value = RecordPreviewState(song, "试听加载超时")
+                mutable.value = RecordPreviewState(song, "Tải bản nghe thử quá thời gian")
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) {
                 fade(0f, 180); audio.stop()
-                mutable.value = RecordPreviewState(song, "暂时无法试听")
+                mutable.value = RecordPreviewState(song, "Tạm thời không thể nghe thử")
             }
         }
     }

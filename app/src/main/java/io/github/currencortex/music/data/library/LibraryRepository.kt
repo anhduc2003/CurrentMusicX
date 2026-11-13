@@ -164,8 +164,8 @@ class LibraryRepository(private val api: ApiClient, private val accountId: () ->
         val d = api.get<CatalogSearchDto>("ncm/search", mapOf("keywords" to query, "type" to "playlist", "limit" to "30", "offset" to "$offset"))
         return CatalogPage(d.playlists.map { playlist ->
             CatalogEntry(playlist.id, playlist.name, playlist.pic.replace("http:", "https:"),
-                listOfNotNull(playlist.trackCount.takeIf { it > 0 }?.let { "$it 首" },
-                    playlist.creator.takeIf(String::isNotBlank)?.let { "创建者：$it" }).joinToString(" · "))
+                listOfNotNull(playlist.trackCount.takeIf { it > 0 }?.let { "$it bài" },
+                    playlist.creator.takeIf(String::isNotBlank)?.let { "Người tạo: $it" }).joinToString(" · "))
         }, d.hasMore.playlist, d.totals.playlist)
     }
     suspend fun mv(id: Long) = api.get<MvDetailDto>("ncm/mv/detail", mapOf("mvid" to "$id")).data

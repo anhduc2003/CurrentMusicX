@@ -30,7 +30,7 @@ class MicrophoneRecorder : RecognitionRecorder {
             if (next.state == AudioRecord.STATE_INITIALIZED) { recorder = next; sampleRate = rate; break }
             next.release()
         }
-        val audio = recorder ?: error("无法打开麦克风，请确认未被其他应用占用")
+        val audio = recorder ?: error("Không thể mở micrô, vui lòng xác nhận micrô không bị ứng dụng khác sử dụng")
         val output = ShortArray(RecognitionWindows.MAX_SAMPLES)
         val windows = RecognitionWindows()
         val buffer = ShortArray(sampleRate / 10)
@@ -39,11 +39,11 @@ class MicrophoneRecorder : RecognitionRecorder {
         var sum = 0; var count = 0
         try {
             audio.startRecording()
-            check(audio.recordingState == AudioRecord.RECORDSTATE_RECORDING) { "无法开始录音，请稍后重试" }
+            check(audio.recordingState == AudioRecord.RECORDSTATE_RECORDING) { "Không thể bắt đầu ghi âm, vui lòng thử lại sau" }
             while (size < output.size && !stop.get()) {
                 currentCoroutineContext().ensureActive()
                 val read = audio.read(buffer, 0, buffer.size, AudioRecord.READ_NON_BLOCKING)
-                check(read >= 0) { "麦克风录音中断，请重试" }
+                check(read >= 0) { "Quá trình ghi âm từ micrô bị gián đoạn, vui lòng thử lại" }
                 if (read == 0) { delay(10); continue }
                 var peak = 0
                 for (index in 0 until read) {

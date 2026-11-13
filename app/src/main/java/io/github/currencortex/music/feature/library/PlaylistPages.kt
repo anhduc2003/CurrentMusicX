@@ -79,9 +79,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val playlists = remember(home.playlists, category, account.account?.id) {
         home.playlists.filter { category.includes(it, account.account?.id ?: 0) }
     }
-    MusicSubpage("我的歌单", "playlist_index_page", onBack, actions = {
+    MusicSubpage("Danh sách phát của tôi", "playlist_index_page", onBack, actions = {
         if (account.account != null || (nativeAccount.loggedIn && !nativeAccount.stale))
-            GlassIconButton(onCreate, "新建歌单", Modifier.testTag("create_playlist")) { Icon(Icons.Default.Add, null) }
+            GlassIconButton(onCreate, "Tạo danh sách phát", Modifier.testTag("create_playlist")) { Icon(Icons.Default.Add, null) }
     }) { topInset ->
     MusicPullToRefresh(home.loading, vm::refresh, Modifier.fillMaxSize(), showIndicator = false) {
         LazyVerticalGrid(GridCells.Adaptive(148.dp), Modifier.fillMaxSize().testTag("playlist_index"),
@@ -91,29 +91,29 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 SettingsSegmentedControl(PlaylistCategory.entries.map { it.label }, category.ordinal,
                     { category = PlaylistCategory.entries[it] }, tag = "playlist_category")
             }
-            item(key = "count", span = { GridItemSpan(maxLineSpan) }) { SettingsHint("${playlists.size} 个歌单 · ${category.label}") }
-            home.errors["我的歌单"]?.let { error -> item(span = { GridItemSpan(maxLineSpan) }) {
-                Column { Text(error); TextButton("重试", onClick = vm::refresh) }
+            item(key = "count", span = { GridItemSpan(maxLineSpan) }) { SettingsHint("${playlists.size} danh sách phát · ${category.label}") }
+            home.errors["Danh sách phát của tôi"]?.let { error -> item(span = { GridItemSpan(maxLineSpan) }) {
+                Column { Text(error); TextButton("Thử lại", onClick = vm::refresh) }
             } }
             if ((home.loading || account.loading) && home.playlists.isEmpty()) items(4) {
                 LoadingCoverTile()
             }
-            if (!home.loading && !account.loading && home.playlists.isEmpty() && home.errors["我的歌单"] == null)
+            if (!home.loading && !account.loading && home.playlists.isEmpty() && home.errors["Danh sách phát của tôi"] == null)
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Column(Modifier.fillMaxWidth().padding(vertical = 32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(MusicIcons.List, null, Modifier.size(40.dp), tint = MiuixTheme.colorScheme.primary.copy(alpha = .6f))
-                        Text(if (account.account == null) "登录后查看你的歌单" else "为喜欢的音乐建一个歌单", Modifier.padding(top = 16.dp), fontSize = 17.sp)
-                        Text(if (account.account == null) "绑定网易云账号后也可同步收藏" else "点右上角 + 开始收藏", Modifier.padding(top = 8.dp),
+                        Text(if (account.account == null) "Đăng nhập để xem danh sách phát của bạn" else "Tạo danh sách phát cho những bản nhạc yêu thích", Modifier.padding(top = 16.dp), fontSize = 17.sp)
+                        Text(if (account.account == null) "Liên kết tài khoản Nhạc Vân NetEase để đồng bộ nhạc đã lưu" else "Nhấn + ở góc trên bên phải để bắt đầu lưu", Modifier.padding(top = 8.dp),
                             fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
                     }
                 }
-            if (!home.loading && home.playlists.isNotEmpty() && playlists.isEmpty() && home.errors["我的歌单"] == null)
-                item(span = { GridItemSpan(maxLineSpan) }) { SettingsHint("暂无${category.label}歌单") }
+            if (!home.loading && home.playlists.isNotEmpty() && playlists.isEmpty() && home.errors["Danh sách phát của tôi"] == null)
+                item(span = { GridItemSpan(maxLineSpan) }) { SettingsHint("Chưa có danh sách phát ${category.label}") }
             items(playlists, key = { "${it.source}-${it.id}" }) { playlist ->
                 var coverBounds by remember { mutableStateOf(Rect.Zero) }
                 Column(Modifier.testTag("playlist_card_${playlist.id}").combinedClickable(role = Role.Button,
                     onClick = { navigate("lib/${if (playlist.source == "netease") "ncmplaylist" else "playlist"}/${playlist.id}") },
-                    onLongClickLabel = "预览歌单与操作",
+                    onLongClickLabel = "Xem trước danh sách phát và thao tác",
                     onLongClick = { if (!coverBounds.isEmpty) playlistPreview = playlist to coverBounds })) {
                     MusicCover(playlist.cover.ifBlank { playlist.songs.firstOrNull()?.cover.orEmpty() },
                         Modifier.fillMaxWidth().aspectRatio(1f).onGloballyPositioned { coordinates ->
@@ -122,7 +122,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                         }, 480, cornerRadius = 18.dp)
                     Text(playlist.name, Modifier.padding(top = 10.dp), fontSize = 16.sp, fontWeight = FontWeight.Medium,
                         maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    Text("${playlist.count.takeIf { it > 0 } ?: playlist.songs.size} 首 · ${if (playlist.source in setOf("ncm", "netease")) "网易云音乐" else "CurrentMusic"}",
+                    Text("${playlist.count.takeIf { it > 0 } ?: playlist.songs.size} bài · ${if (playlist.source in setOf("ncm", "netease")) "Nhạc Vân NetEase" else "CurrentMusic"}",
                         Modifier.padding(top = 4.dp), fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
                 }
             }
@@ -189,7 +189,7 @@ internal data class LocalMusicPlaylistActions(val allowed: Boolean, val rescan: 
     val removable = vm.removable(state.playlist, account.account?.id ?: 0)
     val subscribable = vm.subscribable(state.playlist)
     val subscribed = state.playlist?.nativeSubscribed == true
-    fun subscribe() { library.action("已收藏歌单") { vm.subscribe() } }
+    fun subscribe() { library.action("Đã lưu danh sách phát") { vm.subscribe() } }
     val sharedMotion = LocalPlaylistContainerMotion.current
     val cover = remember(state.cover, state.songs, sharedMotion) {
         state.cover.ifBlank { sharedMotion?.cover.orEmpty() }
@@ -286,7 +286,7 @@ internal data class LocalMusicPlaylistActions(val allowed: Boolean, val rescan: 
         if (pageActive) locateRequests?.collectLatest {
             val index = playlistCurrentSongIndex(songs, currentSong)
             if (index < 0) {
-                vm.container.errorNotices.show("当前歌曲不在此列表中")
+                vm.container.errorNotices.show("Bài hát hiện tại không có trong danh sách này")
                 return@collectLatest
             }
             // Track rows form the tail of the list. Include every optional header.
@@ -298,24 +298,24 @@ internal data class LocalMusicPlaylistActions(val allowed: Boolean, val rescan: 
         currentSong?.takeIf { current -> state.songs.any { it.id == current.id && it.musicSource == current.musicSource } }
     } else null
     val albumPage = vm.route.startsWith("lib/album/")
-    val collectionKind = if (albumPage) "专辑" else "歌单"
+    val collectionKind = if (albumPage) "Album" else "Danh sách phát"
     val title = state.title.ifBlank { sharedMotion?.title.orEmpty() }
-        .ifBlank { if (state.loading) "正在加载$collectionKind" else collectionKind }
+        .ifBlank { if (state.loading) "Đang tải$collectionKind" else collectionKind }
     val origin = when {
-        albumPage -> state.description.lineSequence().firstOrNull { it.isNotBlank() } ?: "专辑"
-        localMusic != null -> "本地曲库 · ${state.songs.size} 首歌曲"
-        state.playlist?.source == "ncm" -> "网易云音乐 · 同步歌单只读"
-        state.playlist?.source == "netease" -> "网易云音乐"
-        editable -> account.account?.nickname.orEmpty().ifBlank { "我的歌单" }
-        vm.route == "lib/likes" -> "CurrentMusic · 我喜欢"
-        vm.route == "lib/daily" -> "每日为你推荐"
-        vm.route == "lib/foryou" -> "根据你的音乐喜好推荐"
-        vm.route == "lib/recent" -> "最近听过的音乐"
-        else -> "CurrentMusic 歌单"
+        albumPage -> state.description.lineSequence().firstOrNull { it.isNotBlank() } ?: "Album"
+        localMusic != null -> "Thư viện nhạc cục bộ · ${state.songs.size} bài hát"
+        state.playlist?.source == "ncm" -> "Nhạc Vân NetEase · Danh sách phát đồng bộ chỉ đọc"
+        state.playlist?.source == "netease" -> "Nhạc Vân NetEase"
+        editable -> account.account?.nickname.orEmpty().ifBlank { "Danh sách phát của tôi" }
+        vm.route == "lib/likes" -> "CurrentMusic · Nhạc tôi thích"
+        vm.route == "lib/daily" -> "Đề xuất hằng ngày cho bạn"
+        vm.route == "lib/foryou" -> "Đề xuất theo sở thích âm nhạc của bạn"
+        vm.route == "lib/recent" -> "Nhạc đã nghe gần đây"
+        else -> "CurrentMusic playlist"
     }
-    val heroOrigin = if (state.playlist?.source == "ncm") "网易云音乐" else origin
+    val heroOrigin = if (state.playlist?.source == "ncm") "Nhạc Vân NetEase" else origin
     val heroDescription = (if (albumPage) state.description.substringAfter('\n', "") else state.description).trim().takeUnless {
-        it == "来自网易云音乐" || it == heroOrigin
+        it == "Đến từ Nhạc Vân NetEase" || it == heroOrigin
     }.orEmpty()
     fun start(shuffle: Boolean) {
         if (songs.isEmpty() || !canPlay) return
@@ -329,24 +329,24 @@ internal data class LocalMusicPlaylistActions(val allowed: Boolean, val rescan: 
     }
     fun share() {
         val text = buildString {
-            appendLine("《$title》 · ${state.songs.size} 首歌曲")
+            appendLine("《$title》 · ${state.songs.size} bài hát")
             state.songs.take(12).forEach { appendLine("${it.name}${it.artists.takeIf(String::isNotBlank)?.let { artist -> " — $artist" }.orEmpty()}") }
-            append("来自 CurrentMusic")
+            append("Đến từ CurrentMusic")
         }
         runCatching { context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain")
-            .putExtra(Intent.EXTRA_TEXT, text), "分享$collectionKind")) }.onFailure { library.container.errorNotices.show("暂时无法打开分享") }
+            .putExtra(Intent.EXTRA_TEXT, text), "Chia sẻ$collectionKind")) }.onFailure { library.container.errorNotices.show("Tạm thời không thể mở mục chia sẻ") }
     }
     PlaylistPageLayout(cover, list, heroHeightPx,
         if (localMusic != null) "local_music_screen" else "library_detail", toolbar = { progress ->
             GlassSearchToolbar(title, ((progress - .35f) / .65f).coerceIn(0f, 1f),
                 { if (selecting) { if (!batch.running) exitSelection() } else onBack() },
                 searching, { searching = it }, query, { query = it },
-                action = GlassToolbarAction(MusicIcons.Image, "CD 唱片架", {
+                action = GlassToolbarAction(MusicIcons.Image, "Kệ đĩa CD", {
                     scope.launch { vm.container.settings.edit { it.copy(playlistRecordShelf = true, playlistDepthRibbon = false) } }
                 }, "playlist_record_shelf_toggle"),
-                trailing = GlassToolbarAction(Icons.Default.MoreVert, "歌单操作", { menuOpen = true }, "playlist_more"),
+                trailing = GlassToolbarAction(Icons.Default.MoreVert, "Thao tác playlist", { menuOpen = true }, "playlist_more"),
                 modifier = Modifier.testTag("playlist_top_bar"), inputTag = "playlist_query", searchTag = "playlist_search_toggle",
-                placeholder = "搜索$collectionKind")
+                placeholder = "Tìm kiếm$collectionKind")
         }) { topInset ->
         // Track rows start below the artwork even while the hero itself is visible.
         // The hero and toolbar keep their own live sources.
@@ -361,7 +361,7 @@ internal data class LocalMusicPlaylistActions(val allowed: Boolean, val rescan: 
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(18.dp)) {
                             StyleArtwork(cover, Modifier.size(128.dp).then(playlistMotionElement(sharedMotion, 0, destination = true))
                                 .clip(RoundedCornerShape(16.dp)).testTag("playlist_cover"), tint,
-                                pixels = 420, pending = state.loading && cover.isBlank(), contentDescription = "歌单封面",
+                                pixels = 420, pending = state.loading && cover.isBlank(), contentDescription = "Ảnh bìa playlist",
                                 onArtworkReady = { sharedMotion?.artworkReady = it })
                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(title, modifier = playlistMotionElement(sharedMotion, 1, destination = true),
@@ -374,21 +374,21 @@ internal data class LocalMusicPlaylistActions(val allowed: Boolean, val rescan: 
                             }
                         }
                         Row(Modifier.fillMaxWidth().padding(top = 18.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            if (localMusic != null) PlaylistPill("扫描范围", Icons.Default.Search,
+                            if (localMusic != null) PlaylistPill("Phạm vi quét", Icons.Default.Search,
                                 localMusic.chooseScope, Modifier.weight(1f).testTag("local_music_scope"))
-                            else if (subscribable) PlaylistPill(if (subscribed) "已收藏" else "收藏歌单",
+                            else if (subscribable) PlaylistPill(if (subscribed) "Đã lưu" else "Lưu playlist",
                                 if (subscribed) Icons.Default.Star else MusicIcons.Star,
                                 { if (subscribed) onDelete() else subscribe() },
                                 Modifier.weight(1f).testTag("playlist_subscribe"),
                                 enabled = !busy && !state.loading && !state.refreshing)
-                            else PlaylistPill("分享", Icons.Default.Share, ::share, Modifier.weight(1f).testTag("playlist_share"), enabled = state.title.isNotBlank())
-                            PlaylistPill("随机播放", Icons.Default.PlayArrow, { start(true) }, Modifier.weight(1f).testTag("playlist_shuffle"), enabled = canPlay && songs.isNotEmpty(), emphasized = true)
-                            if (localMusic != null) PlaylistPill(if (localMusic.allowed) "扫描音乐" else "选择范围", Icons.Default.Refresh,
+                            else PlaylistPill("Chia sẻ", Icons.Default.Share, ::share, Modifier.weight(1f).testTag("playlist_share"), enabled = state.title.isNotBlank())
+                            PlaylistPill("Phát ngẫu nhiên", Icons.Default.PlayArrow, { start(true) }, Modifier.weight(1f).testTag("playlist_shuffle"), enabled = canPlay && songs.isNotEmpty(), emphasized = true)
+                            if (localMusic != null) PlaylistPill(if (localMusic.allowed) "Quét nhạc" else "Chọn phạm vi", Icons.Default.Refresh,
                                 ::refresh, Modifier.weight(1f).testTag(if (localMusic.allowed) "local_music_refresh" else "local_music_permission"),
                                 enabled = !state.loading && !state.refreshing)
-                            else if (subscribable) PlaylistPill("分享", Icons.Default.Share, ::share,
+                            else if (subscribable) PlaylistPill("Chia sẻ", Icons.Default.Share, ::share,
                                 Modifier.weight(1f).testTag("playlist_share"), enabled = state.title.isNotBlank())
-                            else PlaylistPill("${collectionKind}信息", Icons.Default.Info, { infoOpen = true }, Modifier.weight(1f).testTag("playlist_info"))
+                            else PlaylistPill("Thông tin ${collectionKind}", Icons.Default.Info, { infoOpen = true }, Modifier.weight(1f).testTag("playlist_info"))
                         }
                     }
                 }
@@ -396,15 +396,15 @@ internal data class LocalMusicPlaylistActions(val allowed: Boolean, val rescan: 
                     Column(Modifier.fillMaxWidth().playlistPullSurface(pullMotion).background(surface)
                         .testTag("playlist_playback_panel")) {
                         Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                            MusicTransportButton("播放全部", { start(false) }, Modifier.size(48.dp).testTag("play_library_all"),
+                            MusicTransportButton("Phát tất cả", { start(false) }, Modifier.size(48.dp).testTag("play_library_all"),
                                 prominent = true, enabled = songs.isNotEmpty() && canPlay)
                             Column(Modifier.weight(1f).clickable(enabled = songs.isNotEmpty() && canPlay, role = Role.Button) { start(false) }
                                 .padding(horizontal = 14.dp)) {
-                                Text("播放全部", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                                Text(if (query.isBlank()) remember(songs) { playlistDurationLabel(songs) } else "找到 ${songs.size} 首 / 共 ${state.songs.size} 首",
+                                Text("Phát tất cả", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                                Text(if (query.isBlank()) remember(songs) { playlistDurationLabel(songs) } else "Tìm thấy ${songs.size} bài / tổng cộng ${state.songs.size} bài",
                                     Modifier.padding(top = 3.dp), fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
                             }
-                            PlaylistIconAction(MusicIcons.Sort, "歌曲排序", { sortOpen = true }, Modifier.testTag("playlist_sort"),
+                            PlaylistIconAction(MusicIcons.Sort, "Sắp xếp bài hát", { sortOpen = true }, Modifier.testTag("playlist_sort"),
                                 ink = MiuixTheme.colorScheme.onSurface, background = Color.Transparent)
                         }
 
@@ -413,45 +413,45 @@ internal data class LocalMusicPlaylistActions(val allowed: Boolean, val rescan: 
                 if (selecting) item(key = "selection") {
                     Column(Modifier.fillMaxWidth().background(surface).padding(16.dp).testTag("playlist_selection"),
                         verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Text("已选择 ${selectedKeys.size} 首", fontWeight = FontWeight.Medium)
+                        Text("Đã chọn ${selectedKeys.size} bài", fontWeight = FontWeight.Medium)
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            MusicTextAction("全选", { selectedKeys = selectedKeys + songs.filter(::supportsBatchFavorite).map(::favoriteSelectionKey) },
+                            MusicTextAction("Chọn tất cả", { selectedKeys = selectedKeys + songs.filter(::supportsBatchFavorite).map(::favoriteSelectionKey) },
                                 Modifier.testTag("playlist_select_all"), enabled = !batch.running)
-                            MusicTextAction("取消", ::exitSelection, Modifier.testTag("playlist_selection_cancel"), enabled = !batch.running)
+                            MusicTextAction("Hủy", ::exitSelection, Modifier.testTag("playlist_selection_cancel"), enabled = !batch.running)
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            listOf(true to "收藏", false to "取消收藏").forEach { (liked, label) ->
+                            listOf(true to "Yêu thích", false to "Bỏ yêu thích").forEach { (liked, label) ->
                                 GlassActionButton(label, {
                                     library.setSelectedFavorites(state.songs.filter { favoriteSelectionKey(it) in selectedKeys }, liked, ::exitSelection)
                                 }, Modifier.weight(1f).testTag(if (liked) "playlist_batch_favorite" else "playlist_batch_unfavorite"),
                                     enabled = selectedKeys.isNotEmpty() && !likeBusy)
                             }
                         }
-                        if (batch.running) Text("正在处理 ${batch.completed} / ${batch.total} 首", fontSize = 13.sp)
-                        else batch.error?.let { Text("已完成 ${batch.completed} / ${batch.total} 首，$it。可重试或取消。", fontSize = 13.sp) }
+                        if (batch.running) Text("Đang xử lý ${batch.completed} / ${batch.total} bài hát", fontSize = 13.sp)
+                        else batch.error?.let { Text("Đã hoàn tất ${batch.completed} / ${batch.total} bài hát, $it. Có thể thử lại hoặc hủy.", fontSize = 13.sp) }
                     }
                 }
                 if (resume != null) item(key = "resume") {
                     Row(Modifier.fillMaxWidth().playlistPullSurface(pullMotion).background(surface).clickable(role = Role.Button) { vm.container.playerController.toggle() }
                         .padding(horizontal = 20.dp, vertical = 12.dp).testTag("playlist_resume"), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.PlayArrow, null, Modifier.size(16.dp), tint = MiuixTheme.colorScheme.primary)
-                        Text("继续播放：${resume.name}", Modifier.padding(start = 10.dp), fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text("Tiếp tục phát: ${resume.name}", Modifier.padding(start = 10.dp), fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
                 if (state.loading && state.songs.isEmpty()) item { Box(Modifier.fillMaxWidth().playlistPullSurface(pullMotion).padding(20.dp)) { LoadingSongList(4) } }
                 if (localMusic != null && !localMusic.allowed) item {
                     Column(Modifier.fillMaxWidth().playlistPullSurface(pullMotion).background(surface).padding(24.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text(localMusic.permissionMessage ?: "选择音乐文件夹，只导入该目录及子目录中的歌曲；也可选择扫描全机音乐。", fontSize = 14.sp)
-                        TextButton("选择扫描范围", onClick = localMusic.requestPermission, modifier = Modifier.testTag("local_music_grant"))
-                        if (localMusic.permissionMessage != null) TextButton("打开系统设置", onClick = localMusic.openSettings,
+                        Text(localMusic.permissionMessage ?: "Chọn thư mục nhạc để chỉ nhập các bài hát trong thư mục đó và thư mục con; hoặc chọn quét nhạc trên toàn thiết bị.", fontSize = 14.sp)
+                        TextButton("Chọn phạm vi quét", onClick = localMusic.requestPermission, modifier = Modifier.testTag("local_music_grant"))
+                        if (localMusic.permissionMessage != null) TextButton("Mở cài đặt hệ thống", onClick = localMusic.openSettings,
                             modifier = Modifier.testTag("local_music_open_app_settings"))
                     }
                 }
-                state.error?.let { error -> item { Column(Modifier.fillMaxWidth().playlistPullSurface(pullMotion).padding(20.dp)) { Text(error); TextButton("重试", onClick = ::refresh) } } }
-                if (room != null && localMusic == null) item { Text("点击歌曲，为当前房间点歌", Modifier.playlistPullSurface(pullMotion).padding(horizontal = 20.dp, vertical = 8.dp), fontSize = 13.sp) }
+                state.error?.let { error -> item { Column(Modifier.fillMaxWidth().playlistPullSurface(pullMotion).padding(20.dp)) { Text(error); TextButton("Thử lại", onClick = ::refresh) } } }
+                if (room != null && localMusic == null) item { Text("Nhấn vào bài hát để yêu cầu phát trong phòng hiện tại", Modifier.playlistPullSurface(pullMotion).padding(horizontal = 20.dp, vertical = 8.dp), fontSize = 13.sp) }
                 if (!state.loading && songs.isEmpty() && state.error == null && localMusic?.allowed != false) item {
-                    Text(if (query.isNotBlank()) "没有找到匹配的歌曲" else if (localMusic != null) "未找到音乐文件，下拉重新扫描" else "这里还没有歌曲，可在搜索结果中加入歌单",
+                    Text(if (query.isNotBlank()) "Không tìm thấy bài hát phù hợp" else if (localMusic != null) "Không tìm thấy tệp nhạc, kéo xuống để quét lại" else "Chưa có bài hát nào ở đây, bạn có thể thêm bài hát từ kết quả tìm kiếm",
                         Modifier.fillMaxWidth().playlistPullSurface(pullMotion).padding(24.dp), fontSize = 14.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .55f))
                 }
                 itemsIndexed(songs, key = { index, _ -> songKeys[index] }, contentType = { _, _ -> "track" }) { index, song ->
@@ -473,8 +473,8 @@ internal data class LocalMusicPlaylistActions(val allowed: Boolean, val rescan: 
                                 }) {
                                 LibrarySongActions(library, song, navigate)
                                 val dismiss = LocalDismissSongMenu.current
-                                if (editable) MusicDestinationRow("移出歌单", {
-                                    dismiss(); library.action("已移出歌单") { vm.remove(song) }
+                                if (editable) MusicDestinationRow("Xóa khỏi danh sách phát", {
+                                    dismiss(); library.action("Đã xóa khỏi danh sách phát") { vm.remove(song) }
                                 }, enabled = !busy, chevron = false)
                             }
                         }
@@ -484,25 +484,25 @@ internal data class LocalMusicPlaylistActions(val allowed: Boolean, val rescan: 
         }
     }
     SettingsUiScope {
-    if (sortOpen) MusicChoiceDialog("歌曲排序", onDismiss = { sortOpen = false }) {
-        listOf("默认顺序", "歌名 A–Z", "歌手 A–Z").forEachIndexed { index, label ->
+    if (sortOpen) MusicChoiceDialog("Sắp xếp bài hát", onDismiss = { sortOpen = false }) {
+        listOf("Thứ tự mặc định", "Tên bài hát A–Z", "Ca sĩ A–Z").forEachIndexed { index, label ->
             MusicDialogChoiceRow(label, order == index, { order = index; sortOpen = false },
                 modifier = Modifier.testTag("playlist_order_$index"))
         }
     }
-    if (menuOpen) MusicChoiceDialog("${collectionKind}操作", onDismiss = { menuOpen = false }) {
-        MusicDestinationRow("CD 唱片架", {
+    if (menuOpen) MusicChoiceDialog("Thao tác với ${collectionKind}", onDismiss = { menuOpen = false }) {
+        MusicDestinationRow("Kệ đĩa CD", {
             menuOpen = false
             scope.launch { vm.container.settings.edit { it.copy(playlistRecordShelf = true, playlistDepthRibbon = false) } }
         }, modifier = Modifier.testTag("playlist_record_shelf_menu"), chevron = false)
-        MusicDestinationRow("立体缎带", {
+        MusicDestinationRow("Dải ruy băng lập thể", {
             menuOpen = false
             scope.launch { vm.container.settings.edit { it.copy(playlistDepthRibbon = true, playlistRecordShelf = false) } }
         }, modifier = Modifier.testTag("playlist_depth_ribbon_toggle"), chevron = false)
-        MusicDestinationRow("${collectionKind}信息", { menuOpen = false; infoOpen = true }, modifier = Modifier.testTag("playlist_menu_info"), chevron = false)
-        MusicDestinationRow(if (localMusic != null) "重新扫描本地音乐" else "刷新歌单", { menuOpen = false; refresh() }, chevron = false)
+        MusicDestinationRow("Thông tin ${collectionKind}", { menuOpen = false; infoOpen = true }, modifier = Modifier.testTag("playlist_menu_info"), chevron = false)
+        MusicDestinationRow(if (localMusic != null) "Quét lại nhạc trên thiết bị" else "Làm mới danh sách phát", { menuOpen = false; refresh() }, chevron = false)
         if (state.playlist?.editable(account.account?.id ?: 0) == true) {
-            MusicDestinationRow(if (importState.running) "查看网易云导入进度" else "一键导入网易云我喜欢", {
+            MusicDestinationRow(if (importState.running) "Xem tiến trình nhập từ Nhạc Vân NetEase" else "Nhập mục tôi thích trên Nhạc Vân NetEase chỉ với một lần chạm", {
                 menuOpen = false
                 if (!importState.running) vm.container.playlistLikeImporter.start(vm.id, state.title)
                 importOpen = true
@@ -510,24 +510,24 @@ internal data class LocalMusicPlaylistActions(val allowed: Boolean, val rescan: 
                 modifier = Modifier.testTag("playlist_import_netease_likes"), chevron = false)
         }
         if (subscribable && !subscribed) {
-            MusicDestinationRow("收藏歌单", { menuOpen = false; subscribe() },
+            MusicDestinationRow("Lưu danh sách phát", { menuOpen = false; subscribe() },
                 enabled = !busy && !state.loading && !state.refreshing,
                 modifier = Modifier.testTag("playlist_menu_subscribe"), chevron = false)
         }
         if (editable) {
-            MusicDestinationRow("重命名", { menuOpen = false; onRename() }, enabled = !busy, modifier = Modifier.testTag("rename_playlist"), chevron = false)
+            MusicDestinationRow("Đổi tên", { menuOpen = false; onRename() }, enabled = !busy, modifier = Modifier.testTag("rename_playlist"), chevron = false)
         }
         if (removable) {
-            MusicDestinationRow(if (state.playlist?.source == "netease" && !state.playlist.nativeOwned) "取消收藏" else "删除歌单",
+            MusicDestinationRow(if (state.playlist?.source == "netease" && !state.playlist.nativeOwned) "Bỏ lưu" else "Xóa danh sách phát",
                 { menuOpen = false; onDelete() }, enabled = !busy, modifier = Modifier.testTag("delete_playlist"), chevron = false)
         }
     }
-    if (infoOpen) MusicDialog("${collectionKind}信息", onDismiss = { infoOpen = false }) {
+    if (infoOpen) MusicDialog("Thông tin ${collectionKind}", onDismiss = { infoOpen = false }) {
         Text(title, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
         Text(origin, fontSize = 13.sp)
         Text(playlistDurationLabel(state.songs), fontSize = 13.sp)
-        Text(state.description.ifBlank { "暂无歌单介绍" }, Modifier.heightIn(max = 240.dp).verticalScroll(androidx.compose.foundation.rememberScrollState()), fontSize = 14.sp)
-        MusicDialogButton("关闭", onClick = { infoOpen = false })
+        Text(state.description.ifBlank { "Chưa có giới thiệu danh sách phát" }, Modifier.heightIn(max = 240.dp).verticalScroll(androidx.compose.foundation.rememberScrollState()), fontSize = 14.sp)
+        MusicDialogButton("Đóng", onClick = { infoOpen = false })
     }
     if (importOpen) PlaylistLikeImportDialog(importState, onClose = { importOpen = false },
         onStop = vm.container.playlistLikeImporter::stop,
@@ -536,10 +536,10 @@ internal data class LocalMusicPlaylistActions(val allowed: Boolean, val rescan: 
 }
 
 internal fun playlistDurationLabel(songs: List<Song>): String {
-    val count = "${songs.size} 首"
+    val count = "${songs.size} bài"
     if (songs.isEmpty() || songs.any { it.durationMs <= 0 }) return count
     val minutes = songs.sumOf { it.durationMs } / 60_000
-    return "$count · " + if (minutes >= 60) "${minutes / 60}小时${minutes % 60}分钟" else if (minutes > 0) "${minutes}分钟" else "不足1分钟"
+    return "$count · " + if (minutes >= 60) "${minutes / 60} giờ ${minutes % 60} phút" else if (minutes > 0) "${minutes} phút" else "Chưa đến 1 phút"
 }
 
 @Composable internal fun PlaylistTrack(song: Song, selected: Boolean, liked: Boolean, play: () -> Unit,
@@ -560,12 +560,12 @@ internal fun playlistDurationLabel(songs: List<Song>): String {
     Row(Modifier.fillMaxWidth().testTag("playlist_song_${song.id}").combinedClickable(
         enabled = if (selectionMode) selectionEnabled else !pending,
         role = if (selectionMode) Role.Checkbox else Role.Button, onClick = primary,
-        onLongClickLabel = "预览歌曲与操作", onLongClick = if (selectionMode) null else ({ openMenu(preview = true) }))
+        onLongClickLabel = "Xem trước bài hát và thao tác", onLongClick = if (selectionMode) null else ({ openMenu(preview = true) }))
         .semantics { if (selectionMode) toggleableState = ToggleableState(selectionChecked) }
         .padding(vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {
         if (selectionMode) Box(Modifier.padding(end = 12.dp).size(24.dp).border(1.dp, MiuixTheme.colorScheme.primary, CircleShape),
             contentAlignment = Alignment.Center) {
-            if (selectionChecked) Icon(MusicIcons.Check, "已选择", Modifier.size(18.dp), tint = MiuixTheme.colorScheme.primary)
+            if (selectionChecked) Icon(MusicIcons.Check, "Đã chọn", Modifier.size(18.dp), tint = MiuixTheme.colorScheme.primary)
         }
         MusicCover(song.cover, Modifier.size(48.dp).onGloballyPositioned { coordinates ->
             coverBounds = Rect(coordinates.localToWindow(Offset.Zero),
@@ -575,14 +575,14 @@ internal fun playlistDurationLabel(songs: List<Song>): String {
             Text(song.name, fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis,
                 color = if (selected) MiuixTheme.colorScheme.primary else MiuixTheme.colorScheme.onSurface)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                if (liked) Image(painterResource(R.drawable.player_symbol_favorite_fill1), "已喜欢", Modifier.size(12.dp),
+                if (liked) Image(painterResource(R.drawable.player_symbol_favorite_fill1), "Đã thích", Modifier.size(12.dp),
                     colorFilter = ColorFilter.tint(MiuixTheme.colorScheme.primary))
-                Text(if (pending) "正在提交点歌…" else listOf(song.artists, song.album).filter(String::isNotBlank).joinToString(" · "),
+                Text(if (pending) "Đang gửi yêu cầu bài hát…" else listOf(song.artists, song.album).filter(String::isNotBlank).joinToString(" · "),
                     fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
             }
             if (song.mv > 0) Text("MV", fontSize = 10.sp, color = MiuixTheme.colorScheme.primary)
         }
-        if (!selectionMode) PlaylistIconAction(Icons.Default.MoreVert, "歌曲操作", {
+        if (!selectionMode) PlaylistIconAction(Icons.Default.MoreVert, "Thao tác bài hát", {
             openMenu(preview = false)
         }, Modifier.testTag("song_menu_${song.id}"), ink = MiuixTheme.colorScheme.onSurface.copy(alpha = .4f),
             background = Color.Transparent, enabled = !pending)

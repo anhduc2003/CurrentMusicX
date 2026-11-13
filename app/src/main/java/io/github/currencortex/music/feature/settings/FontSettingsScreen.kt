@@ -51,7 +51,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         scope.launch {
             try { viewModel.selectFont(key); error = null }
             catch (cancelled: CancellationException) { throw cancelled }
-            catch (_: Exception) { error = "无法保存字体设置，请重试" }
+            catch (_: Exception) { error = "Không thể lưu cài đặt phông chữ, vui lòng thử lại" }
         }
     }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -68,7 +68,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 }
                 revision++; query = ""
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (failure: Exception) { error = "字体导入失败：${failure.message ?: "文件无效"}" }
+            catch (failure: Exception) { error = "Nhập phông chữ thất bại: ${failure.message ?: "Tệp không hợp lệ"}" }
             finally {
                 if (!saved) imported?.let { font ->
                     withContext(NonCancellable + Dispatchers.IO) { deleteCustomFont(context, font.key) }
@@ -79,15 +79,15 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     }
     val colors = MiuixTheme.colorScheme
     val filter = remember(query) { MusicSearchQuery(query) }
-    val showDefault = filter.matches("默认")
+    val showDefault = filter.matches("Mặc định")
     val filteredImports = imports.filter { filter.matches(it.label) }
     val filteredInstalled = installed.orEmpty().filter { filter.matches(it.label) }
     CompositionLocalProvider(top.yukonga.miuix.kmp.theme.LocalContentColor provides colors.onSurface) {
     SettingsUiScope {
         Box(Modifier.fillMaxSize().imePadding().testTag("font_settings_page")) {
             SettingsScrollLayout(Modifier.fillMaxSize(), topBar = {
-                SettingsTopBar("字体", onBack, tag = "font_toolbar", actions = {
-                    GlassIconButton({ picker.launch(arrayOf("*/*")) }, "导入字体",
+                SettingsTopBar("Phông chữ", onBack, tag = "font_toolbar", actions = {
+                    GlassIconButton({ picker.launch(arrayOf("*/*")) }, "Nhập phông chữ",
                         Modifier.testTag("font_import"), enabled = !importing) {
                         Icon(MusicIcons.Upload, null)
                     }
@@ -101,18 +101,18 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp,
                         top = top + 24.dp, bottom = (20 + DockedSearchInset).dp)) {
                     if (showDefault) item("default") {
-                        SettingsGroup { FontChoice(AppearanceFont("", "默认"), settings.customFont.isBlank(),
+                        SettingsGroup { FontChoice(AppearanceFont("", "Mặc định"), settings.customFont.isBlank(),“
                             !importing, { select("") }) }
                     }
-                    if (importing) item("importing") { SettingsHint("正在导入字体…") }
+                    if (importing) item("importing") { SettingsHint("Đang nhập phông chữ…") }
                     error?.let { item("error") { SettingsHint(it, Modifier.testTag("font_error"), error = true) } }
-                    if (filteredImports.isNotEmpty()) fontSection("导入的字体", filteredImports,
+                    if (filteredImports.isNotEmpty()) fontSection("Phông chữ đã nhập", filteredImports,
                         settings.customFont, !importing, ::select)
-                    if (filteredInstalled.isNotEmpty()) fontSection("已安装字体", filteredInstalled,
+                    if (filteredInstalled.isNotEmpty()) fontSection("Phông chữ đã cài đặt", filteredInstalled,
                         settings.customFont, !importing, ::select)
-                    if (installed == null) item("loading") { SettingsHint("正在读取已安装字体…") }
+                    if (installed == null) item("loading") { SettingsHint("Đang đọc phông chữ đã cài đặt…") }
                     else if (!showDefault && filteredImports.isEmpty() && filteredInstalled.isEmpty())
-                        item("empty") { SettingsHint("没有匹配的字体", Modifier.testTag("font_search_empty")) }
+                        item("empty") { SettingsHint("Không tìm thấy phông chữ phù hợp", Modifier.testTag("font_search_empty")) }
                 }
             }
 

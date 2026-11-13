@@ -22,7 +22,7 @@ class AccountSecurityRepository(private val api: ApiClient, private val accounts
     fun isCurrent(owner: SecurityOwner) = owner.revision == accounts.sessionRevision.value &&
         owner.session == RequestSession(accounts.server, accounts.token) && !owner.session.token.isNullOrBlank()
     private fun checkOwner(owner: SecurityOwner) {
-        if (!isCurrent(owner)) throw ApiException(ErrorKind.Unauthorized, userMessage = "账号或服务器已改变，请重新打开安全设置")
+        if (!isCurrent(owner)) throw ApiException(ErrorKind.Unauthorized, userMessage = "Tài khoản hoặc máy chủ đã thay đổi, vui lòng mở lại phần cài đặt bảo mật")
     }
     private suspend fun request(owner: SecurityOwner, method: String, path: String, body: JsonObject? = null): JsonElement {
         checkOwner(owner)
@@ -44,7 +44,7 @@ class AccountSecurityRepository(private val api: ApiClient, private val accounts
         AuthenticatorEnrollment(secret, uri, owner, clock() + seconds.coerceAtMost(600) * 1000, clock)
     }
     suspend fun enable(enrollment: AuthenticatorEnrollment, code: String): AppResult<RecoveryCodes> = appResult {
-        if (enrollment.remainingSeconds <= 0) throw ApiException(ErrorKind.Unauthorized, userMessage = "绑定已过期，请重新开始")
+         if (enrollment.remainingSeconds <= 0) throw ApiException(ErrorKind.Unauthorized, userMessage = "Liên kết đã hết hạn, vui lòng bắt đầu lại")
         require(code.matches(Regex("[0-9]{6}")))
         val response = request(enrollment.owner, "POST", "auth/2fa/enable", buildJsonObject { put("code", code) }).jsonObject
         val codes = response["recoveryCodes"]!!.jsonArray.map { it.jsonPrimitive.content }

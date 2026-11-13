@@ -22,7 +22,7 @@ internal class NeteaseNativeEngine(sampleRate: Int, channels: Int, preset: Netea
     private var nativeEnded = false
     val outputHeadroom: Int
     init {
-        check(available()) { "原版音效引擎未加载" }
+        check(available()) { "Chưa tải engine hiệu ứng âm thanh gốc" }
         require(sampleRate in 8_000..192_000 && channels in 1..2)
         val parameters = if (preset.type == 1) NeteasePresetParameters.fromJson(preset.bytes.toString(Charsets.UTF_8), channels = channels)
             else { require(preset.type == 2); NeteasePresetParameters.fromFir(preset.bytes) }
@@ -42,7 +42,7 @@ internal class NeteaseNativeEngine(sampleRate: Int, channels: Int, preset: Netea
         outputResampler = if (processingRate != sampleRate) resampler(processingRate, sampleRate) else null
         effects = AudioEffects()
         try {
-            check(NeteasePcmBridge.initialize(effects.nativeInstance, processingRate, channels)) { "原版音效初始化失败" }
+            check(NeteasePcmBridge.initialize(effects.nativeInstance, processingRate, channels)) { "Khởi tạo hiệu ứng âm thanh gốc thất bại" }
             parameters.applyTo(effects)
         } catch (failure: Throwable) { effects.close(); throw failure }
     }

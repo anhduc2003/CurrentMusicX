@@ -43,9 +43,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 
 internal data class MemberFocus(val member: AboutMember, val group: String)
 
-/** QQ 头像内存缓存；关于页每次打开最多加载几张头像，无需落盘。
- *  不同网络下各端点可用性不一（实测 headimg_dl 在部分网络 400），按序回退。
- *  缓存键带规格：列表用 100，详情弹窗用 640。 */
+/** Bộ nhớ đệm ảnh đại diện QQ; mỗi lần mở trang giới thiệu chỉ tải tối đa vài ảnh đại diện, không cần ghi xuống đĩa.
+ *  Mức độ khả dụng của từng endpoint khác nhau tùy mạng (thực tế thử nghiệm, headimg_dl trả về 400 trên một số mạng), nên lần lượt thử phương án dự phòng.
+ *  Khóa bộ nhớ đệm kèm kích thước: danh sách dùng 100, cửa sổ bật lên chi tiết dùng 640. */
 private object QqAvatarCache {
     private val cache = object : LruCache<String, Bitmap>(24) {
         override fun sizeOf(key: String, value: Bitmap) = 1
@@ -97,7 +97,7 @@ internal fun MemberRow(member: AboutMember, onClick: () -> Unit) {
         summary = member.role,
         startAction = { QqAvatar(member.qq, modifier = Modifier.padding(end = 6.dp)) },
         endActions = {
-            // 与下方链接行同一箭头，提示这一行可以点开。
+            // Dùng cùng mũi tên với dòng liên kết bên dưới để cho biết dòng này có thể nhấn mở.
             Image(
                 imageVector = MiuixIcons.Basic.ArrowRight,
                 contentDescription = null,
@@ -109,13 +109,13 @@ internal fun MemberRow(member: AboutMember, onClick: () -> Unit) {
     )
 }
 
-/** ReactBits AnimatedList 的条目动效：条目自身超过一半进入屏幕后，从 scale 0.7 / 全透明
- *  淡入到 1；离开视口复位，再滚回来会重播（对应其 useInView 的 amount 0.5 与 once: false）。
- *  每条延时都是固定的 100ms，靠条目先后越过一半视口自然错开，而不是按序号累加延时。
+/** Hiệu ứng chuyển động cho mục của ReactBits AnimatedList: khi hơn một nửa mục đi vào màn hình, mục sẽ mờ dần từ scale 0.7 / trong suốt hoàn toàn
+ *  thành 1; khi rời khỏi khung nhìn thì đặt lại, cuộn trở lại sẽ phát lại (tương ứng với amount 0.5 và once: false của useInView).
+ *  Độ trễ của mỗi mục luôn cố định ở 100ms; các mục tự nhiên lệch nhịp khi lần lượt vượt qua một nửa khung nhìn, thay vì cộng dồn độ trễ theo thứ tự.
  *
- *  可见性不能用 onGloballyPositioned 判断：滚动时 LazyColumn 只重新摆放已测量的条目、
- *  不会重新布局，位置回调不再触发，屏幕外的条目会永远停在透明态。所以位置回调只用来记下
- *  条目在宿主列表项内的偏移与自身高度（滚动中都是定值），可见比例改由滚动信息实时计算。 */
+ *  Không thể dùng onGloballyPositioned để xác định khả năng hiển thị: khi cuộn, LazyColumn chỉ sắp xếp lại các mục đã đo,
+ *  không bố cục lại nên callback vị trí không được gọi lại, khiến các mục ngoài màn hình mãi ở trạng thái trong suốt. Vì vậy callback vị trí chỉ dùng để ghi nhận
+ *  độ lệch của mục trong phần tử danh sách chủ và chiều cao của mục (đều cố định khi cuộn); tỷ lệ hiển thị được tính theo thời gian thực từ thông tin cuộn. */
 @Composable
 internal fun AnimatedListItem(
     listState: LazyListState,
@@ -166,13 +166,13 @@ internal fun AnimatedListItem(
     }
 }
 
-/** 成员详情弹窗：头像、昵称、所属分组与分工；有 detail 的成员再补一段贡献说明。
- *  show 与 focus 分开传：关闭后 focus 仍保留最后一次选择，供退场动画期间继续渲染内容。 */
+/** Cửa sổ bật lên thông tin thành viên: ảnh đại diện, biệt danh, nhóm và vai trò; thành viên có detail sẽ có thêm phần mô tả đóng góp.
+ *  Truyền riêng show và focus: sau khi đóng, focus vẫn giữ lựa chọn gần nhất để tiếp tục hiển thị nội dung trong lúc chạy hoạt ảnh thoát. */
 @Composable
 internal fun MemberDetailDialog(show: Boolean, focus: MemberFocus?, onDismiss: () -> Unit) {
     val context = LocalContext.current
     val contentHeight = (androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp.dp - 160.dp).coerceAtLeast(180.dp)
-    OverlayDialog(show = show, title = "成员信息", onDismissRequest = onDismiss) {
+    OverlayDialog(show = show, title = "Thông tin thành viên", onDismissRequest = onDismiss) {
         Column(Modifier.fillMaxWidth().heightIn(max = contentHeight).testTag("member_dialog_content")) {
             focus?.let { current ->
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -183,10 +183,10 @@ internal fun MemberDetailDialog(show: Boolean, focus: MemberFocus?, onDismiss: (
                         modifier = Modifier.padding(top = 4.dp))
                     HorizontalDivider(Modifier.padding(vertical = 16.dp),
                         color = colorScheme.onSurface.copy(alpha = 0.08f))
-                    MemberInfoRow("分工", current.member.role)
+                    MemberInfoRow("Vai trò", current.member.role)
                 }
                 current.member.detail?.let { detail ->
-                    // 详情可能有多行（作者的贡献说明是分条的），限高后可滚动，不挤走下面的关闭按钮。
+                    // Chi tiết có thể gồm nhiều dòng (mô tả đóng góp của tác giả được chia thành từng mục); giới hạn chiều cao rồi cho phép cuộn để không đẩy nút đóng bên dưới ra ngoài.
                     Text(detail, fontSize = 13.sp, lineHeight = 21.sp,
                         color = colorScheme.onSurface,
                         modifier = Modifier.weight(1f, fill = false).fillMaxWidth().heightIn(max = 300.dp)
@@ -197,7 +197,7 @@ internal fun MemberDetailDialog(show: Boolean, focus: MemberFocus?, onDismiss: (
                     MusicDialogButton("GitHub", onClick = { openExternalLink(context, url) },
                         modifier = Modifier.fillMaxWidth().padding(top = 12.dp).testTag("member_github"))
                 }
-                MusicDialogButton("关闭", onClick = onDismiss,
+                MusicDialogButton("Đóng", onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth().padding(top = 18.dp))
             }
         }

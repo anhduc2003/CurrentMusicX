@@ -29,9 +29,9 @@ val ProfileUser.canAdminister get() = isAdmin || isSuper || isOwner
 @Serializable data class AdminSessions(val sessions: List<AdminSession> = emptyList())
 
 enum class AdminUserAction(val path: String, val label: String) {
-    DISABLE("disable", "禁用账号"), KICK("kick", "强制下线"), PASSWORD("password", "重置密码"),
-    TITLE("title", "设置头衔"), PROGRESSION("progression", "设置积分与等级"),
-    ADMIN("admin", "管理员权限"), SUPER("super", "超级管理员权限"), OWNER("owner", "站长权限");
+    DISABLE("disable", "Vô hiệu hóa tài khoản"), KICK("kick", "Buộc đăng xuất"), PASSWORD("password", "Đặt lại mật khẩu"),
+    TITLE("title", "Đặt danh hiệu"), PROGRESSION("progression", "Đặt điểm và cấp độ"),
+    ADMIN("admin", "Quyền quản trị viên"), SUPER("super", "Quyền siêu quản trị viên"), OWNER("owner", "Quyền chủ trang");
 
     fun allowed(actor: ProfileUser, target: AdminUser): Boolean {
         if (!actor.canAdminister || actor.id == target.id || target.username == "__internal__") return false

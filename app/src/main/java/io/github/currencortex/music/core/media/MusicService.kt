@@ -84,7 +84,7 @@ class MusicService : MediaSessionService() {
         val device = outputManager.preferredOutput(requested.deviceKey)
         playerSlots.keys.toList().forEach { it.setPreferredAudioDevice(device) }
         if (requested.deviceKey.isNotBlank() && device == null && !requested.mode.rawPcm) {
-            val reason = "首选音频设备未连接，使用系统默认输出"
+            val reason = "Thiết bị âm thanh ưu tiên chưa được kết nối, đang dùng đầu ra mặc định của hệ thống"
             if (outputRouter.fallback(reason)) reconfigureOutput()
             else if (requested.mode == io.github.currencortex.music.data.settings.AudioOutputMode.AUDIO_TRACK)
                 container.audioDiagnostics.update { it.copy(fallbackReason = reason) }
@@ -93,7 +93,7 @@ class MusicService : MediaSessionService() {
     }
     private fun reportOutput(message: String) {
         val fallback = outputRouter.fallbackReason()
-        container.audioOutput.status.value = if (fallback == null) message else "$message · 已回退 AudioTrack：$fallback"
+        container.audioOutput.status.value = if (fallback == null) message else "$message · Đã chuyển về AudioTrack：$fallback"
     }
     private fun reconfigureOutput() {
         if (container.playerController.state.value.resolving || player.currentMediaItem == null) return
@@ -106,17 +106,17 @@ class MusicService : MediaSessionService() {
     }
     private fun updateEffectDiagnostics() {
         val requested = buildList {
-            if (container.adaptiveAudio.state.value.enabled) add("动态音频处理系统")
-            if (container.smartTuning.effective.value.enabled) add("Android EQ / 智能调音")
-            if (container.originalProcessingPreset.value != null) add("网易云原版 PCM 音效")
-            if (container.originalAiMasterEffects.state.value.requestedEnabled) add("MNN / AI 调音")
-            if (container.originalSpeakerEffects.state.value.requestedEnabled) add("网易云扬声器音效")
+            if (container.adaptiveAudio.state.value.enabled) add("Hệ thống xử lý âm thanh động")
+            if (container.smartTuning.effective.value.enabled) add("Android EQ / Điều chỉnh âm thanh thông minh")
+            if (container.originalProcessingPreset.value != null) add("Hiệu ứng âm thanh PCM nguyên bản của Nhạc Vân NetEase")
+            if (container.originalAiMasterEffects.state.value.requestedEnabled) add("MNN / Điều chỉnh âm thanh bằng AI")
+            if (container.originalSpeakerEffects.state.value.requestedEnabled) add("Hiệu ứng loa của Nhạc Vân NetEase")
         }
         val plan = AudioEffectPipeline.plan(container.audioOutput.state.value.mode, requested)
         val applied = if (plan.bypass) emptyList() else buildList {
-            if (container.adaptiveAudioRuntime.value.processing) add("动态音频处理系统（PCM）")
+            if (container.adaptiveAudioRuntime.value.processing) add("Hệ thống xử lý âm thanh động（PCM）")
             if (container.equalizer.state.value.active) add("Android EQ")
-            if (playerSlots[player]?.originalProcessed != null) add("网易云原版 PCM 音效（已观察处理回调）")
+            if (playerSlots[player]?.originalProcessed != null) add("Hiệu ứng âm thanh PCM nguyên bản của Nhạc Vân NetEase（đã nhận được lệnh gọi lại xử lý）")
         }
         container.audioDiagnostics.update { it.copy(requestedEffects = plan.requested, appliedEffects = applied, processingBypass = plan.reason) }
     }
@@ -131,10 +131,10 @@ class MusicService : MediaSessionService() {
         val hardwareReason = generateSequence<Throwable>(error) { it.cause }.take(12).firstOrNull {
             it is BitPerfectFailure || it.message.orEmpty().startsWith("[USB_")
         }?.message?.lineSequence()?.firstOrNull()?.take(220)
-        if (!outputFailure || !outputRouter.fallback("${requested.label} 不可用：${hardwareReason ?: "输出错误 ${error.errorCode}"}")) return false
+        if (!outputFailure || !outputRouter.fallback("${requested.label} không khả dụng：${hardwareReason ?: "Lỗi đầu ra ${error.errorCode}"}")) return false
         val item = player.currentMediaItem ?: return false
         val position = player.currentPosition.coerceAtLeast(0)
-        reportOutput("标准音频路径")
+        reportOutput("Đường dẫn âm thanh tiêu chuẩn")
         container.playerController.state.value = container.playerController.state.value.copy(error = null, loading = true)
         scope.launch {
             yield()
@@ -475,14 +475,14 @@ class MusicService : MediaSessionService() {
                 if (container.audioOutput.state.value.mode.rawPcm)
                     CurrentMusicAudioDiagnostics.record("player.finalState=ERROR errorCode=${error.errorCode}")
                 if (container.audioOutput.state.value.mode.rawPcm &&
-                    !container.audioOutput.status.value.contains("已停止"))
-                    container.audioOutput.status.value = "${container.audioOutput.state.value.mode.label} 已停止：音源解码或输出失败，请检查设备与音源格式"
+                    !container.audioOutput.status.value.contains("Đã dừng"))
+                    container.audioOutput.status.value = "${container.audioOutput.state.value.mode.label} đã dừng：Giải mã nguồn âm thanh hoặc đầu ra thất bại, vui lòng kiểm tra thiết bị và định dạng nguồn âm thanh"
                 player.playWhenReady = false
                 pauseFade.finishPause()
                 container.playerController.state.value = container.playerController.state.value.copy(playing = false, playRequested = false,
                     loading = false, resolving = false, error = if (container.audioOutput.state.value.mode.rawPcm)
                         container.audioOutput.status.value else if (container.playbackQueue.state.value.current?.video == true)
-                        "MV 播放失败，请重试或降低清晰度" else "音频播放失败，请重试或降低音质")
+                        "Phát MV thất bại, vui lòng thử lại hoặc giảm độ phân giải" else "Phát âm thanh thất bại, vui lòng thử lại hoặc giảm chất lượng âm thanh")
                 container.logger.warn("Player", "Playback failed code=${error.errorCode}")
                 if (container.playerController.state.value.mode == PlayerMode.ROOM) container.playerController.external?.failed()
             }

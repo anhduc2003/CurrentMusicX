@@ -2,7 +2,7 @@ package io.github.currencortex.music.core.media
 
 /** A bounded copy keeps the latest attempt and, if necessary, both its beginning and final result. */
 internal object AudioDiagnosticExcerpt {
-    private const val NOTE = "[日志过长，已省略部分中间行；请导出完整诊断]"
+    private const val NOTE = "[Nhật ký quá dài, đã lược bỏ một số dòng ở giữa; vui lòng xuất bản chẩn đoán đầy đủ]"
     fun latest(header: String, lines: List<String>, maxBytes: Int = 3000): String {
         val marker = lines.indexOfLast { "decodedPcm.sink" in it }
         val selected = if (marker < 0) lines.takeLast(30) else {

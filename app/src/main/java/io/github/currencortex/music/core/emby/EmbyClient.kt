@@ -24,8 +24,8 @@ class EmbyAccess(val server: String, val username: String, val userId: String,
 
 /** Accept a server root or a reverse-proxy subpath, including an existing /emby suffix. */
 fun normalizeEmbyServer(value: String): String {
-    val url = value.trim().toHttpUrlOrNull() ?: throw IllegalArgumentException("服务器地址无效")
-    require(url.username.isEmpty() && url.password.isEmpty() && url.query == null && url.fragment == null) { "请填写服务器地址，不包含登录信息或网页参数" }
+    val url = value.trim().toHttpUrlOrNull() ?: throw IllegalArgumentException("Địa chỉ máy chủ không hợp lệ")
+    require(url.username.isEmpty() && url.password.isEmpty() && url.query == null && url.fragment == null) { "Vui lòng nhập địa chỉ máy chủ, không bao gồm thông tin đăng nhập hoặc tham số trang web" }
     val path = url.encodedPath.trimEnd('/').removeSuffix("/emby")
     return url.newBuilder().encodedPath("$path/emby/").build().toString()
 }
@@ -55,19 +55,19 @@ class EmbyClient(private val access: () -> EmbyAccess?, private val wire: OkHttp
             continuation.invokeOnCancellation { call.cancel() }
             call.enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    if (continuation.isActive) continuation.resumeWith(Result.failure(IOException("Emby 连接失败，请检查网络与服务器")))
+                    if (continuation.isActive) continuation.resumeWith(Result.failure(IOException("Kết nối Emby thất bại, vui lòng kiểm tra mạng và máy chủ")))
                 }
                 override fun onResponse(call: Call, response: Response) {
                     // Keep cancellation attached until the body has been read, not just until headers arrive.
                     val result = runCatching { response.use {
                         checkStatus(it)
-                        val source = it.body?.source() ?: throw IOException("Emby 响应为空")
+                        val source = it.body?.source() ?: throw IOException("Phản hồi Emby trống")
                         source.request(MAX_BYTES + 1)
-                        if (source.buffer.size > MAX_BYTES) throw IOException("曲库响应过大，请分页读取")
+                        if (source.buffer.size > MAX_BYTES) throw IOException("Phản hồi thư viện nhạc quá lớn, vui lòng đọc theo từng trang")
                         val text = source.readUtf8()
                         val parsed = if (text.isBlank()) JsonObject(emptyMap()) else
                             runCatching { ApiJson.parseToJsonElement(text).jsonObject }.getOrNull()
-                                ?: throw IOException("服务器未返回 Emby 接口，请检查地址")
+                                ?: throw IOException("Máy chủ không trả về API Emby, vui lòng kiểm tra địa chỉ")
                         if (!provisional) ensure(expected)
                         parsed
                     } }
@@ -92,25 +92,25 @@ class EmbyClient(private val access: () -> EmbyAccess?, private val wire: OkHttp
                 safe.url.port != base.port || !safe.url.encodedPath.startsWith(base.encodedPath) ||
                 !path.matches(Regex("(?:Audio/[A-Za-z0-9_-]+/stream|Items/[A-Za-z0-9_-]+/(?:Images/Primary|Download))")) ||
                 safe.url.queryParameterNames.any { it !in setOf(MARKER, "Static", "MediaSourceId", "MaxWidth", "Tag") })
-                throw IOException("Emby 账号或媒体地址已变化")
+                throw IOException("Tài khoản Emby hoặc địa chỉ phương tiện đã thay đổi")
             var request = authenticate(safe.newBuilder().url(safe.url.newBuilder().removeAllQueryParameters(MARKER).build()).build(), account)
             var response: Response? = null
             // Remote-backed Emby libraries commonly redirect. Never forward account headers to the destination.
             for (hop in 0..5) {
                 ensure(account)
                 val next = try { executeMedia(request, chain.call()) }
-                catch (_: IOException) { throw IOException("Emby 媒体读取失败，请检查网络或重试其他歌曲") }
+                catch (_: IOException) { throw IOException("Đọc phương tiện Emby thất bại, vui lòng kiểm tra mạng hoặc thử bài hát khác") }
                 if (next.code !in 300..399) { response = next; break }
                 val target = next.header("Location")?.let(next.request.url::resolve)
                 next.close()
                 if (hop == 5 || target == null || target.username.isNotEmpty() || target.password.isNotEmpty() ||
                     (target.scheme != "https" && !(base.scheme == "http" && target.host == base.host && target.port == base.port)))
-                    throw IOException("Emby 媒体重定向无效")
+                    throw IOException("Chuyển hướng phương tiện Emby không hợp lệ")
                 request = Request.Builder().url(target).apply {
                     safe.header("Range")?.let { header("Range", it) }
                 }.build()
             }
-            val result = response ?: throw IOException("Emby 媒体不可用")
+            val result = response ?: throw IOException("Phương tiện Emby không khả dụng")
             try { ensure(account); checkStatus(result) } catch (e: Exception) { result.close(); throw e }
             result.newBuilder().request(safe).build()
         }
@@ -141,8 +141,8 @@ class EmbyClient(private val access: () -> EmbyAccess?, private val wire: OkHttp
     }
     private fun checkStatus(response: Response) {
         if (response.code == 401) throw embyUnauthorized()
-        if (response.code == 403) throw ApiException(ErrorKind.Forbidden, 403, "Emby 账号没有此操作权限")
-        if (!response.isSuccessful) throw ApiException(ErrorKind.Server, response.code, "Emby 请求失败（${response.code}）")
+        if (response.code == 403) throw ApiException(ErrorKind.Forbidden, 403, "Tài khoản Emby không có quyền thực hiện thao tác này")
+        if (!response.isSuccessful) throw ApiException(ErrorKind.Server, response.code, "Yêu cầu Emby thất bại（${response.code}）")
     }
     companion object {
         const val MARKER = "_cm_emby"
@@ -153,7 +153,7 @@ class EmbyClient(private val access: () -> EmbyAccess?, private val wire: OkHttp
     }
 }
 
-internal fun embyUnauthorized() = ApiException(ErrorKind.Unauthorized, 401, "Emby 登录已失效，请重新连接")
+internal fun embyUnauthorized() = ApiException(ErrorKind.Unauthorized, 401, "Đăng nhập Emby đã hết hiệu lực, vui lòng kết nối lại")
 internal fun JsonObject.text(key: String) = (get(key) as? JsonPrimitive)?.contentOrNull.orEmpty()
 internal fun JsonObject.number(key: String) = (get(key) as? JsonPrimitive)?.longOrNull ?: 0L
 internal fun JsonObject.flag(key: String) = (get(key) as? JsonPrimitive)?.booleanOrNull ?: false

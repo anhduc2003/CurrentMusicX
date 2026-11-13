@@ -21,7 +21,7 @@ internal fun digest(algorithm: String, value: String) = MessageDigest.getInstanc
     .digest(value.toByteArray(Charsets.UTF_8)).joinToString("") { "%02x".format(it) }
 
 fun normalizeNavidromeServer(value: String): String {
-    val url = value.trim().toHttpUrlOrNull() ?: throw IllegalArgumentException("服务器地址无效")
+    val url = value.trim().toHttpUrlOrNull() ?: throw IllegalArgumentException("Địa chỉ máy chủ không hợp lệ")
     require(url.username.isEmpty() && url.password.isEmpty() && url.query == null && url.fragment == null)
     var path = url.encodedPath.trimEnd('/')
     if (path.endsWith("/rest")) path = path.removeSuffix("/rest")
@@ -63,15 +63,15 @@ class NavidromeClient(private val access: () -> NavidromeAccess?) {
             val expectedPath = base.newBuilder().addPathSegment("rest").addPathSegment("$endpoint.view").build().encodedPath
             if (identity != account.identity || safe.url.scheme != base.scheme || safe.url.host != base.host ||
                 safe.url.port != base.port || safe.url.encodedPath != expectedPath || endpoint !in MEDIA_ENDPOINTS)
-                throw IOException("Navidrome 账号或服务器已变化")
+                throw IOException("Tài khoản Navidrome hoặc máy chủ đã thay đổi")
             if (safe.url.queryParameterNames.any { it !in setOf(MARKER, "id", "size", "format", "maxBitRate", "timeOffset") })
-                throw IOException("Navidrome 媒体参数无效")
+                throw IOException("Tham số phương tiện Navidrome không hợp lệ")
             val params = safe.url.queryParameterNames.filter { it != MARKER }.flatMap { key ->
                 safe.url.queryParameterValues(key).filterNotNull().map { key to it }
             }
             // The dedicated client never forwards authentication through redirects.
             val response = wire.newCall(safe.newBuilder().url(url(account, endpoint, params, true)).build()).execute()
-            if (response.code in 300..399) { response.close(); throw IOException("Navidrome 媒体地址重定向，请检查服务器地址") }
+            if (response.code in 300..399) { response.close(); throw IOException("Địa chỉ phương tiện Navidrome bị chuyển hướng, vui lòng kiểm tra địa chỉ máy chủ") }
             try { ensure(account) } catch (e: Exception) { response.close(); throw e }
             response.newBuilder().request(safe).build()
         }
@@ -79,14 +79,14 @@ class NavidromeClient(private val access: () -> NavidromeAccess?) {
     suspend fun request(endpoint: String, params: List<Pair<String, String>> = emptyList(),
         expected: NavidromeAccess = current(), provisional: Boolean = false): JsonObject = withContext(Dispatchers.IO) {
         val call = wire.newCall(Request.Builder().url(url(expected, endpoint, params, true)).build())
-        val root = call.readResponse(connectionFailure = { IOException("Navidrome 连接失败，请检查网络与服务器") }) {
+        val root = call.readResponse(connectionFailure = { IOException("Không thể kết nối Navidrome, vui lòng kiểm tra mạng và máy chủ") }) {
             if (it.code in setOf(401, 403)) throw navidromeUnauthorized(it.code)
             if (!it.isSuccessful) throw ApiException(ErrorKind.Server, it.code)
-            val body = it.body ?: throw IOException("Navidrome 响应为空")
+            val body = it.body ?: throw IOException("Phản hồi Navidrome trống")
             val source = body.source(); source.request(MAX_BYTES + 1)
-            if (source.buffer.size > MAX_BYTES) throw IOException("曲库响应过大，请分页读取")
+            if (source.buffer.size > MAX_BYTES) throw IOException("Phản hồi thư viện nhạc quá lớn, vui lòng đọc theo từng trang")
             val root = runCatching { ApiJson.parseToJsonElement(source.readUtf8()).jsonObject["subsonic-response"]?.jsonObject }
-                .getOrNull() ?: throw IOException("服务器未返回 Subsonic 接口，请检查地址或反向代理")
+                .getOrNull() ?: throw IOException("Máy chủ không trả về giao diện Subsonic, vui lòng kiểm tra địa chỉ hoặc proxy ngược")
             if (root.string("status") != "ok") {
                 val code = root["error"]?.jsonObject?.number("code")?.toInt() ?: 0
                 if (code in setOf(40, 41)) throw navidromeUnauthorized(code)
@@ -105,7 +105,7 @@ class NavidromeClient(private val access: () -> NavidromeAccess?) {
 }
 
 internal fun navidromeUnauthorized(status: Int = 0) =
-    ApiException(ErrorKind.Unauthorized, status, "Navidrome 登录已失效，请重新连接")
+    ApiException(ErrorKind.Unauthorized, status, "Đăng nhập Navidrome đã hết hạn, vui lòng kết nối lại")
 
 internal fun JsonObject.string(key: String) = (get(key) as? JsonPrimitive)?.contentOrNull.orEmpty()
 internal fun JsonObject.number(key: String) = (get(key) as? JsonPrimitive)?.longOrNull ?: 0L

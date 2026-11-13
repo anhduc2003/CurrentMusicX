@@ -12,7 +12,7 @@ import io.github.currencortex.music.feature.library.scanLocalMusic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
-enum class PlaylistImportMode(val label: String) { LINKS("链接导入"), TEXT("文字导入"), IMAGES("图片导入"), LOCAL("本地导入") }
+enum class PlaylistImportMode(val label: String) { LINKS("Nhập bằng liên kết"), TEXT("Nhập văn bản"), IMAGES("Nhập hình ảnh"), LOCAL("Nhập từ thiết bị") }
 
 data class PlaylistImportState(val mode: PlaylistImportMode = PlaylistImportMode.LINKS,
     val links: List<String> = listOf(""), val text: String = "", val importStar: Boolean = false,
@@ -84,7 +84,7 @@ class PlaylistImportViewModel(private val repository: NeteasePlaylistImportRepos
     }
     fun readImages(context: Context, uris: List<Uri>) {
         if (uris.isEmpty() || state.value.busy || state.value.imagesLoading || state.value.task != null) return
-        if (uris.size > 9) { mutable.update { it.copy(error = "最多选择 9 张图片，请重新选择") }; return }
+        if (uris.size > 9) { mutable.update { it.copy(error = "Chỉ có thể chọn tối đa 9 ảnh, vui lòng chọn lại") }; return }
         val revision = account.value.revision
         mutable.update { it.copy(imagesLoading = true, error = null) }
         imageJob = viewModelScope.launch {
@@ -94,11 +94,11 @@ class PlaylistImportViewModel(private val repository: NeteasePlaylistImportRepos
                     uris.distinct().mapIndexed { index, uri ->
                         ensureActive()
                         val mime = resolver.getType(uri).orEmpty()
-                        require(mime.startsWith("image/")) { "请选择有效的图片文件" }
+                        require(mime.startsWith("image/")) { "Vui lòng chọn tệp hình ảnh hợp lệ" }
                         val name = resolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use {
                             if (it.moveToFirst()) it.getString(0) else null
                         }?.take(160) ?: "playlist-${index + 1}.jpg"
-                        val bytes = requireNotNull(resolver.openInputStream(uri)) { "无法读取所选图片" }.use { input ->
+                        val bytes = requireNotNull(resolver.openInputStream(uri)) { "Không thể đọc ảnh đã chọn" }.use { input ->
                             val output = java.io.ByteArrayOutputStream()
                             val buffer = ByteArray(32 * 1024)
                             val limit = 8 * 1024 * 1024
@@ -108,7 +108,7 @@ class PlaylistImportViewModel(private val repository: NeteasePlaylistImportRepos
                                 if (read < 0) break
                                 if (read > 0) output.write(buffer, 0, read)
                             }
-                            require(output.size() in 1..limit) { "每张图片必须小于或等于 8 MB，且不能为空" }
+                            require(output.size() in 1..limit) { "Mỗi ảnh phải có dung lượng không quá 8 MB và không được để trống" }
                             output.toByteArray()
                         }
                         PlaylistImportImage(bytes, name, mime)
@@ -128,7 +128,7 @@ class PlaylistImportViewModel(private val repository: NeteasePlaylistImportRepos
                 val songs = withContext(Dispatchers.IO) { scanLocalMusic(context.applicationContext) }
                 mutable.update { it.copy(localSongs = songs, selected = it.selected.intersect(songs.map(Song::localUri).toSet()), scanned = true) }
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (_: Exception) { mutable.update { it.copy(error = "无法扫描本地音乐，请检查音频权限后重试") } }
+            catch (_: Exception) { mutable.update { it.copy(error = "Không thể quét nhạc trên thiết bị, vui lòng kiểm tra quyền truy cập âm thanh rồi thử lại") } }
             finally { mutable.update { it.copy(scanning = false) } }
         }
     }
@@ -143,27 +143,27 @@ class PlaylistImportViewModel(private val repository: NeteasePlaylistImportRepos
             PlaylistImportMode.IMAGES -> input.images.isNotEmpty() && input.targetId != null && input.targets.any { it.id == input.targetId }
         }
         if (!valid) { mutable.update { it.copy(error = when (input.mode) {
-            PlaylistImportMode.LOCAL -> "请先选择本地歌曲"
-            PlaylistImportMode.IMAGES -> "请先选择图片和目标网易云歌单"
-            else -> "请先填写导入内容"
+            PlaylistImportMode.LOCAL -> "Vui lòng chọn bài hát trên thiết bị trước"
+            PlaylistImportMode.IMAGES -> "Vui lòng chọn ảnh và danh sách phát Nhạc Vân NetEase đích trước"
+            else -> "Vui lòng nhập nội dung cần nhập trước"
         }) }; return }
         val revision = account.value.revision
-        mutable.update { it.copy(busy = true, error = null, message = "正在提交导入任务…") }
+        mutable.update { it.copy(busy = true, error = null, message = "Đang gửi tác vụ nhập…") }
         var pending: PlaylistImportState? = input
         requestJob = viewModelScope.launch {
             try {
                 val task = createTask(requireNotNull(pending).also { pending = null })
                 if (account.value.revision != revision) return@launch
-                mutable.update { it.copy(task = task, images = emptyList(), message = "任务已提交到网易云，离开页面不会撤回服务端任务。") }
+                mutable.update { it.copy(task = task, images = emptyList(), message = "Tác vụ đã được gửi đến Nhạc Vân NetEase; rời khỏi trang sẽ không hủy tác vụ trên máy chủ.") }
                 repeat(60) { attempt ->
                     if (updateStatus(task, revision)) return@launch
                     if (attempt < 59) delay(5_000)
                 }
-                mutable.update { it.copy(message = "服务端仍在处理，可稍后手动刷新进度。") }
+                mutable.update { it.copy(message = "Máy chủ vẫn đang xử lý, bạn có thể làm mới tiến độ thủ công sau.") }
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (error: Exception) {
                 if (account.value.revision == revision) mutable.update { it.copy(error = failureMessage(error),
-                    message = if (it.task != null) "服务端任务已提交，可手动刷新进度。" else null) }
+                    message = if (it.task != null) "Tác vụ đã được gửi lên máy chủ, bạn có thể làm mới tiến độ thủ công." else null) }
             } finally { if (account.value.revision == revision) mutable.update { it.copy(busy = false) } }
         }
     }
@@ -178,7 +178,7 @@ class PlaylistImportViewModel(private val repository: NeteasePlaylistImportRepos
         currentCoroutineContext().ensureActive()
         if (account.value.revision != revision) throw CancellationException("Account changed")
         mutable.update { it.copy(result = result, error = null, message = result.message.ifBlank {
-            if (result.finished) { if (result.successful) "导入完成" else "导入未完成" } else "网易云正在匹配歌曲…"
+            if (result.finished) { if (result.successful) "Nhập hoàn tất" else "Nhập chưa hoàn tất" } else "Nhạc Vân NetEase đang tìm bài hát phù hợp…"
         }) }
         if (result.finished && completedTask != task.id && (result.successful || result.playlistIds.isNotEmpty())) {
             completedTask = task.id; onImported()
@@ -202,5 +202,5 @@ class PlaylistImportViewModel(private val repository: NeteasePlaylistImportRepos
         mutable.update { it.copy(task = null, result = null, message = null, error = null) }
     }
     private fun failureMessage(error: Exception) = (error as? ApiException)?.let { it.userMessage ?: it.kind.message }
-        ?: error.message?.take(180) ?: "操作失败，请稍后重试"
+        ?: error.message?.take(180) ?: "Thao tác thất bại, vui lòng thử lại sau"
 }

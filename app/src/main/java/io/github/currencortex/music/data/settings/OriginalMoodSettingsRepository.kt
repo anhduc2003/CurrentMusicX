@@ -18,7 +18,7 @@ class OriginalMoodSettingsRepository(private val store: DataStore<Preferences>, 
         .stateIn(scope, SharingStarted.Eagerly, OriginalSmartPreferences())
     suspend fun snapshot(): OriginalSmartPreferences = decode(store.data.first())
     suspend fun set(value: OriginalSmartPreferences) {
-        require(!value.enabled || value.ownerId > 0) { "原版情绪音效必须绑定真实网易云账号" }
+        require(!value.enabled || value.ownerId > 0) { "Hiệu ứng âm thanh tâm trạng bản gốc phải được liên kết với tài khoản Nhạc Vân NetEase thật" }
         store.edit { p ->
             if (value.enabled) {
                 OriginalEffectPreferenceKeys.clearMaster(p)

@@ -225,7 +225,7 @@ internal fun Modifier.playerSharedText(role: PlayerPagerArtworkRole?, subtitle: 
             } else PlayerArtworkFrame(1f, destinationBounds, 0f)
         } }
         PlayerImmersiveCover(song?.cover.orEmpty(), Modifier.fillMaxSize().testTag(if (moving) "player_artwork_flight" else "player_pager_artwork")
-            .semantics { contentDescription = "歌曲封面" }.playerMotionDiagnostics {
+            .semantics { contentDescription = "Ảnh bìa bài hát" }.playerMotionDiagnostics {
                 geometry.value?.let { this[PlayerPagerArtworkGeometry] = it }
                 visual.value?.let { this[PlayerArtworkGeometry] = it }
                 this[CoverRotation] = 0f

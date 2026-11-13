@@ -15,7 +15,7 @@ class OriginalMoodCodec(source: ByteArray) {
     init {
         require(source.size in 1..1_048_576)
         require(java.security.MessageDigest.getInstance("SHA-256").digest(source).joinToString("") { "%02x".format(it.toInt() and 255) } ==
-            "bb756e69dffae120e355b00e3242d656922a0f2c82c7555e7abeb3a975a8059a") { "原版情绪算法校验失败" }
+            "bb756e69dffae120e355b00e3242d656922a0f2c82c7555e7abeb3a975a8059a") { "Xác minh thuật toán cảm xúc bản gốc thất bại" }
         scope = bounded(8_000) { cx ->
             cx.initSafeStandardObjects().also {
                 cx.evaluateString(it, source.toString(Charsets.UTF_8), "netease-mood-codec", 1, null)
@@ -43,7 +43,7 @@ class OriginalMoodCodec(source: ByteArray) {
         require(!prepared.infer || output?.size == 32 && output.all(Float::isFinite))
         val result = invoke("moodFinish", listOf(prepared.value,
             JsonArray(output?.map(::JsonPrimitive).orEmpty())))
-        val parameters = result["aev2"] as? JsonObject ?: error("原版情绪音效返回格式无效")
+        val parameters = result["aev2"] as? JsonObject ?: error("Định dạng phản hồi hiệu ứng âm thanh cảm xúc bản gốc không hợp lệ")
         val raw = buildJsonObject { put("aev2", parameters) }.toString()
         NeteasePresetParameters.fromJson(raw)
         return MoodEffectResult(raw, (result["emotion"] as? JsonPrimitive)?.content.orEmpty(),
@@ -81,7 +81,7 @@ class OriginalMoodCodec(source: ByteArray) {
             setClassShutter { false }
         }
         override fun observeInstructionCount(cx: Context, instructionCount: Int) {
-            if (System.nanoTime() > (deadline.get() ?: 0L)) error("原版音效算法执行超时")
+            if (System.nanoTime() > (deadline.get() ?: 0L)) error("Thuật toán hiệu ứng âm thanh bản gốc thực thi quá thời gian")
         }
     }
 }
@@ -99,7 +99,7 @@ data class PreparedMood internal constructor(internal val value: JsonObject) {
 data class MoodEffectResult(val json: String, val emotion: String, val family: String, val inferred: Boolean,
     val visualExtra: JsonObject? = null) {
     fun preset(): NeteaseOriginalPreset = NeteaseOriginalPreset(ORIGINAL_MOOD_PRESET_ID,
-        "网易云 AI 情绪调音师", 1, json.toByteArray(Charsets.UTF_8))
+        "Nhạc Vân NetEase AI", 1, json.toByteArray(Charsets.UTF_8))
 }
 
 const val ORIGINAL_MOOD_PRESET_ID = -111L

@@ -47,7 +47,7 @@ class LyricsSynchronizer(private val document: LyricsDocument) {
         val begin = prefixEnd.getOrElse(previous) { 0 }
         val end = intervals.getOrNull(previous + 1)?.start ?: document.metadata.durationMs
         if (end != null && (end - begin < 2000 || positionMs >= end)) return null
-        return LyricsInterlude(begin, end, if (previous < 0) "前奏" else if (previous == intervals.lastIndex) "尾奏" else "间奏")
+        return LyricsInterlude(begin, end, if (previous < 0) "Dạo đầu" else if (previous == intervals.lastIndex) "Dạo kết" else "Nhạc dạo")
     }
     fun findCurrentWord(line: LyricLine, positionMs: Long): Int {
         var low = 0; var high = line.words.lastIndex

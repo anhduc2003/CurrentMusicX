@@ -15,7 +15,7 @@ enum class IslandNoticeKind { SOUND_EFFECT, UPDATE_DOWNLOAD, ERROR, MESSAGE }
 data class IslandNoticeAction(val label: String, val invoke: () -> Unit)
 
 data class SoundEffectNotice(val id: Long, val name: String, val tier: SoundEffectNoticeTier,
-    val phase: SoundEffectNoticePhase = SoundEffectNoticePhase.APPLYING, val message: String = "正在启用音效…",
+    val phase: SoundEffectNoticePhase = SoundEffectNoticePhase.APPLYING, val message: String = "Đang bật hiệu ứng âm thanh…",
     val kind: IslandNoticeKind = IslandNoticeKind.SOUND_EFFECT, val progress: Int? = null,
     val action: IslandNoticeAction? = null)
 data class SoundEffectNoticeResult(val phase: SoundEffectNoticePhase, val message: String)
@@ -57,8 +57,7 @@ internal fun originalEffectNoticeResult(loading: Boolean, enabled: Boolean, requ
     processing: Boolean, message: String): SoundEffectNoticeResult? = when {
     loading -> null
     enabled -> SoundEffectNoticeResult(SoundEffectNoticePhase.READY,
-        if (processing) "音效已生效" else "已开启，播放后生效")
-    requested && message.startsWith("正在") -> null
-    requested -> SoundEffectNoticeResult(SoundEffectNoticePhase.WAITING, message)
+        if (processing) "Hiệu ứng âm thanh đã có hiệu lực" else "Đã bật, có hiệu lực sau khi phát" )
+requested && message.startsWith("Đang") -> null    requested -> SoundEffectNoticeResult(SoundEffectNoticePhase.WAITING, message)
     else -> SoundEffectNoticeResult(SoundEffectNoticePhase.FAILED, message)
 }

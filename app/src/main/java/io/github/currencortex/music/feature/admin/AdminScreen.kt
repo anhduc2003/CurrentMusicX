@@ -86,13 +86,13 @@ internal sealed interface AdminConfirmation {
             (fadeIn(tween(180)) + slideInHorizontally(tween(240)) { if (forward) it / 8 else -it / 8 }) togetherWith
                 fadeOut(tween(120))
         }, label = "admin_detail_navigation") { currentDestination ->
-        if (currentDestination == null) MusicSubpage("管理员面板", "admin_screen", onBack = { if (!state.busy) onBack() }, actions = {
-            GlassIconButton(actions::refresh, if (state.loading) "正在刷新" else "刷新", enabled = !state.loading && !state.busy,
+        if (currentDestination == null) MusicSubpage("Bảng quản trị", "admin_screen", onBack = { if (!state.busy) onBack() }, actions = {
+            GlassIconButton(actions::refresh, if (state.loading) "Đang làm mới" else "Làm mới", enabled = !state.loading && !state.busy,
                 modifier = Modifier.testTag("admin_refresh")) { Icon(MusicIcons.Update, null) }
         }) { topInset ->
             Column(Modifier.fillMaxSize().padding(top = topInset)) {
                 if (!visible) {
-                    if (state.loading) AdminLoading() else AdminEmpty("无法进入管理面板", state.error ?: "请使用有管理权限的账号登录", "重新验证", actions::refresh)
+                    if (state.loading) AdminLoading() else AdminEmpty("Không thể truy cập bảng quản trị", state.error ?: "Vui lòng đăng nhập bằng tài khoản có quyền quản trị", "Xác thực lại", actions::refresh)
                 } else {
                     BoxWithConstraints(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)) {
                     val tabWidth = ((maxWidth / AdminTab.entries.size).value).coerceAtLeast(50f * LocalDensity.current.fontScale).dp
@@ -147,7 +147,7 @@ internal sealed interface AdminConfirmation {
     val error = state.error.takeIf { active }
     Column(Modifier.fillMaxSize()) {
         if (tab == AdminTab.USERS) AdminSearch(state, actions)
-        if (tab == AdminTab.ANNOUNCEMENTS) AdminSectionHeading("公告管理", "${state.announcements?.count { !it.removed } ?: 0} 条生效", "发布公告",
+        if (tab == AdminTab.ANNOUNCEMENTS) AdminSectionHeading("Quản lý thông báo", "${state.announcements?.count { !it.removed } ?: 0} mục đang có hiệu lực", "Đăng thông báo",
             enabled = !loading && !state.busy) { open(AdminDestination.Announcement(null)) }
         if (error != null && loaded) AdminNotice(error, error = true, retry = actions::refresh)
         MusicPullToRefresh(loading, actions::refresh, Modifier.weight(1f).fillMaxWidth(), enabled = active && !state.busy) {
@@ -155,7 +155,7 @@ internal sealed interface AdminConfirmation {
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = LocalMusicBottomInset.current + 28.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 when {
-                    !loaded && error != null -> item { AdminEmpty("加载失败", error, "重试", actions::refresh) }
+                    !loaded && error != null -> item { AdminEmpty("Tải thất bại", error, "Thử lại", actions::refresh) }
                     !loaded -> item { AdminLoading() }
                     else -> when (tab) {
                         AdminTab.OVERVIEW -> adminOverview(state)

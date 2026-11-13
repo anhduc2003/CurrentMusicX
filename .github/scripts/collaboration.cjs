@@ -6,18 +6,15 @@ const types = {
   refactor: 'maintenance', test: 'maintenance', release: 'maintenance',
 };
 const modules = {
-  '播放与音效': 'module: playback', '歌词': 'module: lyrics',
-  '音源与网络': 'module: network', '界面与外观': 'module: appearance',
-  '下载与缓存': 'module: storage', '其他': 'module: general',
-};
+'Phát lại và hiệu ứng âm thanh': 'module: playback', 'Lời bài hát': 'module: lyrics','Nguồn âm thanh và mạng': 'module: network', 'Giao diện và giao diện bên ngoài': 'module: appearance','Tải xuống và bộ nhớ đệm': 'module: storage', 'Khác': 'module: general',};
 const managedLabels = {
-  ...Object.fromEntries([...new Set(Object.values(types))].map(name => [name, '发布分类'])),
-  ...Object.fromEntries(Object.values(modules).map(name => [name, '问题所属模块'])),
-  'breaking-change': '不兼容变更', 'needs-info': '等待作者补充信息',
-  stale: '长期没有活动', 'bot: skip': '跳过自动分流与过期处理',
-  'bot: auto-closed': '自动关闭，等待补充信息后可由维护者重开',
-  'scope too large': '建议拆分过大的 PR', 'announcement': '维护公告',
-  'needs follow-up': '需要继续跟进，不自动关闭',
+  ...Object.fromEntries([...new Set(Object.values(types))].map(name => [name, 'Phân loại phát hành'])),
+  ...Object.fromEntries(Object.values(modules).map(name => [name, 'Mô-đun liên quan đến vấn đề'])),
+  'breaking-change': 'Thay đổi không tương thích', 'needs-info': 'Chờ tác giả bổ sung thông tin',
+  stale: 'Không có hoạt động trong thời gian dài', 'bot: skip': 'Bỏ qua tự động phân loại và xử lý quá hạn',
+  'bot: auto-closed': 'Tự động đóng; quản trị viên có thể mở lại sau khi thông tin được bổ sung',
+  'scope too large': 'Đề nghị chia nhỏ PR quá lớn', 'announcement': 'Thông báo của nhóm duy trì',
+  'needs follow-up': 'Cần tiếp tục theo dõi, không tự động đóng',
 };
 const names = issue => issue.labels.map(label => typeof label === 'string' ? label : label.name);
 const maintainer = item => ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(item.author_association);
@@ -28,8 +25,7 @@ function section(body, heading) {
   if (start < 0) return '';
   const end = lines.findIndex((line, i) => i > start && line.startsWith('### '));
   const value = lines.slice(start + 1, end < 0 ? undefined : end).join('\n').trim();
-  return /^(_No response_|无|N\/A)$/i.test(value) ? '' : value;
-}
+return /^(_No response_|Không|N\/A)$/i.test(value) ? '' : value;}
 function prLabels(title, body = '') {
   const match = /^(\w+)(?:\([^)]*\))?(!)?:\s*\S/.exec(title.trim());
   return [...new Set([
@@ -48,13 +44,10 @@ function obsoleteBotLabels(labels, desired, events) {
 function issuePlan(issue) {
   const labels = names(issue);
   if (issue.state !== 'open' || labels.includes('bot: skip') || labels.includes('announcement')) return null;
-  const module = modules[section(issue.body, '问题模块')];
-  // Free-form issues are allowed: do not claim their information is missing merely
+const module = modules[section(issue.body, 'Mô-đun vấn đề')];  // Free-form issues are allowed: do not claim their information is missing merely
   // because headings differ from the form. Maintainer reports need no questionnaire.
-  const form = labels.includes('bug') && String(issue.body).includes('### 应用版本');
-  const missing = form && !maintainer(issue)
-    ? ['应用版本', '设备与 Android 版本', '复现步骤', '实际与预期结果'].filter(h => !section(issue.body, h)) : [];
-  return { module: labels.some(l => l.startsWith('module: ')) ? null : module, missing, form };
+const form = labels.includes('bug') && String(issue.body).includes('### Phiên bản ứng dụng');  const missing = form && !maintainer(issue)
+? ['Phiên bản ứng dụng', 'Thiết bị và phiên bản Android', 'Các bước tái hiện', 'Kết quả thực tế và kết quả mong đợi'].filter(h => !section(issue.body, h)) : [];  return { module: labels.some(l => l.startsWith('module: ')) ? null : module, missing, form };
 }
 function staleDecision(issue, comments, events, now = Date.now()) {
   const labels = names(issue);
@@ -117,13 +110,13 @@ async function run({ github, context, core }, mode = 'event') {
       const action = staleDecision(issue, comments, events);
       if (action === 'revive') await remove(issue.number, 'stale');
       if (action === 'mark-stale') {
-        await comment(issue.number, '此条目已 60 天没有讨论活动。如仍可复现或仍有需求，请补充信息。功能建议与 PR 不因长期无活动自动关闭；符合条件的 Bug／问题将在标记后 30 天关闭。', 'stale');
+         await comment(issue.number, 'Mục này đã 60 ngày không có hoạt động thảo luận. Nếu vẫn có thể tái hiện hoặc vẫn còn nhu cầu, vui lòng bổ sung thông tin. Đề xuất tính năng và PR sẽ không tự động đóng do không hoạt động trong thời gian dài; Bug/vấn đề đủ điều kiện sẽ đóng sau 30 ngày kể từ khi được gắn nhãn.', 'stale');
         await add(issue.number, ['stale']);
       }
       if (action?.startsWith('close-') && closed < 2) {
         await comment(issue.number, action === 'close-info'
-          ? '等待补充信息已超过 14 天，暂时关闭；这不代表问题已经修复。补充后可请维护者重开。'
-          : '标记长期无活动后已超过 30 天，暂时关闭；这不代表问题已经修复。仍有问题请补充信息，请维护者重开。', 'closed');
+           ? 'Đã quá 14 ngày chờ bổ sung thông tin, tạm thời đóng; điều này không có nghĩa là vấn đề đã được khắc phục. Sau khi bổ sung thông tin, bạn có thể đề nghị quản trị viên mở lại.'
+           : 'Đã quá 30 ngày kể từ khi được đánh dấu không hoạt động trong thời gian dài, tạm thời đóng; điều này không có nghĩa là vấn đề đã được khắc phục. Nếu vẫn gặp vấn đề, vui lòng bổ sung thông tin và đề nghị quản trị viên mở lại.', 'closed');
         await add(issue.number, ['bot: auto-closed']);
         await mutate(`Close #${issue.number}`, () => github.rest.issues.update({ ...repo, issue_number: issue.number, state: 'closed', state_reason: 'not_planned' }));
         closed++;
@@ -146,7 +139,7 @@ async function run({ github, context, core }, mode = 'event') {
     const pr = (await github.rest.pulls.get({ ...repo, pull_number: number })).data;
     if (!maintainer(issue) && (pr.changed_files > 40 || pr.additions + pr.deletions > 3000)) {
       await add(number, ['scope too large']);
-      await comment(number, '此 PR 改动较多，请核对是否可以按独立功能拆分，并补充验证范围。此提示不表示代码审查已通过。', 'scope');
+       await comment(number, 'PR này có nhiều thay đổi. Vui lòng kiểm tra xem có thể chia thành các phần theo chức năng độc lập hay không, đồng thời bổ sung phạm vi kiểm thử. Lời nhắc này không có nghĩa là việc đánh giá mã đã được thông qua.', 'scope');
     }
     return;
   }
@@ -163,13 +156,13 @@ async function run({ github, context, core }, mode = 'event') {
   if (context.payload.action === 'edited' && names(issue).includes('stale')) await remove(number, 'stale');
   if (plan.module) await add(number, [plan.module]);
   if (plan.missing.length) {
-    await comment(number, `请补充：${plan.missing.join('、')}。请勿公开凭据或未脱敏日志。14 天未补充且无人跟进时会暂时关闭，之后可由维护者重开。`, 'info');
+     await comment(number, `Vui lòng bổ sung: ${plan.missing.join('、')}. Không công khai thông tin xác thực hoặc nhật ký chưa được ẩn dữ liệu nhạy cảm. Nếu sau 14 ngày vẫn chưa bổ sung và không ai theo dõi, mục này sẽ tạm thời đóng; quản trị viên có thể mở lại sau đó.`, 'info');
     if (names(issue).includes('needs-info') && context.payload.action === 'edited') await remove(number, 'needs-info');
     if (!names(issue).includes('needs-info') || context.payload.action === 'edited') await add(number, ['needs-info']);
   } else if (plan.form && names(issue).includes('needs-info')) {
     await remove(number, 'needs-info');
     await add(number, ['needs follow-up']);
-    await comment(number, '已补充模板所需信息，等待维护者进一步检查。', 'info');
+     await comment(number, 'Đã bổ sung thông tin theo mẫu, đang chờ quản trị viên kiểm tra thêm.', 'info');
   }
 }
 module.exports = { prLabels, obsoleteBotLabels, section, issuePlan, staleDecision, run };

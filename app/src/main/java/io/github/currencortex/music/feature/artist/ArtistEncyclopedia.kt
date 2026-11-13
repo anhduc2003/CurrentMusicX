@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter
     val profile = state.profile
     val brief = state.biography?.briefDesc?.takeIf(String::isNotBlank) ?: artist?.briefDesc.orEmpty()
     val sections = state.biography?.introduction.orEmpty().filter { it.text.isNotBlank() }
-    MusicSubpage("艺人百科", "artist_encyclopedia", onBack, backTag = "artist_bio_back") { topInset ->
+    MusicSubpage("Bách khoa nghệ sĩ", "artist_encyclopedia", onBack, backTag = "artist_bio_back") { topInset ->
         LazyColumn(Modifier.fillMaxSize().testTag("artist_bio_list"),
             state = if (tab == "basic") basicScroll else detailsScroll,
             contentPadding = musicScrollPadding(PaddingValues(24.dp, topInset + 24.dp, 24.dp, 32.dp)),
@@ -37,53 +37,53 @@ import java.time.format.DateTimeFormatter
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     MusicCover(profile?.avatar?.ifBlank { artist?.cover.orEmpty() } ?: artist?.cover.orEmpty(), Modifier.size(72.dp), 240, cornerRadius = 36.dp)
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(artist?.name ?: "艺人", fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+                        Text(artist?.name ?: "Nghệ sĩ", fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
                         if (!artist?.description.isNullOrBlank()) Text(artist.description, fontSize = 13.sp,
                             color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
-                        state.fans?.let { Text("${artistCount(it.fans)} 粉丝 · ${artistCount(it.follows)} 关注", fontSize = 13.sp,
+                        state.fans?.let { Text("${artistCount(it.fans)} người hâm mộ · ${artistCount(it.follows)} theo dõi", fontSize = 13.sp,
                             color = MiuixTheme.colorScheme.onSurfaceVariantSummary) }
                     }
                 }
             }
-            item("tabs") { MusicCategoryTabs(listOf("basic" to "基本信息", "details" to "艺人资料"), tab, { tab = it }, "artist_bio_tab") }
+            item("tabs") { MusicCategoryTabs(listOf("basic" to "Thông tin cơ bản", "details" to "Thông tin nghệ sĩ"), tab, { tab = it }, "artist_bio_tab") }
             if (tab == "basic") {
                 if (artist != null) item("basic") {
-                    ArtistSectionTitle("基本信息")
+                    ArtistSectionTitle("Thông tin cơ bản")
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         profile?.identify?.takeIf(String::isNotBlank)?.let { BiographyLine(it) }
-                        if (artist.description.isNotBlank()) BiographyLine("艺人别名：${artist.description}")
-                        profile?.identities?.takeIf { it.isNotEmpty() }?.let { BiographyLine("音乐身份：${it.joinToString("、")}") }
-                        when (profile?.gender) { 1 -> BiographyLine("性别：男"); 2 -> BiographyLine("性别：女") }
+                        if (artist.description.isNotBlank()) BiographyLine("Tên gọi khác: ${artist.description}")
+                        profile?.identities?.takeIf { it.isNotEmpty() }?.let { BiographyLine("Danh tính âm nhạc: ${it.joinToString("、")}") }
+                        when (profile?.gender) { 1 -> BiographyLine("Giới tính: Nam"); 2 -> BiographyLine("Giới tính: Nữ") }
                         profile?.birthday?.takeIf { it != 0L && it > -2208988800000L && it < System.currentTimeMillis() }
-                            ?.let { BiographyLine("生日：${artistProfileDate(it)}") }
-                        BiographyLine("音乐作品：${artist.songTotal} 首歌曲 · ${artist.albumTotal} 张专辑")
-                        BiographyLine("音乐视频：${artist.mvTotal} 支 MV")
-                        profile?.createTime?.takeIf { it > 0 }?.let { BiographyLine("注册时间：${artistProfileDate(it)}") }
-                        profile?.signature?.takeIf(String::isNotBlank)?.let { BiographyLine("个人简介：$it") }
+                            ?.let { BiographyLine("Ngày sinh: ${artistProfileDate(it)}") }
+                        BiographyLine("Tác phẩm âm nhạc: ${artist.songTotal} bài hát · ${artist.albumTotal} album")
+                        BiographyLine("Video âm nhạc: ${artist.mvTotal} MV")
+                        profile?.createTime?.takeIf { it > 0 }?.let { BiographyLine("Thời gian đăng ký: ${artistProfileDate(it)}") }
+                        profile?.signature?.takeIf(String::isNotBlank)?.let { BiographyLine("Giới thiệu bản thân: $it") }
                     }
                 }
                 if (state.profileLoading && profile == null) item("profile_loading") { LoadingTextList(2) }
                 state.profileError?.let { error -> item("profile_error") {
-                    ArtistSectionError("基本信息加载失败：$error", "重试基本信息", retryProfile, state.profileLoading)
+                    ArtistSectionError("Tải thông tin cơ bản thất bại: $error", "Thử tải lại thông tin cơ bản", retryProfile, state.profileLoading)
                 } }
-                if (brief.isNotBlank()) item("brief") { ArtistSectionTitle("艺人简介"); BiographyLine(brief) }
+                if (brief.isNotBlank()) item("brief") { ArtistSectionTitle("Giới thiệu nghệ sĩ"); BiographyLine(brief) }
                 state.overview?.takeIf { it.awardTitle.isNotBlank() || it.awardCount > 0 }?.let { overview -> item("awards") {
-                    ArtistSectionTitle("获奖成就")
+                    ArtistSectionTitle("Thành tựu và giải thưởng")
                     ArtistAwards(overview)
                 } }
             } else {
                 itemsIndexed(sections, key = { index, _ -> "section_$index" }) { _, section ->
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text(section.title.ifBlank { "艺人资料" }, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                        Text(section.title.ifBlank { "Thông tin nghệ sĩ" }, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
                         BiographyLine(section.text)
                     }
                 }
             }
             if (state.biographyLoading && state.biography == null) item("loading") { LoadingTextList(4) }
-            state.biographyError?.let { error -> item("error") { ArtistSectionError("简介加载失败：$error", "重试简介", retry, state.biographyLoading) } }
+            state.biographyError?.let { error -> item("error") { ArtistSectionError("Tải phần giới thiệu thất bại: $error", "Thử tải lại phần giới thiệu", retry, state.biographyLoading) } }
             if (!state.biographyLoading && state.biographyError == null &&
                 ((tab == "basic" && brief.isBlank()) || (tab == "details" && sections.isEmpty()))) item("empty") {
-                ArtistEmpty(if (tab == "basic") "暂无艺人简介" else "暂无更多艺人资料")
+                ArtistEmpty(if (tab == "basic") "Chưa có giới thiệu nghệ sĩ" else "Chưa có thêm thông tin nghệ sĩ")
             }
         }
     }

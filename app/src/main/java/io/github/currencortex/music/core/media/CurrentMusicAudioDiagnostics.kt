@@ -37,7 +37,7 @@ internal object CurrentMusicAudioDiagnostics {
     /** Read-only capability snapshot, also callable before any playback has started. */
     fun capabilities(manager: AudioManager, device: AudioDeviceInfo): String {
         record("device ${device(device).describe()}")
-        if (Build.VERSION.SDK_INT < 34) return "Android API ${Build.VERSION.SDK_INT} 未提供 Bit-perfect MixerAttributes"
+        if (Build.VERSION.SDK_INT < 34) return "Android API ${Build.VERSION.SDK_INT} không cung cấp Bit-perfect MixerAttributes"
         return try {
             val all = manager.getSupportedMixerAttributes(device)
             record("supportedMixerAttributes.count=${all.size} deviceId=${device.id}")
@@ -47,11 +47,11 @@ internal object CurrentMusicAudioDiagnostics {
                 record("supportedMixer[$index]=${snapshot.describe()}")
                 snapshot.describe()
             }
-            "${device.productName} · ${all.count { it.mixerBehavior == 1 }} 种 Bit-perfect 配置\n" +
-                if (formats.isEmpty()) "Android 未报告可配置的 MixerAttributes；DAC 硬件能力未知" else formats.joinToString("\n")
+            "${device.productName} · ${all.count { it.mixerBehavior == 1 }} cấu hình Bit-perfect\n" +
+                if (formats.isEmpty()) "Android không báo cáo MixerAttributes có thể cấu hình; chưa rõ khả năng phần cứng DAC" else formats.joinToString("\n")
         } catch (e: Exception) {
             record("failure=MIXER_QUERY exception=${e.javaClass.simpleName} deviceId=${device.id}")
-            "Android 查询 MixerAttributes 失败（${e.javaClass.simpleName}）；DAC 硬件能力未知"
+            "Truy vấn MixerAttributes của Android thất bại（${e.javaClass.simpleName}）；chưa rõ khả năng phần cứng DAC"
         }
     }
 }

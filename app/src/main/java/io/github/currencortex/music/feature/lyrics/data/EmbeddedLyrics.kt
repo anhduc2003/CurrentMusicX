@@ -11,10 +11,10 @@ import java.io.IOException
 import java.util.Locale
 
 internal class EmbeddedLyricsReadException(cause: Throwable) :
-    IOException("无法读取音频文件中的歌词标签", cause)
+    IOException("Không thể đọc thẻ lời bài hát trong tệp âm thanh", cause)
 
 internal class EmbeddedLyricsDecodeException :
-    IOException("音频文件包含歌词，但格式或时间轴无法识别")
+    IOException("Tệp âm thanh có chứa lời bài hát nhưng không thể nhận diện định dạng hoặc dòng thời gian")
 
 /** Keep extraction separate from parsing: a damaged first tag must not hide a valid later tag. */
 internal fun embeddedLyricsCandidates(audioTag: Tag?): List<String> {

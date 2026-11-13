@@ -1,35 +1,35 @@
-# CurrentMusicX CI Release 保留规则
+# Quy tắc giữ lại bản phát hành CI của CurrentMusicX
 
-## 目标
+## Mục tiêu
 
-**GitHub Releases 中始终只保留最新一个完整发布的 CurrentMusic CI 版本**。正式版（如 `v1.3.0`、`v1.3.1`、`v1.3.2`）必须永久排除在自动清理范围之外。
+**Trong GitHub Releases, luôn chỉ giữ lại phiên bản CurrentMusic CI hoàn chỉnh mới nhất**. Các bản phát hành chính thức (như `v1.3.0`, `v1.3.1`, `v1.3.2`) phải luôn được loại khỏi phạm vi tự động dọn dẹp.
 
-## CI 版发布时机
+## Thời điểm phát hành bản CI
 
-PR 合并前并行运行源码与协作检查。Android Release 构建和 Lint 集中在主线进行。只要还有目标为 `main` 的开放 PR，仓库就推迟构建和发布 CI 版，草稿和带 `bot: skip` 标签的 PR 也计入。中途合并只触发轻量的 **Check pending CI release** 检查。
+Trước khi hợp nhất PR, các bước kiểm tra mã nguồn và cộng tác chạy song song. Bản dựng Android Release và Lint được tập trung vào nhánh chính. Chừng nào vẫn còn PR đang mở có nhánh đích là `main`, kho lưu trữ sẽ hoãn xây dựng và phát hành bản CI; PR ở trạng thái nháp và PR có nhãn `bot: skip` cũng được tính. Việc hợp nhất trong thời gian này chỉ kích hoạt bước kiểm tra nhẹ **Check pending CI release**.
 
-最后一个 PR 合并、关闭或改投其他分支后，检查最新 `main` 和上一个完整 CI 版之间的累计改动。有应用改动时构建并发布一个 CI 版。若只改了文档或 CI，则跳过打包。签名发布流程会再次核对 PR 和主线状态。
+Sau khi PR cuối cùng được hợp nhất, đóng hoặc chuyển sang nhánh khác, kiểm tra các thay đổi tích lũy giữa `main` mới nhất và bản CI hoàn chỉnh trước đó. Nếu có thay đổi ứng dụng thì xây dựng và phát hành một bản CI. Nếu chỉ thay đổi tài liệu hoặc CI thì bỏ qua bước đóng gói. Quy trình phát hành có ký sẽ kiểm tra lại trạng thái PR và nhánh chính.
 
-Android CI 成功构建并上传 APK 后，通过 `workflow_dispatch` 显式启动 **Publish CI build**，传入构建的 `run_id` 和 `run_attempt`，避免依赖机器人调度后可能不继续触发的 `workflow_run` 事件。发布端从 GitHub API 核验来源、运行次数、完成状态及 APK 构建/上传步骤；通知作业尚未结束时最多等待两分钟，超时则失败。签名仍只在 `ci-signing` 环境的独立作业内执行。
+Sau khi Android CI xây dựng thành công và tải APK lên, khởi chạy rõ ràng **Publish CI build** thông qua `workflow_dispatch`, truyền vào `run_id` và `run_attempt` của bản dựng để tránh phụ thuộc vào sự kiện `workflow_run`, vốn có thể không được kích hoạt tiếp sau khi bộ lập lịch bot chạy. Phía phát hành xác minh nguồn, số lần chạy, trạng thái hoàn tất và các bước xây dựng/tải APK lên thông qua GitHub API; nếu tác vụ thông báo chưa kết thúc thì chờ tối đa hai phút, quá thời hạn sẽ báo lỗi. Việc ký vẫn chỉ được thực hiện trong tác vụ riêng biệt thuộc môi trường `ci-signing`.
 
-若需要补发已有构建，可在 `main` 上手动运行 **Publish CI build** 并填写原 Android CI 的运行 ID 和运行次数。补发也必须满足无开放 PR、构建提交仍为最新主线、存在累计应用改动等发布条件，且不能替换已发布的同名版本。
+Nếu cần phát hành lại bản dựng hiện có, có thể chạy thủ công **Publish CI build** trên `main` và điền ID lần chạy cùng số lần chạy của Android CI ban đầu. Việc phát hành lại cũng phải đáp ứng các điều kiện phát hành như không có PR đang mở, commit của bản dựng vẫn là nhánh chính mới nhất và có thay đổi ứng dụng tích lũy; đồng thời không được thay thế phiên bản cùng tên đã phát hành.
 
-## 判断规则
+## Quy tắc xác định
 
-- 仅修改 GitHub 工作流或 CI 脚本时，由协作检查运行脚本语法检查和工作流校验，自动构建跳过 Android 工具链、APK 和预发布。队列清空后，可手动启动 Android CI 验证工具链；是否发布仍取决于累计改动。
-- CI 版和正式版的自动更新说明都排除仅修改 CI 的 PR。若同一 PR 还修改应用代码，保留该 PR 的更新条目。
+- Khi chỉ sửa quy trình làm việc GitHub hoặc tập lệnh CI, bước kiểm tra cộng tác sẽ chạy kiểm tra cú pháp tập lệnh và xác thực quy trình làm việc; bản dựng tự động sẽ bỏ qua bộ công cụ Android, APK và bản phát hành trước. Sau khi hàng đợi được giải phóng, có thể khởi chạy Android CI thủ công để xác minh bộ công cụ; việc có phát hành hay không vẫn tùy thuộc vào các thay đổi tích lũy.
+- Ghi chú cập nhật tự động của cả bản CI và bản chính thức đều loại trừ PR chỉ sửa CI. Nếu cùng PR đó còn sửa mã ứng dụng, vẫn giữ lại mục cập nhật của PR.
 
-- 仅匹配 `vX.Y.Z-ci.N` 格式的 tag、`CurrentMusic CI #N` 名称、`prerelease=true` 且 `draft=false` 的完整 CI Release。
-- 必须具有 `CurrentMusic-Android-vX.Y.Z-ci.N.apk` 和 `SHA256SUMS.txt` 两个附件；不符合标准的 Release、草稿及其他预发布版本不自动删除。
-- 跨版本比较 CI 构建编号 `N`，保留编号最大的一个。**不依赖 GitHub Releases 列表的展示顺序**。
-- 若检测到重复构建编号、列表异常或权限错误，停止或报告失败，不进行不确定的删除。
-- 清理旧 CI Release 后删除对应 `vX.Y.Z-ci.N` Git tag；如果 Release 删除失败，不删除其 tag。
-- 发布作业成功后显式调度清理；兼容保留的 `workflow_run` 入口同时要求发布工作流及该次运行的 `publish` 作业成功。发布作业跳过时不调度清理。
-- 规则首次合并到 `main` 时自动运行一次，清理既有旧 CI Release；也可以从 Actions 手动执行。
+- Chỉ khớp với tag có định dạng `vX.Y.Z-ci.N`, tên `CurrentMusic CI #N`, `prerelease=true` và `draft=false`.
+- Phải có cả hai tệp đính kèm `CurrentMusic-Android-vX.Y.Z-ci.N.apk` và `SHA256SUMS.txt`; Release không đáp ứng tiêu chuẩn, bản nháp và các bản phát hành trước khác sẽ không bị tự động xóa.
+- So sánh số bản dựng CI `N` giữa các phiên bản và giữ lại bản có số lớn nhất. **Không dựa vào thứ tự hiển thị của danh sách GitHub Releases**.
+- Nếu phát hiện số bản dựng trùng lặp, danh sách bất thường hoặc lỗi quyền, hãy dừng hoặc báo lỗi; không thực hiện thao tác xóa khi chưa xác định chắc chắn.
+- Sau khi dọn dẹp CI Release cũ, xóa Git tag `vX.Y.Z-ci.N` tương ứng; nếu xóa Release thất bại thì không xóa tag của Release đó.
+- Sau khi tác vụ phát hành thành công, lên lịch dọn dẹp một cách tường minh; đầu vào `workflow_run` được giữ lại để tương thích cũng yêu cầu quy trình phát hành và tác vụ `publish` của lần chạy đó phải thành công. Nếu bỏ qua tác vụ phát hành thì không lên lịch dọn dẹp.
+- Khi quy tắc lần đầu được hợp nhất vào `main`, tự động chạy một lần để dọn dẹp các CI Release cũ hiện có; cũng có thể chạy thủ công từ Actions.
 
-## 安全边界
+## Giới hạn an toàn
 
-- `.github/workflows/ci-prune.yml` 只检出 `main` 可信脚本，不检出、执行 Fork PR 的文件。
-- 清理任务使用 `actions: read` 核验发布作业，使用 `contents: write` 管理 CI Release 和 tag。
-- **不会删除正式版 Release 或正式版 tag**，也不会自动删除草稿、其他项目的预发布或未完整发布的 CI 构建。
-- 当新 CI 尚未成功公开发布时，旧的最新 CI 版本仍然保留，保证应用更新入口可用。
+- `.github/workflows/ci-prune.yml` chỉ checkout tập lệnh đáng tin cậy từ `main`, không checkout hoặc thực thi tệp từ Fork PR.
+- Tác vụ dọn dẹp dùng `actions: read` để xác minh tác vụ phát hành, và dùng `contents: write` để quản lý CI Release cùng tag.
+- **Không xóa Release hoặc tag của bản phát hành chính thức**, cũng không tự động xóa bản nháp, bản phát hành trước của dự án khác hoặc bản dựng CI chưa được phát hành hoàn chỉnh.
+- Khi bản CI mới chưa được công khai phát hành thành công, vẫn giữ lại phiên bản CI mới nhất cũ để đảm bảo lối vào cập nhật ứng dụng luôn khả dụng.

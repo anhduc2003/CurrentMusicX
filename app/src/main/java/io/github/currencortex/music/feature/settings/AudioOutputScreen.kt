@@ -49,14 +49,14 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val supportedRates = remember { AudioOutputSettings.rates.filter { it == 0 ||
         AudioTrack.getMinBufferSize(it, AudioFormat.CHANNEL_OUT_STEREO, AudioFormat.ENCODING_PCM_16BIT) > 0 } }
     val selectedDevice = devices.firstOrNull { it.outputKey() == settings.deviceKey }
-    var bitPerfectDevices by remember { mutableStateOf("正在读取 USB 逐位输出能力…") }
+    var bitPerfectDevices by remember { mutableStateOf("Đang đọc khả năng xuất bit-perfect qua USB…") }
     LaunchedEffect(devices, settings.deviceKey) {
         bitPerfectDevices = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-            if (android.os.Build.VERSION.SDK_INT < 34) "当前系统低于 Android 14，无法启用 Bit-perfect"
+            if (android.os.Build.VERSION.SDK_INT < 34) "Hệ thống hiện tại thấp hơn Android 14, không thể bật Bit-perfect"
             else {
                 val usb = devices.filter { it.type == AudioDeviceInfo.TYPE_USB_DEVICE || it.type == AudioDeviceInfo.TYPE_USB_HEADSET }
                     .filter { settings.deviceKey.isEmpty() || it.outputKey() == settings.deviceKey }
-                if (usb.isEmpty()) "当前未连接或未选择 USB DAC"
+                if (usb.isEmpty()) "Hiện chưa kết nối hoặc chưa chọn USB DAC"
                 else usb.joinToString("\n") { device ->
                     CurrentMusicAudioDiagnostics.capabilities(manager, device)
                 }
@@ -70,7 +70,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         val structured = container.audioDiagnostics.text()
         val capability = bitPerfectDevices
         return kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-            "$structured\nUSB 系统能力查询:\n$capability\n\n完整原生诊断:\n${CurrentMusicAudioDiagnostics.fullSnapshot()}"
+            "$structured\nTruy vấn khả năng hệ thống USB:\n$capability\n\nChẩn đoán gốc đầy đủ:\n${CurrentMusicAudioDiagnostics.fullSnapshot()}"
         }
     }
     val exportDiagnostics = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
@@ -78,138 +78,138 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             try {
                 val report = diagnosticReport()
                 kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                    requireNotNull(context.contentResolver.openOutputStream(uri)) { "无法打开文件" }.bufferedWriter(Charsets.UTF_8).use { it.write(report) }
+                    requireNotNull(context.contentResolver.openOutputStream(uri)) { "Không thể mở tệp" }.bufferedWriter(Charsets.UTF_8).use { it.write(report) }
                 }
-                diagnosticMessage = "完整诊断已导出"
+                diagnosticMessage = "Đã xuất chẩn đoán đầy đủ"
             } catch (e: kotlinx.coroutines.CancellationException) { throw e }
-            catch (_: Exception) { diagnosticMessage = "导出失败，请重试" }
+            catch (_: Exception) { diagnosticMessage = "Xuất thất bại, vui lòng thử lại" }
         }
     }
     fun save(action: suspend () -> Unit) { scope.launch {
         try { action(); error = null } catch (e: kotlinx.coroutines.CancellationException) { throw e }
-        catch (_: Exception) { error = "保存失败，请重试" }
+        catch (_: Exception) { error = "Lưu thất bại, vui lòng thử lại" }
     } }
     val hint = MiuixTheme.colorScheme.onSurfaceVariantSummary
 
     val modeDescriptions = mapOf(
-        AudioOutputMode.AUDIO_TRACK to "系统音轨，支持系统音效",
-        AudioOutputMode.OPENSL_ES to "固定 OpenSL ES，设备路由跟随系统",
-        AudioOutputMode.AAUDIO to "固定 AAudio，原生低延迟输出",
-        AudioOutputMode.OBOE to "自动选择 AAudio 或 OpenSL ES",
-        AudioOutputMode.DIRECT to "PCM 16 bit，按音源采样率请求 AAudio 独占，跳过音效与重采样",
-        AudioOutputMode.BIT_PERFECT to "Android 14+ 与兼容 USB DAC，保留解码后的 PCM 位深、采样率和声道",
-        AudioOutputMode.NETEASE_USB to "内置 USB Host 驱动，需授权独占设备；实验性输出"
+        AudioOutputMode.AUDIO_TRACK to "Âm thanh hệ thống, hỗ trợ hiệu ứng âm thanh hệ thống",
+        AudioOutputMode.OPENSL_ES to "Cố định OpenSL ES, định tuyến thiết bị theo hệ thống",
+        AudioOutputMode.AAUDIO to "Cố định AAudio, xuất âm thanh độ trễ thấp nguyên bản",
+        AudioOutputMode.OBOE to "Tự động chọn AAudio hoặc OpenSL ES",
+        AudioOutputMode.DIRECT to "PCM 16 bit, yêu cầu AAudio độc quyền theo tần số lấy mẫu của nguồn âm thanh, bỏ qua hiệu ứng âm thanh và lấy mẫu lại",
+        AudioOutputMode.BIT_PERFECT to "Android 14+ và USB DAC tương thích, giữ nguyên độ sâu bit, tần số lấy mẫu và số kênh của PCM đã giải mã",
+        AudioOutputMode.NETEASE_USB to "Trình điều khiển USB Host tích hợp, cần cấp quyền độc quyền cho thiết bị; đầu ra thử nghiệm"
     )
     var capabilitiesOpen by remember { mutableStateOf(false) }
-    SettingsPage("音频输出", "audio_output_settings") {
-        item("mode") { SettingsSection("输出方式", MusicIcons.Headphones) {
-            SettingsOptionsRow("输出模式", settings.mode.label, AudioOutputMode.entries.map { mode ->
+     SettingsPage("Đầu ra âm thanh", "audio_output_settings") {
+         item("mode") { SettingsSection("Phương thức đầu ra", MusicIcons.Headphones) {
+             SettingsOptionsRow("Chế độ đầu ra", settings.mode.label, AudioOutputMode.entries.map { mode ->
                 SettingsOption("output_mode_${mode.name}", mode.label, settings.mode == mode,
                     summary = modeDescriptions.getValue(mode), onSelect = { save { container.audioOutput.setMode(mode) } })
             }, Modifier.testTag("output_mode"))
             SettingsDivider()
-            SettingsPreference("运行状态", outputStatus, Modifier.testTag("output_status"))
+             SettingsPreference("Trạng thái hoạt động", outputStatus, Modifier.testTag("output_status"))
             diagnostics.fallbackReason?.let { reason ->
                 SettingsHint(reason, Modifier.testTag("output_fallback_reason"))
-                SettingsPreference("重试所选输出模式", "重新检查设备、权限与格式", Modifier.testTag("output_retry"), onClick = {
-                    diagnosticMessage = if (container.audioOutputRetry.tryEmit(Unit)) "已请求重试输出模式" else "正在处理，请稍后重试"
+                 SettingsPreference("Thử lại chế độ đầu ra đã chọn", "Kiểm tra lại thiết bị, quyền và định dạng", Modifier.testTag("output_retry"), onClick = {
+                     diagnosticMessage = if (container.audioOutputRetry.tryEmit(Unit)) "Đã yêu cầu thử lại chế độ đầu ra" else "Đang xử lý, vui lòng thử lại sau"
                 })
             }
             if (settings.mode == AudioOutputMode.BIT_PERFECT)
                 SettingsHint(bitPerfectDevices, Modifier.testTag("bit_perfect_capability"))
         } }
-        item("format") { SettingsSection("音频格式", MusicIcons.File) {
-            SettingsOptionsRow("输出采样率", if (settings.mode.bypassProcessing || settings.sampleRate == 0) "跟随音源" else "${settings.sampleRate} Hz",
-                supportedRates.map { rate -> SettingsOption("output_rate_$rate", if (rate == 0) "跟随音源" else "$rate Hz",
+         item("format") { SettingsSection("Định dạng âm thanh", MusicIcons.File) {
+             SettingsOptionsRow("Tần số lấy mẫu đầu ra", if (settings.mode.bypassProcessing || settings.sampleRate == 0) "Theo nguồn âm thanh" else "${settings.sampleRate} Hz",
+                 supportedRates.map { rate -> SettingsOption("output_rate_$rate", if (rate == 0) "Theo nguồn âm thanh" else "$rate Hz",
                     settings.sampleRate == rate, onSelect = { save { container.audioOutput.setSampleRate(rate) } }) },
                 Modifier.testTag("output_sample_rate"),
-                summary = if (settings.mode.bypassProcessing) "${settings.mode.label} 使用音源采样率" else null,
+                summary = if (settings.mode.bypassProcessing) "${settings.mode.label} Sử dụng tần số lấy mẫu của nguồn âm thanh" else null,
                 enabled = !settings.mode.bypassProcessing)
             SettingsDivider()
-            SettingsOptionsRow("缓冲策略", settings.bufferPolicy.label, AudioBufferPolicy.entries.map { policy ->
+            SettingsOptionsRow("Chính sách bộ đệm", settings.bufferPolicy.label, AudioBufferPolicy.entries.map { policy ->
                 SettingsOption("output_buffer_${policy.name}", policy.label, settings.bufferPolicy == policy,
                     summary = when (policy) {
-                        AudioBufferPolicy.BALANCED -> "兼顾起播速度与播放稳定性"
-                        AudioBufferPolicy.RESPONSIVE -> "较快起播，减少提前缓冲"
-                        AudioBufferPolicy.RESILIENT -> "增加提前缓冲，应对网络波动"
+                        AudioBufferPolicy.BALANCED -> "Cân bằng tốc độ bắt đầu phát và độ ổn định khi phát"
+                        AudioBufferPolicy.RESPONSIVE -> "Bắt đầu phát nhanh hơn, giảm bộ đệm trước"
+                        AudioBufferPolicy.RESILIENT -> "Tăng bộ đệm trước để ứng phó với biến động mạng"
                     }, onSelect = { save { container.audioOutput.setBufferPolicy(policy) } })
-            }, Modifier.testTag("output_buffer_policy"), summary = "调整解码与网络缓冲；设备缓冲以实际输出为准")
+            }, Modifier.testTag("output_buffer_policy"), summary = "Điều chỉnh bộ đệm giải mã và mạng; bộ đệm thiết bị tùy thuộc đầu ra thực tế"
         } }
         if (settings.mode == AudioOutputMode.NETEASE_USB) item("usb") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                SettingsInfoHeader("输出设备", MusicIcons.Device, horizontalInset = 0.dp)
+                SettingsInfoHeader("Thiết bị đầu ra", MusicIcons.Device, horizontalInset = 0.dp)
                 NeteaseUsbOutputSettings(settings) { key -> save { container.audioOutput.setUsbDevice(key) } }
             }
-        } else item("device") { SettingsSection("输出设备", MusicIcons.Device) {
-            SettingsOptionsRow("首选设备", selectedDevice?.outputLabel() ?: if (settings.deviceKey.isEmpty()) "跟随系统" else "设备未连接",
-                listOf(SettingsOption("output_device_system", "跟随系统", settings.deviceKey.isEmpty(),
+        } else item("device") { SettingsSection("Thiết bị đầu ra", MusicIcons.Device) {
+            SettingsOptionsRow("Thiết bị ưu tiên", selectedDevice?.outputLabel() ?: if (settings.deviceKey.isEmpty()) "Theo hệ thống" else "Thiết bị chưa kết nối",
+                listOf(SettingsOption("output_device_system", "Theo hệ thống", settings.deviceKey.isEmpty(),
                     onSelect = { save { container.audioOutput.setDevice("") } })) + devices.map { device ->
                     SettingsOption("output_device_${device.id}", device.outputLabel(), settings.deviceKey == device.outputKey(),
                         onSelect = { save { container.audioOutput.setDevice(device.outputKey()) } })
                 }, Modifier.testTag("output_device"))
         } }
-        item("live_diagnostics") { SettingsSection("播放诊断", MusicIcons.Headphones) {
+        item("live_diagnostics") { SettingsSection("Chẩn đoán phát nhạc", MusicIcons.Headphones) {
             val rows = listOf(
-                "引擎请求模式" to diagnostics.requestedMode.label,
-                "实际音频后端" to (diagnostics.backend ?: "系统未提供"),
-                "播放状态" to if (diagnostics.playing) "播放中" else "暂停或未播放",
-                "输入音频声明" to diagnostics.source.describe(),
-                "解码后的 PCM" to diagnostics.decoded.describe(),
-                "请求输出采样率" to (diagnostics.requestedRate?.let { "$it Hz" } ?: "跟随音源"),
-                "可验证的输出格式" to diagnostics.output.describe(),
-                "输出格式证据" to diagnostics.formatEvidence,
-                "当前输出设备" to ((diagnostics.device ?: "系统未提供") + (diagnostics.deviceId?.let { " · ID $it" } ?: "")),
-                "USB DAC 声明能力" to (diagnostics.usbCapabilities ?: "系统未提供"),
-                "软件 / 设备缓冲帧" to "${diagnostics.softwareBufferFrames ?: "系统未提供"} / ${diagnostics.deviceBufferFrames ?: "系统未提供"}",
-                "设备缓冲容量" to (diagnostics.capacityFrames?.let { "$it 帧" } ?: "系统未提供"),
-                "缓冲欠载次数" to (diagnostics.underruns?.toString() ?: "系统未提供"),
-                "输出延迟" to ((diagnostics.latencyMs?.let { "%.2f ms".format(java.util.Locale.ROOT, it) } ?: "无法验证") + " · ${diagnostics.latencyEvidence}"),
-                "请求的 DSP" to diagnostics.requestedEffects.joinToString("、").ifBlank { "无" },
-                "已观察到的 DSP" to diagnostics.appliedEffects.joinToString("、").ifBlank { "未观察到处理" },
-                "处理策略" to (diagnostics.processingBypass ?: "正常处理链"),
-                "Bit-perfect 验证状态" to when (diagnostics.bitPerfect) {
-                    BitPerfectEvidence.INACTIVE -> "未启用"
-                    BitPerfectEvidence.REQUESTED -> "已请求，等待验证"
-                    BitPerfectEvidence.ANDROID_CONFIGURATION_VERIFIED -> "Android 路由与格式配置已核实，最终硬件未验证"
-                    BitPerfectEvidence.UNVERIFIED -> "无法验证"
-                    BitPerfectEvidence.FALLBACK -> "已回退标准路径"
+                "Chế độ yêu cầu của engine" to diagnostics.requestedMode.label,
+                "Backend âm thanh thực tế" to (diagnostics.backend ?: "Hệ thống không cung cấp"),
+                "Trạng thái phát" to if (diagnostics.playing) "Đang phát" else "Đã tạm dừng hoặc không phát",
+                "Thông tin âm thanh đầu vào" to diagnostics.source.describe(),
+                "PCM sau giải mã" to diagnostics.decoded.describe(),
+                "Tần số lấy mẫu đầu ra được yêu cầu" to (diagnostics.requestedRate?.let { "$it Hz" } ?: "Theo nguồn âm thanh"),
+                "Định dạng đầu ra có thể xác minh" to diagnostics.output.describe(),
+                "Bằng chứng về định dạng đầu ra" to diagnostics.formatEvidence,
+                "Thiết bị đầu ra hiện tại" to ((diagnostics.device ?: "Hệ thống không cung cấp") + (diagnostics.deviceId?.let { " · ID $it" } ?: "")),
+                "Khả năng USB DAC được khai báo" to (diagnostics.usbCapabilities ?: "Hệ thống không cung cấp"),
+                "Khung bộ đệm phần mềm / thiết bị" to "${diagnostics.softwareBufferFrames ?: "Hệ thống không cung cấp"} / ${diagnostics.deviceBufferFrames ?: "Hệ thống không cung cấp"}",
+                "Dung lượng bộ đệm thiết bị" to (diagnostics.capacityFrames?.let { "$it khung" } ?: "Hệ thống không cung cấp"),
+                "Số lần thiếu dữ liệu bộ đệm" to (diagnostics.underruns?.toString() ?: "Hệ thống không cung cấp"),
+                "Độ trễ đầu ra" to ((diagnostics.latencyMs?.let { "%.2f ms".format(java.util.Locale.ROOT, it) } ?: "Không thể xác minh") + " · ${diagnostics.latencyEvidence}"),
+                "DSP được yêu cầu" to diagnostics.requestedEffects.joinToString("、").ifBlank { "Không có" },
+                "DSP đã quan sát" to diagnostics.appliedEffects.joinToString("、").ifBlank { "Không quan sát thấy xử lý" },
+                "Chiến lược xử lý" to (diagnostics.processingBypass ?: "Chuỗi xử lý bình thường"),
+                "Trạng thái xác minh Bit-perfect" to when (diagnostics.bitPerfect) {
+                    BitPerfectEvidence.INACTIVE -> "Chưa bật"
+                    BitPerfectEvidence.REQUESTED -> "Đã yêu cầu, đang chờ xác minh"
+                    BitPerfectEvidence.ANDROID_CONFIGURATION_VERIFIED -> "Đã xác minh cấu hình định tuyến và định dạng Android, chưa xác minh phần cứng cuối"
+                    BitPerfectEvidence.UNVERIFIED -> "Không thể xác minh"
+                    BitPerfectEvidence.FALLBACK -> "Đã chuyển về đường dẫn tiêu chuẩn"
                 },
-                "蓝牙当前编码格式" to "系统未提供",
-                "最终 DAC 逐位透明度" to "未验证"
+                "Định dạng mã hóa Bluetooth hiện tại" to "Hệ thống không cung cấp",
+                "Độ trong suốt từng bit của DAC cuối" to "Chưa xác minh"
             )
             rows.forEachIndexed { index, (title, value) ->
                 if (index > 0) SettingsDivider()
                 SettingsPreference(title, value, Modifier.testTag("audio_diagnostic_$index"))
             }
         } }
-        item("diagnostics") { SettingsSection("设备与诊断", MusicIcons.Info) {
-            SettingsPreference("设备报告的能力", if (capabilitiesOpen) "收起设备信息" else "采样率与系统首选配置",
+        item("diagnostics") { SettingsSection("Thiết bị và chẩn đoán", MusicIcons.Info) {
+            SettingsPreference("Khả năng do thiết bị báo cáo", if (capabilitiesOpen) "Thu gọn thông tin thiết bị" else "Tốc độ lấy mẫu và cấu hình ưu tiên của hệ thống",
                 Modifier.testTag("output_capabilities"), onClick = { capabilitiesOpen = !capabilitiesOpen },
                 trailing = { Icon(MusicIcons.Forward, null, Modifier.size(18.dp).rotate(if (capabilitiesOpen) 90f else 0f)) })
             androidx.compose.animation.AnimatedVisibility(capabilitiesOpen) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("系统首选采样率：${manager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE)?.plus(" Hz") ?: "未报告"}")
-                    Text("系统默认值不代表 AudioTrack 或 DAC 的实际采样率。", fontSize = 13.sp, color = hint)
+                    Text("Tốc độ lấy mẫu ưu tiên của hệ thống: ${manager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE)?.plus(" Hz") ?: "Không được báo cáo"}")
+                    Text("Giá trị mặc định của hệ thống không đại diện cho tốc độ lấy mẫu thực tế của AudioTrack hoặc DAC.", fontSize = 13.sp, color = hint)
                     (selectedDevice?.let(::listOf) ?: devices).forEach { device ->
                         Text(device.outputLabel())
-                        Text(if (device.sampleRates.isEmpty()) "未限定采样率" else device.sampleRates.sorted().joinToString(" / ") { "$it Hz" },
+                        Text(if (device.sampleRates.isEmpty()) "Không giới hạn tốc độ lấy mẫu" else device.sampleRates.sorted().joinToString(" / ") { "$it Hz" },
                             fontSize = 13.sp, color = hint)
                     }
                 }
             }
             SettingsDivider()
-            SettingsPreference("复制音频诊断", "实时状态与完整原生记录",
+            SettingsPreference("Sao chép chẩn đoán âm thanh", "Trạng thái trực tiếp và nhật ký gốc đầy đủ",
                 Modifier.testTag("copy_audio_diagnostics"), onClick = {
                     scope.launch {
                         try {
                             clipboard.setText(AnnotatedString(diagnosticReport()))
-                            diagnosticMessage = "已复制完整音频诊断"
+                            diagnosticMessage = "Đã sao chép đầy đủ thông tin chẩn đoán âm thanh"
                         } catch (e: kotlinx.coroutines.CancellationException) { throw e }
-                        catch (_: Exception) { diagnosticMessage = "复制失败，请重试" }
+                        catch (_: Exception) { diagnosticMessage = "Sao chép thất bại, vui lòng thử lại" }
                     }
                 })
             SettingsDivider()
-            SettingsPreference("导出完整音频诊断", "保存完整记录，便于分享与排查",
+            SettingsPreference("Xuất đầy đủ thông tin chẩn đoán âm thanh", "Lưu nhật ký đầy đủ để chia sẻ và khắc phục sự cố",
                 Modifier.testTag("export_audio_diagnostics"), onClick = { exportDiagnostics.launch("CurrentMusicAudio.txt") })
             diagnosticMessage?.let { SettingsHint(it) }
         } }

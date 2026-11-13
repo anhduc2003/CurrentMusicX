@@ -18,7 +18,7 @@ fun openAppLinkSettings(context: Context) {
         try {
             context.startActivity(details.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
         } catch (_: ActivityNotFoundException) {
-            context.showMusicError("请在系统设置的应用信息中设置默认打开链接")
+            context.showMusicError("Vui lòng thiết lập mặc định mở liên kết trong phần Thông tin ứng dụng của Cài đặt hệ thống")
         }
     }
 }

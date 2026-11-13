@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 1254 1254" role="img" aria-labelledby="title desc">
   <title id="title">CurrentMusicX</title>
-  <desc id="desc">蓝色渐变圆角方形与珍珠白圆润单音符，与应用启动图标使用相同轮廓和配色。</desc>
+  <desc id="desc">Hình vuông bo góc chuyển sắc xanh lam và nốt nhạc đơn bo tròn màu trắng ngọc trai, sử dụng cùng đường nét và phối màu với biểu tượng khởi chạy ứng dụng.</desc>
   <!-- Foreground paths and gradients match the Android launcher drawables. -->
   <defs>
     <linearGradient id="background" x2="0" y2="1">

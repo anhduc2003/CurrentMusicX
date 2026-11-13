@@ -129,7 +129,7 @@ private fun PlayerState.miniTransport() =
     } else remember { mutableFloatStateOf(0f) }
     var dragged by remember { mutableFloatStateOf(0f) }
     val subtitle = when (state.mode) {
-        PlayerMode.ROOM -> if (pair != null) "双人一起听" else if (state.canControlPlayback) "房间控制" else "跟随房间"
+        PlayerMode.ROOM -> if (pair != null) "Cùng nghe" else if (state.canControlPlayback) "Điều khiển phòng" else "Theo phòng"
         else -> song?.artists.orEmpty()
     }
     val surface = LocalMusicGlassSurface.current
@@ -148,12 +148,12 @@ private fun PlayerState.miniTransport() =
             }) {
             if (pair != null) ListeningPairArtwork(pair, Modifier.fillMaxSize().testTag("mini_pair_artwork")
                 .combinedClickable(onClick = onOpen, onLongClick = onLocateCurrentSong,
-                    onLongClickLabel = if (onLocateCurrentSong != null) "定位当前歌曲" else null))
+                    onLongClickLabel = if (onLocateCurrentSong != null) "Định vị bài hát hiện tại" else null))
             else MusicCover(song?.cover.orEmpty(), Modifier.size(42.dp).testTag("mini_cover")
                 .playerMotionDiagnostics { this[CoverRotation] = rotation.value }
                 .graphicsLayer { rotationZ = rotation.value; alpha = if (artworkVisible()) 1f else 0f }.clip(CircleShape)
                 .border(2.dp, coverBorder, CircleShape).combinedClickable(onClick = onOpen, onLongClick = onLocateCurrentSong,
-                    onLongClickLabel = if (onLocateCurrentSong != null) "定位当前歌曲" else null))
+                    onLongClickLabel = if (onLocateCurrentSong != null) "Định vị bài hát hiện tại" else null))
             }
             Column(Modifier.weight(1f).heightIn(min = 48.dp).padding(horizontal = 8.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
                 .onGloballyPositioned { reportOpenArea(1, it) }
@@ -166,11 +166,11 @@ private fun PlayerState.miniTransport() =
                             if (allowed && abs(offset) >= threshold) { if (offset < 0f) next() else previous() }
                         })
                 }.combinedClickable(onClick = onOpen, onLongClick = onLocateCurrentSong,
-                    onLongClickLabel = if (onLocateCurrentSong != null) "定位当前歌曲" else null).semantics {
-                    if (enabled) customActions = listOf(CustomAccessibilityAction("上一首") { previous(); true }, CustomAccessibilityAction("下一首") { next(); true })
+                    onLongClickLabel = if (onLocateCurrentSong != null) "Định vị bài hát hiện tại" else null).semantics {
+                    if (enabled) customActions = listOf(CustomAccessibilityAction("Bài trước") { previous(); true }, CustomAccessibilityAction("Bài tiếp theo") { next(); true })
                 }, verticalArrangement = Arrangement.Center) {
                 val artistColor = MiuixTheme.colorScheme.onSurface.copy(alpha = .6f)
-                MiniPlayerSongText(song?.name ?: "等待房间点歌", Modifier.fillMaxWidth().testTag("mini_title")
+                MiniPlayerSongText(song?.name ?: "Đang chờ phòng chọn bài", Modifier.fillMaxWidth().testTag("mini_title")
                     .then(if (active) Modifier else Modifier.clearAndSetSemantics {}).graphicsLayer {
                     translationX = dragged.coerceIn(-threshold * 2, threshold * 2) * .15f
                 }, color = MiuixTheme.colorScheme.onSurface, fontSize = 14.sp, fontWeight = FontWeight.Medium)
@@ -181,9 +181,9 @@ private fun PlayerState.miniTransport() =
                 }, subtitle = true, color = artistColor, fontSize = 11.sp,
                     lyricTrackKey = songKey.takeIf { active && currentMatches })
             }
-            MiniControl(if (state.showPause) "暂停" else "播放", onToggle, Modifier.testTag("mini_toggle").semantics {
+            MiniControl(if (state.showPause) "Tạm dừng" else "Phát", onToggle, Modifier.testTag("mini_toggle").semantics {
                 progressBarRangeInfo = if (loading) ProgressBarRangeInfo.Indeterminate else ProgressBarRangeInfo(progress, 0f..1f)
-                stateDescription = if (loading) "正在加载音乐" else "播放进度"
+                stateDescription = if (loading) "Đang tải nhạc" else "Tiến trình phát"
             }, enabled) { ink ->
                 Canvas(Modifier.size(25.dp)) {
                     val stroke = Stroke(1.6.dp.toPx())
@@ -201,7 +201,7 @@ private fun PlayerState.miniTransport() =
                 PlayerSharedControlIcon(PlayerSharedControl.TOGGLE, ink, Modifier.size(18.dp),
                     playing = state.showPause, mini = true)
             }
-            MiniControl("播放队列", onQueue, Modifier.testTag("mini_queue")) { ink ->
+            MiniControl("Hàng đợi phát", onQueue, Modifier.testTag("mini_queue")) { ink ->
                 PlayerSharedControlIcon(PlayerSharedControl.QUEUE, ink, Modifier.size(24.dp), mini = true)
             }
         }

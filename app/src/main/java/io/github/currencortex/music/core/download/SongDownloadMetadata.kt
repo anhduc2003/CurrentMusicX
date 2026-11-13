@@ -69,7 +69,7 @@ object DownloadLyrics {
 object SongDownloadNames {
     fun base(song: Song): String = (song.name + song.artists.takeIf(String::isNotBlank)?.let { " - $it" }.orEmpty())
         .replace(Regex("[\\\\/:*?\"<>|\\p{Cntrl}]"), "_").trim().trimEnd('.')
-        .take(80).ifBlank { "歌曲" } + " [${song.id}]"
+        .take(80).ifBlank { "Bài hát" } + " [${song.id}]"
 }
 
 /** Writes the existing container, preserving encoded audio. AndroidArtwork avoids java.awt. */
@@ -101,8 +101,8 @@ object SongTagWriter {
         val saved = AudioFileIO.read(file).tag
         val savedRich = (saved as? WavTag)?.getID3Tag() ?: saved
         check(savedRich.getFirst(FieldKey.TITLE) == song.name && savedRich.getFirst(FieldKey.ARTIST) == song.artists &&
-            savedRich.getFirst(FieldKey.ALBUM) == song.album) { "歌曲信息写入失败，请重试" }
-        if (lrc.isNotBlank()) check(savedRich.getFirst(FieldKey.LYRICS) == lrc) { "歌词写入失败，请重试" }
-        if (cover != null) check(savedRich.firstArtwork?.binaryData?.contentEquals(cover.bytes) == true) { "封面写入失败，请重试" }
+            savedRich.getFirst(FieldKey.ALBUM) == song.album) { "Ghi thông tin bài hát thất bại, vui lòng thử lại" }
+        if (lrc.isNotBlank()) check(savedRich.getFirst(FieldKey.LYRICS) == lrc) { "Ghi lời bài hát thất bại, vui lòng thử lại" }
+        if (cover != null) check(savedRich.firstArtwork?.binaryData?.contentEquals(cover.bytes) == true) { "Ghi ảnh bìa thất bại, vui lòng thử lại" }
     }
 }

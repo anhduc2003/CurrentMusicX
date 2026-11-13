@@ -10,15 +10,15 @@ object NcaeDecoder {
     private const val MAX_BYTES = 2 * 1024 * 1024
 
     fun decode(container: ByteArray): NcaeDecoded {
-        require(container.size in 18..MAX_BYTES) { "音效文件大小不支持" }
-        require(container.copyOfRange(0, 4).contentEquals(byteArrayOf(78, 67, 65, 69))) { "音效文件格式不支持" }
+        require(container.size in 18..MAX_BYTES) { "Kích thước tệp hiệu ứng âm thanh không được hỗ trợ" }
+        require(container.copyOfRange(0, 4).contentEquals(byteArrayOf(78, 67, 65, 69))) { "Định dạng tệp hiệu ứng âm thanh không được hỗ trợ" }
         fun byte(index: Int) = container[index].toInt() and 255
         val length = (0..3).fold(0L) { value, i -> value or (byte(4 + i).toLong() shl (8 * i)) }
         val type = byte(14) or (byte(15) shl 8)
         val keyLength = byte(16)
-        require(type == 1 || type == 2) { "此音效资源类型暂不支持" }
+        require(type == 1 || type == 2) { "Loại tài nguyên hiệu ứng âm thanh này hiện chưa được hỗ trợ" }
         require(keyLength >= 5 && (keyLength + 3) % 4 == 0 && 17L + keyLength + length == container.size.toLong()) {
-            "音效文件结构无效"
+            "Cấu trúc tệp hiệu ứng âm thanh không hợp lệ"
         }
         val key = (0 until keyLength).filter { it != 4 }.map { byte(17 + it) xor byte(21) }
         val box = IntArray(256) { it }
@@ -38,11 +38,11 @@ object NcaeDecoder {
             val scratch = ByteArray(8192)
             while (!inflater.finished()) {
                 val count = inflater.inflate(scratch)
-                require(count > 0 || inflater.finished()) { "音效文件解码失败" }
-                require(output.size() + count <= MAX_BYTES) { "音效资源过大" }
+                require(count > 0 || inflater.finished()) { "Giải mã tệp hiệu ứng âm thanh thất bại" }
+                require(output.size() + count <= MAX_BYTES) { "Tài nguyên hiệu ứng âm thanh quá lớn" }
                 output.write(scratch, 0, count)
             }
-            require(inflater.remaining == 0 && output.size() > 0) { "音效文件内容无效" }
+            require(inflater.remaining == 0 && output.size() > 0) { "Nội dung tệp hiệu ứng âm thanh không hợp lệ" }
             return NcaeDecoded(type, output.toByteArray())
         } finally { inflater.end() }
     }

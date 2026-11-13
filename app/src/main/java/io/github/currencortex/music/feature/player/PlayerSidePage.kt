@@ -239,7 +239,7 @@ internal class PlayerSidePageState(private val scope: CoroutineScope) {
             Box(Modifier.fillMaxSize().then(if (state.active) Modifier.clearAndSetSemantics {} else Modifier)) { content() }
             if (state.active) Box(Modifier.matchParentSize().testTag("player_side_return")
                 .clickable(enabled = enabled, role = Role.Button, onClick = state::close)
-                .semantics { contentDescription = "返回播放页" })
+                .semantics { contentDescription = "Quay lại trang phát nhạc" })
         }
     }
 }
@@ -252,33 +252,33 @@ internal class PlayerSidePageState(private val scope: CoroutineScope) {
             .padding(start = maxWidth * (1f - SIDE_TRAVEL)).testTag("player_side_scroll"),
             contentPadding = PaddingValues(start = 12.dp, end = 20.dp, top = 24.dp, bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            item { Text("歌曲详情", fontSize = 24.sp, fontWeight = FontWeight.SemiBold) }
+            item { Text("Chi tiết bài hát", fontSize = 24.sp, fontWeight = FontWeight.SemiBold) }
             item { Card { Row(Modifier.padding(18.dp), verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 MusicCover(song?.cover.orEmpty(), Modifier.size(64.dp), pixels = 200)
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text(song?.name ?: "还没有选择歌曲", fontSize = 18.sp, fontWeight = FontWeight.SemiBold,
+                    Text(song?.name ?: "Chưa chọn bài hát", fontSize = 18.sp, fontWeight = FontWeight.SemiBold,
                         maxLines = 3, overflow = TextOverflow.Ellipsis)
                     if (song != null && song.durationMs > 0) {
                         val seconds = song.durationMs / 1000
-                        Text("时长 ${seconds / 60}:${(seconds % 60).toString().padStart(2, '0')}",
+                        Text("Thời lượng ${seconds / 60}:${(seconds % 60).toString().padStart(2, '0')}",
                             color = colors.onSurfaceVariantSummary, fontSize = 13.sp)
                     }
                 }
             } } }
             if (song != null) item { Card { Column {
-                MusicDestinationRow("歌手", { navigation.openArtists(false) }, summary = song.artists.ifBlank { "暂无歌手信息" },
+                MusicDestinationRow("Ca sĩ", { navigation.openArtists(false) }, summary = song.artists.ifBlank { "Chưa có thông tin ca sĩ" },
                     enabled = navigation.artistsEnabled, modifier = Modifier.testTag("side_open_artist"))
-                MusicDestinationRow("专辑", navigation.openAlbum,
-                    summary = if (navigation.albumLoading) "正在查找专辑…" else song.album.ifBlank { "暂无专辑信息" },
+                MusicDestinationRow("Album", navigation.openAlbum,
+                    summary = if (navigation.albumLoading) "Đang tìm album…" else song.album.ifBlank { "Chưa có thông tin album" },
                     enabled = navigation.albumEnabled && !navigation.albumLoading, modifier = Modifier.testTag("side_open_album"))
             } } }
             if (song != null) item { Card { Column {
-                MusicDestinationRow("歌曲 AI 解读", onAi, enabled = aiEnabled,
-                    summary = if (aiEnabled) "创作背景 · 歌词含义" else "当前歌曲暂不支持 AI 解读",
+                MusicDestinationRow("Phân tích bài hát bằng AI", onAi, enabled = aiEnabled,
+                    summary = if (aiEnabled) "Bối cảnh sáng tác · Ý nghĩa lời bài hát" else "Bài hát hiện tại chưa hỗ trợ phân tích bằng AI",
                     modifier = Modifier.testTag("side_open_ai"))
-                MusicDestinationRow("艺人百科", { navigation.openArtists(true) }, enabled = navigation.artistsEnabled,
-                    summary = if (playerArtistLinks(song).isNotEmpty()) "艺人简介 · 音乐经历" else "搜索歌手后查看资料",
+                MusicDestinationRow("Bách khoa nghệ sĩ", { navigation.openArtists(true) }, enabled = navigation.artistsEnabled,
+                    summary = if (playerArtistLinks(song).isNotEmpty()) "Giới thiệu nghệ sĩ · Hành trình âm nhạc" else "Tìm ca sĩ để xem thông tin",
                     modifier = Modifier.testTag("side_open_biography"))
             } } }
         }

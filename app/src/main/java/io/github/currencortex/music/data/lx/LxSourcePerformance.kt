@@ -26,7 +26,7 @@ internal fun lxOrderedSources(sources: List<LxStoredSource>, selected: String, n
 
 /** Cancellation belongs to the caller and must never start another plugin. */
 internal suspend fun <T> lxTrySources(sources: List<LxStoredSource>, resolve: suspend (LxStoredSource) -> T): T {
-    if (sources.isEmpty()) throw LxSourceException("请先在音源与网络中导入落雪音源")
+    if (sources.isEmpty()) throw LxSourceException("Vui lòng nhập nguồn nhạc Lx trong Nguồn nhạc và mạng trước")
     for ((index, source) in sources.withIndex()) {
         currentCoroutineContext().ensureActive()
         try {

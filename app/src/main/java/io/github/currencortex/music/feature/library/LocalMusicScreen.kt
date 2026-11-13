@@ -44,7 +44,7 @@ internal suspend fun scanLocalMusic(context: Context): List<Song> {
             val rawId = cursor.getLong(id)
             if (rawId < 0 || rawId == Long.MAX_VALUE) continue
             fun text(column: Int) = cursor.getString(column).orEmpty().takeUnless { it == "<unknown>" }.orEmpty()
-            val name = text(title).ifBlank { text(display).substringBeforeLast('.') }.ifBlank { "未知歌曲" }
+            val name = text(title).ifBlank { text(display).substringBeforeLast('.') }.ifBlank { "Bài hát không xác định" }
             val volume = if (Build.VERSION.SDK_INT >= 29) cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.VOLUME_NAME)).orEmpty() else ""
             val base = if (volume.isNotBlank()) MediaStore.Audio.Media.getContentUri(volume) else collection
             val uri = ContentUris.withAppendedId(base, rawId).toString()
@@ -54,7 +54,7 @@ internal suspend fun scanLocalMusic(context: Context): List<Song> {
                 cover = cover, durationMs = cursor.getLong(duration).coerceAtLeast(0), musicSource = MusicSource.LOCAL, localUri = uri)
         }
         items
-    } ?: error("系统未返回音乐列表")
+    } ?: error("Hệ thống không trả về danh sách nhạc")
 }
 
 /** Scanning scope is independent of playback: changing it never replaces the playing queue. */
@@ -88,12 +88,12 @@ internal suspend fun scanLocalMusic(context: Context): List<Song> {
             try {
                 context.contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 chooseScope(uri.toString())
-            } catch (_: SecurityException) { error = "无法保留文件夹读取权限，请重新选择" }
+            } catch (_: SecurityException) { error = "Không thể giữ quyền đọc thư mục, vui lòng chọn lại" }
         }
     }
     val request = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         allowed = granted
-        error = if (granted) null else "未获得音频权限，仍可选择文件夹扫描。"
+        error = if (granted) null else "Chưa được cấp quyền âm thanh, bạn vẫn có thể chọn thư mục để quét."
     }
     DisposableEffect(lifecycle, permission) {
         val observer = LifecycleEventObserver { _, event ->
@@ -109,7 +109,7 @@ internal suspend fun scanLocalMusic(context: Context): List<Song> {
         if (!canScan) { songs = emptyList(); scanning = false; return@LaunchedEffect }
         if (folder != null && !folderAllowed) {
             songs = emptyList(); scanning = false
-            error = "文件夹权限已失效，请重新选择文件夹"
+            error = "Quyền truy cập thư mục đã hết hiệu lực, vui lòng chọn lại thư mục"
             return@LaunchedEffect
         }
         scanning = true; error = null
@@ -124,20 +124,20 @@ internal suspend fun scanLocalMusic(context: Context): List<Song> {
             }
             songs = result.songs
             refreshRequested = false
-            if (!result.cacheSaved) error = "扫描完成，但列表保存失败，下次进入可能需要重新扫描"
+            if (!result.cacheSaved) error = "Đã quét xong nhưng không lưu được danh sách; lần sau có thể cần quét lại"
         } catch (e: CancellationException) { throw e }
         catch (_: SecurityException) {
             songs = emptyList()
-            error = if (folder != null) "文件夹权限已失效，请重新选择文件夹" else "音乐读取权限已关闭"
-        } catch (_: Exception) { error = "扫描失败，请检查所选位置后重试" }
+            error = if (folder != null) "Quyền truy cập thư mục đã hết hiệu lực, vui lòng chọn lại thư mục" else "Quyền đọc nhạc đã bị tắt"
+        } catch (_: Exception) { error = "Quét thất bại, vui lòng kiểm tra vị trí đã chọn rồi thử lại" }
         finally { scanning = false }
     }
     val description = folder?.let {
         val path = runCatching { android.provider.DocumentsContract.getTreeDocumentId(android.net.Uri.parse(it)) }.getOrDefault("")
-        "所选文件夹：$path · 包含子文件夹"
-    } ?: if (wholeDevice) "全机音乐 · 下拉重新扫描" else "先选择文件夹或全机扫描"
+        "Thư mục đã chọn：$path · Bao gồm thư mục con"
+    } ?: if (wholeDevice) "Nhạc trên toàn thiết bị · Vuốt xuống để quét lại" else "Trước tiên hãy chọn thư mục hoặc quét toàn bộ thiết bị"
     PlaylistDetailBody(
-        LibraryDetailState(title = "本地音乐", description = description,
+        LibraryDetailState(title = "Nhạc trên thiết bị", description = description,
             songs = songs, loading = scanning && songs.isEmpty(), refreshing = scanning && songs.isNotEmpty(),
             error = error.takeIf { canScan }, loaded = canScan),
         vm, library, onBack, navigate, play, onRename = {}, onDelete = {},
@@ -147,16 +147,16 @@ internal suspend fun scanLocalMusic(context: Context): List<Song> {
             context.startActivity(android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                 android.net.Uri.parse("package:${context.packageName}")))
         }, error, { scopeOpen = true }))
-    if (scopeOpen) io.github.currencortex.music.ui.component.MusicDialog("扫描范围", onDismiss = { scopeOpen = false }) {
-        io.github.currencortex.music.ui.component.MusicDestinationRow("选择文件夹", {
+    if (scopeOpen) io.github.currencortex.music.ui.component.MusicDialog("Phạm vi quét", onDismiss = { scopeOpen = false }) {
+        io.github.currencortex.music.ui.component.MusicDestinationRow("Chọn thư mục", {
             scopeOpen = false
             try { folderPicker.launch(folder?.let(android.net.Uri::parse)) }
-            catch (_: android.content.ActivityNotFoundException) { error = "系统没有可用的文件夹选择器" }
+            catch (_: android.content.ActivityNotFoundException) { error = "Hệ thống không có trình chọn thư mục khả dụng" }
         }, chevron = false, modifier = androidx.compose.ui.Modifier.testTag("local_music_choose_folder"))
-        io.github.currencortex.music.ui.component.MusicDestinationRow("扫描全机音乐", {
+         io.github.currencortex.music.ui.component.MusicDestinationRow("Quét nhạc trên toàn thiết bị", {
             scopeOpen = false; chooseScope(null)
             if (!allowed) request.launch(permission)
         }, chevron = false, modifier = androidx.compose.ui.Modifier.testTag("local_music_scan_device"))
-        top.yukonga.miuix.kmp.basic.Text("文件夹模式仅扫描所选目录及其子目录，不改变当前播放队列。")
+         top.yukonga.miuix.kmp.basic.Text("Chế độ thư mục chỉ quét thư mục đã chọn và các thư mục con, không thay đổi hàng đợi phát hiện tại.")
     }
 }

@@ -4,7 +4,7 @@ import io.github.currencortex.music.data.navidrome.NavidromeEntry
 import io.github.currencortex.music.data.song.Song
 import kotlinx.coroutines.flow.MutableStateFlow
 
-data class NavidromePage(val kind: String = "albums", val id: String = "", val title: String = "曲库",
+data class NavidromePage(val kind: String = "albums", val id: String = "", val title: String = "Thư viện nhạc",
     val cover: String = "", val subtitle: String = "", val owned: Boolean = false) {
     val key get() = "$kind:$id"
 }

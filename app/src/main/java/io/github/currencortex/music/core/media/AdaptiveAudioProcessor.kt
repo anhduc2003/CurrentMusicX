@@ -10,7 +10,9 @@ import java.nio.ByteBuffer
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-data class AdaptiveAudioRuntime(val processing: Boolean = false, val message: String = "播放后生效",
+data class AdaptiveAudioRuntime(val processing: Boolean = false, val message: String = "Có hiệu lực sau khi phát",
+
+
     val gains: List<Float> = List(10) { 0f })
 
 /** Producer is the PCM thread; the service consumes only its audible deck's media timestamps. */
@@ -63,10 +65,10 @@ internal class AdaptiveAudioProcessor(
         dsp = if (configured && format.encoding in listOf(C.ENCODING_PCM_16BIT, C.ENCODING_PCM_FLOAT))
             AdaptiveAudioDsp(format.sampleRate, format.channelCount) else null
         frame = DoubleArray(if (dsp != null) format.channelCount else 0)
-        val message = when {
-            !configured -> "等待音频格式"
-            dsp == null -> "当前 PCM 编码不支持，已旁路"
-            else -> "等待音频处理"
+            !configured -> "Đang chờ định dạng âm thanh"
+            dsp == null -> "Mã hóa PCM hiện tại không được hỗ trợ, đã bỏ qua"
+            else -> "Đang chờ xử lý âm thanh"
+            else -> "Đang chờ xử lý âm thanh"
         }
         CurrentMusicAudioDiagnostics.record("adaptive.configure rate=${format.sampleRate} channels=${format.channelCount} " +
             "encoding=${format.encoding} supported=${dsp != null}")
@@ -116,8 +118,8 @@ internal class AdaptiveAudioProcessor(
         output.flip()
         if (!s.haptics || !s.enabled) haptics.clear()
         if (!reported || frames - lastReport >= rate / 5) {
-            lastReport = frames; reported = s.enabled
-            report(AdaptiveAudioRuntime(s.enabled, if (s.enabled) "本地音频处理中" else "已关闭", engine.gains))
+             report(AdaptiveAudioRuntime(s.enabled, if (s.enabled) "Đang xử lý âm thanh cục bộ" else "Đã tắt", engine.gains))
+             report(AdaptiveAudioRuntime(s.enabled, if (s.enabled) "Đang xử lý âm thanh cục bộ" else "Đã tắt", engine.gains))
         }
     }
 }

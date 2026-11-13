@@ -25,9 +25,9 @@ import kotlin.coroutines.resumeWithException
 import kotlin.math.abs
 
 enum class LyricsMatchSource(val label: String, val shortLabel: String) {
-    NETEASE("网易云音乐", "网易云"), CURRENT_MUSIC("CurrentMusic 歌词", "CurrentMusic"),
-    QQ_MUSIC("QQ 音乐", "QQ 音乐"), QISHUI("汽水音乐", "汽水"),
-    AMLL("AMLL 逐字歌词", "AMLL"), KUGOU("酷狗音乐", "酷狗")
+    NETEASE("Nhạc Vân NetEase", "NetEase"), CURRENT_MUSIC("Lời bài hát CurrentMusic", "CurrentMusic"),
+    QQ_MUSIC("Nhạc QQ", "QQ"), QISHUI("Nhạc Qishui", "Qishui"),
+    AMLL("Lời bài hát từng chữ AMLL", "AMLL"), KUGOU("Nhạc Kugou", "Kugou")
 }
 
 data class LyricsCandidate(val source: LyricsMatchSource, val id: String, val title: String,
@@ -67,7 +67,7 @@ class OnlineLyricsMatcher(
     suspend fun search(source: LyricsMatchSource, query: String): List<LyricsCandidate> {
         val text = query.trim()
         if (text.isEmpty()) return emptyList()
-        require(text.length <= MAX_QUERY_LENGTH) { "搜索关键词过长" }
+        require(text.length <= MAX_QUERY_LENGTH) { "Từ khóa tìm kiếm quá dài" }
         return bounded(source, 8_000) {
             (if (source != LyricsMatchSource.NETEASE && additionalSources.containsKey(source))
                 additionalSources.getValue(source).search(text) else when (source) {
@@ -77,37 +77,37 @@ class OnlineLyricsMatcher(
                     .map { LyricsCandidate(source, it.id.toString(), it.name, it.artists, it.album,
                         it.durationMs, it.id.toString(), it.cover) }.toList()
                 LyricsMatchSource.CURRENT_MUSIC -> (searchCurrentMusic
-                    ?: throw LyricsMatchException("CurrentMusic 歌词搜索尚未配置"))(text).asSequence()
+                    ?: throw LyricsMatchException("Tìm kiếm lời bài hát CurrentMusic chưa được cấu hình"))(text).asSequence()
                     .filter { it.id > 0 && !it.video && it.name.isNotBlank() }.take(MAX_RESULTS)
                     .map { LyricsCandidate(source, it.id.toString(), it.name, it.artists, it.album,
                         it.durationMs, it.id.toString(), it.cover) }.toList()
                 LyricsMatchSource.QQ_MUSIC, LyricsMatchSource.QISHUI -> (additionalSources[source]
-                    ?: throw LyricsMatchException("${source.label}歌词匹配尚未配置")).search(text)
+                    ?: throw LyricsMatchException("Chưa cấu hình đối sánh lời bài hát ${source.label}")).search(text)
                 LyricsMatchSource.KUGOU -> searchKugou(text)
-            }).onEach { require(it.source == source) { "歌词搜索来源不一致" } }
+            }).onEach { require(it.source == source) { "Nguồn tìm kiếm lời bài hát không nhất quán" } }
                 .distinctBy { it.reference.ifEmpty { it.id } }.take(MAX_RESULTS)
         }
     }
 
     suspend fun load(candidate: LyricsCandidate): SavedLyrics = bounded(candidate.source, 7_000) {
-        require(candidate.id.isNotBlank() && candidate.id.length <= 128 && candidate.reference.length <= 256) { "歌词候选无效" }
+        require(candidate.id.isNotBlank() && candidate.id.length <= 128 && candidate.reference.length <= 256) { "Ứng viên lời bài hát không hợp lệ" }
         val document = (if (candidate.source != LyricsMatchSource.NETEASE && additionalSources.containsKey(candidate.source))
             additionalSources.getValue(candidate.source).load(candidate) else when (candidate.source) {
             LyricsMatchSource.AMLL -> loadAmll(candidate)
             LyricsMatchSource.NETEASE -> {
-                val id = candidate.id.toLongOrNull()?.takeIf { it > 0 } ?: throw LyricsMatchException("网易云歌曲编号无效")
+                val id = candidate.id.toLongOrNull()?.takeIf { it > 0 } ?: throw LyricsMatchException("Mã bài hát Nhạc Vân NetEase không hợp lệ")
                 loadNetease(id)
             }
             LyricsMatchSource.CURRENT_MUSIC -> {
-                val id = candidate.id.toLongOrNull()?.takeIf { it > 0 } ?: throw LyricsMatchException("CurrentMusic 歌曲编号无效")
-                (loadCurrentMusic ?: throw LyricsMatchException("CurrentMusic 歌词读取尚未配置"))(id)
+                val id = candidate.id.toLongOrNull()?.takeIf { it > 0 } ?: throw LyricsMatchException("Mã bài hát CurrentMusic không hợp lệ")
+                (loadCurrentMusic ?: throw LyricsMatchException("Tính năng tải lời bài hát CurrentMusic chưa được cấu hình"))(id)
             }
             LyricsMatchSource.QQ_MUSIC, LyricsMatchSource.QISHUI -> (additionalSources[candidate.source]
-                ?: throw LyricsMatchException("${candidate.source.label}歌词匹配尚未配置")).load(candidate)
+                ?: throw LyricsMatchException("Chưa cấu hình đối sánh lời bài hát ${candidate.source.label}")).load(candidate)
             LyricsMatchSource.KUGOU -> loadKugou(candidate)
         }).withoutEstimatedTiming()
         if (document.lines.none { it.text.isNotBlank() || it.backgroundVocals.isNotEmpty() })
-            throw LyricsMatchException("${candidate.source.label}没有可用歌词")
+            throw LyricsMatchException("${candidate.source.label} không có lời bài hát khả dụng")
         LyricsFileCodec.validate(document)
         SavedLyrics(document, LyricsOrigin(candidate.source.label, candidate.source.name.lowercase(Locale.ROOT),
             candidate.reference.ifEmpty { candidate.id }))
@@ -230,7 +230,7 @@ class OnlineLyricsMatcher(
             }.distinct()
         for (params in queries) {
             val root = request(amllBase.path("v1/lyrics/search", params + ("pageSize" to MAX_RESULTS.toString())), "AMLL")
-            if (root.number("status") != 200L) throw LyricsMatchException("AMLL 搜索失败（${root.string("status").ifEmpty { "响应无效" }}）")
+            if (root.number("status") != 200L) throw LyricsMatchException("AMLL tìm kiếm thất bại（${root.string("status").ifEmpty { "Phản hồi không hợp lệ" }}）")
             val items = root.obj("data").array("items")
             if (items.isEmpty()) continue
             return items.asSequence().mapNotNull { value ->
@@ -249,17 +249,17 @@ class OnlineLyricsMatcher(
     private suspend fun loadAmll(candidate: LyricsCandidate): LyricsDocument {
         val parts = candidate.reference.split(':', limit = 2)
         if (parts.size != 2 || parts[0] !in setOf("ncm", "qq") || !parts[1].matches(PLATFORM_ID))
-            throw LyricsMatchException("AMLL 歌曲关联编号无效")
+            throw LyricsMatchException("Mã liên kết bài hát AMLL không hợp lệ")
         val field = if (parts[0] == "ncm") "ncmMusicId" else "qqMusicId"
         val root = request(amllBase.path("v1/lyrics/get", mapOf(field to parts[1])), "AMLL")
-        if (root.number("status") != 200L) throw LyricsMatchException("AMLL 歌词获取失败（${root.string("status")}）")
+        if (root.number("status") != 200L) throw LyricsMatchException("AMLL lấy lời bài hát thất bại（${root.string("status")}）")
         val data = root.obj("data")
         val ids = data.strings(if (parts[0] == "ncm") "ncmMusicIds" else "qqMusicIds")
-        if (ids.isNotEmpty() && parts[1] !in ids) throw LyricsMatchException("AMLL 返回了其他歌曲的歌词")
-        val raw = data.string("lyrics").takeIf { it.isNotBlank() } ?: throw LyricsMatchException("AMLL 尚未收录这首歌的歌词")
+        if (ids.isNotEmpty() && parts[1] !in ids) throw LyricsMatchException("AMLL đã trả về lời bài hát của bài khác")
+        val raw = data.string("lyrics").takeIf { it.isNotBlank() } ?: throw LyricsMatchException("AMLL chưa có lời bài hát này")
         val document = LyricsFileCodec.decode(raw.toByteArray(Charsets.UTF_8), "lyrics.ttml").document
         val declaredIds = document.metadata.values[field].orEmpty()
-        if (declaredIds.isNotEmpty() && parts[1] !in declaredIds) throw LyricsMatchException("AMLL 歌词元数据与歌曲不符")
+        if (declaredIds.isNotEmpty() && parts[1] !in declaredIds) throw LyricsMatchException("Siêu dữ liệu lời bài hát AMLL không khớp với bài hát")
         return document
     }
 
@@ -270,7 +270,7 @@ class OnlineLyricsMatcher(
             val timestamp = System.currentTimeMillis()
             params += mapOf("userid" to "0", "appid" to "3116", "token" to "", "clienttime" to (timestamp / 1000).toString(),
                 "iscorrection" to "1", "uuid" to "-", "mid" to md5(timestamp.toString()), "dfid" to "-", "clientver" to "11070", "platform" to "AndroidFilter")
-            val root = request(kugouCatalogBase.path("v2/search/song", signed(params)), "酷狗", "SearchSong")
+            val root = request(kugouCatalogBase.path("v2/search/song", signed(params)), "Kugou", "SearchSong")
             kugouStatus(root)
             val values = root.obj("data").array("lists")
             val candidates = values.asSequence().mapNotNull { value ->
@@ -285,9 +285,9 @@ class OnlineLyricsMatcher(
         catch (_: Exception) { currentCoroutineContext().ensureActive() }
         // The mobile search is independent of the newer signed catalogue's availability.
         val root = request(kugouSearchBase.path("api/v3/search/song", mapOf("keyword" to keyword, "page" to "1",
-            "pagesize" to MAX_RESULTS.toString(), "format" to "json", "showtype" to "14", "plat" to "0", "version" to "9108")), "酷狗")
+            "pagesize" to MAX_RESULTS.toString(), "format" to "json", "showtype" to "14", "plat" to "0", "version" to "9108")), "Kugou")
         kugouStatus(root)
-        if (root.number("status") != 1L) throw LyricsMatchException("酷狗搜索失败（${root.string("status")}）")
+        if (root.number("status") != 1L) throw LyricsMatchException("Kugou tìm kiếm thất bại（${root.string("status")}）")
         return root.obj("data").array("info").asSequence().mapNotNull { value ->
             val item = value as? JsonObject ?: return@mapNotNull null
             val hash = item.string("hash").uppercase(Locale.ROOT).takeIf { it.matches(KUGOU_HASH) } ?: return@mapNotNull null
@@ -298,20 +298,20 @@ class OnlineLyricsMatcher(
 
     private suspend fun loadKugou(candidate: LyricsCandidate): LyricsDocument {
         val hash = candidate.id.uppercase(Locale.ROOT)
-        if (!hash.matches(KUGOU_HASH)) throw LyricsMatchException("酷狗歌曲编号无效")
+        if (!hash.matches(KUGOU_HASH)) throw LyricsMatchException("Mã bài hát Kugou không hợp lệ")
         val params = mapOf("duration" to candidate.durationMs.coerceAtLeast(0).toString(), "hash" to hash,
             "keyword" to "${candidate.artists} - ${candidate.title}".take(MAX_QUERY_LENGTH), "lrctxt" to "1", "man" to "no")
-        val root = request(kugouLyricsBase.path("v1/search", signed(params + LYRIC_PARAMS)), "酷狗", "Lyric")
+        val root = request(kugouLyricsBase.path("v1/search", signed(params + LYRIC_PARAMS)), "Kugou", "Lyric")
         kugouStatus(root)
-        val best = root.array("candidates").firstOrNull() as? JsonObject ?: throw LyricsMatchException("酷狗没有可用歌词")
-        val id = best.string("id").takeIf { it.matches(Regex("[0-9]{1,30}")) } ?: throw LyricsMatchException("酷狗歌词编号无效")
-        val access = best.string("accesskey").takeIf { it.length in 1..256 } ?: throw LyricsMatchException("酷狗歌词下载参数无效")
+        val best = root.array("candidates").firstOrNull() as? JsonObject ?: throw LyricsMatchException("Kugou không có lời bài hát khả dụng")
+        val id = best.string("id").takeIf { it.matches(Regex("[0-9]{1,30}")) } ?: throw LyricsMatchException("Mã lời bài hát Kugou không hợp lệ")
+        val access = best.string("accesskey").takeIf { it.length in 1..256 } ?: throw LyricsMatchException("Tham số tải lời bài hát Kugou không hợp lệ")
         val download = request(kugouLyricsBase.path("download", signed(LYRIC_PARAMS + mapOf("accesskey" to access,
-            "charset" to "utf8", "client" to "mobi", "fmt" to "krc", "id" to id, "ver" to "1"))), "酷狗", "Lyric")
+            "charset" to "utf8", "client" to "mobi", "fmt" to "krc", "id" to id, "ver" to "1"))), "Kugou", "Lyric")
         kugouStatus(download)
-        val raw = download.string("content").takeIf { it.isNotBlank() } ?: throw LyricsMatchException("酷狗返回了空歌词")
-        val bytes = try { Base64.getDecoder().decode(raw) } catch (e: IllegalArgumentException) { throw LyricsMatchException("酷狗歌词编码无效", e) }
-        if (bytes.size > LyricsFileCodec.MAX_BYTES) throw LyricsMatchException("酷狗歌词文件过大")
+        val raw = download.string("content").takeIf { it.isNotBlank() } ?: throw LyricsMatchException("Kugou trả về lời bài hát trống")
+        val bytes = try { Base64.getDecoder().decode(raw) } catch (e: IllegalArgumentException) { throw LyricsMatchException("Mã hóa lời bài hát Kugou không hợp lệ", e) }
+        if (bytes.size > LyricsFileCodec.MAX_BYTES) throw LyricsMatchException("Tệp lời bài hát Kugou quá lớn")
         val name = if (download.number("contenttype") == 2L) "lyrics.lrc" else "lyrics.krc"
         return LyricsFileCodec.decode(bytes, name).document
     }
@@ -324,23 +324,23 @@ class OnlineLyricsMatcher(
         continuation.invokeOnCancellation { call.cancel() }
         call.enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                if (continuation.isActive) continuation.resumeWithException(LyricsMatchException("${provider}网络请求失败", e))
+                if (continuation.isActive) continuation.resumeWithException(LyricsMatchException("Yêu cầu mạng ${provider} thất bại", e))
             }
             override fun onResponse(call: Call, response: Response) {
                 try {
                     val root = response.use {
-                        if (!it.isSuccessful) throw LyricsMatchException("${provider}请求失败（HTTP ${it.code}）")
-                        val body = it.body ?: throw LyricsMatchException("${provider}返回了空响应")
-                        if (body.contentLength() > MAX_RESPONSE_BYTES) throw LyricsMatchException("${provider}响应过大")
+                        if (!it.isSuccessful) throw LyricsMatchException("Yêu cầu ${provider} thất bại (HTTP ${it.code})")
+                        val body = it.body ?: throw LyricsMatchException("${provider} trả về phản hồi trống")
+                        if (body.contentLength() > MAX_RESPONSE_BYTES) throw LyricsMatchException("Phản hồi ${provider} quá lớn")
                         val source = body.source()
                         source.request(MAX_RESPONSE_BYTES.toLong() + 1)
-                        if (source.buffer.size > MAX_RESPONSE_BYTES) throw LyricsMatchException("${provider}响应过大")
+                        if (source.buffer.size > MAX_RESPONSE_BYTES) throw LyricsMatchException("Phản hồi ${provider} quá lớn")
                         try { Json.parseToJsonElement(source.readUtf8()) as? JsonObject ?: throw IOException("Expected an object") }
-                        catch (e: Exception) { throw LyricsMatchException("${provider}响应格式无效", e) }
+                        catch (e: Exception) { throw LyricsMatchException("Định dạng phản hồi của ${provider} không hợp lệ", e) }
                     }
                     if (continuation.isActive) continuation.resume(root)
                 } catch (e: Exception) {
-                    if (continuation.isActive) continuation.resumeWithException(if (e is LyricsMatchException) e else LyricsMatchException("${provider}响应读取失败", e))
+                    if (continuation.isActive) continuation.resumeWithException(if (e is LyricsMatchException) e else LyricsMatchException("Đọc phản hồi từ ${provider} thất bại", e))
                 }
             }
         })
@@ -350,7 +350,7 @@ class OnlineLyricsMatcher(
         withTimeout(timeoutMs) { block() }
     } catch (e: TimeoutCancellationException) {
         currentCoroutineContext().ensureActive()
-        throw LyricsMatchException("${source.label}歌词请求超时", e)
+        throw LyricsMatchException("Yêu cầu lời bài hát từ ${source.label} quá thời gian chờ", e)
     }
 
     companion object {
@@ -383,14 +383,14 @@ class OnlineLyricsMatcher(
             .apply { params.forEach { (key, value) -> addQueryParameter(key, value) } }.build()
         private fun JsonObject.string(key: String) = (get(key) as? JsonPrimitive)?.contentOrNull.orEmpty()
         private fun JsonObject.number(key: String) = (get(key) as? JsonPrimitive)?.longOrNull
-        private fun JsonObject.obj(key: String) = get(key) as? JsonObject ?: throw LyricsMatchException("歌词服务响应缺少 $key")
-        private fun JsonObject.array(key: String) = get(key) as? JsonArray ?: throw LyricsMatchException("歌词服务响应缺少 $key")
+        private fun JsonObject.obj(key: String) = get(key) as? JsonObject ?: throw LyricsMatchException("Phản hồi dịch vụ lời bài hát thiếu $key")
+        private fun JsonObject.array(key: String) = get(key) as? JsonArray ?: throw LyricsMatchException("Phản hồi dịch vụ lời bài hát thiếu $key")
         private fun JsonObject.arrayOrEmpty(key: String) = get(key) as? JsonArray ?: JsonArray(emptyList())
         private fun JsonObject.strings(key: String) = arrayOrEmpty(key).mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
         private fun kugouStatus(root: JsonObject) {
             val code = root.number("error_code") ?: root.number("errcode")
-            if (code != null && code !in setOf(0L, 200L)) throw LyricsMatchException("酷狗服务拒绝请求（$code）")
-            root.number("status")?.let { if (it !in setOf(1L, 200L)) throw LyricsMatchException("酷狗服务拒绝请求（$it）") }
+            if (code != null && code !in setOf(0L, 200L)) throw LyricsMatchException("Dịch vụ Kugou từ chối yêu cầu ($code)")
+            root.number("status")?.let { if (it !in setOf(1L, 200L)) throw LyricsMatchException("Dịch vụ Kugou từ chối yêu cầu ($it)") }
         }
         fun isReliableMatch(song: Song, candidate: LyricsCandidate): Boolean =
             FoliaLyricsMatchPolicy.details(song, candidate).accepted

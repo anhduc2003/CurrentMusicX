@@ -33,7 +33,7 @@ internal val desktopIslandArtistStyle = TextStyle(fontSize = 9.sp)
         val titleLayout = measurer.measure(AnnotatedString(islandSingleLine(name)), desktopIslandTitleStyle.copy(fontFamily = customFont),
             softWrap = false, maxLines = 1)
         val artistLayout = measurer.measure(AnnotatedString(islandSingleLine(artist.ifBlank {
-            if (song == null) "等待播放" else "未知歌手"
+            if (song == null) "Đang chờ phát" else "Nghệ sĩ không xác định"
         })), desktopIslandArtistStyle.copy(fontFamily = customFont), softWrap = false, maxLines = 1)
         // A subpixel lost between dp and physical pixels can ellipsize several otherwise
         // fitting characters. Give both shaped labels a small, explicit rounding margin.

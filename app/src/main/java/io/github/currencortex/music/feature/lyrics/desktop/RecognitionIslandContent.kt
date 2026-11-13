@@ -29,9 +29,9 @@ import top.yukonga.miuix.kmp.basic.Icon
 /** A temporary cue inside the original island frame, with the same cover, progress and natural height. */
 @Composable internal fun RecognitionIslandContent(state: RecognitionState, options: DesktopLyricsSettings,
     maximum: Float, onSize: (IntSize) -> Unit, onTop: (Int) -> Unit, onAction: () -> Unit, onClose: () -> Unit) {
-    val song = state.songs.firstOrNull() ?: remember { Song(0, "听歌识曲") }
+    val song = state.songs.firstOrNull() ?: remember { Song(0, "Nhận diện bài hát") }
     val title = when (state.phase) {
-        RecognitionPhase.RECORDING -> if (state.source == RecognitionAudioSource.SYSTEM) "识别系统音频" else "正在聆听"
+        RecognitionPhase.RECORDING -> if (state.source == RecognitionAudioSource.SYSTEM) "Nhận diện âm thanh hệ thống" else "Đang lắng nghe"
         else -> recognitionIslandTitle(state)
     }
     val size = rememberIslandSize(song, title, options.displayFontSize, compact = true, editing = false)
@@ -53,7 +53,7 @@ import top.yukonga.miuix.kmp.basic.Icon
                     .testTag("recognition_island_action"), maxLines = 1, overflow = TextOverflow.Ellipsis,
                     style = TextStyle(color = Color.White, fontSize = options.displayFontSize.sp, fontWeight = FontWeight.Medium))
                 Box(Modifier.width(28.dp).height(30.dp).clickable(role = Role.Button, onClick = onClose)
-                    .semantics { contentDescription = "关闭听歌识曲" }.testTag("recognition_island_close"), contentAlignment = Alignment.Center) {
+                     .semantics { contentDescription = "Đóng nhận diện bài hát" }.testTag("recognition_island_close"), contentAlignment = Alignment.Center) {
                     Icon(MusicIcons.Close, null, Modifier.size(13.dp), tint = Color.White.copy(alpha = .65f))
                 }
             }

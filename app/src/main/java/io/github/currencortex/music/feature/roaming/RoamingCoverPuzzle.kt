@@ -63,8 +63,8 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 }
             }
         }
-        if (showCaption) Text(if (complete) "拼好了，继续聆听这首歌" else if (failed) "封面暂不可用，歌曲继续播放" else "轻点两块碎片交换位置",
+        if (showCaption) Text(if (complete) "Ghép xong rồi, tiếp tục nghe bài hát này" else if (failed) "Tạm thời không dùng được ảnh bìa, bài hát vẫn tiếp tục phát" else "Chạm vào hai mảnh ghép để đổi vị trí",
             fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
-        if (complete && showCaption) MusicTextAction("再拼一次", { tiles = (0..8).shuffled(); selected = null })
+        if (complete && showCaption) MusicTextAction("Ghép lại", { tiles = (0..8).shuffled(); selected = null })
     }
 }

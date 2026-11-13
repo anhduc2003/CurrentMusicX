@@ -119,11 +119,9 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
     }
     val artistLink = Modifier.testTag("player_song_artist").clickable(
         enabled = songNavigation.artistsEnabled, role = Role.Button,
-        onClickLabel = "查看歌手") { songNavigation.openArtists(false) }
-    val albumLink = Modifier.testTag("player_song_title").clickable(
+onClickLabel = "Xem ca sĩ") { songNavigation.openArtists(false) }    val albumLink = Modifier.testTag("player_song_title").clickable(
         enabled = songNavigation.albumEnabled && !songNavigation.albumLoading, role = Role.Button,
-        onClickLabel = "查看所在专辑", onClick = songNavigation.openAlbum)
-    val dismiss = {
+onClickLabel = "Xem album chứa bài hát", onClick = songNavigation.openAlbum)    val dismiss = {
         queueGestureJob?.cancel()
         queueGestureJob = null
         queueGesture = false
@@ -256,16 +254,13 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
         }
         val header: @Composable () -> Unit = {
             Row(Modifier.fillMaxWidth().height(if (widePlayer) 48.dp else 52.dp), verticalAlignment = Alignment.CenterVertically) {
-                PlayerIconButton(PlayerIcon.COLLAPSE, "收起播放器", onBack, Modifier.testTag("navigate_back"))
-                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                    if (roaming.active) Text("私人漫游 · ${roaming.choice.title}",
-                        Modifier.testTag("open_roaming_modes")
+PlayerIconButton(PlayerIcon.COLLAPSE, "Thu gọn trình phát", onBack, Modifier.testTag("navigate_back"))                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+if (roaming.active) Text("Chuyển vùng riêng tư · ${roaming.choice.title}",                        Modifier.testTag("open_roaming_modes")
                             .clickable(role = Role.Button) { overlay = PlayerOverlay.ROAMING }
                             .padding(horizontal = 8.dp, vertical = 14.dp), color = Color.White.copy(alpha = .65f),
                         fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
-                PlayerIconButton(PlayerIcon.SHARE, "分享歌曲", { overlay = PlayerOverlay.SHARE }, Modifier.testTag("player_share"),
-                    enabled = queue.current != null)
+PlayerIconButton(PlayerIcon.SHARE, "Chia sẻ bài hát", { overlay = PlayerOverlay.SHARE }, Modifier.testTag("player_share"),                    enabled = queue.current != null)
             }
         }
         PlayerSidePageLayout(sidePage,
@@ -283,8 +278,7 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
                         aiEnabled = io.github.currencortex.music.data.song.NeteaseSongActionsRepository.songId(queue.current) != null,
                         onAi = {
                             vm.openAi()
-                            vm.ai.draft("请解读这首歌的创作背景和歌词含义。")
-                            overlay = PlayerOverlay.AI
+vm.ai.draft("Hãy giải thích bối cảnh sáng tác và ý nghĩa lời bài hát này.")                            overlay = PlayerOverlay.AI
                         })
                 }
             }) {
@@ -337,8 +331,7 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
                             }
                         }
                     }
-                    PlayerIconButton(PlayerIcon.MORE, "播放与歌词设置", { overlay = PlayerOverlay.OPTIONS },
-                        Modifier.align(Alignment.TopEnd).testTag("lyrics_options"))
+PlayerIconButton(PlayerIcon.MORE, "Cài đặt phát nhạc và lời bài hát", { overlay = PlayerOverlay.OPTIONS },                        Modifier.align(Alignment.TopEnd).testTag("lyrics_options"))
                 } else Column(Modifier.fillMaxSize().pointerInput(settings.lyricsDisplay.hideControls) {
                     if (settings.lyricsDisplay.hideControls) {
                         try {
@@ -378,8 +371,7 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
                                 PlayerArtwork(queue.current?.cover.orEmpty(), Modifier.size(46.dp).testTag("player_lyrics_cover"), pixels = 800,
                                     pagerRole = PlayerPagerArtworkRole.LYRICS)
                                 Column(Modifier.weight(1f).padding(start = 12.dp)) {
-                                    PlayerSongText(queue.current?.name ?: "还没有选择歌曲", albumLink, role = PlayerPagerArtworkRole.LYRICS, color = Color.White,
-                                        fontWeight = FontWeight.SemiBold, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+PlayerSongText(queue.current?.name ?: "Chưa chọn bài hát", albumLink, role = PlayerPagerArtworkRole.LYRICS, color = Color.White,                                        fontWeight = FontWeight.SemiBold, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                     PlayerSongText(queue.current?.artists.orEmpty(), artistLink, role = PlayerPagerArtworkRole.LYRICS, subtitle = true, fontSize = 13.sp, color = Color.White.copy(alpha = .55f), maxLines = 1, overflow = TextOverflow.Ellipsis)
                                 }
                             }
@@ -415,8 +407,7 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
             if (!widePlayer) {
                 PlayerControlsRegion({ 1f - controlsVisibility() }) {
                     Box(Modifier.fillMaxWidth().height(48.dp), contentAlignment = Alignment.Center) {
-                        Text("显示控制面板", color = Color.White.copy(alpha = .65f), fontSize = 12.sp,
-                            modifier = Modifier.testTag("lyrics_reveal_controls").clickable(role = Role.Button) {
+Text("Hiển thị bảng điều khiển", color = Color.White.copy(alpha = .65f), fontSize = 12.sp,                            modifier = Modifier.testTag("lyrics_reveal_controls").clickable(role = Role.Button) {
                                 controlsHidden = false; controlsAutoHidden = false; controlsRevealed = true
                             }
                                 .padding(horizontal = 24.dp, vertical = 14.dp))
@@ -447,8 +438,7 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
             PlayerOverlay.ROAMING -> io.github.currencortex.music.feature.roaming.PersonalRoamingDialog(vm.container, dismiss) {
                 onAiNavigate("user/binding")
             }
-            PlayerOverlay.MODE -> MusicChoiceDialog("播放模式", dismiss) {
-                PlaybackMode.entries.filter { !together.active || it != PlaybackMode.HEART }.forEach { mode -> MusicDialogChoiceRow(mode.label, mode == playbackMode,
+PlayerOverlay.MODE -> MusicChoiceDialog("Chế độ phát", dismiss) {                PlaybackMode.entries.filter { !together.active || it != PlaybackMode.HEART }.forEach { mode -> MusicDialogChoiceRow(mode.label, mode == playbackMode,
                     onClick = { vm.setPlaybackMode(mode); overlay = PlayerOverlay.QUEUE },
                     enabled = (if (together.active) !together.busy else state.mode == PlayerMode.LOCAL) && (mode != PlaybackMode.HEART ||
                         io.github.currencortex.music.data.song.NeteaseSongActionsRepository.songId(queue.current) != null),
@@ -458,46 +448,32 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
                 onNetwork = onNetwork, song = queue.current, insights = vm.container.musicRepository.insights,
                 audioInfo = state.audioInfo, onRefresh = if (state.mode == PlayerMode.LOCAL && state.song?.musicSource == io.github.currencortex.music.data.song.MusicSource.NETEASE && !state.resolving)
                     ({ vm.container.playerController.refreshSource() }) else null)
-            PlayerOverlay.ACTIONS -> if (queue.current != null) MusicChoiceDialog("歌曲操作", dismiss) { actions?.invoke(queue.current!!) }
-            PlayerOverlay.OPTIONS -> MusicChoiceDialog("播放与歌词", dismiss) {
-                Column(Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
+PlayerOverlay.ACTIONS -> if (queue.current != null) MusicChoiceDialog("Thao tác bài hát", dismiss) { actions?.invoke(queue.current!!) }PlayerOverlay.OPTIONS -> MusicChoiceDialog("Phát nhạc và lời bài hát", dismiss) {                Column(Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
                 if (io.github.currencortex.music.data.song.NeteaseSongActionsRepository.songId(queue.current) != null)
-                    MusicDestinationRow("问AI", summary = "了解这首歌 · 私有对话", modifier = Modifier.testTag("open_player_ai"),
-                        onClick = { vm.openAi(); overlay = PlayerOverlay.AI })
+MusicDestinationRow("Hỏi AI", summary = "Tìm hiểu bài hát này · trò chuyện riêng tư", modifier = Modifier.testTag("open_player_ai"),                        onClick = { vm.openAi(); overlay = PlayerOverlay.AI })
                 MusicDestinationRow(if (content == PlayerContent.LYRICS) {
-                    if (widePlayer) "显示控制栏" else "显示封面"
-                } else "显示歌词",
-                    modifier = Modifier.testTag("open_lyrics"), onClick = {
+if (widePlayer) "Hiển thị thanh điều khiển" else "Hiển thị ảnh bìa"} else "Hiển thị lời bài hát",                    modifier = Modifier.testTag("open_lyrics"), onClick = {
                         dismiss()
                         scope.launch { pager.animateScrollToPage(if (pager.targetPage == 0) 1 else 0,
                             animationSpec = tween(260, easing = LinearOutSlowInEasing)) }
                     })
                 if (controlsRevealed && settings.lyricsDisplay.hideControls && content == PlayerContent.LYRICS)
-                    MusicDestinationRow("隐藏控制面板", modifier = Modifier.testTag("lyrics_conceal_controls"),
-                        onClick = { controlsAutoHidden = true; controlsRevealed = false; dismiss() })
-                if (actions != null && queue.current != null) MusicDestinationRow("歌曲操作", onClick = {
-                    val song = queue.current ?: return@MusicDestinationRow
+MusicDestinationRow("Ẩn bảng điều khiển", modifier = Modifier.testTag("lyrics_conceal_controls"),                        onClick = { controlsAutoHidden = true; controlsRevealed = false; dismiss() })
+if (actions != null && queue.current != null) MusicDestinationRow("Thao tác bài hát", onClick = {                    val song = queue.current ?: return@MusicDestinationRow
                     if (menuHost == null) overlay = PlayerOverlay.ACTIONS
                     else { dismiss(); menuHost(SongMenu(song, {}, {}, {}, extra = { actions(song) }, transport = false)) }
                 })
-                MusicDestinationRow("播放音质", summary = if (state.song?.privateLibrary == true) state.song?.originalQualityLabel.orEmpty() else state.audioInfo?.label ?: settings.quality.label, onClick = { overlay = PlayerOverlay.QUALITY }, enabled = state.mode == PlayerMode.LOCAL && state.song?.privateLibrary != true)
-                MusicDestinationRow("播放背景", summary = if (backgroundImage != null) "自定义图片 · 模糊 ${appearance.playerBackgroundBlur.toInt()}%"
-                    else if (appearance.playerDynamicBackground) "流动背景 · 跟随歌曲封面"
-                    else "封面毛玻璃 · 模糊 ${appearance.playerBackgroundBlur.toInt()}%",
-                    modifier = Modifier.testTag("open_player_background"), onClick = { overlay = PlayerOverlay.BACKGROUND })
-                MusicDestinationRow("私人漫游", summary = if (roaming.active) roaming.choice.title else "按你的喜好连续推荐",
-                    modifier = Modifier.testTag("open_player_roaming"), onClick = { overlay = PlayerOverlay.ROAMING })
-                if (onEqualizer != null) MusicDestinationRow("音效", onClick = { dismiss(); onEqualizer() },
-                    modifier = Modifier.testTag("open_player_equalizer"))
-                MusicDestinationRow("播放模式", summary = playbackMode.label, onClick = { overlay = PlayerOverlay.MODE }, enabled = state.mode == PlayerMode.LOCAL || (together.active && !together.busy))
-                MusicDestinationRow("定时关闭", summary = sleepSummary(sleepState), modifier = Modifier.testTag("open_sleep_timer"),
+MusicDestinationRow("Chất lượng phát nhạc", summary = if (state.song?.privateLibrary == true) state.song?.originalQualityLabel.orEmpty() else state.audioInfo?.label ?: settings.quality.label, onClick = { overlay = PlayerOverlay.QUALITY }, enabled = state.mode == PlayerMode.LOCAL && state.song?.privateLibrary != true)MusicDestinationRow("Nền phát nhạc", summary = if (backgroundImage != null) "Ảnh tùy chỉnh · Làm mờ ${appearance.playerBackgroundBlur.toInt()}%"else if (appearance.playerDynamicBackground) "Nền chuyển động · Theo ảnh bìa bài hát"else "Ảnh bìa kính mờ · làm mờ ${appearance.playerBackgroundBlur.toInt()}%",                    modifier = Modifier.testTag("open_player_background"), onClick = { overlay = PlayerOverlay.BACKGROUND })
+MusicDestinationRow("Nghe ngẫu nhiên riêng tư", summary = if (roaming.active) roaming.choice.title else "Liên tục đề xuất theo sở thích của bạn",                    modifier = Modifier.testTag("open_player_roaming"), onClick = { overlay = PlayerOverlay.ROAMING })
+if (onEqualizer != null) MusicDestinationRow("Hiệu ứng âm thanh", onClick = { dismiss(); onEqualizer() },                    modifier = Modifier.testTag("open_player_equalizer"))
+MusicDestinationRow("Chế độ phát", summary = playbackMode.label, onClick = { overlay = PlayerOverlay.MODE }, enabled = state.mode == PlayerMode.LOCAL || (together.active && !together.busy))                 MusicDestinationRow("Tắt hẹn giờ", summary = sleepSummary(sleepState), modifier = Modifier.testTag("open_sleep_timer",
                     onClick = { overlay = PlayerOverlay.SLEEP })
-                MusicDestinationRow("歌词显示", summary = "${settings.lyricsDisplay.style.label} · ${settings.lyricsFont.label} · 字号 ${settings.lyricsFontSize.toInt()}",
+                 MusicDestinationRow("Hiển thị lời bài hát", summary = "${settings.lyricsDisplay.style.label} · ${settings.lyricsFont.label} · Cỡ chữ ${settings.lyricsFontSize.toInt()}",
                     modifier = Modifier.testTag("open_lyrics_display"), onClick = { overlay = PlayerOverlay.LYRICS })
                 if (queue.current != null && queue.current?.video != true)
-                    MusicDestinationRow("歌词管理", summary = "来源 · 在线匹配 · 单曲偏移 · 导入导出",
+                     MusicDestinationRow("Quản lý lời bài hát", summary = "Nguồn · Khớp trực tuyến · Độ lệch bài hát · Nhập xuất",
                         modifier = Modifier.testTag("open_lyrics_management"), onClick = { overlay = PlayerOverlay.LYRICS_MANAGEMENT })
-                if (onRoom != null && state.song?.privateLibrary != true) MusicDestinationRow(if (state.mode == PlayerMode.ROOM) "房间控制" else "一起听", onClick = { dismiss(); onRoom() })
+                 if (onRoom != null && state.song?.privateLibrary != true) MusicDestinationRow(if (state.mode == PlayerMode.ROOM) "Điều khiển phòng" else "Nghe cùng nhau", onClick = { dismiss(); onRoom() })
                 }
             }
             PlayerOverlay.AI -> PlayerAiDialog(vm.ai, dismiss) { card ->
@@ -505,20 +481,20 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
                 if (card.type == "song") vm.playAiCard(card)
                 else onAiNavigate("lib/${if (card.type == "playlist") "ncmplaylist" else card.type}/${card.id}")
             }
-            PlayerOverlay.WEIGHT -> MusicChoiceDialog("歌词字重", { overlay = PlayerOverlay.LYRICS }) {
+             PlayerOverlay.WEIGHT -> MusicChoiceDialog("Độ đậm lời bài hát", { overlay = PlayerOverlay.LYRICS }) {
                 LyricsWeight.entries.forEach { weight ->
                     MusicDialogChoiceRow(weight.label, weight == settings.lyricsWeight,
                         modifier = Modifier.testTag("lyrics_weight_${weight.name}"),
                         onClick = { vm.lyricsWeight(weight); overlay = PlayerOverlay.LYRICS })
                 }
             }
-            PlayerOverlay.KARAOKE -> MusicChoiceDialog("卡拉OK（逐字）歌词动画兼容策略", { overlay = PlayerOverlay.LYRICS }) {
+             PlayerOverlay.KARAOKE -> MusicChoiceDialog("Chiến lược tương thích hiệu ứng lời karaoke (từng chữ)", { overlay = PlayerOverlay.LYRICS }) {
                 KaraokeScope.entries.forEach { scope ->
                     MusicDialogChoiceRow(scope.label, scope == settings.lyricsDisplay.karaokeScope,
                         summary = when (scope) {
-                            KaraokeScope.CURRENT -> "只对正在播放的行逐字高亮"
-                            KaraokeScope.ALL -> "所有含逐字时间的可见行跟随进度高亮"
-                            KaraokeScope.ALWAYS -> "全部行启用；普通歌词按行时长近似扫亮"
+                             KaraokeScope.CURRENT -> "Chỉ tô sáng từng chữ ở dòng đang phát"
+                             KaraokeScope.ALL -> "Các dòng hiển thị có thời gian từng chữ sẽ được tô sáng theo tiến độ"
+                             KaraokeScope.ALWAYS -> "Bật cho tất cả các dòng; lời bài hát thông thường sẽ được tô sáng gần đúng theo thời lượng dòng"
                         },
                         modifier = Modifier.testTag("karaoke_scope_${scope.name}"),
                         onClick = { vm.lyricsDisplay { it.copy(karaokeScope = scope) }; overlay = PlayerOverlay.LYRICS })
@@ -529,7 +505,7 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
                 val lyrics by vm.lyrics.collectAsStateWithLifecycle()
                 val song by vm.currentSong.collectAsStateWithLifecycle()
                 val currentLyric = currentSettingsLyric(lyrics, state, song, settings.lyricsOffsetMs)
-                MusicDialog("歌词显示", dismiss) {
+                 MusicDialog("Hiển thị lời bài hát", dismiss) {
                     LyricsDisplaySettings(settings.lyricsFontSize, vm::lyricsFontSize, settings.lyricsWeight, { overlay = PlayerOverlay.WEIGHT },
                         settings.lyricsDisplay, vm::lyricsDisplay, { overlay = PlayerOverlay.KARAOKE },
                         settings.lyricsFont, settings.lyricsFontFile, vm::lyricsFont, vm::lyricsFontFile, currentLyric)
@@ -563,7 +539,7 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
             } else PlayerArtwork(song?.cover.orEmpty(), Modifier.size(coverSize).testTag("player_cover"),
                 transitionTarget = transitionTarget, pagerRole = pagerRole)
             Column(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 16.dp, bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                PlayerSongText(song?.name ?: "还没有选择歌曲", albumLink, role = pagerRole, color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                 PlayerSongText(song?.name ?: "Chưa chọn bài hát", albumLink, role = pagerRole, color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 PlayerSongText(song?.artists.orEmpty(), artistLink, role = pagerRole, subtitle = true, fontSize = 18.sp, color = Color.White.copy(alpha = .55f), maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
             if (showPreview) CoverLyricPreview(vm, Modifier.fillMaxWidth().padding(horizontal = 8.dp)
@@ -597,7 +573,7 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 8.dp),
             verticalArrangement = Arrangement.spacedBy(if (compact) 12.dp else 24.dp, Alignment.CenterVertically)) {
             Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
-                Text(queue.current?.name ?: "还没有选择歌曲", albumLink,
+                 Text(queue.current?.name ?: "Chưa chọn bài hát", albumLink,
                     color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold,
                     maxLines = 2, overflow = TextOverflow.Ellipsis)
                 Text(queue.current?.artists.orEmpty(), Modifier.padding(top = 6.dp).then(artistLink),
@@ -638,7 +614,7 @@ internal val PlayerPagePosition = SemanticsPropertyKey<Float>("PlayerPagePositio
             MusicPlaceholder(Modifier.fillMaxWidth(.8f).height(30.dp))
             MusicPlaceholder(Modifier.fillMaxWidth().height(30.dp))
             MusicPlaceholder(Modifier.fillMaxWidth(.6f).height(30.dp))
-            Text("正在加载歌词", fontSize = 13.sp, color = Color.White.copy(alpha = .45f))
-        } else Text(lyrics.error ?: "暂无歌词", Modifier.padding(28.dp), color = Color.White.copy(alpha = .5f), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+             Text("Đang tải lời bài hát", fontSize = 13.sp, color = Color.White.copy(alpha = .45f))
+         } else Text(lyrics.error ?: "Chưa có lời bài hát", Modifier.padding(28.dp), color = Color.White.copy(alpha = .5f), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
     }
 }

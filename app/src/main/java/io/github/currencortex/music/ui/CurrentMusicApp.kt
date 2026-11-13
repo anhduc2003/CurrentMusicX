@@ -447,7 +447,7 @@ fun CurrentMusicApp(container: AppContainer, animateLaunch: Boolean = false, lau
                     is io.github.currencortex.music.core.links.MusicWebLink.Song -> {
                         val song = container.musicRepository.detail(target.id)
                         if (container.playerController.state.value.mode != PlayerMode.LOCAL) {
-                            libraryVm.message.value = "请先退出一起听，再打开歌曲链接"
+Vui lòng thoát khỏi chế độ nghe cùng nhau trước khi mở liên kết bài hát
                         } else {
                             pendingWebLinkId = request.id
                             playWithPermission {
@@ -455,24 +455,24 @@ fun CurrentMusicApp(container: AppContainer, animateLaunch: Boolean = false, lau
                                 if (container.playerController.state.value.mode == PlayerMode.LOCAL) {
                                     container.playerController.playSong(song)
                                     navigateTo(PLAYER)
-                                } else libraryVm.message.value = "请先退出一起听，再打开歌曲链接"
+} else libraryVm.message.value = "Vui lòng thoát khỏi chế độ nghe cùng nhau trước khi mở liên kết bài hát"
                                 onWebLinkConsumed(request.id)
                             }
                             // Keep the request through recreation until the notification prompt is answered.
                             return@LaunchedEffect
                         }
                     }
-                    else -> libraryVm.message.value = "暂不支持此链接，请在浏览器中打开"
+else -> libraryVm.message.value = "Chưa hỗ trợ liên kết này, vui lòng mở bằng trình duyệt"
                 }
             } catch (cancelled: kotlinx.coroutines.CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
-                libraryVm.message.value = "链接打开失败，请检查网络后重试"
+libraryVm.message.value = "Không mở được liên kết, vui lòng kiểm tra mạng rồi thử lại"
             }
             onWebLinkConsumed(request.id)
         }
         fun requestSong(song: Song) {
-            if (song.musicSource in setOf(io.github.currencortex.music.data.song.MusicSource.NAVIDROME, io.github.currencortex.music.data.song.MusicSource.EMBY, io.github.currencortex.music.data.song.MusicSource.LOCAL)) { libraryVm.message.value = "本地或私有曲库歌曲不能提交到一起听房间"; return }
+if (song.musicSource in setOf(io.github.currencortex.music.data.song.MusicSource.NAVIDROME, io.github.currencortex.music.data.song.MusicSource.EMBY, io.github.currencortex.music.data.song.MusicSource.LOCAL)) { libraryVm.message.value = "Bài hát trong thư viện cục bộ hoặc riêng tư không thể gửi vào phòng nghe cùng nhau"; return }
             if (nativeTogether.active) { container.listenTogether.request(song); return }
             if (!container.roomSession.active || song.id in roomPending) return
             val revision = container.accountRepository.sessionRevision.value
@@ -483,8 +483,8 @@ fun CurrentMusicApp(container: AppContainer, animateLaunch: Boolean = false, lau
                     val result = container.roomSession.submit(song)
                     if (revision == container.accountRepository.sessionRevision.value && roomId == container.roomSession.state.value.detail?.room?.id) {
                         libraryVm.message.value = when (result) {
-                            is AppResult.Success -> "已提交点歌：${song.name}，可返回房间查看队列"
-                            is AppResult.Failure -> "点歌失败：${result.kind.message}"
+is AppResult.Success -> "Đã gửi yêu cầu bài hát: ${song.name}, bạn có thể quay lại phòng để xem hàng đợi"
+is AppResult.Failure -> "Yêu cầu bài hát thất bại: ${result.kind.message}"
                         }
                     }
                 } finally { if (revision == container.accountRepository.sessionRevision.value) roomPending = roomPending - song.id }
@@ -507,7 +507,7 @@ fun CurrentMusicApp(container: AppContainer, animateLaunch: Boolean = false, lau
             playerDrag.flingThreshold = with(density) { 600.dp.toPx() }
         }
         val predictiveBack = settings.predictiveBack && Build.VERSION.SDK_INT >= 34
-        val labels = listOf("首页", "发现", "我的", "设置")
+val labels = listOf("Trang chủ", "Khám phá", "Của tôi", "Cài đặt")
         val icons = listOf(Icons.Default.Home, Icons.Default.Star, Icons.Default.Person, Icons.Default.Settings)
         fun selectTab(index: Int) {
             if (selected == index) return
@@ -712,7 +712,7 @@ fun CurrentMusicApp(container: AppContainer, animateLaunch: Boolean = false, lau
                     Box(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) {
                         SearchScreen(searchVm, container.playerController, actions = { LibrarySongActions(libraryVm, it, ::navigateLibrary) },
                             navigate = ::navigateLibrary,
-                            roomName = if (nativeTogether.active) "网易云双人一起听" else roomLive.detail?.room?.name.orEmpty(),
+roomName = if (nativeTogether.active) "Nghe cùng nhau trên Nhạc Vân NetEase" else roomLive.detail?.room?.name.orEmpty(),
                             onBack = ::navigateBack, onPlay = ::requestSong)
                     }
                 }
@@ -1075,8 +1075,8 @@ fun CurrentMusicApp(container: AppContainer, animateLaunch: Boolean = false, lau
             }, versionPreview = updatePreviewVersion, sourceCheck = container.updateSourceCheck)
         LibraryDialogs(libraryVm)
         ProfileDialogs(profileVm, authVm)
-        if (profileMessage != null) MusicDialog("账号操作", onDismiss = { profileVm.message.value = null }) {
-            Text(profileMessage.orEmpty()); MusicDialogButton("关闭", onClick = { profileVm.message.value = null })
+if (profileMessage != null) MusicDialog("Thao tác tài khoản", onDismiss = { profileVm.message.value = null }) {
+Text(profileMessage.orEmpty()); MusicDialogButton("Đóng", onClick = { profileVm.message.value = null })
         }
         LaunchedEffect(playerState.error) {
             playerState.error?.let { message ->
@@ -1089,17 +1089,17 @@ fun CurrentMusicApp(container: AppContainer, animateLaunch: Boolean = false, lau
                 libraryVm.message.value = null
             }
         }
-        if (pendingPlay != null) MusicDialog("后台播放通知", onDismiss = {
+if (pendingPlay != null) MusicDialog("Thông báo phát nhạc nền", onDismiss = {
             pendingPlay = null
             pendingWebLinkId?.let(onWebLinkConsumed)
             pendingWebLinkId = null
         }) {
-            Text("允许通知后，可从通知栏控制播放；锁屏和蓝牙媒体控制也由播放服务提供。")
-            MusicDialogButton("允许通知并播放", onClick = {
+Text("Sau khi cho phép thông báo, bạn có thể điều khiển phát nhạc từ thanh thông báo; màn hình khóa và điều khiển phương tiện qua Bluetooth cũng do dịch vụ phát nhạc cung cấp.")
+MusicDialogButton("Cho phép thông báo và phát nhạc", onClick = {
                 explained = true
                 if (Build.VERSION.SDK_INT >= 33) permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
             })
-            MusicDialogButton("继续播放", onClick = { explained = true; val action = pendingPlay; pendingPlay = null; action?.invoke() })
+MusicDialogButton("Tiếp tục phát", onClick = { explained = true; val action = pendingPlay; pendingPlay = null; action?.invoke() })
         }
         io.github.currencortex.music.feature.lyrics.desktop.DesktopLyricsRecommendation(container,
             eligible = launchFinished && announcements.isEmpty() && !updateDialogVisible && pendingPlay == null)

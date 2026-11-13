@@ -106,9 +106,9 @@ private class CoverTransitionHistory { var current: DesktopIslandCoverTransition
     Box(modifier.clip(CircleShape).background(Color(0xFF2B303B)).graphicsLayer {
         rotationZ = spin()
     }, contentAlignment = Alignment.Center) {
-        Image(icon, if (song == null) "应用图标" else "占位封面", Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+        Image(icon, if (song == null) "Biểu tượng ứng dụng" else "Ảnh bìa giữ chỗ", Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
         if (cover.isNotBlank()) AsyncImage(
             remember(context, cover) { ImageRequest.Builder(context).data(coverRequestUrl(cover, 256)).size(256).build() },
-            contentDescription = "歌曲封面", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+            contentDescription = "Ảnh bìa bài hát", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
     }
 }

@@ -39,7 +39,7 @@ private const val DEFAULT_SLEEP_MINUTES = 30
     if (custom) {
         SleepCustomTimeDialog(onDismiss = { custom = false },
             onConfirm = { minutes -> custom = false; timer.start(minutes, state.extendToSongEnd) })
-    } else MusicDialog("定时关闭", onDismiss) {
+    } else MusicDialog("Tắt theo hẹn giờ", onDismiss) {
         val colors = io.github.currencortex.music.ui.component.musicDialogColors()
         Column(Modifier.testTag("sleep_timer_sheet").heightIn(max = 460.dp).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -48,9 +48,9 @@ private const val DEFAULT_SLEEP_MINUTES = 30
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         when {
-                            state.waitingForSongEnd -> "本曲播完后暂停"
+                            state.waitingForSongEnd -> "Tạm dừng sau khi phát xong bài này"
                             state.enabled -> formatRemaining(state.remainingMs)
-                            else -> "选择时间"
+                            else -> "Chọn thời gian"
                         },
                         Modifier.weight(1f).testTag("sleep_timer_countdown"),
                         fontSize = if (state.waitingForSongEnd) 17.sp else 24.sp,
@@ -78,7 +78,7 @@ private const val DEFAULT_SLEEP_MINUTES = 30
                 }
                 Spacer(Modifier.height(6.dp))
                 Box(Modifier.fillMaxWidth().height(1.dp).background(colors.dividerLine))
-                Text("自定义", Modifier.fillMaxWidth().clickable(role = Role.Button) { custom = true }
+                 Text("Tùy chỉnh", Modifier.fillMaxWidth().clickable(role = Role.Button) { custom = true }
                     .testTag("sleep_timer_custom").padding(vertical = 14.dp),
                     textAlign = TextAlign.Center, fontSize = 14.sp, color = colors.primary)
             }
@@ -86,12 +86,12 @@ private const val DEFAULT_SLEEP_MINUTES = 30
                 .clickable(role = Role.Switch) { timer.setExtendToSongEnd(!state.extendToSongEnd) }
                 .padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f).padding(end = 12.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                    Text("自动延长到整首歌播完", fontSize = 15.sp, color = colors.onSurface)
-                    Text("时间到时若还在播放，会等当前歌曲唱完再暂停", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+                    Text("Tự động kéo dài đến khi bài hát phát xong", fontSize = 15.sp, color = colors.onSurface)
+                    Text("Nếu vẫn đang phát khi hết giờ, sẽ đợi bài hát hiện tại phát xong rồi tạm dừng", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
                 }
                 Switch(state.extendToSongEnd, { timer.setExtendToSongEnd(it) }, Modifier.testTag("sleep_extend_switch"))
             }
-            Text("定时结束后暂停播放，不会清空播放队列。关闭弹窗或切到后台仍会计时。",
+            Text("Khi hết giờ, phát sẽ tạm dừng nhưng hàng đợi phát sẽ không bị xóa. Bộ hẹn giờ vẫn tiếp tục chạy khi đóng hộp thoại hoặc chuyển ứng dụng xuống nền.",
                 Modifier.padding(horizontal = 4.dp).testTag("sleep_timer_note"),
                 fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
         }
@@ -103,33 +103,32 @@ private const val DEFAULT_SLEEP_MINUTES = 30
     val colors = io.github.currencortex.music.ui.component.musicDialogColors()
     var hours by rememberSaveable { mutableStateOf(0) }
     var minutes by rememberSaveable { mutableStateOf(0) }
-    MusicDialog("自定义关闭", onDismiss) {
+    MusicDialog("Tắt theo hẹn giờ tùy chỉnh", onDismiss) {
         Column(Modifier.fillMaxWidth().background(colors.onSurface.copy(alpha = .05f), RoundedCornerShape(20.dp))
             .padding(vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 NumberPicker(hours, { hours = it }, Modifier.weight(1f).testTag("sleep_custom_hours"),
                     range = 0..23, label = { "%02d".format(it) }, visibleItemCount = 3)
-                Text("小时", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+                Text("Giờ", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
                 Box(Modifier.width(1.dp).height(28.dp).background(colors.dividerLine))
                 NumberPicker(minutes, { minutes = it }, Modifier.weight(1f).testTag("sleep_custom_minutes"),
                     range = 0..59, label = { "%02d".format(it) }, visibleItemCount = 3)
-                Text("分钟", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+                Text("Phút", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
             }
         }
         io.github.currencortex.music.ui.component.MusicDialogActions {
-            io.github.currencortex.music.ui.component.MusicDialogButton("取消", onDismiss,
+            io.github.currencortex.music.ui.component.MusicDialogButton("Hủy", onDismiss,
                 Modifier.weight(1f).testTag("sleep_custom_cancel"))
-            io.github.currencortex.music.ui.component.MusicDialogButton("确定", { onConfirm(hours * 60 + minutes) },
+            io.github.currencortex.music.ui.component.MusicDialogButton("Xác nhận", { onConfirm(hours * 60 + minutes) },
                 Modifier.weight(1f).testTag("sleep_custom_confirm"), enabled = hours > 0 || minutes > 0)
         }
     }
 }
 
-/** One-line summary for the player's "定时关闭" menu row. */
-internal fun sleepSummary(state: SleepTimer.State): String = when {
-    state.waitingForSongEnd -> "本曲播完后暂停"
-    state.enabled -> "剩余 ${formatRemaining(state.remainingMs)}"
-    else -> "关闭"
+/** One-line summary for the player's "Tắt theo hẹn giờ" menu row. */internal fun sleepSummary(state: SleepTimer.State): String = when {
+    state.waitingForSongEnd -> "Tạm dừng sau khi phát xong bài này"
+    state.enabled -> "Còn ${formatRemaining(state.remainingMs)}"
+    else -> "Tắt"
 }
 
 private fun formatRemaining(ms: Long): String {    val total = ((ms.coerceAtLeast(0L) + 999) / 1000)

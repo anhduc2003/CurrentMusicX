@@ -166,19 +166,19 @@ import top.yukonga.miuix.kmp.basic.TextField
             AndroidView(factory = { renderer }, update = {
                 it.topInset = top; it.bottomInset = footerInset; applyViewRefreshRate(it, refreshRate); it.invalidate()
             }, modifier = Modifier.fillMaxSize().testTag("record_shelf_canvas").semantics {
-                contentDescription = "CD 唱片架，滑动浏览歌曲，点击唱片抽出，再次点击播放，底部刻度可快速定位"
-                stateDescription = if (replacingResults) "正在切换唱片" else selected?.let { "${selection + 1} / ${displayedSongs.size}，${it.name}，${it.artists}" } ?: "没有匹配的歌曲"
+                contentDescription = "Kệ đĩa CD, vuốt để duyệt bài hát, nhấn vào đĩa để rút ra, nhấn lần nữa để phát, dùng vạch chia bên dưới để định vị nhanh"
+                stateDescription = if (replacingResults) "Đang chuyển đĩa" else selected?.let { "${selection + 1} / ${displayedSongs.size}，${it.name}，${it.artists}" } ?: "Không tìm thấy bài hát phù hợp"
                 if (replacingResults) disabled()
-                onClick("播放当前歌曲") { if (canPlay && selected != null && !replacingResults) { activate(selection); true } else false }
+                onClick("Phát bài hát hiện tại") { if (canPlay && selected != null && !replacingResults) { activate(selection); true } else false }
                 scrollBy { x, y -> renderer.travel((x - y * .55f) / 70f); true }
                 scrollToIndex { index ->
                     if (!replacingResults && index in displayedSongs.indices) { renderer.select(index); true } else false
                 }
                 customActions = listOf(
-                    CustomAccessibilityAction("上一张唱片") { renderer.travel(-1f); true },
-                    CustomAccessibilityAction("下一张唱片") { renderer.travel(1f); true },
-                    CustomAccessibilityAction("播放当前歌曲") { activate(selection); canPlay && selected != null },
-                    CustomAccessibilityAction("返回列表") { onClose(); true },
+                    CustomAccessibilityAction("Đĩa trước") { renderer.travel(-1f); true },
+                    CustomAccessibilityAction("Đĩa tiếp theo") { renderer.travel(1f); true },
+                    CustomAccessibilityAction("Phát bài hát hiện tại") { activate(selection); canPlay && selected != null },
+                    CustomAccessibilityAction("Quay lại danh sách") { onClose(); true },
                 )
             })
             }
@@ -187,18 +187,18 @@ import top.yukonga.miuix.kmp.basic.TextField
             .windowInsetsPadding(safeInsets.only(WindowInsetsSides.Horizontal)).statusBarsPadding()
             .padding(horizontal = screenWidth * .04f, vertical = 14.dp),
             verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ShelfCircle(glassBackdrop, "搜索歌曲", "record_shelf_search", { searchOpen = true }) {
+            ShelfCircle(glassBackdrop, "Tìm kiếm bài hát", "record_shelf_search", { searchOpen = true }) {
                 Icon(Icons.Default.Search, null, Modifier.size(20.dp), tint = Color.White)
             }
             Column(Modifier.weight(1f).padding(top = 2.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(selected?.name ?: "没有匹配的歌曲", fontSize = 24.sp, lineHeight = 28.sp, fontWeight = FontWeight.SemiBold,
+                Text(selected?.name ?: "Không tìm thấy bài hát phù hợp", fontSize = 24.sp, lineHeight = 28.sp, fontWeight = FontWeight.SemiBold,
                     color = Color.White, maxLines = 2, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center,
                     modifier = Modifier.graphicsLayer { alpha = titleAlpha }.blur(if (picking) 3.dp else 0.dp).testTag("record_shelf_title"))
                 Text(selected?.let { listOf(it.artists, it.album).filter(String::isNotBlank).joinToString(" · ") }.orEmpty(),
                     Modifier.padding(top = 7.dp).graphicsLayer { alpha = titleAlpha }.blur(if (picking) 3.dp else 0.dp), fontSize = 14.sp, color = Color.White.copy(alpha = .6f), maxLines = 1,
                     overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
             }
-            ShelfCircle(glassBackdrop, "返回歌曲列表", "record_shelf_close", onClose) {
+            ShelfCircle(glassBackdrop, "Quay lại danh sách bài hát", "record_shelf_close", onClose) {
                 ShelfGlyph("collection", Modifier.size(21.dp))
             }
         }
@@ -206,7 +206,7 @@ import top.yukonga.miuix.kmp.basic.TextField
             .windowInsetsPadding(safeInsets.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
             .padding(bottom = footerMargin).width(footerWidth).padding(horizontal = footerWidth * .05f),
             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-            ShelfCircle(glassBackdrop, if (selected?.let(isSaved) == true) "取消喜欢" else "喜欢当前歌曲", "record_shelf_save", {
+            ShelfCircle(glassBackdrop, if (selected?.let(isSaved) == true) "Bỏ yêu thích" else "Yêu thích bài hát hiện tại", "record_shelf_save", {
                 selected?.let { onSave?.invoke(it) }
             }, enabled = selected != null && !selected.video && onSave != null && saveEnabled && !replacingResults, size = footerSize) {
                 Icon(if (selected?.let(isSaved) == true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
@@ -221,36 +221,36 @@ import top.yukonga.miuix.kmp.basic.TextField
                     renderer.pick(index)
                 }) {
                 ShelfGlyph("shuffle", Modifier.size(23.dp), Color(0xFF0E1420))
-                Text("帮我挑一首", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF0E1420))
+                Text("Chọn giúp tôi một bài", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF0E1420))
             }
-            ShelfCircle(glassBackdrop, "唱片架选项", "record_shelf_options", { optionsOpen = true }, size = footerSize) {
+            ShelfCircle(glassBackdrop, "Tùy chọn kệ đĩa", "record_shelf_options", { optionsOpen = true }, size = footerSize) {
                 ShelfGlyph("sliders", Modifier.size(24.dp))
             }
         }
     }
-    if (optionsOpen) MusicDialog("唱片架", onDismiss = { optionsOpen = false }) {
-        SettingsSwitch("整首试听", fullPreview, onFullPreviewChange,
-            Modifier.testTag("record_shelf_preview_full"), summary = "从头播放整首歌曲，关闭后恢复高潮片段")
-        SettingsSwitch(if (fullPreview) "循环试听整首歌" else "循环试听片段", previewMode == RecordShelfPreviewMode.LOOP,
+    if (optionsOpen) MusicDialog("Kệ đĩa", onDismiss = { optionsOpen = false }) {
+        SettingsSwitch("Nghe thử toàn bộ bài", fullPreview, onFullPreviewChange,
+            Modifier.testTag("record_shelf_preview_full"), summary = "Phát toàn bộ bài hát từ đầu; khi tắt, phát lại đoạn cao trào"}
+        SettingsSwitch(if (fullPreview) "Lặp lại toàn bộ bài" else "Lặp lại đoạn nghe thử", previewMode == RecordShelfPreviewMode.LOOP,
             { onPreviewModeChange(if (it) RecordShelfPreviewMode.LOOP else RecordShelfPreviewMode.ONCE) },
-            Modifier.testTag("record_shelf_preview_loop"), summary = if (fullPreview) "重复播放当前唱片的整首歌曲" else "重复当前唱片的试听片段")
-        SettingsSwitch("试听结束自动下一首", previewMode in setOf(RecordShelfPreviewMode.NEXT, RecordShelfPreviewMode.RANDOM),
+            Modifier.testTag("record_shelf_preview_loop"), summary = if (fullPreview) "Phát lặp lại toàn bộ bài hát trên đĩa hiện tại" else "Phát lặp lại đoạn nghe thử của đĩa hiện tại")
+        SettingsSwitch("Tự động chuyển bài khi nghe thử kết thúc", previewMode in setOf(RecordShelfPreviewMode.NEXT, RecordShelfPreviewMode.RANDOM),
             { onPreviewModeChange(if (it) RecordShelfPreviewMode.NEXT else RecordShelfPreviewMode.ONCE) },
             Modifier.testTag("record_shelf_preview_next"), summary = if (previewMode == RecordShelfPreviewMode.RANDOM)
-                "试听结束后随机抽出另一张唱片" else "按当前列表顺序试听，最后一首后回到开头")
-        SettingsSwitch("自动随机切换", previewMode == RecordShelfPreviewMode.RANDOM,
+                "Nghe thử một đĩa khác được chọn ngẫu nhiên" else "Nghe thử theo thứ tự danh sách hiện tại, quay lại đầu danh sách sau bài cuối cùng")
+        SettingsSwitch("Tự động chuyển ngẫu nhiên", previewMode == RecordShelfPreviewMode.RANDOM,
             { onPreviewModeChange(if (it) RecordShelfPreviewMode.RANDOM else RecordShelfPreviewMode.NEXT) },
-            Modifier.testTag("record_shelf_preview_random"), summary = "随机抽出另一张唱片并试听",
+            Modifier.testTag("record_shelf_preview_random"), summary = "Chọn ngẫu nhiên một đĩa khác và nghe thử",
             enabled = previewMode in setOf(RecordShelfPreviewMode.NEXT, RecordShelfPreviewMode.RANDOM))
-        MusicDialogButton("返回歌曲列表", onClick = { optionsOpen = false; onClose() })
+        MusicDialogButton("Quay lại danh sách bài hát", onClick = { optionsOpen = false; onClose() })
     }
 
-    if (searchOpen) MusicDialog("搜索唱片", onDismiss = { searchOpen = false }) {
-        TextField(query, { query = it }, label = "歌名、歌手或专辑", singleLine = true,
+    if (searchOpen) MusicDialog("Tìm kiếm đĩa", onDismiss = { searchOpen = false }) {
+        TextField(query, { query = it }, label = "Tên bài hát, ca sĩ hoặc album", singleLine = true,
             modifier = Modifier.fillMaxWidth().testTag("record_shelf_query"))
-        Text("${filtered.size} 首歌曲", fontSize = 13.sp)
-        MusicDialogButton("查看唱片", onClick = { searchOpen = false })
-        if (query.isNotBlank()) MusicDialogButton("清空搜索", onClick = { query = "" })
+        Text("${filtered.size} bài hát", fontSize = 13.sp)
+        MusicDialogButton("Xem đĩa nhạc", onClick = { searchOpen = false })
+        if (query.isNotBlank()) MusicDialogButton("Xóa tìm kiếm", onClick = { query = "" })
     }
 }
 

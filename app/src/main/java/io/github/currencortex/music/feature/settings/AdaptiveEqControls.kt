@@ -181,11 +181,11 @@ private data class EqGainDrag(val manual: Float, val displayed: Float, val limit
     Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)
         .clip(RoundedCornerShape(14.dp)).background(colors.onSurface.copy(alpha = .025f)).padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(if (live) "实时曲线 · 手动 + 动态" else "手动曲线 · 等待音乐播放", fontSize = 12.sp,
+        Text(if (live) "Đường cong trực tiếp · Thủ công + động" else "Đường cong thủ công · Chờ phát nhạc", fontSize = 12.sp,
             lineHeight = 17.sp, fontWeight = FontWeight.Medium, color = if (live) colors.primary else colors.onSurfaceVariantSummary)
-        Text("±9 dB · 中线为 0 dB", fontSize = 10.sp, color = colors.onSurfaceVariantSummary)
+         Text("±9 dB · Đường giữa là 0 dB", fontSize = 10.sp, color = colors.onSurfaceVariantSummary)
         Canvas(Modifier.fillMaxWidth().height(72.dp).padding(vertical = 4.dp).testTag("adaptive_eq_curve")
-            .semantics { contentDescription = if (live) "十段均衡实时输出曲线" else "十段均衡手动曲线" }) {
+             .semantics { contentDescription = if (live) "Đường cong đầu ra trực tiếp của bộ cân bằng 10 dải" else "Đường cong thủ công của bộ cân bằng 10 dải" }) {
             val mid = size.height / 2
             for (fraction in listOf(0f, .5f, 1f)) drawLine(colors.onSurface.copy(alpha = if (fraction == .5f) .16f else .06f),
                 Offset(0f, size.height * fraction), Offset(size.width, size.height * fraction))

@@ -207,7 +207,7 @@ private data class SheetClip(val width: Float, val height: Float, val radius: Fl
                 .requiredSize(with(density) { bounds.width.toDp() }, with(density) { bounds.height.toDp() })
                 .testTag("player_sheet_reopen_mini")
                 .semantics {
-                    role = Role.Button; contentDescription = "重新打开播放器"
+                    role = Role.Button; contentDescription = "Mở lại trình phát"
                     onClick { reopenNow(); true }
                 }.pointerInput(Unit) {
                     awaitEachGesture {

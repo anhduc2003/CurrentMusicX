@@ -72,7 +72,7 @@ import kotlin.math.sin
     val emotion = MoodEffectsPresentation.emotion(copy?.get("emotion")?.jsonPrimitive?.contentOrNull
         ?: state.emotion.takeIf { matched })
     val title = if (matched) copy?.get("keyword")?.jsonPrimitive?.contentOrNull?.takeIf(String::isNotBlank)
-        ?: emotion.keyword else "情绪调音师"
+        ?: emotion.keyword else "Bộ điều chỉnh cảm xúc"
     val description = copy?.get("description")?.jsonPrimitive?.contentOrNull?.takeIf(String::isNotBlank)
         ?: MoodEffectsPresentation.introduction
     val using = state.requestedEnabled || state.enabled
@@ -112,13 +112,13 @@ import kotlin.math.sin
         Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(bottom = LocalMusicBottomInset.current)) {
             Row(Modifier.fillMaxWidth().height(52.dp).padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically) {
-                MoodDetailIcon("返回", onBack) { Icon(Icons.Default.ArrowBack, null, tint = Color.White, modifier = Modifier.size(21.dp)) }
+                MoodDetailIcon("Quay lại", onBack) { Icon(Icons.Default.ArrowBack, null, tint = Color.White, modifier = Modifier.size(21.dp)) }
                 Row(Modifier.weight(1f), horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically) {
-                    Text("AI情绪调音师", color = Color.White.copy(alpha = .88f), fontSize = 14.sp)
+                    Text("Bộ điều chỉnh cảm xúc AI", color = Color.White.copy(alpha = .88f), fontSize = 14.sp)
                     Spacer(Modifier.width(5.dp)); EffectsMembership(4)
                 }
-                MoodDetailIcon("AI情绪调音师说明", { information = true }) {
+                MoodDetailIcon("Giới thiệu về bộ điều chỉnh cảm xúc AI", { information = true }) {
                     Icon(Icons.Default.Info, null, tint = Color.White.copy(alpha = .65f), modifier = Modifier.size(19.dp))
                 }
             }
@@ -141,15 +141,15 @@ import kotlin.math.sin
                 Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(9.dp)).background(Color.White.copy(alpha = .10f))
                     .clickable(enabled = song != null, role = Role.Button, onClick = onPlayback)
                     .padding(10.dp).testTag("mood_song_playback"), verticalAlignment = Alignment.CenterVertically) {
-                    if (song != null) EffectsArtwork(song.cover, Modifier.size(58.dp).clip(RoundedCornerShape(4.dp)), "当前歌曲封面")
+                    if (song != null) EffectsArtwork(song.cover, Modifier.size(58.dp).clip(RoundedCornerShape(4.dp)), "Ảnh bìa bài hát hiện tại")
                     Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-                        Text(song?.name ?: "播放歌曲，感受情绪调音", color = Color.White, fontSize = 14.sp,
+                        Text(song?.name ?: "Phát nhạc để cảm nhận cảm xúc", color = Color.White, fontSize = 14.sp,
                             maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Spacer(Modifier.height(5.dp))
-                        Text(if (matched && state.processing && playing) "情绪氛围增强中"
-                            else if (state.loading) "正在匹配歌曲情绪"
-                            else if (matched) "已匹配 · ${emotion.name}"
-                            else "使用后 · 情绪氛围将增强", color = Color.White.copy(alpha = .48f), fontSize = 11.sp)
+                        Text(if (matched && state.processing && playing) "Đang tăng cường không khí cảm xúc"
+                            else if (state.loading) "Đang khớp cảm xúc bài hát"
+                            else if (matched) "Đã khớp · ${emotion.name}"
+                            else "Sau khi áp dụng · Không khí cảm xúc sẽ được tăng cường", color = Color.White.copy(alpha = .48f), fontSize = 11.sp)
                     }
                     if (playing && song != null) Row(Modifier.size(30.dp), horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically) {
@@ -158,7 +158,7 @@ import kotlin.math.sin
                     } else Icon(Icons.Default.PlayArrow, null, tint = Color.White, modifier = Modifier.size(30.dp))
                 }
                 Spacer(Modifier.height(29.dp))
-                Text("当前歌曲 · 调节说明", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
+                Text("Bài hát hiện tại · Hướng dẫn điều chỉnh", color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.height(13.dp))
                 MoodActualAdjustments(visual, Color(scene.color))
                 Text(if (matched && visual != null) copy?.get("description")?.jsonPrimitive?.contentOrNull
@@ -172,7 +172,7 @@ import kotlin.math.sin
                 .border(if (using) 1.dp else 0.dp, if (using) Color.White.copy(alpha = .20f) else Color.Transparent, CircleShape)
                 .clickable(role = Role.Button, onClick = onToggle).testTag("mood_toggle"),
                 horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                Text(if (using) "取消使用" else "立即使用", color = if (using) Color.White else Color(0xFF30251A),
+                Text(if (using) "Hủy áp dụng" else "Áp dụng ngay", color = if (using) Color.White else Color(0xFF30251A),
                     fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                 if (!using) { Spacer(Modifier.width(6.dp)); EffectsMembership(4) }
             }
@@ -188,8 +188,8 @@ import kotlin.math.sin
 }
 
 @Composable private fun MoodActualAdjustments(visual: JsonObject?, lineColor: Color) {
-    val names = mapOf("stereo_width" to "立体声", "loudness" to "响度", "rhythm" to "节奏",
-        "high_freq" to "高频", "space_size" to "混响", "vocal" to "人声", "richness" to "层次感")
+    val names = mapOf("stereo_width" to "Độ rộng âm thanh nổi", "loudness" to "Âm lượng", "rhythm" to "Nhịp điệu",
+        "high_freq" to "Âm cao", "space_size" to "Độ vang", "vocal" to "Giọng hát", "richness" to "Độ dày âm thanh")
     val dimensions = (visual?.get("dimensions") as? JsonArray).orEmpty().mapNotNull { it as? JsonObject }
         .sortedBy { it["rank"]?.jsonPrimitive?.intOrNull ?: Int.MAX_VALUE }
     val plotted = dimensions.take(5).mapNotNull { row ->
@@ -242,7 +242,7 @@ import kotlin.math.sin
         } }
     }
     Row(Modifier.fillMaxWidth().padding(bottom = 22.dp), horizontalArrangement = Arrangement.Center) {
-        listOf("调节前" to Color.White.copy(alpha = .6f), "调节后" to lineColor).forEach { (text, color) ->
+        listOf("Trước khi điều chỉnh" to Color.White.copy(alpha = .6f), "Sau khi điều chỉnh" to lineColor).forEach { (text, color) ->
             Box(Modifier.padding(start = 12.dp, top = 5.dp, end = 5.dp).size(6.dp).background(color, CircleShape))
             Text(text, color = Color.White.copy(alpha = .65f), fontSize = 11.sp)
         }
@@ -254,16 +254,16 @@ import kotlin.math.sin
             if (name != null && name in names && intensity in setOf("weak", "medium", "strong")) {
                 EffectsArtwork(NativeEffectsAssets.local("mood_detail_effect_${name}_${intensity}.png"),
                     Modifier.weight(1f).aspectRatio(151f / 115f).clip(RoundedCornerShape(10.dp)),
-                    names[name] + when (intensity) { "weak" -> "微调中"; "strong" -> "突出中"; else -> "提升中" })
+                    names[name] + when (intensity) { "weak" -> "Đang tinh chỉnh"; "strong" -> "Đang làm nổi bật"; else -> "Đang tăng cường" })
             }
         }
     }
 }
 
 @Composable private fun MoodInformationSheet(onDismiss: () -> Unit) {
-    io.github.currencortex.music.ui.component.MusicDialog("AI情绪调音师说明", onDismiss, footer = {
-        io.github.currencortex.music.ui.component.MusicDialogButton("知道了", onDismiss,
-            Modifier.testTag("mood_info_done").semantics { contentDescription = "关闭说明" })
+    io.github.currencortex.music.ui.component.MusicDialog("Giới thiệu về bộ điều chỉnh cảm xúc AI", onDismiss, footer = {
+        io.github.currencortex.music.ui.component.MusicDialogButton("Đã hiểu", onDismiss,
+            Modifier.testTag("mood_info_done").semantics { contentDescription = "Đóng phần giới thiệu" })
     }) {
         Column(Modifier.fillMaxWidth().heightIn(max = 420.dp).verticalScroll(rememberScrollState()).testTag("mood_info_panel")) {
             MoodEffectsPresentation.explanation.forEach { (heading, text) ->

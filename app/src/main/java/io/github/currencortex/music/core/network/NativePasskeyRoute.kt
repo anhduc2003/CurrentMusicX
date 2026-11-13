@@ -8,7 +8,7 @@ object NativePasskeyRoute {
     fun server(server: String): String {
         val normalized = ServerUrl.normalize(server)
         val pinned = if (CurrentMusicServer.builtIn(normalized)) ServerDefaults.URL else normalized
-        require(pinned.toHttpUrl().isHttps) { "通行密钥需要 HTTPS 服务器" }
+        require(pinned.toHttpUrl().isHttps) { "Khóa truy cập cần máy chủ HTTPS" }
         return pinned
     }
     fun rpId(base: String) = server(base).toHttpUrl().host

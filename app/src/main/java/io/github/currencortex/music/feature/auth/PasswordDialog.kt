@@ -33,44 +33,43 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         while (now < codeUntil) { delay(1000); now = SystemClock.elapsedRealtime() }
     }
     SettingsUiScope {
-    MusicDialog(if (recovery) "找回密码" else "修改密码", { if (!busy) onDismiss() }) {
+    MusicDialog(if (recovery) "Khôi phục mật khẩu" else "Đổi mật khẩu", { if (!busy) onDismiss() }) {
         Column(Modifier.fillMaxWidth().heightIn(max = 480.dp).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        if (!recovery) SettingsSegmentedControl(listOf("原密码验证", "邮箱验证"), if (usingCode) 1 else 0, {
+        if (!recovery) SettingsSegmentedControl(listOf("Xác minh mật khẩu hiện tại", "Xác minh qua email"), if (usingCode) 1 else 0, {
             usingCode = it == 1; credential = ""
         }, enabled = !busy, tag = "password_verification",
             itemTag = { if (it == 1) "password_email_mode" else "password_old_mode" })
-        if (recovery) TextField(email, { email = it }, label = "已注册的邮箱", singleLine = true,
+        if (recovery) TextField(email, { email = it }, label = "Email đã đăng ký", singleLine = true,
             enabled = !busy, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth().testTag("password_email"))
         if (usingCode) {
-            Text(if (recovery) "验证码 5 分钟内有效。重置后需重新登录，其他设备也会退出。"
-                else "验证码发送到当前账号绑定的邮箱。修改后保留本机登录，其他设备下线。",
+            Text(if (recovery) "Mã xác minh có hiệu lực trong 5 phút. Sau khi đặt lại, bạn cần đăng nhập lại và các thiết bị khác sẽ đăng xuất."
+                else "Mã xác minh đã được gửi đến email liên kết với tài khoản hiện tại. Sau khi đổi, thiết bị này vẫn đăng nhập nhưng các thiết bị khác sẽ đăng xuất.",
                 fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                TextField(credential, { credential = it }, label = "邮箱验证码", singleLine = true, enabled = !busy,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+TextField(credential, { credential = it }, label = "Xác minh qua email mã", singleLine = true, enabled = !busy,                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                     modifier = Modifier.weight(1f).testTag("password_code"))
-                GlassActionButton(if (now < codeUntil) "${(codeUntil - now + 999) / 1000}s" else "获取验证码",
+                GlassActionButton(if (now < codeUntil) "${(codeUntil - now + 999) / 1000}s" else "Lấy mã xác minh",
                     onClick = { onSendCode(email.trim()) },
                     enabled = !busy && now >= codeUntil && (!recovery || email.isNotBlank()),
                     modifier = Modifier.testTag("password_send_code"), fillWidth = false)
             }
-        } else TextField(credential, { credential = it }, label = "当前密码", singleLine = true, enabled = !busy,
+        } else TextField(credential, { credential = it }, label = "Mật khẩu hiện tại", singleLine = true, enabled = !busy,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth().testTag("password_old"))
-        TextField(password, { password = it }, label = "新密码（6～64 位）", singleLine = true, enabled = !busy,
+        TextField(password, { password = it }, label = "Mật khẩu mới (6–64 ký tự)", singleLine = true, enabled = !busy,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth().testTag("password_new"))
-        TextField(confirm, { confirm = it }, label = "再次输入新密码", singleLine = true, enabled = !busy,
+        TextField(confirm, { confirm = it }, label = "Nhập lại mật khẩu mới", singleLine = true, enabled = !busy,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
             modifier = Modifier.fillMaxWidth().testTag("password_confirm"))
-        if (confirm.isNotEmpty() && confirm != password) Text("两次输入的密码不一致", fontSize = 12.sp,
+        if (confirm.isNotEmpty() && confirm != password) Text("Hai lần nhập mật khẩu không khớp", fontSize = 12.sp,
             color = MiuixTheme.colorScheme.error, modifier = Modifier.testTag("password_mismatch"))
-        MusicDialogButton(if (busy) "处理中…" else if (recovery) "重置密码" else "更新密码",
+        MusicDialogButton(if (busy) "Đang xử lý…" else if (recovery) "Đặt lại mật khẩu" else "Cập nhật mật khẩu",
             onClick = { onSubmit(email.trim(), credential, password, usingCode) },
             enabled = !busy && (!recovery || email.isNotBlank()) && credential.isNotBlank() &&
                 password.length in 6..64 && password == confirm,

@@ -36,12 +36,12 @@ import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.Text
 
 enum class LegalDocument(val title: String, val asset: String) {
-    LICENSE("开源许可", "legal/GPL-3.0.txt"),
-    NOTICES("第三方声明", "legal/NOTICES.md"),
+    LICENSE("Giấy phép mã nguồn mở", "legal/GPL-3.0.txt"),
+    NOTICES("Thông báo của bên thứ ba", "legal/NOTICES.md"),
     APACHE("Apache License 2.0", "legal/APACHE-2.0.txt"),
     AGPL("GNU AGPL 3.0", "legal/AGPL-3.0.txt"),
     LGPL("GNU LGPL 3.0", "legal/LGPL-3.0.txt"),
-    PRIVACY("隐私说明", "legal/PRIVACY.md"),
+    PRIVACY("Thông tin quyền riêng tư", "legal/PRIVACY.md"),
 }
 
 @Composable
@@ -61,7 +61,7 @@ fun LegalDocumentScreen(document: LegalDocument, onBack: () -> Unit, onOpenDocum
                     .replace("@@ISSUES_URL@@", AppMetadata.ISSUES_URL)
             }
         } catch (cancelled: CancellationException) { throw cancelled
-        } catch (_: Exception) { error = "文档暂时无法读取，请重试。" }
+        } catch (_: Exception) { error = "Không thể đọc tài liệu lúc này, vui lòng thử lại." }
     }
     val paragraphs = remember(text) { text?.split(Regex("\\n\\s*\\n")) ?: emptyList() }
     io.github.currencortex.music.ui.component.nativeui.SettingsScrollLayout(Modifier.fillMaxSize(),topBar = {
@@ -69,18 +69,17 @@ fun LegalDocumentScreen(document: LegalDocument, onBack: () -> Unit, onOpenDocum
     }) { topInset ->
     LazyColumn(Modifier.fillMaxSize().testTag("legal_document"), contentPadding = musicScrollPadding(PaddingValues(16.dp, topInset+24.dp, 16.dp, 48.dp))) {
         if (document == LegalDocument.LICENSE) item {
-            SettingsSection("组件许可", MusicIcons.File) {
+            SettingsSection("Giấy phép thành phần", MusicIcons.File) {
             io.github.currencortex.music.ui.component.PageNavigationPreference(title = "Apache License 2.0",
-                summary = "MIUIX、AndroidX 等组件的许可", onClick = { onOpenDocument(LegalDocument.APACHE) })
+                summary = "Giấy phép của các thành phần như MIUIX, AndroidX", onClick = { onOpenDocument(LegalDocument.APACHE) })
             io.github.currencortex.music.ui.component.PageNavigationPreference(title = "GNU LGPL 3.0",
-                summary = "歌曲标签组件 Jaudiotagger 的许可", onClick = { onOpenDocument(LegalDocument.LGPL) })
+                summary = "Giấy phép của thành phần gắn thẻ bài hát Jaudiotagger", onClick = { onOpenDocument(LegalDocument.LGPL) })
             SettingsDivider()
             io.github.currencortex.music.ui.component.PageNavigationPreference(title = "GNU AGPL 3.0",
-                summary = "Folia 莫奈歌词动画移植组件的许可", onClick = { onOpenDocument(LegalDocument.AGPL) })
-            }
+summary = "Giấy phép của thành phần chuyển thể hoạt ảnh lời bài hát Folia Monet", onClick = { onOpenDocument(LegalDocument.AGPL) })            }
         }
-        if (error != null) item { BasicComponent(title = error, summary = "点击重试", onClick = { attempt++ }) }
-        else if (text == null) item { Text("正在读取…") }
+        if (error != null) item { BasicComponent(title = error, summary = "Nhấn để thử lại", onClick = { attempt++ }) }
+        else if (text == null) item { Text("Đang đọc…") }
         items(paragraphs) { paragraph ->
             val heading = paragraph.startsWith('#')
             SelectionContainer {

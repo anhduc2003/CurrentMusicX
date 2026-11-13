@@ -53,7 +53,7 @@ class OriginalAiMasterRepository internal constructor(private val directory: Fil
         }
         val rows = raw["data"] as? JsonArray ?: throw ApiException(ErrorKind.Parse)
         val row = rows.filterIsInstance<JsonObject>().firstOrNull { it["id"]?.jsonPrimitive?.longOrNull == songId }
-            ?: throw IllegalStateException("网易云未返回此歌曲的 AI 调音方案")
+            ?: throw IllegalStateException("Nhạc Vân NetEase không trả về phương án chỉnh âm AI cho bài hát này")
         val key = row.text("baseKey").takeIf { it.matches(Regex("key_[a-z_]{1,48}")) }
             ?: throw ApiException(ErrorKind.Parse)
         val base = material(BASE_URL, BASE_MD5, 1611)
@@ -72,7 +72,7 @@ class OriginalAiMasterRepository internal constructor(private val directory: Fil
         require(hash.matches(Regex("[a-fA-F0-9]{32}")) && size in 18..2_097_152)
         val url = link.replace("http:", "https:").toHttpUrlOrNull()
         require(url != null && url.isHttps && url.port == 443 && url.username.isEmpty() && url.password.isEmpty() &&
-            url.host.endsWith(".music.126.net") && url.fragment == null) { "原版调音资源来源无效" }
+             url.host.endsWith(".music.126.net") && url.fragment == null) { "Nguồn tài nguyên chỉnh âm bản gốc không hợp lệ" }
         check(directory.isDirectory || directory.mkdirs())
         val file = File(directory, hash.lowercase() + ".ncae")
         fun valid(bytes: ByteArray) = bytes.size.toLong() == size && MessageDigest.getInstance("MD5").digest(bytes)
@@ -80,7 +80,7 @@ class OriginalAiMasterRepository internal constructor(private val directory: Fil
         val cached = file.takeIf { it.isFile && it.length() == size }?.readBytes()?.takeIf(::valid)
         val bytes = cached ?: run {
             val downloaded = download(url)
-            require(valid(downloaded)) { "原版 AI 调音资源校验失败" }
+             require(valid(downloaded)) { "Xác minh tài nguyên chỉnh âm AI bản gốc thất bại" }
             currentCoroutineContext().ensureActive()
             val pending = File(directory, hash.lowercase() + ".pending")
             pending.writeBytes(downloaded)
@@ -89,7 +89,7 @@ class OriginalAiMasterRepository internal constructor(private val directory: Fil
             downloaded
         }
         val decoded = NcaeDecoder.decode(bytes)
-        require(decoded.type == 1) { "原版调音资源格式不支持" }
+         require(decoded.type == 1) { "Định dạng tài nguyên chỉnh âm bản gốc không được hỗ trợ" }
         Json.parseToJsonElement(decoded.bytes.toString(Charsets.UTF_8)).jsonObject
     }
 
@@ -108,7 +108,7 @@ class OriginalAiMasterRepository internal constructor(private val directory: Fil
             })
         }
         return response.use {
-            check(it.isSuccessful) { "原版调音资源下载失败" }
+             check(it.isSuccessful) { "Tải tài nguyên chỉnh âm bản gốc thất bại" }
             val body = requireNotNull(it.body)
             require(body.contentLength() <= 2_097_152)
             body.byteStream().use { input ->

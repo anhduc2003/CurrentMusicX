@@ -101,10 +101,10 @@ import java.time.format.DateTimeFormatter
                     val ready = withTimeoutOrNull(4_000) { RecognitionDesktopSession.attached.first { it } } == true
                     if (ready && lifecycle.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED))
                         context.startActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                    else if (!ready) permissionMessage = "桌面识曲启动失败，请检查权限后重试"
+                    else if (!ready) permissionMessage = "Không thể khởi chạy nhận diện nhạc trên màn hình chính, hãy kiểm tra quyền rồi thử lại"
                 }
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (_: Exception) { permissionMessage = "暂时无法开始识曲，请重新授权后重试" }
+            catch (_: Exception) { permissionMessage = "Hiện chưa thể bắt đầu nhận diện nhạc, hãy cấp quyền lại rồi thử lại" }
             finally { desktopStarting = false }
         }
     }
@@ -123,7 +123,7 @@ import java.time.format.DateTimeFormatter
             startSystem()
         } else {
             pendingDesktop = false
-            permissionMessage = "已取消系统音频授权，可重新开始或切换麦克风"
+            permissionMessage = "Đã hủy quyền truy cập âm thanh hệ thống, bạn có thể bắt đầu lại hoặc chuyển sang micrô"
         }
     }
     fun startChosen() {
@@ -158,7 +158,7 @@ import java.time.format.DateTimeFormatter
         pendingRecord = granted && lifecycle.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
         if (granted && lifecycle.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
             startChosen()
-        } else if (!granted) permissionMessage = "需要录音权限才能识曲，可在系统设置中开启"
+        } else if (!granted) permissionMessage = "Cần quyền ghi âm để nhận diện nhạc, bạn có thể bật quyền trong phần cài đặt hệ thống"
     }
     DisposableEffect(controller, lifecycle) {
         val observer = LifecycleEventObserver { _, event ->
@@ -188,7 +188,7 @@ import java.time.format.DateTimeFormatter
         pendingDesktop = desktop
         if (desktop && !Settings.canDrawOverlays(context)) {
             pendingDesktop = false
-            permissionMessage = "开启悬浮窗权限后，点击桌面灵动岛识曲"
+            permissionMessage = "Bật quyền cửa sổ nổi, sau đó chạm vào Đảo động trên màn hình chính để nhận diện nhạc"
             context.startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}")))
             return
         }
@@ -197,12 +197,12 @@ import java.time.format.DateTimeFormatter
     }
     val colors = MiuixTheme.colorScheme
     val bottom = LocalMusicBottomInset.current
-    MusicSubpage(if (showingHistory) "识别记录" else "听歌识曲", "music_recognition",
+    MusicSubpage(if (showingHistory) "Lịch sử nhận diện" else "Nhận diện bài hát", "music_recognition",
         onBack = { if (showingHistory) showingHistory = false else { controller.cancel(); onBack() } },
         backTag = "recognition_back", toolbarTag = "recognition_header", actions = {
-            if (showingHistory) GlassActionButton("清空", { historyStore.clear(); history = emptyList() },
+            if (showingHistory) GlassActionButton("Xóa tất cả", { historyStore.clear(); history = emptyList() },
                 Modifier.testTag("recognition_clear_history"), fillWidth = false, minHeight = 36.dp)
-            else GlassIconButton({ controller.cancel(); showingHistory = true }, "识别记录", Modifier.testTag("recognition_history")) {
+            else GlassIconButton({ controller.cancel(); showingHistory = true }, "Lịch sử nhận diện", Modifier.testTag("recognition_history")) {
                 Icon(MusicIcons.Update, null)
             }
         }) { topInset ->
@@ -210,7 +210,7 @@ import java.time.format.DateTimeFormatter
             LazyColumn(Modifier.fillMaxSize().testTag("recognition_history_list"),
                 contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = topInset + 8.dp, bottom = bottom + 24.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (history.isEmpty()) item { Text("还没有识别记录，听见喜欢的音乐就来试试", Modifier.padding(vertical = 30.dp), color = colors.onSurfaceVariantSummary, fontSize = 14.sp) }
+                if (history.isEmpty()) item { Text("Chưa có lịch sử nhận diện. Nghe thấy bài nhạc hay thì hãy thử nhé", Modifier.padding(vertical = 30.dp), color = colors.onSurfaceVariantSummary, fontSize = 14.sp) }
                 itemsIndexed(history, key = { _, item -> item.song.id }) { index, entry ->
                     RecognitionSongCard(entry.song, DateTimeFormatter.ofPattern("MM-dd HH:mm").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(entry.recognizedAt)),
                         "recognition_history_song_$index") { play(history.map { it.song }, index) }
@@ -252,12 +252,12 @@ import java.time.format.DateTimeFormatter
             item {
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("让好音乐，有名有姓", fontSize = 25.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center)
-                    Text(if (source == RecognitionAudioSource.SYSTEM) "识别手机里正在播放的音乐" else "靠近音源，听一小段就好", fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
+                    Text("Để mỗi giai điệu hay đều có tên", fontSize = 25.sp, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center)
+                    Text(if (source == RecognitionAudioSource.SYSTEM) "Nhận diện nhạc đang phát trên điện thoại" else "Đưa lại gần nguồn âm thanh, nghe một đoạn ngắn là được", fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
                     if (onSource != null) Row(Modifier.clip(RoundedCornerShape(20.dp)).background(colors.surfaceContainer).padding(4.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         (if (Build.VERSION.SDK_INT >= 29) RecognitionAudioSource.entries else listOf(RecognitionAudioSource.MICROPHONE)).forEach { option ->
-                            Text(if (option == RecognitionAudioSource.SYSTEM) "系统音频" else "麦克风",
+                            Text(if (option == RecognitionAudioSource.SYSTEM) "Âm thanh hệ thống" else "Micrô",
                                 Modifier.clip(RoundedCornerShape(16.dp)).background(if (source == option) colors.primary.copy(alpha = .12f) else androidx.compose.ui.graphics.Color.Transparent)
                                     .clickable(enabled = !state.busy, role = Role.Button) { onSource(option) }
                                     .padding(horizontal = 16.dp, vertical = 8.dp).testTag("recognition_source_${option.name}"),
@@ -265,7 +265,7 @@ import java.time.format.DateTimeFormatter
                         }
                     }
                     if (source == RecognitionAudioSource.SYSTEM && onProjectionMode != null) Text(
-                        if (useProjection) "录制授权方式 · 切换为系统混音" else "系统混音不可用？切换录制授权方式",
+                        if (useProjection) "Cách cấp quyền ghi âm · Chuyển sang trộn âm thanh hệ thống" else "Không dùng được trộn âm thanh hệ thống? Chuyển sang cách cấp quyền ghi âm",
                         Modifier.clickable(enabled = !state.busy, role = Role.Button, onClick = onProjectionMode)
                             .padding(horizontal = 10.dp, vertical = 6.dp).testTag("recognition_capture_mode"),
                         fontSize = 12.sp, color = colors.primary)
@@ -277,38 +277,38 @@ import java.time.format.DateTimeFormatter
             item {
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(when (state.phase) {
-                        RecognitionPhase.RECORDING -> "正在聆听 · ${state.seconds} 秒"
-                        RecognitionPhase.RECOGNIZING -> "正在识别音乐…"
-                        RecognitionPhase.MATCHED -> "找到这首歌了"
-                        RecognitionPhase.NO_MATCH -> "再听一次试试"
-                        RecognitionPhase.ERROR -> "这次没能完成识别"
-                        else -> "点击开始听歌识曲"
+                        RecognitionPhase.RECORDING -> "Đang nghe · ${state.seconds} giây"
+                        RecognitionPhase.RECOGNIZING -> "Đang nhận diện nhạc…"
+                        RecognitionPhase.MATCHED -> "Đã tìm thấy bài hát này"
+                        RecognitionPhase.NO_MATCH -> "Thử nghe lại lần nữa"
+                        RecognitionPhase.ERROR -> "Lần này chưa thể hoàn tất nhận diện"
+                        else -> "Chạm để bắt đầu nhận diện bài hát"
                     }, Modifier.testTag("recognition_status"), fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
                     Text(when (state.phase) {
-                        RecognitionPhase.RECORDING -> if (state.round == 0) "边听边识别，最快 2 秒，最长 15 秒" else "正在第 ${state.round} 次匹配 · 点击结束聆听"
-                        RecognitionPhase.RECOGNIZING -> (if (state.step == RecognitionStep.MATCH) "正在匹配歌曲" else "正在分析声音") + " · 点击可取消"
-                        RecognitionPhase.MATCHED -> "点击歌曲即可播放，也可继续识别"
-                        else -> state.message ?: "支持识别正在播放的歌曲原声"
+                        RecognitionPhase.RECORDING -> if (state.round == 0) "Vừa nghe vừa nhận diện, nhanh nhất 2 giây, lâu nhất 15 giây" else "Đang khớp lần thứ ${state.round} · Chạm để dừng nghe"
+                        RecognitionPhase.RECOGNIZING -> (if (state.step == RecognitionStep.MATCH) "Đang khớp bài hát" else "Đang phân tích âm thanh") + " · Chạm để hủy"
+                        RecognitionPhase.MATCHED -> "Chạm vào bài hát để phát hoặc tiếp tục nhận diện"
+                        else -> state.message ?: "Hỗ trợ nhận diện bản nhạc gốc của bài hát đang phát"
                     }, fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
                     permissionMessage?.let { Text(it, Modifier.testTag("recognition_permission_message"), color = colors.error, fontSize = 13.sp)
-                        Text("去设置", Modifier.clickable(role = Role.Button, onClick = onSettings).padding(10.dp), color = colors.primary, fontSize = 14.sp) }
+                        Text("Đi đến cài đặt", Modifier.clickable(role = Role.Button, onClick = onSettings).padding(10.dp), color = colors.primary, fontSize = 14.sp) }
                 }
             }
             itemsIndexed(state.songs, key = { _, song -> song.id }) { index, song ->
-                RecognitionSongCard(song, if (index == 0) "网易云识别结果" else "你也许在听", "recognition_result_$index") { onPlay(state.songs, index) }
+                RecognitionSongCard(song, if (index == 0) "Kết quả nhận diện của Nhạc Vân NetEase" else "Có thể bạn đang nghe", "recognition_result_$index") { onPlay(state.songs, index) }
             }
             item {
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                if (onDesktop != null) Text(if (desktopStarting) "正在开启桌面识曲…" else "桌面灵动岛识曲  ↗",
+                if (onDesktop != null) Text(if (desktopStarting) "Đang khởi chạy nhận diện nhạc trên máy tính…" else "Nhận diện nhạc bằng Đảo động trên máy tính  ↗",
                     Modifier.clip(RoundedCornerShape(20.dp)).background(colors.primary.copy(alpha = .08f))
                         .clickable(enabled = !state.busy && !desktopStarting, role = Role.Button, onClick = onDesktop)
                         .padding(horizontal = 18.dp, vertical = 12.dp).testTag("recognition_desktop"),
                     color = colors.primary.copy(alpha = if (state.busy) .45f else 1f), fontSize = 14.sp)
                 Text((if (source == RecognitionAudioSource.SYSTEM) {
-                    if (useProjection) "需系统录制/投射授权，仅采集声音，不录制画面\n部分应用不允许采集，可切换麦克风\n"
-                    else "读取系统正在播放的音乐，不使用麦克风\n设备不支持时可切换录制授权方式\n"
-                } else "识别时使用麦克风\n") +
-                    "向网易云发送音频指纹；未命中时发送前 10 秒音频辅助识别歌词\n本机仅保存歌曲记录，普通模式离页即停，桌面模式关闭或锁屏即停",
+                    if (useProjection) "Cần cấp quyền ghi/phản chiếu màn hình của hệ thống; chỉ thu âm thanh, không ghi hình\nMột số ứng dụng không cho phép thu âm thanh, bạn có thể chuyển sang dùng micrô\n"
+                    else "Đọc nhạc đang phát trên hệ thống, không sử dụng micrô\nNếu thiết bị không hỗ trợ, bạn có thể chuyển sang phương thức cấp quyền ghi âm\n"
+                } else "Sử dụng micrô khi nhận diện\n") +
+                    "Gửi dấu vân tay âm thanh đến Nhạc Vân NetEase; nếu không tìm thấy kết quả, sẽ gửi 10 giây âm thanh đầu tiên để hỗ trợ nhận diện lời bài hát\nThiết bị này chỉ lưu lịch sử bài hát; chế độ thông thường sẽ dừng khi rời trang, chế độ máy tính sẽ dừng khi đóng hoặc khóa màn hình",
                     Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 10.dp).testTag("recognition_disclosure"), fontSize = 11.sp,
                     lineHeight = 18.sp, color = colors.onSurfaceVariantSummary.copy(alpha = .75f), textAlign = TextAlign.Center)
                 }
@@ -335,7 +335,7 @@ import java.time.format.DateTimeFormatter
         Box(Modifier.size(diameter * .486f).clip(CircleShape).background(colors.primary)
             .clickable(role = Role.Button, onClick = onAction).testTag("recognition_action"), contentAlignment = Alignment.Center) {
             Icon(if (state.phase == RecognitionPhase.RECORDING) MusicIcons.Stop else if (state.phase == RecognitionPhase.RECOGNIZING) MusicIcons.Close else MusicIcons.Microphone,
-                when (state.phase) { RecognitionPhase.RECORDING -> "停止录音并识别"; RecognitionPhase.RECOGNIZING -> "取消识别"; else -> "开始听歌识曲" },
+                when (state.phase) { RecognitionPhase.RECORDING -> "Dừng ghi âm và nhận diện"; RecognitionPhase.RECOGNIZING -> "Hủy nhận diện"; else -> "Bắt đầu nhận diện bài hát" },
                 Modifier.size(diameter * .2f), tint = colors.onPrimary)
         }
     }
@@ -352,7 +352,7 @@ import java.time.format.DateTimeFormatter
             Text(song.name, fontSize = 16.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(song.artists, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, color = colors.onSurfaceVariantSummary)
         }
-        Icon(MusicIcons.Play, "播放", Modifier.size(24.dp), tint = colors.onSurface)
+        Icon(MusicIcons.Play, "Phát", Modifier.size(24.dp), tint = colors.onSurface)
     }
 }
 

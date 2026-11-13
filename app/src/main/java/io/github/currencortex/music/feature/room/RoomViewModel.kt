@@ -46,7 +46,7 @@ class RoomViewModel(val container: AppContainer) : ViewModel() {
         }
     } }
     fun load(value: String = query, more: Boolean = false, roomScope: RoomScope = browser.value.scope) {
-        if (container.accountRepository.state.value.account == null) { browser.value = RoomBrowserState(error = "登录后可创建或加入听歌房"); return }
+        if (container.accountRepository.state.value.account == null) { browser.value = RoomBrowserState(error = "Bạn cần đăng nhập để tạo hoặc tham gia phòng nghe nhạc"); return }
         if (more && (browser.value.loading || !browser.value.more)) return
         val nextQuery = value.trim()
         val previous = browser.value

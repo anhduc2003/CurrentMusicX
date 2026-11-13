@@ -50,9 +50,9 @@ import kotlin.math.roundToInt
     val live = settings.enabled && playback.playing && runtime.processing && !bypass
     val liveEq = live && settings.dynamicEq
     val status = when {
-        !settings.enabled -> "已关闭 · 调节参数已保留"
-        output.mode.bypassProcessing -> "${output.mode.label} 已旁路音频处理和马达驱动"
-        !playback.playing -> "已开启 · 播放后生效"
+        !settings.enabled -> "Đã tắt · Đã giữ lại thông số điều chỉnh"
+        output.mode.bypassProcessing -> "${output.mode.label} đã bỏ qua xử lý âm thanh và điều khiển mô-tơ"
+        !playback.playing -> "Đã bật · Có hiệu lực sau khi phát"
         else -> runtime.message
     }
     val enabled = settings.enabled && active
@@ -62,14 +62,14 @@ import kotlin.math.roundToInt
     }
     SettingsUiScope {
         SettingsScrollLayout(Modifier.fillMaxSize().testTag("adaptive_audio_screen"), topBar = {
-            SettingsTopBar("音频处理", onBack = { vm.clearAdaptivePreview(); onBack() })
+            SettingsTopBar("Xử lý âm thanh", onBack = { vm.clearAdaptivePreview(); onBack() })
         }) { topInset ->
             LazyColumn(Modifier.fillMaxSize().testTag("adaptive_audio_list"), contentPadding = musicScrollPadding(PaddingValues(
                 start = 16.dp, end = 16.dp, top = topInset, bottom = 24.dp)),
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 item("master") {
                     SettingsGroup {
-                        SettingsToggle("启用音频处理", settings.enabled, { value -> vm.editAdaptive { it.copy(enabled = value) } },
+                        SettingsToggle("Bật xử lý âm thanh", settings.enabled, { value -> vm.editAdaptive { it.copy(enabled = value) } },
                             Modifier.testTag("adaptive_enabled"))
                         Row(Modifier.fillMaxWidth().background(MiuixTheme.colorScheme.primary.copy(alpha = if (live) .08f else .03f))
                             .padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically,
@@ -85,11 +85,11 @@ import kotlin.math.roundToInt
                     SettingsGroup {
                         Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 14.dp), verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                                Text("十段均衡器", fontSize = 20.sp, lineHeight = 26.sp, fontWeight = FontWeight.SemiBold)
-                                Text(if (liveEq) "实时增益 · 含动态 EQ · ±9 dB" else "手动调节 · ±6 dB",
+                                Text("Bộ cân bằng 10 dải tần", fontSize = 20.sp, lineHeight = 26.sp, fontWeight = FontWeight.SemiBold)
+                                Text(if (liveEq) "Mức khuếch đại thời gian thực · Bao gồm EQ động · ±9 dB" else "Điều chỉnh thủ công · ±6 dB",
                                     Modifier.testTag("adaptive_band_mode"), fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
                             }
-                            GlassIconButton({ vm.editAdaptive { it.copy(gains = List(10) { 0f }) } }, "重置十段均衡器",
+                            GlassIconButton({ vm.editAdaptive { it.copy(gains = List(10) { 0f }) } }, "Đặt lại bộ cân bằng 10 dải tần",
                                 Modifier.testTag("adaptive_reset"), enabled = enabled && settings.gains.any { it != 0f }, surface = false) {
                                 Icon(MusicIcons.Reset, null)
                             }
@@ -100,7 +100,7 @@ import kotlin.math.roundToInt
                             onCancel = vm::clearAdaptivePreview, liveGains = runtime.gains.takeIf { liveEq })
                         Column(Modifier.padding(horizontal = 12.dp).clip(RoundedCornerShape(14.dp))
                             .background(MiuixTheme.colorScheme.primary.copy(alpha = if (enabled) .07f else .025f))) {
-                            AudioAdjustment("${AdaptiveAudioSettings.FREQUENCIES[selectedBand]} Hz · 手动增益", settings.gains[selectedBand], -6f..6f,
+                            AudioAdjustment("${AdaptiveAudioSettings.FREQUENCIES[selectedBand]} Hz · Mức khuếch đại thủ công", settings.gains[selectedBand], -6f..6f,
                                 ::gainLabel, enabled, "adaptive_band_fine", key = selectedBand,
                                 onPreview = { vm.previewAdaptive(band(it)) }, onCancel = vm::clearAdaptivePreview,
                                 onSave = { vm.commitAdaptive(band(it)) })
@@ -109,12 +109,12 @@ import kotlin.math.roundToInt
                 }
                 item("dynamic") {
                     SettingsGroup {
-                        SettingsToggle("动态 EQ", settings.dynamicEq, { value -> vm.editAdaptive { it.copy(dynamicEq = value) } },
-                            Modifier.testTag("adaptive_dynamic"), "跟随音乐调整，叠加在手动曲线上", enabled = enabled)
+                        SettingsToggle("EQ động", settings.dynamicEq, { value -> vm.editAdaptive { it.copy(dynamicEq = value) } },
+                            Modifier.testTag("adaptive_dynamic"), "Điều chỉnh theo nhạc, bổ sung trên đường cong thủ công", enabled = enabled)
                         if (settings.dynamicEq) {
                             val controls = enabled && settings.dynamicEq
                             AdaptiveEqCurve(if (live) runtime.gains else settings.gains, live)
-                            AudioSectionLabel("音色方向")
+                            AudioSectionLabel("Định hướng âm sắc")
                             BoxWithConstraints(Modifier.padding(horizontal = 16.dp).semantics { selectableGroup() }) {
                                 val columns = if (maxWidth < 240.dp * LocalDensity.current.fontScale) 1 else 2
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -132,12 +132,12 @@ import kotlin.math.roundToInt
                             }
                             Spacer(Modifier.height(12.dp))
                             SettingsDivider()
-                            AudioAdjustment("效果强度", settings.strength.toFloat(), 0f..4f,
-                                { listOf("弱", "默认", "中", "强", "超强")[it.roundToInt().coerceIn(0, 4)] }, controls,
+                            AudioAdjustment("Cường độ hiệu ứng", settings.strength.toFloat(), 0f..4f,
+                                { listOf("Nhẹ", "Mặc định", "Trung bình", "Mạnh", "Rất mạnh")[it.roundToInt().coerceIn(0, 4)] }, controls,
                                 "adaptive_strength", steps = 3, onPreview = { value -> vm.previewAdaptive { it.copy(strength = value.roundToInt()) } },
                                 onCancel = vm::clearAdaptivePreview, onSave = { value -> vm.commitAdaptive { it.copy(strength = value.roundToInt()) } })
-                            AudioAdjustment("响应速度", settings.speed.toFloat(), 0f..4f,
-                                { listOf("舒缓", "标准", "灵敏", "快速", "极快")[it.roundToInt().coerceIn(0, 4)] }, controls,
+                            AudioAdjustment("Tốc độ phản hồi", settings.speed.toFloat(), 0f..4f,
+                                { listOf("Êm dịu", "Tiêu chuẩn", "Nhạy", "Nhanh", "Rất nhanh")[it.roundToInt().coerceIn(0, 4)] }, controls,
                                 "adaptive_speed", steps = 3, onPreview = { value -> vm.previewAdaptive { it.copy(speed = value.roundToInt()) } },
                                 onCancel = vm::clearAdaptivePreview, onSave = { value -> vm.commitAdaptive { it.copy(speed = value.roundToInt()) } })
                         }
@@ -145,10 +145,10 @@ import kotlin.math.roundToInt
                 }
                 item("bass") {
                     SettingsGroup {
-                        SettingsToggle("虚拟低频", settings.virtualBass, { value -> vm.editAdaptive { it.copy(virtualBass = value) } },
-                            Modifier.testTag("adaptive_bass"), "用低频谐波补充厚度，适合小型扬声器", enabled = enabled)
+                        SettingsToggle("Âm trầm ảo", settings.virtualBass, { value -> vm.editAdaptive { it.copy(virtualBass = value) } },
+                            Modifier.testTag("adaptive_bass"), "Bổ sung độ dày bằng họa âm trầm, phù hợp với loa nhỏ", enabled = enabled)
                         if (settings.virtualBass) {
-                            AudioAdjustment("低频力度", settings.bassStrength.toFloat(), 0f..100f, { "${it.roundToInt()}%" },
+                            AudioAdjustment("Cường độ âm trầm", settings.bassStrength.toFloat(), 0f..100f, { "${it.roundToInt()}%" },
                                 enabled, "adaptive_bass_strength", onPreview = { value -> vm.previewAdaptive { it.copy(bassStrength = value.roundToInt()) } },
                                 onCancel = vm::clearAdaptivePreview, onSave = { value -> vm.commitAdaptive { it.copy(bassStrength = value.roundToInt()) } })
                         }
@@ -156,8 +156,8 @@ import kotlin.math.roundToInt
                 }
                 item("haptics") {
                     SettingsGroup {
-                        SettingsToggle("马达驱动", settings.haptics, { value -> vm.editAdaptive { it.copy(haptics = value) } },
-                            Modifier.testTag("adaptive_haptics"), if (vm.hapticsSupported) "随音乐震动，暂停即停止" else "此设备没有可用马达",
+                        SettingsToggle("Điều khiển mô-tơ", settings.haptics, { value -> vm.editAdaptive { it.copy(haptics = value) } },
+                            Modifier.testTag("adaptive_haptics"), if (vm.hapticsSupported) "Rung theo nhạc, dừng khi tạm dừng" else "Thiết bị này không có mô-tơ khả dụng",
                             enabled = enabled && vm.hapticsSupported)
                         if (settings.haptics && vm.hapticsSupported) {
                             BoxWithConstraints(Modifier.fillMaxWidth().padding(horizontal = 16.dp).semantics { selectableGroup() }) {
@@ -175,10 +175,10 @@ import kotlin.math.roundToInt
                                     }
                                 }
                             }
-                            AudioAdjustment("震动力度", settings.hapticStrength.toFloat(), 0f..100f, { "${it.roundToInt()}%" },
+                            AudioAdjustment("Cường độ rung", settings.hapticStrength.toFloat(), 0f..100f, { "${it.roundToInt()}%" },
                                 enabled, "adaptive_haptic_strength", onPreview = { value -> vm.previewAdaptive { it.copy(hapticStrength = value.roundToInt()) } },
                                 onCancel = vm::clearAdaptivePreview, onSave = { value -> vm.commitAdaptive { it.copy(hapticStrength = value.roundToInt()) } })
-                            if (!vm.hapticsAmplitudeControl) SettingsHint("此设备采用短脉冲模式，通过时长与间隔调节震感。")
+                            if (!vm.hapticsAmplitudeControl) SettingsHint("Thiết bị này sử dụng chế độ xung ngắn; điều chỉnh cảm giác rung bằng thời lượng và khoảng cách giữa các xung.")
                         }
                     }
                 }
@@ -196,10 +196,10 @@ import kotlin.math.roundToInt
     modifier: Modifier, onClick: () -> Unit) {
     val colors = MiuixTheme.colorScheme
     val summary = when (curve) {
-        DynamicEqCurve.WARM -> "柔和、厚实"
-        DynamicEqCurve.V_SHAPE -> "低音与高音更突出"
-        DynamicEqCurve.VOCAL -> "突出人声层次"
-        DynamicEqCurve.BRIGHT -> "清晰、明亮"
+        DynamicEqCurve.WARM -> "Dịu nhẹ, dày dặn"
+DynamicEqCurve.V_SHAPE -> "Âm trầm và âm cao nổi bật hơn"
+DynamicEqCurve.VOCAL -> "Làm nổi bật các lớp giọng hát"
+DynamicEqCurve.BRIGHT -> "Trong trẻo, sáng rõ"
     }
     ElasticPress(modifier.selectable(selected, enabled = enabled, role = Role.RadioButton, onClick = onClick), enabled) {
         Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp))

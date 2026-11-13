@@ -33,9 +33,7 @@ object LyricsReferenceMatcher {
     private const val MAX_FIXED_OFFSET_MS = 1000.0
     private const val MAX_COARSE_ENDPOINT_ERROR_MS = 3000.0
     private const val MAX_CONSECUTIVE_GAP = 3
-    private val credit = Regex("^(?:作词|作曲|编曲|制作)(?:人)?\\s*[:：]\\s*\\S.*$")
-    private val trailingCredit = Regex("^(?:作词|作曲|编曲|制作|制作人|吉他|贝斯|和声编写|和声|录音工程师|录音工程室|混音工程师|混音工程室|制作助理|OP|SP)\\s*[:：]\\s*\\S.*$")
-
+private val credit = Regex("^(?:Viết lời|Sáng tác|Phối khí|Sản xuất)(?:người)?\\s*[:：]\\s*\\S.*$")private val trailingCredit = Regex("^(?:Lời|Nhạc|Phối khí|Sản xuất|Nhà sản xuất|Ghi-ta|Đàn bass|Biên soạn bè|Bè|Kỹ sư thu âm|Phòng thu âm|Kỹ sư hòa âm|Phòng hòa âm|Trợ lý sản xuất|OP|SP)\\s*[:：]\\s*\\S.*$")
     fun compare(reference: LyricsDocument, candidate: LyricsDocument): LyricsReferenceScore {
         val baseline = index(reference) ?: return rejected()
         val other = index(candidate) ?: return rejected()

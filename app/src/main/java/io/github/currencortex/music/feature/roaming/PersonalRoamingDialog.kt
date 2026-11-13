@@ -72,21 +72,21 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     LaunchedEffect(settings) { onDialogActive(settings) }
     DisposableEffect(Unit) { onDispose { onDialogActive(false) } }
     SettingsUiScope {
-    if (settings) MusicDialog("漫游设置", { settings = false }, footer = {
-        MusicDialogButton("返回模式选择", { settings = false }, Modifier.testTag("roaming_settings_done"))
+    if (settings) MusicDialog("Cài đặt khám phá", { settings = false }, footer = {
+        MusicDialogButton("Quay lại chọn chế độ", { settings = false }, Modifier.testTag("roaming_settings_done"))
     }) {
-        SettingsSwitch("提前补充推荐", state.settings.preload,
+        SettingsSwitch("Tải trước đề xuất", state.settings.preload,
             { station.updateSettings(state.settings.copy(preload = it)) }, Modifier.testTag("roaming_preload"))
-        SettingsSwitch("结束时恢复原队列", state.settings.restoreQueue,
+        SettingsSwitch("Khôi phục hàng đợi khi kết thúc", state.settings.restoreQueue,
             { station.updateSettings(state.settings.copy(restoreQueue = it)) }, Modifier.testTag("roaming_restore_queue"))
-        Text(if (state.settings.restoreQueue) "结束后恢复之前的队列与进度，保持暂停。" else "结束后保留当前歌曲与队列。",
+        Text(if (state.settings.restoreQueue) "Khôi phục hàng đợi và tiến trình trước đó sau khi kết thúc, đồng thời giữ trạng thái tạm dừng." else "Giữ lại bài hát và hàng đợi hiện tại sau khi kết thúc.",
             fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
     }
     val footer: @Composable () -> Unit = {
         val primary: @Composable (Modifier) -> Unit = { modifier ->
-        MusicDialogButton(if (!loggedIn) "登录网易云" else if (state.loading) "正在寻找推荐…"
-            else if (changed) if (state.active) "切换到${choice.title}" else "开始漫游"
-            else if (state.error != null) "重试推荐" else "继续聆听",
+         MusicDialogButton(if (!loggedIn) "Đăng nhập Nhạc Vân NetEase" else if (state.loading) "Đang tìm đề xuất…"
+             else if (changed) if (state.active) "Chuyển sang ${choice.title}" else "Bắt đầu khám phá"
+             else if (state.error != null) "Thử lại đề xuất" else "Tiếp tục nghe",
             onClick = {
                 when {
                     !loggedIn -> { onDismiss(); onBinding() }
@@ -99,7 +99,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             colors = ButtonDefaults.textButtonColors(color = colors.primary, textColor = colors.onPrimary))
         }
         if (state.active) MusicDialogActions {
-            MusicDialogButton("结束漫游", { station.stop(); onDismiss() },
+             MusicDialogButton("Kết thúc khám phá", { station.stop(); onDismiss() },
                 Modifier.weight(1f).testTag("roaming_stop"), cornerRadius = 14.dp,
                 colors = ButtonDefaults.textButtonColors(textColor = colors.error))
             primary(Modifier.weight(1f))
@@ -107,9 +107,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     }
     val body: @Composable () -> Unit = {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text("私人漫游", Modifier.weight(1f).testTag("music_dialog_title"),
+             Text("Khám phá cá nhân", Modifier.weight(1f).testTag("music_dialog_title"),
                 fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
-            MusicTextAction("设置", { settings = true }, Modifier.testTag("roaming_settings"))
+             MusicTextAction("Cài đặt", { settings = true }, Modifier.testTag("roaming_settings"))
         }
         Column(Modifier.fillMaxWidth().then(if (embedded) Modifier else
             Modifier.heightIn(max = bodyHeight).verticalScroll(rememberScrollState()))
@@ -122,7 +122,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     if (index < state.catalog.modes.lastIndex) SettingsDivider()
                 }
             }
-            Text("场景模式", Modifier.padding(top = 8.dp, bottom = 4.dp), fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+             Text("Chế độ bối cảnh", Modifier.padding(top = 8.dp, bottom = 4.dp), fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
             state.catalog.scenes.chunked(4).forEach { group ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     group.forEach { scene ->
@@ -143,8 +143,8 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     repeat(4 - group.size) { Spacer(Modifier.weight(1f)) }
                 }
             }
-            if (state.catalogLoading) Text("正在刷新场景…", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
-            if (state.catalogError != null) MusicTextAction("重新加载场景", station::loadCatalog, Modifier.testTag("roaming_reload_catalog"))
+             if (state.catalogLoading) Text("Đang làm mới bối cảnh…", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+             if (state.catalogError != null) MusicTextAction("Tải lại bối cảnh", station::loadCatalog, Modifier.testTag("roaming_reload_catalog"))
         }
     }
     if (embedded) Column(modifier.verticalScroll(rememberScrollState()).padding(20.dp),

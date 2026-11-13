@@ -79,7 +79,7 @@ class ApiClient(
         // Native routing above owns its own credentials. Project-only protected requests
         // need a project session; do not send known-anonymous requests just to receive 401.
         if (authenticated && session.token.isNullOrBlank())
-            throw ApiException(ErrorKind.Unauthorized, userMessage = "请先登录 CurrentMusic 账号")
+            throw ApiException(ErrorKind.Unauthorized, userMessage = "Vui lòng đăng nhập tài khoản CurrentMusic trước")
         if (passkeyOrigin != null) {
             require(path in setOf("auth/passkeys/login/options", "auth/passkeys/login/verify"))
             require(passkeyOrigin.matches(Regex("android:apk-key-hash:[A-Za-z0-9_-]{43}")))
@@ -106,7 +106,7 @@ class ApiClient(
             // Older NCM gateway also uses 401 for missing NCM binding. Only a project-session
             // rejection should invalidate the account.
             val errorText = raw
-            if (code == 401 && authenticated && !errorText.contains("绑定")) onUnauthorized(session)
+            if (code == 401 && authenticated && !errorText.contains("liên kết")) onUnauthorized(session)
             // Account validation is user-facing upstream text, not a generic HTTP failure.
             // Other routes and server failures retain their existing bounded error mapping.
             val accountError = if (code in 400..499 && path in setOf("auth/login", "auth/2fa/login", "auth/security-question/login",
@@ -119,7 +119,7 @@ class ApiClient(
                         ?.takeIf { value -> value.isString }?.content?.trim()?.takeIf { value -> value.isNotEmpty() }?.take(240)
                 }.getOrNull() else null
             throw ApiException(when (code) {
-                401 -> if (errorText.contains("绑定")) ErrorKind.Forbidden else ErrorKind.Unauthorized
+                401 -> if (errorText.contains("liên kết")) ErrorKind.Forbidden else ErrorKind.Unauthorized
                 403 -> ErrorKind.Forbidden; 404 -> ErrorKind.NotFound; 429 -> ErrorKind.RateLimited
                 in 500..599 -> ErrorKind.Server; else -> ErrorKind.Unknown
             }, code, accountError)

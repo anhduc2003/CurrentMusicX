@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: 要刷新审查摘要的 PR 编号
+        description: Số PR cần làm mới bản tóm tắt đánh giá
         required: true
         type: number
 permissions:
@@ -29,9 +29,9 @@ jobs:
         with:
           script: |
             const number=context.eventName === 'workflow_dispatch' ? Number(context.payload.inputs.pr_number) : context.issue.number;
-            if (!Number.isSafeInteger(number) || number < 1) throw new Error('无效 PR 编号');
+            if (!Number.isSafeInteger(number) || number < 1) throw new Error('Số PR không hợp lệ');
             const {data:pr}=await github.rest.pulls.get({...context.repo,pull_number:number});
-            if (pr.base.ref !== 'main') throw new Error('仅支持目标分支为 main 的 PR');
+            if (pr.base.ref !== 'main') throw new Error('Chỉ hỗ trợ PR có nhánh đích là main');
             // Bootstrap: on the first PR, trusted base does not yet contain the helper.
             // Keep this fallback inline; never check out or execute PR-head code.
             let summarize,markdown;
@@ -47,7 +47,7 @@ jobs:
                 const severe=open.filter(t=>t.comments.nodes.some(c=>/\bP[01]\b/.test(c.body||'')));
                 return {risk:{level},open:open.length,high:severe.length,needsHuman:level==='high'||open.length>0};
               };
-              markdown=r=>`## PR 审查概览\n\n- 风险：${r.risk.level}\n- 未解决讨论：${r.open}\n- P0/P1：${r.high}\n- 建议：${r.needsHuman?'人工复核':'遵循现有合并规则'}\n\n> 仅汇总现有审查，不代表 Codex 已完成本次审查。`;
+              markdown=r=>`## Tổng quan đánh giá PR\n\n- Rủi ro：${r.risk.level}\n- Thảo luận chưa giải quyết：${r.open}\n- P0/P1：${r.high}\n- Đề xuất：${r.needsHuman?'Rà soát thủ công':'Tuân theo quy tắc hợp nhất hiện tại'}\n\n> Chỉ tổng hợp các đánh giá hiện có, không có nghĩa là Codex đã hoàn tất đánh giá lần này。`;
             }
             const files=await github.paginate(github.rest.pulls.listFiles,{...context.repo,pull_number:number,per_page:100});
             const query=`query($owner:String!,$repo:String!,$number:Int!,$cursor:String){repository(owner:$owner,name:$repo){pullRequest(number:$number){reviewThreads(first:100,after:$cursor){nodes{isResolved isOutdated comments(first:20){nodes{body}}}pageInfo{hasNextPage endCursor}}}}}`;

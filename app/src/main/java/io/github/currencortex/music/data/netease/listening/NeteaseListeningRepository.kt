@@ -162,7 +162,7 @@ internal class NeteaseListeningRepository(
         val entitled = listOf("associator", "redplus").any { kind ->
             (data?.obj(kind)?.number("expireTime") ?: 0) >= now()
         }
-        if (!entitled) throw ApiException(ErrorKind.Forbidden, userMessage = "该时段需要网易云会员权限")
+        if (!entitled) throw ApiException(ErrorKind.Forbidden, userMessage = "Khung giờ này yêu cầu quyền hội viên Nhạc Vân NetEase")
     }
 
     private suspend fun request(path: String, payload: JsonObject, expected: NeteaseSession) =

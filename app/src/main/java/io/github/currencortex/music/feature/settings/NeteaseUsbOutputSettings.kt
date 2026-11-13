@@ -45,21 +45,21 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     var message by remember { mutableStateOf<String?>(null) }
     val hint = MiuixTheme.colorScheme.onSurfaceVariantSummary
     Card { Column(Modifier.padding(vertical = 8.dp).testTag("netease_usb_settings")) {
-        Text("USB Host 独占输出", Modifier.padding(horizontal = 20.dp, vertical = 10.dp), fontSize = 18.sp)
-        Text("内置网易云 9.6.15 arm64 USB 驱动，直接访问授权设备。支持 8–192 kHz、单声道或立体声的 PCM 16/24/32-bit 整数；24-bit packed 扩展至 32-bit。音量跟随系统媒体音量，可用手机音量键调节；应用会对 PCM 做音量衰减，原驱动仍包含淡入处理，此模式不标为 Bit-perfect。",
+        Text("Đầu ra độc quyền USB Host", Modifier.padding(horizontal = 20.dp, vertical = 10.dp), fontSize = 18.sp)
+        Text("Tích hợp trình điều khiển USB arm64 của Nhạc Vân NetEase 9.6.15, truy cập trực tiếp thiết bị đã được cấp quyền. Hỗ trợ PCM số nguyên 16/24/32-bit, đơn âm hoặc âm thanh nổi, ở tần số 8–192 kHz; 24-bit packed được mở rộng thành 32-bit. Âm lượng đồng bộ với âm lượng đa phương tiện của hệ thống, có thể điều chỉnh bằng phím âm lượng của điện thoại; ứng dụng sẽ giảm âm lượng PCM, trình điều khiển gốc vẫn có xử lý tăng âm lượng dần, chế độ này không được đánh dấu là Bit-perfect.",
             Modifier.padding(horizontal = 20.dp, vertical = 8.dp), fontSize = 13.sp, color = hint)
-        if (devices.isEmpty()) Text("未连接 USB Audio 设备；连接后在此授权。", Modifier.padding(20.dp), fontSize = 14.sp)
+        if (devices.isEmpty()) Text("Chưa kết nối thiết bị USB Audio; sau khi kết nối, hãy cấp quyền tại đây.", Modifier.padding(20.dp), fontSize = 14.sp)
         else devices.forEach { device ->
             val selected = settings.usbDeviceKey == NeteaseUsbDevices.key(device) || (settings.usbDeviceKey.isEmpty() && devices.size == 1)
             MusicDialogChoiceRow(NeteaseUsbDevices.label(device), selected, {
                 select(NeteaseUsbDevices.key(device))
                 if (!manager.hasPermission(device)) try { NeteaseUsbDevices.requestPermission(context, device) }
-                catch (_: Exception) { message = "USB 授权请求失败，请重新连接设备" }
-            }, summary = if (manager.hasPermission(device)) "已获得 USB 访问授权" else "点按选择并授权 USB 访问")
-            if (selected && !manager.hasPermission(device)) MusicDestinationRow("授权访问 USB DAC", {
+                catch (_: Exception) { message = "Yêu cầu cấp quyền USB thất bại, vui lòng kết nối lại thiết bị" }
+            }, summary = if (manager.hasPermission(device)) "Đã được cấp quyền truy cập USB" else "Nhấn để chọn và cấp quyền truy cập USB")
+            if (selected && !manager.hasPermission(device)) MusicDestinationRow("Cấp quyền truy cập USB DAC", {
                 try { NeteaseUsbDevices.requestPermission(context, device) }
-                catch (_: Exception) { message = "USB 授权请求失败，请重新连接设备" }
-            }, Modifier.testTag("request_usb_audio_permission"), summary = "系统授权成功后，再手动开始播放")
+                catch (_: Exception) { message = "Yêu cầu cấp quyền USB thất bại, vui lòng kết nối lại thiết bị" }
+            }, Modifier.testTag("request_usb_audio_permission"), summary = "Sau khi hệ thống cấp quyền thành công, hãy bắt đầu phát thủ công")
         }
         message?.let { Text(it, Modifier.padding(20.dp), fontSize = 13.sp, color = hint) }
     } }

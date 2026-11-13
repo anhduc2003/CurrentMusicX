@@ -64,9 +64,9 @@ import top.yukonga.miuix.kmp.theme.*
             saving = true
             try {
                 saveAvatarImage(context.contentResolver, selected, uri)
-                context.showMusicMessage("头像已保存")
+                context.showMusicMessage("Đã lưu ảnh đại diện")
             } catch (cancelled: CancellationException) { throw cancelled }
-              catch (_: Exception) { context.showMusicError("保存失败，请重新选择位置") }
+              catch (_: Exception) { context.showMusicError("Lưu thất bại, vui lòng chọn lại vị trí") }
             finally { saving = false }
         }
     }
@@ -84,14 +84,14 @@ import top.yukonga.miuix.kmp.theme.*
             Column(Modifier.fillMaxSize().background(Color.Black).safeDrawingPadding().testTag("avatar_preview")) {
                 Box(Modifier.padding(start = 12.dp, top = 8.dp).size(48.dp)
                     .clickable(role = Role.Button, onClick = onDismiss)
-                    .semantics { contentDescription = "关闭头像预览" }.testTag("avatar_preview_close"),
+                    .semantics { contentDescription = "Đóng xem trước ảnh đại diện" }.testTag("avatar_preview_close"),
                     contentAlignment = Alignment.Center) {
                     Icon(MusicIcons.Close, null, Modifier.size(28.dp), tint = Color.White)
                 }
                 Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                     if (url != null) key(url, attempt) {
                         AsyncImage(remember(url, attempt) { ImageRequest.Builder(context).data(url)
-                            .size(1600).allowHardware(false).build() }, "${user.nickname}的头像",
+                            .size(1600).allowHardware(false).build() }, "Ảnh đại diện của ${user.nickname}",
                             Modifier.fillMaxSize().testTag("avatar_preview_image"), contentScale = ContentScale.Fit,
                             onLoading = { image = null; failed = false },
                             onSuccess = { image = it.result.image; failed = false },
@@ -100,26 +100,26 @@ import top.yukonga.miuix.kmp.theme.*
                     if (url == null || failed) Column(horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Icon(MusicIcons.Account, null, Modifier.size(72.dp), tint = Color.White.copy(alpha = .6f))
-                        Text(if (url == null) "还没有设置头像" else "头像加载失败", color = Color.White.copy(alpha = .6f))
-                        if (failed) TextButton("重新加载", onClick = { attempt++ })
+                        Text(if (url == null) "Chưa thiết lập ảnh đại diện" else "Tải ảnh đại diện thất bại", color = Color.White.copy(alpha = .6f))
+                        if (failed) TextButton("Tải lại", onClick = { attempt++ })
                     } else if (image == null) CircularProgressIndicator()
                 }
                 Column(Modifier.fillMaxWidth().heightIn(max = 240.dp).verticalScroll(rememberScrollState())
                     .padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     onDecorations?.let { action -> Card(Modifier.fillMaxWidth()) {
-                        MusicDestinationRow("去设置头像挂件", action, Modifier.testTag("avatar_preview_decorations"))
+                        MusicDestinationRow("Đi thiết lập phụ kiện ảnh đại diện", action, Modifier.testTag("avatar_preview_decorations"))
                     } }
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Card(Modifier.weight(1f)) {
-                            MusicDestinationRow(if (saving) "正在保存…" else "保存头像", {
+                            MusicDestinationRow(if (saving) "Đang lưu…" else "Lưu ảnh đại diện", {
                                 pendingImage = image
                                 try { save.launch("CurrentMusic-avatar-${user.id}.png") }
-                                catch (_: Exception) { pendingImage = null; context.showMusicError("无法打开保存位置") }
+                                catch (_: Exception) { pendingImage = null; context.showMusicError("Không thể mở vị trí lưu") }
                             }, Modifier.testTag("avatar_preview_save"), enabled = image != null && !saving,
                                 chevron = false)
                         }
                         onChange?.let { action -> Card(Modifier.weight(1f)) {
-                            MusicDestinationRow("更换头像", action, Modifier.testTag("avatar_preview_change"), chevron = false)
+                            MusicDestinationRow("Thay ảnh đại diện", action, Modifier.testTag("avatar_preview_change"), chevron = false)
                         } }
                     }
                 }

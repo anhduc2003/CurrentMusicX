@@ -6,21 +6,21 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 
 enum class ErrorKind(val message: String) {
-    Network("网络连接失败"), Timeout("请求超时，请重试"), Unauthorized("CurrentMusic 登录已过期，请重新登录"),
-    Forbidden("没有访问权限"), NotFound("内容不存在"), RateLimited("请求过于频繁"),
-    Server("服务器异常"), Parse("数据格式异常"), Unknown("操作失败，请重试"),
-    AudioKeyRequired("请在网络与播放设置中填写 LeiZ API Key"),
-    AudioKeyRejected("LeiZ API Key 无效或没有访问权限，请检查音源设置"),
-    AudioUnavailable("LeiZ 未提供这首歌的音源，可能受 VIP 权限限制"),
-    AudioSourceChanged("音源设置已改变，请重新播放"),
-    CurrentMusicAccountRequired("请先注册并登录 CurrentMusic 账号，再登录网易云"),
-    NeteaseBindingRequired("请先绑定网易云账号；绑定失效时请重新登录网易云"),
-    NeteaseAudioUnavailable("网易云未提供可播放音源，请检查账号权限或歌曲可用地区"),
-    NeteaseSessionChanged("网易云账号已切换，请重试"),
-    NeteaseLikedPlaylistUnavailable("无法读取网易云“我喜欢的音乐”歌单，请检查网易云绑定"),
-    NeteaseHeartNoRecommendations("暂时没有心动推荐，请换一首歌再试"),
-    NeteaseSongAlreadyInPlaylist("该歌曲已存在"),
-    NeteaseRateLimited("网易云操作过于频繁，请稍后重试")
+    Network("Kết nối mạng thất bại"), Timeout("Yêu cầu quá thời gian, vui lòng thử lại"), Unauthorized("Phiên đăng nhập CurrentMusic đã hết hạn, vui lòng đăng nhập lại"),
+    Forbidden("Không có quyền truy cập"), NotFound("Nội dung không tồn tại"), RateLimited("Yêu cầu quá thường xuyên"),
+    Server("Máy chủ gặp sự cố"), Parse("Định dạng dữ liệu bất thường"), Unknown("Thao tác thất bại, vui lòng thử lại"),
+    AudioKeyRequired("Vui lòng nhập LeiZ API Key trong phần cài đặt mạng và phát nhạc"),
+    AudioKeyRejected("LeiZ API Key không hợp lệ hoặc không có quyền truy cập, vui lòng kiểm tra cài đặt nguồn nhạc"),
+    AudioUnavailable("LeiZ không cung cấp nguồn phát cho bài hát này, có thể bị giới hạn quyền VIP"),
+    AudioSourceChanged("Cài đặt nguồn nhạc đã thay đổi, vui lòng phát lại"),
+    CurrentMusicAccountRequired("Vui lòng đăng ký và đăng nhập tài khoản CurrentMusic trước, sau đó đăng nhập Nhạc Vân NetEase"),
+    NeteaseBindingRequired("Vui lòng liên kết tài khoản Nhạc Vân NetEase trước; nếu liên kết hết hiệu lực, hãy đăng nhập lại Nhạc Vân NetEase"),
+    NeteaseAudioUnavailable("Nhạc Vân NetEase không cung cấp nguồn phát được, vui lòng kiểm tra quyền tài khoản hoặc khu vực khả dụng của bài hát"),
+    NeteaseSessionChanged("Tài khoản Nhạc Vân NetEase đã chuyển đổi, vui lòng thử lại"),
+    NeteaseLikedPlaylistUnavailable("Không thể đọc danh sách phát “Nhạc tôi thích” của Nhạc Vân NetEase, vui lòng kiểm tra liên kết Nhạc Vân NetEase"),
+    NeteaseHeartNoRecommendations("Hiện chưa có đề xuất bài hát tâm đầu ý hợp, vui lòng đổi bài hát rồi thử lại"),
+    NeteaseSongAlreadyInPlaylist("Bài hát này đã tồn tại"),
+    NeteaseRateLimited("Thao tác trên Nhạc Vân NetEase quá thường xuyên, vui lòng thử lại sau")
 }
 class ApiException(val kind: ErrorKind, val status: Int = 0, val userMessage: String? = null) : IOException(userMessage ?: kind.message)
 sealed interface AppResult<out T> {

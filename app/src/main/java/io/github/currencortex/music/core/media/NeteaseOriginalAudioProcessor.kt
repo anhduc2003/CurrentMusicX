@@ -37,7 +37,7 @@ internal class NeteaseOriginalAudioProcessor(
             if (selected !== failed && selected != null) {
                 try {
                     require(inputAudioFormat.encoding == C.ENCODING_PCM_16BIT && inputAudioFormat.channelCount in 1..2 &&
-                        inputAudioFormat.sampleRate in 8_000..192_000) { "原版引擎不支持当前格式" }
+                        inputAudioFormat.sampleRate in 8_000..192_000) { "Động cơ bản gốc không hỗ trợ định dạng hiện tại" }
                     engine = NeteaseNativeEngine(inputAudioFormat.sampleRate, inputAudioFormat.channelCount, selected)
                     active = selected
                 } catch (_: Exception) { reject(selected) }
@@ -69,7 +69,7 @@ internal class NeteaseOriginalAudioProcessor(
 
     private fun reject(preset: NeteaseOriginalPreset?) {
         release(); failed = preset; drained = true
-        failure(preset, "原版音效处理失败，已恢复本机音效")
+        failure(preset, "Xử lý hiệu ứng âm thanh bản gốc thất bại, đã khôi phục hiệu ứng âm thanh trên thiết bị")
     }
 
     override fun onQueueEndOfStream() {

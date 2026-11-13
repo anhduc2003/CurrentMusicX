@@ -44,7 +44,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     }
 }
 
-private fun Decoration.label() = name.ifBlank { id }.removePrefix("key-").ifBlank { "不佩戴" }
+private fun Decoration.label() = name.ifBlank { id }.removePrefix("key-").ifBlank { "Không đeo" }
 
 @Composable internal fun DecorationPage(state: DecorationState, busy: Boolean, message: String?, onBack: () -> Unit,
     reload: () -> Unit, query: (String) -> Unit, preview: (Decoration?) -> Unit, apply: (String) -> Unit,
@@ -55,12 +55,12 @@ private fun Decoration.label() = name.ifBlank { id }.removePrefix("key-").ifBlan
     val selectedId = state.preview?.id ?: catalog?.current.orEmpty()
     val chosen = state.preview ?: catalog?.decorations?.firstOrNull { it.id == selectedId }
     val changed = catalog != null && selectedId != catalog.current
-    val name = if (selectedId.isEmpty()) "不佩戴挂件" else chosen?.label() ?: selectedId.removePrefix("key-")
+    val name = if (selectedId.isEmpty()) "Không đeo phụ kiện" else chosen?.label() ?: selectedId.removePrefix("key-")
     val focus = LocalFocusManager.current
     val grid = rememberLazyGridState()
     LaunchedEffect(state.query) { grid.scrollToItem(0) }
-    MusicSubpage("头像挂件", "decoration_screen", onBack, backTag = "decoration_back", actions = {
-        MusicTextAction(if (state.loading) "更新中" else "刷新", reload, enabled = !busy && !state.loading)
+    MusicSubpage("Phụ kiện ảnh đại diện", "decoration_screen", onBack, backTag = "decoration_back", actions = {
+        MusicTextAction(if (state.loading) "Đang cập nhật" else "Làm mới", reload, enabled = !busy && !state.loading)
     }) { topInset ->
     BoxWithConstraints(Modifier.fillMaxSize().padding(top = topInset)) {
         val compact = maxHeight < 480.dp
@@ -79,9 +79,9 @@ private fun Decoration.label() = name.ifBlank { id }.removePrefix("key-").ifBlan
                                 fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Text(if (changed) "正在试戴" else "当前装扮", Modifier.weight(1f), fontSize = 11.sp,
+                                Text(if (changed) "Đang thử" else "Trang trí hiện tại", Modifier.weight(1f), fontSize = 11.sp,
                                     color = colors.primary, maxLines = 1)
-                                if (!catalog.unlocked) Text("${catalog.listenMs.coerceAtLeast(0) / 60000} / ${catalog.minListenMs.coerceAtLeast(0) / 60000} 分钟解锁",
+                                if (!catalog.unlocked) Text("${catalog.listenMs.coerceAtLeast(0) / 60000} / ${catalog.minListenMs.coerceAtLeast(0) / 60000} phút để mở khóa",
                                     fontSize = 11.sp, color = hint)
                             }
                             if (!catalog.unlocked) {
@@ -96,38 +96,38 @@ private fun Decoration.label() = name.ifBlank { id }.removePrefix("key-").ifBlan
                 Spacer(Modifier.height(10.dp))
             }
             if (catalog != null) {
-                MusicSearchBar(state.query, { focus.clearFocus() }, onInput = query, placeholder = "搜索挂件名称或 ID",
+                MusicSearchBar(state.query, { focus.clearFocus() }, onInput = query, placeholder = "Tìm tên hoặc ID phụ kiện",
                     inputTag = "decoration_query", modifier = Modifier.testTag("decoration_search"))
                 Row(Modifier.fillMaxWidth().padding(top = 10.dp, bottom = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(if (state.query.isBlank()) "全部挂件" else "搜索结果", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    Text(if (state.query.isBlank()) "Tất cả phụ kiện" else "Kết quả tìm kiếm", fontSize = 14.sp, fontWeight = FontWeight.Medium)
                     val count = catalog.decorations.count { it.name.contains(state.query.trim(), true) || it.id.contains(state.query.trim(), true) }
-                    Text("$count 款", fontSize = 12.sp, color = hint)
+                    Text("$count món", fontSize = 12.sp, color = hint)
                 }
             }
             when {
                 catalog == null -> Column(Modifier.weight(1f).fillMaxWidth(), Arrangement.Center, Alignment.CenterHorizontally) {
-                    Text(if (state.loading) "正在加载挂件…" else state.error ?: "暂无可用挂件", fontSize = 14.sp, color = hint)
-                    if (!state.loading) MusicTextAction("重新加载", reload)
+                    Text(if (state.loading) "Đang tải phụ kiện…" else state.error ?: "Không có phụ kiện khả dụng", fontSize = 14.sp, color = hint)
+                    if (!state.loading) MusicTextAction("Tải lại", reload)
                 }
                 else -> {
                     val matches = catalog.decorations.filter { it.name.contains(state.query.trim(), true) || it.id.contains(state.query.trim(), true) }
-                    state.error?.let { Text("更新失败，可刷新重试", fontSize = 12.sp, color = hint, modifier = Modifier.padding(bottom = 8.dp)) }
+                    state.error?.let { Text("Cập nhật thất bại, hãy làm mới để thử lại", fontSize = 12.sp, color = hint, modifier = Modifier.padding(bottom = 8.dp)) }
                     if (matches.isEmpty() && state.query.isNotBlank()) Column(Modifier.weight(1f).fillMaxWidth(), Arrangement.Center, Alignment.CenterHorizontally) {
-                        Text("没有找到相关挂件", fontSize = 15.sp)
-                        MusicTextAction("清除搜索", { focus.clearFocus(); query("") })
+                        Text("Không tìm thấy phụ kiện phù hợp", fontSize = 15.sp)
+                        MusicTextAction("Xóa tìm kiếm", { focus.clearFocus(); query("") })
                     } else LazyVerticalGrid(GridCells.Adaptive(92.dp), Modifier.weight(1f).testTag("decoration_grid"), state = grid,
                         contentPadding = PaddingValues(bottom = 12.dp), horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         if (state.query.isBlank()) item(key = "none") {
-                            DecorationTile(Decoration("", "不佩戴"), selectedId.isEmpty(), catalog.current.isEmpty(), busy,
-                                { focus.clearFocus(); preview(Decoration("", "不佩戴")) }, avatar)
+                            DecorationTile(Decoration("", "Không đeo"), selectedId.isEmpty(), catalog.current.isEmpty(), busy,
+                                { focus.clearFocus(); preview(Decoration("", "Không đeo")) }, avatar)
                         }
                         items(matches, key = { "frame:${it.id}" }) { item ->
                             DecorationTile(item, selectedId == item.id, catalog.current == item.id, busy,
                                 { focus.clearFocus(); preview(item) }, avatar)
                         }
                         if (matches.isEmpty()) item(span = { GridItemSpan(maxLineSpan) }) {
-                            Text("暂时没有上架的挂件", Modifier.padding(vertical = 20.dp), fontSize = 13.sp, color = hint)
+                            Text("Chưa có phụ kiện nào được mở bán", Modifier.padding(vertical = 20.dp), fontSize = 13.sp, color = hint)
                         }
                     }
                     Column(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -135,9 +135,9 @@ private fun Decoration.label() = name.ifBlank { id }.removePrefix("key-").ifBlan
                             modifier = Modifier.testTag("decoration_status")) }
                         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            MusicTextAction("还原", { preview(null) }, enabled = changed && !busy)
-                            GlassActionButton(if (busy) "正在保存…" else if (!changed) "当前装扮" else if (selectedId.isEmpty()) "取消佩戴"
-                                else if (!catalog.unlocked) "听歌后解锁" else "佩戴此挂件", { apply(selectedId) },
+                            MusicTextAction("Khôi phục", { preview(null) }, enabled = changed && !busy)
+                            GlassActionButton(if (busy) "Đang lưu…" else if (!changed) "Trang trí hiện tại" else if (selectedId.isEmpty()) "Hủy đeo"
+                                else if (!catalog.unlocked) "Nghe nhạc để mở khóa" else "Đeo phụ kiện này", { apply(selectedId) },
                                 Modifier.weight(1f).testTag("wear_decoration"), primary = true,
                                 enabled = !busy && changed && (selectedId.isEmpty() || catalog.unlocked))
                         }
@@ -164,7 +164,7 @@ private fun Decoration.label() = name.ifBlank { id }.removePrefix("key-").ifBlan
         }
         Text(item.label(), fontSize = 12.sp, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
             maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Text(if (worn) (if (item.id.isEmpty()) "当前" else "已佩戴") else if (selected) "试戴中" else "", fontSize = 10.sp, lineHeight = 14.sp,
+        Text(if (worn) (if (item.id.isEmpty()) "Hiện tại" else "Đang đeo") else if (selected) "Đang thử" else "", fontSize = 10.sp, lineHeight = 14.sp,
             color = if (selected) colors.primary else colors.onSurfaceVariantSummary)
     }
 }

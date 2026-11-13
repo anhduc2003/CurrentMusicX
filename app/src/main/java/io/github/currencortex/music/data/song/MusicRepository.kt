@@ -45,7 +45,7 @@ class MusicRepository(private val api: ApiClient,
         else source(song.id, quality, session, refresh, supportsDolby)
     }
     private suspend fun lxSource(song: Song, quality: AudioQuality, access: AudioSourceAccess): AudioSource {
-        val result = try { requireNotNull(lx) { "落雪音源尚未初始化" }.source(song, quality, access.lxSourceId, access.lxSmartSwitch) }
+        val result = try { requireNotNull(lx) { "Nguồn nhạc Lx chưa được khởi tạo" }.source(song, quality, access.lxSourceId, access.lxSmartSwitch) }
             catch (e: io.github.currencortex.music.data.lx.LxSourceException) { throw ApiException(ErrorKind.Server, userMessage = e.message) }
         if (audioAccess().identity != access.identity) throw ApiException(ErrorKind.AudioSourceChanged)
         return result
@@ -88,12 +88,12 @@ class MusicRepository(private val api: ApiClient,
     }
     /** Matching sources are explicit: the media-source setting never reroutes this search. */
     suspend fun searchForLyricsMatching(keyword: String, source: LyricsSource): AppResult<SearchPage> = appResult {
-        require(source != LyricsSource.AUTO) { "自动择优需要选择器处理，请指定具体歌词来源" }
+        require(source != LyricsSource.AUTO) { "Tự động chọn nguồn tốt nhất cần bộ chọn xử lý, vui lòng chỉ định nguồn lời bài hát cụ thể" }
         val query = keyword.trim().split(Regex("\\s+-\\s+"), limit = 3).take(2).joinToString(" ")
             .replace(Regex("\\s+"), " ").trim().take(200)
-        if (query.isBlank()) throw ApiException(ErrorKind.Parse, userMessage = "请输入歌名或歌手")
+        if (query.isBlank()) throw ApiException(ErrorKind.Parse, userMessage = "Vui lòng nhập tên bài hát hoặc ca sĩ")
         val gateway = if (source == LyricsSource.NETEASE) api.netease
-            ?: throw ApiException(ErrorKind.NotFound, userMessage = "网易云原生歌词接口未启用") else null
+            ?: throw ApiException(ErrorKind.NotFound, userMessage = "Chưa bật API lời bài hát gốc của Nhạc Vân NetEase") else null
         val nativeRevision = gateway?.sessions?.state?.value?.revision
         withTimeoutOrNull(LYRICS_MATCH_SEARCH_TIMEOUT_MS) {
             val parameters = mapOf("keywords" to query, "offset" to "0", "limit" to "30", "type" to "song")
@@ -110,10 +110,10 @@ class MusicRepository(private val api: ApiClient,
 
     /** Read the selected source directly, without allowing an implicit project/native fallback. */
     suspend fun lyricsForMatching(id: Long, source: LyricsSource): AppResult<LyricsDocument> = appResult {
-        require(source != LyricsSource.AUTO) { "自动择优需要选择器处理，请指定具体歌词来源" }
+         require(source != LyricsSource.AUTO) { "Tự động chọn nguồn tốt nhất cần bộ chọn xử lý, vui lòng chỉ định nguồn lời bài hát cụ thể" }
         if (id <= 0) throw ApiException(ErrorKind.NotFound)
         val gateway = if (source == LyricsSource.NETEASE) api.netease
-            ?: throw ApiException(ErrorKind.NotFound, userMessage = "网易云原生歌词接口未启用") else null
+             ?: throw ApiException(ErrorKind.NotFound, userMessage = "Chưa bật API lời bài hát gốc của Nhạc Vân NetEase") else null
         val nativeRevision = gateway?.sessions?.state?.value?.revision
         withTimeoutOrNull(LYRICS_MATCH_LOAD_TIMEOUT_MS) {
             suspend fun read(path: String): LyricsDocument {
@@ -136,7 +136,7 @@ class MusicRepository(private val api: ApiClient,
             else if (source == LyricsSource.NETEASE) read("ncm/lyric")
             else when (enhanced) {
                 is AppResult.Failure -> throw ApiException(enhanced.kind, enhanced.status, enhanced.message)
-                is AppResult.Success -> throw ApiException(ErrorKind.NotFound, userMessage = "这个来源没有提供歌词")
+                 is AppResult.Success -> throw ApiException(ErrorKind.NotFound, userMessage = "Nguồn này không cung cấp lời bài hát")
             }
         } ?: throw ApiException(ErrorKind.Timeout)
     }
@@ -161,7 +161,7 @@ class MusicRepository(private val api: ApiClient,
         }
     }
     suspend fun lyricsDocument(id: Long, source: LyricsSource = LyricsSource.NETEASE, expectedServer: String? = null) = appResult {
-        require(source != LyricsSource.AUTO) { "自动择优需要选择器处理，请指定具体歌词来源" }
+         require(source != LyricsSource.AUTO) { "Tự động chọn nguồn tốt nhất cần bộ chọn xử lý, vui lòng chỉ định nguồn lời bài hát cụ thể" }
         suspend fun read(path: String): io.github.currencortex.music.feature.lyrics.model.LyricsDocument =
             parseDocument(api.decode(api.request("GET", path, mapOf("id" to "$id"),
                 expectedSession = expectedServer?.let { RequestSession(it, null) },

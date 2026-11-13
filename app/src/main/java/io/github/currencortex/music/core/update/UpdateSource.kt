@@ -5,8 +5,8 @@ import java.net.URI
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 enum class UpdateSource(val label: String, val prefix: String) {
-    CURRENTMUSIC("CurrentMusic 专用镜像", ""),
-    GITHUB("GitHub 原站", ""),
+    CURRENTMUSIC("Mirror riêng cho CurrentMusic", ""),
+    GITHUB("Trang chính thức của GitHub", ""),
     TBAP("github.tbap.top", "https://github.tbap.top/"),
     GH_PROXY("gh-proxy.com", "https://gh-proxy.com/"),
     GEEKERTAO("ghfile.geekertao.top", "https://ghfile.geekertao.top/"),
@@ -20,16 +20,16 @@ enum class UpdateSource(val label: String, val prefix: String) {
     }
 
     fun url(release: AppRelease, proxy: UpdateProxy = UpdateProxy.current): String {
-        val official = requireNotNull(release.apkUrl) { "此发布没有 APK" }
-        require(official.startsWith("${AppMetadata.RELEASES_PROJECT_URL}/releases/download/")) { "更新来源不匹配" }
+        val official = requireNotNull(release.apkUrl) { "Bản phát hành này không có APK" }
+        require(official.startsWith("${AppMetadata.RELEASES_PROJECT_URL}/releases/download/")) { "Nguồn cập nhật không khớp" }
         if (this == CURRENTMUSIC) {
-            require(!release.isCi) { "CurrentMusic 专用镜像仅提供正式版" }
+            require(!release.isCi) { "Mirror riêng cho CurrentMusic chỉ cung cấp bản phát hành chính thức" }
             return proxy.assetUrl(official.toHttpUrl())
         }
-        if (prefix.isNotEmpty()) require(prefix.startsWith("https://")) { "下载源必须使用 HTTPS" }
+        if (prefix.isNotEmpty()) require(prefix.startsWith("https://")) { "Nguồn tải xuống phải sử dụng HTTPS" }
         val result = prefix + official
         val uri = URI(result)
-        require(uri.scheme == "https" && uri.rawUserInfo == null) { "下载源必须使用 HTTPS" }
+        require(uri.scheme == "https" && uri.rawUserInfo == null) { "Nguồn tải xuống phải sử dụng HTTPS" }
         return result
     }
 

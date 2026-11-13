@@ -41,40 +41,40 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val canConnect = !busy && server.isNotBlank() && username.isNotBlank() && password.isNotEmpty()
     fun connect() { if (canConnect) { focus.clearFocus(); keyboard?.hide(); vm.connect(server, username, password) { password = ""; visible = false; onConnected() } } }
     LazyColumn(Modifier.fillMaxSize().imePadding(), contentPadding = musicScrollPadding(PaddingValues(16.dp,topInset+8.dp,16.dp,32.dp)), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        item { SettingsHint("兼容 Navidrome / Subsonic，歌曲原音质直连播放，账号加密保存在本机。") }
+        item { SettingsHint("Tương thích với Navidrome / Subsonic, phát trực tiếp bài hát ở chất lượng âm thanh gốc, thông tin tài khoản được mã hóa và lưu trên thiết bị.") }
         if (account.configured) {
-            item { SettingsSection("当前账号", MusicIcons.Device) {
+            item { SettingsSection("Tài khoản hiện tại", MusicIcons.Device) {
                 SettingsPreference(account.username, account.server)
                 if (account.version.isNotBlank()) SettingsHint("Navidrome ${account.version}")
                 SettingsDivider()
-                SettingsSwitch("用作首页曲库", account.home, vm::home, summary = "首页直接浏览自建曲库；关闭后恢复原首页", enabled = !busy)
+                SettingsSwitch("Dùng làm thư viện nhạc trên trang chủ", account.home, vm::home, summary = "Duyệt trực tiếp thư viện nhạc tự tạo trên trang chủ; tắt để khôi phục trang chủ trước đây", enabled = !busy)
                 SettingsDivider()
-                MusicDestinationRow(if (edit) "取消更换账号" else "更换服务器或账号", {
+                MusicDestinationRow(if (edit) "Hủy đổi tài khoản" else "Đổi máy chủ hoặc tài khoản", {
                     server = account.server; username = account.username
                     edit = !edit; password = ""; visible = false; vm.clearError(); focus.clearFocus(); keyboard?.hide()
                 }, enabled = !busy, modifier = Modifier.testTag("navidrome_edit_account"), chevron = false)
             } }
         }
-        if (edit) item { SettingsSection("服务器连接", MusicIcons.Storage) { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            TextField(server, { server = it; vm.clearError() }, label = "服务器地址", singleLine = true, enabled = !busy,
+        if (edit) item { SettingsSection("Kết nối máy chủ", MusicIcons.Storage) { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            TextField(server, { server = it; vm.clearError() }, label = "Địa chỉ máy chủ", singleLine = true, enabled = !busy,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next), modifier = Modifier.testTag("navidrome_server"))
-            TextField(username, { username = it; vm.clearError() }, label = "用户名", singleLine = true, enabled = !busy,
+            TextField(username, { username = it; vm.clearError() }, label = "Tên người dùng", singleLine = true, enabled = !busy,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next), modifier = Modifier.testTag("navidrome_username"))
-            TextField(password, { password = it; vm.clearError() }, label = "密码", singleLine = true, enabled = !busy,
+            TextField(password, { password = it; vm.clearError() }, label = "Mật khẩu", singleLine = true, enabled = !busy,
                 visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { connect() }), modifier = Modifier.testTag("navidrome_password"))
-            MusicTextAction(if (visible) "隐藏密码" else "显示密码", { visible = !visible }, enabled = !busy)
+            MusicTextAction(if (visible) "Ẩn mật khẩu" else "Hiện mật khẩu", { visible = !visible }, enabled = !busy)
             error?.let { Text(it, color = MiuixTheme.colorScheme.error, fontSize = 13.sp, modifier = Modifier.testTag("navidrome_account_error")) }
         } } }
         // Keep the primary action in its own lazy item. A form taller than the IME viewport
         // otherwise brings the whole card into view and can place its action under the header.
         if (edit) item("connect") {
-            GlassActionButton(if (busy) "正在连接…" else if (account.configured) "确认更换" else "连接服务器", ::connect,
+            GlassActionButton(if (busy) "Đang kết nối…" else if (account.configured) "Xác nhận đổi" else "Kết nối máy chủ", ::connect,
                 primary=true,enabled = canConnect, modifier = Modifier.fillMaxWidth().testTag("navidrome_connect"))
         }
         if (!edit) error?.let { item { Text(it, color = MiuixTheme.colorScheme.error, fontSize = 13.sp) } }
-        if (account.configured) item { Card { SettingsPreference("断开连接", "仅退出此服务器，不影响其他音乐账号",
+         if (account.configured) item { Card { SettingsPreference("Ngắt kết nối", "Chỉ đăng xuất khỏi máy chủ này, không ảnh hưởng đến các tài khoản nhạc khác",
             Modifier.testTag("navidrome_disconnect"), enabled = !busy, onClick = onDisconnect) } }
     }
     }

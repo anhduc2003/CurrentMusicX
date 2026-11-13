@@ -50,9 +50,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 .padding(start = unit * CurrentMusicPreviewRenderer.DockMargin, end = unit * CurrentMusicPreviewRenderer.DockMargin,
                     bottom = unit * CurrentMusicPreviewRenderer.DockBottom)
                 .height(unit * CurrentMusicPreviewRenderer.NavHeight).fillMaxWidth()) {
-                listOf("首页", "发现", "我的", "设置").forEachIndexed { index, title ->
+                listOf("Trang chủ", "Khám phá", "Của tôi", "Cài đặt").forEachIndexed { index, title ->
                     Box(Modifier.weight(1f).fillMaxHeight().testTag("appearance_preview_tab_$index")
-                        .semantics { contentDescription = "预览$title"; this.selected = selected == index }
+                        .semantics { contentDescription = "Xem trước$title"; this.selected = selected == index }
                         .clickable(role = Role.Tab) {
                             if (index != selected) {
                                 transition?.cancel()

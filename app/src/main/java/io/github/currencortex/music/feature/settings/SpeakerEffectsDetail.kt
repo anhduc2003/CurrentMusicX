@@ -91,7 +91,7 @@ import top.yukonga.miuix.kmp.basic.Text
                 item(key = "speaker-heading") {
                     Column(Modifier.fillMaxWidth().padding(horizontal = 28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                            Text(art.title + if (currentReady) " · 增强中" else "", color = Color.White,
+                            Text(art.title + if (currentReady) " · Đang tăng cường" else "", color = Color.White,
                                 fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.testTag("sound_speaker_detail_title"))
                             EffectsMembership(4)
                         }
@@ -118,7 +118,7 @@ import top.yukonga.miuix.kmp.basic.Text
                                 .testTag("sound_speaker_detail_scene_${candidate.wireName}"),
                                 horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                                 EffectsArtwork(NativeEffectsAssets.local(candidateArt.file("icon.png")), Modifier.size(27.dp), scale = ContentScale.Fit)
-                                Text(if (state.enabled && state.scene == candidate) "使用中" else candidateArt.shortTitle,
+                                Text(if (state.enabled && state.scene == candidate) "Đang sử dụng" else candidateArt.shortTitle,
                                     color = Color.White.copy(alpha = if (selected) 1f else .62f), fontSize = 10.sp)
                             }
                         }
@@ -134,7 +134,7 @@ import top.yukonga.miuix.kmp.basic.Text
                 Brush.verticalGradient(listOf(art.base.copy(alpha = .70f), art.base.copy(alpha = 0f)))),
                 verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(52.dp).clickable(role = Role.Button) { leave() }
-                    .semantics { contentDescription = "返回音效" }.testTag("sound_speaker_detail_back"), contentAlignment = Alignment.Center) {
+                    .semantics { contentDescription = "Quay lại hiệu ứng âm thanh" }.testTag("sound_speaker_detail_back"), contentAlignment = Alignment.Center) {
                     Canvas(Modifier.size(20.dp)) {
                         drawLine(Color.White, Offset(size.width * .65f, size.height * .15f),
                             Offset(size.width * .30f, size.height * .5f), 1.8.dp.toPx())
@@ -142,10 +142,10 @@ import top.yukonga.miuix.kmp.basic.Text
                             Offset(size.width * .65f, size.height * .85f), 1.8.dp.toPx())
                     }
                 }
-                Text("外放音效", Modifier.weight(1f), color = Color.White, textAlign = TextAlign.Center,
+                Text("Hiệu ứng loa ngoài", Modifier.weight(1f), color = Color.White, textAlign = TextAlign.Center,
                     fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 Box(Modifier.size(52.dp).clickable(role = Role.Button) { information = true }
-                    .semantics { contentDescription = "外放音效说明" }.testTag("sound_speaker_detail_info"), contentAlignment = Alignment.Center) {
+                    .semantics { contentDescription = "Thông tin hiệu ứng loa ngoài" }.testTag("sound_speaker_detail_info"), contentAlignment = Alignment.Center) {
                     Box(Modifier.size(25.dp).background(Color.White.copy(alpha = .12f), CircleShape), contentAlignment = Alignment.Center) {
                         Text("i", color = Color.White.copy(alpha = .8f), fontSize = 17.sp, fontWeight = FontWeight.Medium)
                     }
@@ -164,11 +164,11 @@ import top.yukonga.miuix.kmp.basic.Text
                         if (previewing) onPreviewStop()
                         if (currentChoice) onDisable() else onEnable(scene)
                     }.testTag("sound_speaker_detail_apply"), contentAlignment = Alignment.Center) {
-                    Text(if (currentChoice) (if (state.loading) "取消加载" else "取消使用")
-                        else if (state.requestedEnabled) "切换环境使用" else "立即使用",
+                    Text(if (currentChoice) (if (state.loading) "Hủy tải" else "Ngừng sử dụng")
+                        else if (state.requestedEnabled) "Chuyển sang dùng môi trường này" else "Dùng ngay",
                         color = if (currentChoice) Color.White else Color(0xFF2C2519), fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 }
-                Text(if (previewHere) "结束试听" else "试听音效 ›", Modifier.padding(top = 12.dp)
+                Text(if (previewHere) "Kết thúc nghe thử" else "Nghe thử hiệu ứng ›", Modifier.padding(top = 12.dp)
                     .heightIn(min = 28.dp).clickable(role = Role.Button) {
                         if (previewHere) onPreviewStop() else onPreviewStart(scene)
                     }.testTag("sound_speaker_detail_preview"), color = Color.White.copy(alpha = .65f), fontSize = 13.sp)
@@ -177,14 +177,14 @@ import top.yukonga.miuix.kmp.basic.Text
             }
         }
     }
-    if (information) MusicDialog("外放音效说明", onDismiss = { information = false }) {
+    if (information) MusicDialog("Thông tin hiệu ứng loa ngoài", onDismiss = { information = false }) {
         Column(Modifier.heightIn(max = 420.dp).testTag("sound_speaker_detail_information")) {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                item { SpeakerInformationSection("音效介绍", "针对手机扬声器的声音特点，提供通用、浴室和睡前三种环境模式。浏览环境不会改变正在使用的音效，点击底部按钮后才会正式切换。") }
-                item { SpeakerInformationSection("通用模式", "适合大部分空间，按横竖屏与系统音量选择原版音效素材，让声音更饱满通透。") }
-                item { SpeakerInformationSection("浴室声场", "自然混响与中高频调整，帮助声音在浴室等空间中更清晰。") }
-                item { SpeakerInformationSection("睡前陪伴", "弱化重低音和强刺激频段，营造安静放松的听感。") }
-                item { SpeakerInformationSection("使用范围", "需要当前网易云账号的有效 SVIP 权益及原版音效引擎。仅在手机扬声器播放时处理音频；连接耳机后暂停外放处理。试听结束会恢复试听前的选择。") }
+                item { SpeakerInformationSection("Giới thiệu hiệu ứng", "Tối ưu cho đặc tính âm thanh của loa điện thoại, cung cấp ba chế độ môi trường: phổ thông, phòng tắm và trước khi ngủ. Xem trước môi trường sẽ không làm thay đổi hiệu ứng đang dùng; chỉ khi nhấn nút bên dưới, hiệu ứng mới được chuyển chính thức.") }
+                item { SpeakerInformationSection("Chế độ phổ thông", "Phù hợp với hầu hết không gian. Tự chọn chất liệu hiệu ứng gốc theo chiều dọc/ngang của màn hình và âm lượng hệ thống, giúp âm thanh đầy đặn, trong trẻo hơn.") }
+                item { SpeakerInformationSection("Không gian phòng tắm", "Tạo tiếng vang tự nhiên và điều chỉnh dải trung cao, giúp âm thanh rõ hơn trong phòng tắm và những không gian tương tự.") }
+                item { SpeakerInformationSection("Đồng hành trước giờ ngủ", "Giảm âm trầm sâu và các dải tần gây kích thích mạnh, tạo cảm giác nghe yên tĩnh, thư thái.") }
+                item { SpeakerInformationSection("Phạm vi sử dụng", "Cần có quyền lợi SVIP còn hiệu lực trên tài khoản Nhạc Vân NetEase hiện tại và bộ máy hiệu ứng âm thanh gốc. Chỉ xử lý âm thanh khi phát qua loa điện thoại; quá trình xử lý sẽ tạm dừng khi kết nối tai nghe. Sau khi kết thúc nghe thử, lựa chọn trước đó sẽ được khôi phục.") }
             }
         }
     }
@@ -203,10 +203,10 @@ private data class SpeakerDetailArt(val key: String, val shortTitle: String, val
 }
 
 private fun speakerDetailArt(scene: OriginalSpeakerScene): SpeakerDetailArt = when (scene) {
-    OriginalSpeakerScene.NORMAL -> SpeakerDetailArt("normal", "通用", "通用模式", "横竖屏智能调节，人声清晰，声量饱满",
-        Color(0xFF4F8FD6), 1650f, "通用模式 · 音效使用小贴士。横竖屏智能调节，适配手机播放姿态；声音更饱满通透。")
-    OriginalSpeakerScene.SHOWER -> SpeakerDetailArt("shower", "浴室", "浴室声场", "混响加持，无惧水声干扰，快乐洗澡",
-        Color(0xFF302FA8), 2241f, "浴室声场 · 音效使用小贴士。自然混响，提亮中高频，让歌声更清晰。")
-    OriginalSpeakerScene.SLEEP -> SpeakerDetailArt("sleep", "睡前", "睡前陪伴", "弱化重低音与强刺激频段，伴你安心入眠",
-        Color(0xFF08548D), 2379f, "睡前陪伴 · 音效使用小贴士。枕边安心听；科学调音，更懂睡眠。")
+    OriginalSpeakerScene.NORMAL -> SpeakerDetailArt("normal", "Phổ thông", "Chế độ phổ thông", "Tự điều chỉnh theo chiều dọc/ngang, giọng hát rõ ràng, âm thanh đầy đặn",
+        Color(0xFF4F8FD6), 1650f, "Chế độ phổ thông · Mẹo sử dụng hiệu ứng âm thanh. Tự điều chỉnh theo chiều dọc/ngang, phù hợp với tư thế cầm điện thoại; âm thanh đầy đặn, trong trẻo hơn.")
+    OriginalSpeakerScene.SHOWER -> SpeakerDetailArt("shower", "Phòng tắm", "Không gian phòng tắm", "Thêm tiếng vang, không ngại tiếng nước át, thoải mái tận hưởng lúc tắm",
+        Color(0xFF302FA8), 2241f, "Không gian phòng tắm · Mẹo sử dụng hiệu ứng âm thanh. Tiếng vang tự nhiên, làm nổi dải trung cao để giọng hát rõ hơn.")
+    OriginalSpeakerScene.SLEEP -> SpeakerDetailArt("sleep", "Trước giờ ngủ", "Đồng hành trước giờ ngủ", "Giảm âm trầm sâu và dải tần gây kích thích mạnh, cùng bạn yên tâm đi vào giấc ngủ",
+        Color(0xFF08548D), 2379f, "Đồng hành trước giờ ngủ · Mẹo sử dụng hiệu ứng âm thanh. Thư thái nghe bên gối; tinh chỉnh âm thanh khoa học, thấu hiểu giấc ngủ.")
 }

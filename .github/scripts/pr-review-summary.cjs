@@ -7,7 +7,7 @@ function summarize(files, threads) {
   return {risk,open:open.length,high:high.length,needsHuman:risk.level==='high'||open.length>0};
 }
 function markdown(result) {
-  const level={low:'低',medium:'中',high:'高'}[result.risk.level];
-  return ['## PR 审查概览','',`- 变更风险：**${level}**`,`- 未解决的有效行级审查讨论：**${result.open}**`,`- 其中含 P0/P1 标记：**${result.high}**`,`- 建议：**${result.needsHuman?'人工复核':'继续按现有分支保护规则审核'}**`,'','> 本报告仅汇总 GitHub 已有审查讨论，不代表 Codex 已完成本次审查，也不会自动批准或合并。',''].join('\n');
+  const level={low:'Thấp',medium:'Trung bình',high:'Cao'}[result.risk.level];
+  return ['## Tổng quan đánh giá PR','',`- Rủi ro thay đổi: **${level}**`,`- Thảo luận đánh giá cấp dòng hợp lệ chưa được giải quyết: **${result.open}**`,`- Trong đó có gắn nhãn P0/P1: **${result.high}**`,`- Đề xuất: **${result.needsHuman?'Kiểm tra thủ công':'Tiếp tục đánh giá theo quy tắc bảo vệ nhánh hiện tại'}**`,'','> Báo cáo này chỉ tổng hợp các thảo luận đánh giá hiện có trên GitHub, không có nghĩa là Codex đã hoàn tất đánh giá lần này và sẽ không tự động phê duyệt hoặc hợp nhất.',''].join('\n');
 }
 module.exports={summarize,markdown};

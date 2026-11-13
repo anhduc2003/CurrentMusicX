@@ -9,12 +9,12 @@ import android.net.Uri
 fun openExternalLink(context: Context, url: String) {
     val uri = Uri.parse(url)
     if (uri.scheme != "https" || uri.host.isNullOrBlank() || uri.userInfo != null) {
-        context.showMusicError("链接无效")
+         context.showMusicError("Liên kết không hợp lệ")
         return
     }
     try {
         context.startActivity(Intent(Intent.ACTION_VIEW, uri))
     } catch (_: ActivityNotFoundException) {
-        context.showMusicError("未找到可以打开链接的应用")
+         context.showMusicError("Không tìm thấy ứng dụng có thể mở liên kết")
     }
 }

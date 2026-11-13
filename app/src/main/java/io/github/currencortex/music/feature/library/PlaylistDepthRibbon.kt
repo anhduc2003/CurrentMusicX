@@ -85,15 +85,15 @@ internal val LocalRecordFlightTarget = staticCompositionLocalOf<() -> Rect?> { {
         AndroidView(factory = { renderer }, update = { it.configure(songs, paused); applyViewRefreshRate(it, refreshRate) },
             modifier = Modifier.fillMaxSize().testTag("depth_ribbon_canvas")
                 .onGloballyPositioned { renderer.rootOffset = it.boundsInRoot().topLeft }.semantics {
-                contentDescription = "歌曲立体缎带，左右滑动浏览，点击封面查看歌曲，长按查看全景"
+contentDescription = "Ruy băng không gian của bài hát, vuốt sang trái hoặc phải để duyệt, nhấn vào ảnh bìa để xem bài hát, nhấn giữ để xem toàn cảnh"
                 scrollBy { x, y -> renderer.travel(-(x + y) / 150f); true }
                 scrollToIndex { index ->
                     if (index in songs.indices) { renderer.focusSong(index); true } else false
                 }
                 customActions = listOf(
-                    CustomAccessibilityAction(if (paused) "继续漫游" else "暂停漫游") { paused = !paused; true },
-                    CustomAccessibilityAction("查看当前歌曲") { renderer.focusNearest(); true },
-                    CustomAccessibilityAction("返回列表") { onClose(); true },
+CustomAccessibilityAction(if (paused) "Tiếp tục dạo" else "Tạm dừng dạo") { paused = !paused; true },
+CustomAccessibilityAction("Xem bài hát hiện tại") { renderer.focusNearest(); true },
+CustomAccessibilityAction("Quay lại danh sách") { onClose(); true },
                 )
             })
         Column(Modifier.align(Alignment.BottomCenter).navigationBarsPadding()
@@ -106,8 +106,8 @@ internal val LocalRecordFlightTarget = staticCompositionLocalOf<() -> Rect?> { {
                     color = Color.White.copy(alpha = .65f), fontSize = 13.sp, maxLines = 2,
                     modifier = Modifier.padding(top = 6.dp))
                 Row(Modifier.padding(top = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    RibbonButton("继续浏览", onClick = renderer::releaseFocus, modifier = Modifier.testTag("depth_ribbon_release"))
-                    if (canPlay) RibbonButton("播放歌曲", onClick = {
+RibbonButton("Tiếp tục duyệt", onClick = renderer::releaseFocus, modifier = Modifier.testTag("depth_ribbon_release"))
+if (canPlay) RibbonButton("Phát bài hát", onClick = {
                         selected?.let { index -> renderer.ejectRecord(songs[index].id, { onPrepare(index) }) { onPlay(index) } }
                     }, accent = true, modifier = Modifier.testTag("depth_ribbon_play"))
                 }

@@ -82,7 +82,7 @@ internal class CurrentMusicPreviewRenderer(font: Typeface?, private val fontScal
         private val ink = c.onSurface
         private val muted = c.onSurfaceVariantSummary
         private val nav = listOf("home", "discover", "me", "settings")
-        private val labels = listOf("首页", "发现", "我的", "设置")
+        private val labels = listOf("Trang chủ", "Khám phá", "Cá nhân", "Cài đặt")
         private fun text(value: String, x: Float, y: Float, size: Float, color: Color = ink,
             strong: Boolean = false, align: AndroidPaint.Align = AndroidPaint.Align.LEFT, maxWidth: Float = 330f) {
             textPaint.typeface = if (strong) bold else regular
@@ -126,50 +126,50 @@ internal class CurrentMusicPreviewRenderer(font: Typeface?, private val fontScal
             panel(16f, 80f, 328f, 48f)
             drawCircle(muted, 6f, Offset(34f, 102f), style = Stroke(1.5f))
             drawLine(muted, Offset(38f, 107f), Offset(43f, 112f), 1.5f)
-            text("搜索歌曲、歌手、歌单", 52f, 109f, 13f, muted)
+            text("Tìm bài hát, ca sĩ, playlist", 52f, 109f, 13f, muted)
             withTransform({ translate(0f, -12f) }) {
-            text("每日推荐", 20f, 176f, 20f, strong = true)
-            text("全部 ›", 338f, 174f, 12f, accent, align = AndroidPaint.Align.RIGHT)
+            text("Đề xuất hằng ngày", 20f, 176f, 20f, strong = true)
+            text("Tất cả ›", 338f, 174f, 12f, accent, align = AndroidPaint.Align.RIGHT)
             art(35f, 220f, 122f, 1); art(203f, 220f, 122f, 2)
             drawRoundRect(Color.Black.copy(alpha = .12f), Offset(105f, 207f), Size(150f, 150f), CornerRadius(20f))
             art(105f, 200f, 150f, 0, 20f)
-            text("今日精选", 180f, 381f, 18f, strong = true, align = AndroidPaint.Align.CENTER)
-            text("CurrentMusic · 每日推荐", 180f, 402f, 12f, muted, align = AndroidPaint.Align.CENTER)
+            text("Tuyển chọn hôm nay", 180f, 381f, 18f, strong = true, align = AndroidPaint.Align.CENTER)
+            text("CurrentMusic · Đề xuất hằng ngày", 180f, 402f, 12f, muted, align = AndroidPaint.Align.CENTER)
             panel(20f, 424f, 320f, 64f)
-            text("私人漫游", 36f, 450f, 16f)
-            text("按你的喜好，连续听点好音乐", 36f, 470f, 12f, muted, maxWidth = 235f)
+            text("Phiêu du riêng tư", 36f, 450f, 16f)
+            text("Theo sở thích của bạn, nghe liền mạch những bản nhạc hay", 36f, 470f, 12f, muted, maxWidth = 235f)
             drawCircle(accent, 19f, Offset(305f, 456f)); play(300f, 448f, 16f, c.onPrimary)
             panel(20f, 502f, 320f, 76f)
             val shortcutIcons = listOf("heart", "list", "mic", "headphones")
-            listOf("我喜欢", "歌单", "听歌识曲", "一起听").forEachIndexed { index, title ->
+            listOf("Yêu thích", "Playlist", "Nhận diện bài hát", "Nghe cùng nhau").forEachIndexed { index, title ->
                 val center = 60f + index * 80
                 icon(shortcutIcons[index], center - 11.5f, 516f, 23f)
                 text(title, center, 560f, 12f, align = AndroidPaint.Align.CENTER, maxWidth = 76f)
             }
-            text("猜你喜欢", 32f, 613f, 17f, muted, true)
-            text("更多 ›", 338f, 611f, 12f, accent, align = AndroidPaint.Align.RIGHT)
+            text("Có thể bạn cũng thích", 32f, 613f, 17f, muted, true)
+            text("Thêm ›", 338f, 611f, 12f, accent, align = AndroidPaint.Align.RIGHT)
             clipRect(20f, 626f, 340f, 810f) {
                 repeat(3) { i ->
                     val x = 20f + i * 152
                     art(x, 630f, 136f, i + 1)
-                    text(listOf("为你精选", "静听时光", "轻松旋律")[i], x, 788f, 14f)
+                    text(listOf("Tuyển chọn cho bạn", "Khoảnh khắc thư thái", "Giai điệu nhẹ nhàng")[i], x, 788f, 14f)
                 }
             }
             }
         }
         fun discover() = with(scope) {
-            text("发现", 16f, 46f, 24f, strong = true)
+            text("Khám phá", 16f, 46f, 24f, strong = true)
             panel(16f, 72f, 328f, 44f, radius = 22f)
             panel(20f, 76f, 80f, 36f, accent, 18f)
-            listOf("音乐", "用户", "帖子", "Chat").forEachIndexed { i, title ->
+            listOf("Nhạc", "Người dùng", "Bài đăng", "Chat").forEachIndexed { i, title ->
                 text(title, 60f + i * 80, 101f, 15f, if (i == 0) c.onPrimary else muted,
                     strong = i == 0, align = AndroidPaint.Align.CENTER, maxWidth = 74f)
             }
             panel(16f, 152f, 328f, 124f, radius = 20f)
-            row("每日推荐", "今天的专属歌单", 152f, "play")
-            row("猜你喜欢", "沿着喜欢的旋律继续探索", 214f, "heart")
-            text("曲风分类", 32f, 315f, 17f, muted, true)
-            listOf("流行", "摇滚", "电子", "民谣", "爵士", "古典").forEachIndexed { i, title ->
+            row("Đề xuất hằng ngày", "Playlist dành riêng cho hôm nay", 152f, "play")
+            row("Có thể bạn cũng thích", "Tiếp tục khám phá theo giai điệu yêu thích", 214f, "heart")
+            text("Thể loại nhạc", 32f, 315f, 17f, muted, true)
+            listOf("Pop", "Rock", "Nhạc điện tử", "Dân ca", "Jazz", "Cổ điển").forEachIndexed { i, title ->
                 val x = 20f + i % 2 * 166; val y = 336f + i / 2 * 122
                 panel(x, y, 154f, 108f)
                 art(x + 10, y + 10, 64f, i, 14f)
@@ -177,50 +177,50 @@ internal class CurrentMusicPreviewRenderer(font: Typeface?, private val fontScal
             }
         }
         fun profile() = with(scope) {
-            text("我的", 16f, 46f, 24f, strong = true)
+            text("Cá nhân", 16f, 46f, 24f, strong = true)
             icon("file", 264f, 24f, 24f, ink)
             icon("settings", 310f, 24f, 24f, ink)
             withTransform({ translate(0f, 8f) }) {
             panel(16f, 88f, 328f, 240f, radius = 20f)
             avatar(64f, 136f, 32f)
             text("CurrentMusic", 112f, 128f, 21f, strong = true, maxWidth = 212f)
-            text("让喜欢的音乐一直陪伴", 112f, 153f, 13f, muted, maxWidth = 212f)
+            text("Để âm nhạc yêu thích luôn đồng hành", 112f, 153f, 13f, muted, maxWidth = 212f)
             drawLine(ink.copy(alpha = .08f), Offset(32f, 184f), Offset(328f, 184f))
-            listOf("点赞", "收藏", "歌单").forEachIndexed { i, title ->
+            listOf("Đã thích", "Yêu thích", "Playlist").forEachIndexed { i, title ->
                 text(listOf("24", "18", "8")[i], 32f + i * 104, 217f, 21f, strong = true)
                 text(title, 32f + i * 104, 241f, 12f, muted, maxWidth = 92f)
             }
             drawLine(ink.copy(alpha = .08f), Offset(32f, 260f), Offset(328f, 260f))
-            text("听歌天数", 32f, 282f, 12f, muted)
-            text("12 天", 32f, 308f, 15f)
-            text("听歌时长", 188f, 282f, 12f, muted)
-            text("3 小时 30 分", 188f, 308f, 15f, maxWidth = 140f)
-            text("我的音乐", 32f, 368f, 17f, muted, true)
+            text("Số ngày nghe nhạc", 32f, 282f, 12f, muted)
+            text("12 ngày", 32f, 308f, 15f)
+            text("Thời lượng nghe nhạc", 188f, 282f, 12f, muted)
+            text("3 giờ 30 phút", 188f, 308f, 15f, maxWidth = 140f)
+            text("Nhạc của tôi", 32f, 368f, 17f, muted, true)
             panel(16f, 388f, 328f, 248f, radius = 20f)
-            listOf(Triple("我喜欢", "收藏的歌曲", "heart"), Triple("歌单", "创建与收藏的歌单", "list"),
-                Triple("最近播放", "回顾听过的歌曲", "recent"), Triple("本地音乐", "手机上的歌曲", "device")).forEachIndexed { i, item ->
+            listOf(Triple("Bài hát yêu thích", "Bài hát đã lưu", "heart"), Triple("Danh sách phát", "Danh sách phát đã tạo và lưu", "list"),
+                Triple("Phát gần đây", "Nghe lại các bài hát đã nghe", "recent"), Triple("Nhạc trên thiết bị", "Bài hát trên điện thoại", "device")).forEachIndexed { i, item ->
                 row(item.first, item.second, 388f + i * 62, item.third)
             }
-            text("音乐服务", 32f, 676f, 17f, muted, true)
+            text("Dịch vụ âm nhạc", 32f, 676f, 17f, muted, true)
             panel(16f, 696f, 328f, 186f, radius = 20f)
-            listOf("网易云账号" to "绑定账号、同步歌单", "导入歌单" to "链接、文字、图片与本地歌曲",
-                "Navidrome 曲库" to "自己的音乐服务器").forEachIndexed { i, item -> row(item.first, item.second, 696f + i * 62) }
+            listOf("Tài khoản Nhạc Vân NetEase" to "Liên kết tài khoản, đồng bộ danh sách phát", "Nhập danh sách phát" to "Liên kết, văn bản, hình ảnh và bài hát trên thiết bị",
+                "Thư viện Navidrome" to "Máy chủ nhạc của riêng bạn").forEachIndexed { i, item -> row(item.first, item.second, 696f + i * 62) }
             }
         }
         fun settings() {
-            text("设置", 16f, 46f, 24f, strong = true)
+            text("Cài đặt", 16f, 46f, 24f, strong = true)
             panel(16f, 96f, 328f, 62f, radius = 20f)
-            row("检查更新", "查看版本和更新说明", 96f, "download")
-            text("个性化", 32f, 198f, 17f, muted, true)
+            row("Kiểm tra cập nhật", "Xem phiên bản và ghi chú cập nhật", 96f, "download")
+            text("Cá nhân hóa", 32f, 198f, 17f, muted, true)
             panel(16f, 217f, 328f, 124f, radius = 20f)
-            row("外观", "主题、颜色与界面效果", 217f, "appearance")
-            row("桌面悬浮歌词", "实时预览、字幕样式与窗口控制", 279f, "lyrics")
-            text("音乐", 32f, 381f, 17f, muted, true)
+            row("Giao diện", "Chủ đề, màu sắc và hiệu ứng giao diện", 217f, "appearance")
+            row("Lời bài hát nổi trên màn hình", "Xem trước trực tiếp, kiểu phụ đề và điều khiển cửa sổ", 279f, "lyrics")
+            text("Âm nhạc", 32f, 381f, 17f, muted, true)
             panel(16f, 400f, 328f, 248f, radius = 20f)
-            row("播放", "音质、歌曲衔接与预加载", 400f, "headphones")
-            row("音源与网络", "音乐音源、歌词来源与服务器", 462f, "storage")
-            row("音效", "智能调音、音效与均衡器", 524f, "headphones")
-            row("音频输出", "输出采样率、设备与能力信息", 586f, "device")
+            row("Phát nhạc", "Chất lượng âm thanh, chuyển bài và tải trước", 400f, "headphones")
+            row("Nguồn nhạc và mạng", "Nguồn nhạc, nguồn lời bài hát và máy chủ", 462f, "storage")
+            row("Hiệu ứng âm thanh", "Điều chỉnh âm thanh thông minh, hiệu ứng và bộ cân bằng", 524f, "headphones")
+            row("Đầu ra âm thanh", "Tần số lấy mẫu đầu ra, thiết bị và thông tin khả năng", 586f, "device")
         }
         private fun row(title: String, summary: String, y: Float, glyph: String? = null) {
             val x = if (glyph == null) 36f else 72f
@@ -249,7 +249,7 @@ internal class CurrentMusicPreviewRenderer(font: Typeface?, private val fontScal
             }
             val cover = Path().apply { addOval(Rect(left + 10, top + 10, left + 52, top + 52)) }
             clipPath(cover) { art(left + 10, top + 10, 42f, 0, 21f) }
-            text("今日精选", left + 64, top + 28, 14f, maxWidth = 122f)
+            text("Tuyển chọn hôm nay", left + 64, top + 28, 14f, maxWidth = 122f)
             text("CurrentMusic", left + 64, top + 45, 11f, muted, maxWidth = 122f)
             drawCircle(ink.copy(alpha = .3f), 12f, Offset(right - 72, top + 31), style = Stroke(1.5f))
             play(right - 75, top + 24, 14f)

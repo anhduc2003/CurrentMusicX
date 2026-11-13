@@ -41,37 +41,37 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     Column(verticalArrangement = Arrangement.spacedBy(22.dp)) {
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                SectionTitle("搜索历史", Modifier.weight(1f))
+                SectionTitle("Lịch sử tìm kiếm", Modifier.weight(1f))
                 if (history.isNotEmpty()) Box(Modifier.size(36.dp).clickable(role = Role.Button, onClick = onClearHistory)
                     .testTag("search_clear_history"), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Delete, "清空搜索历史", Modifier.size(18.dp), tint = colors.onSurface.copy(alpha = .38f))
+                    Icon(Icons.Default.Delete, "Xóa lịch sử tìm kiếm", Modifier.size(18.dp), tint = colors.onSurface.copy(alpha = .38f))
                 }
             }
-            if (history.isEmpty()) Text("搜索过的音乐会留在这里", Modifier.padding(top = 10.dp), fontSize = 13.sp,
+            if (history.isEmpty()) Text("Các bài hát bạn đã tìm sẽ được lưu ở đây", Modifier.padding(top = 10.dp), fontSize = 13.sp,
                 color = colors.onSurface.copy(alpha = .4f))
             else FlowRow(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 (if (expanded) history else history.take(3)).forEach { h ->
                     Box(Modifier.widthIn(max = 180.dp).clip(RoundedCornerShape(18.dp))
                         .background(colors.surfaceContainer).combinedClickable(role = Role.Button,
-                            onClick = { onSearch(h.keyword) }, onLongClick = { onDeleteHistory(h.keyword) }, onLongClickLabel = "删除这条搜索记录")
+                            onClick = { onSearch(h.keyword) }, onLongClick = { onDeleteHistory(h.keyword) }, onLongClickLabel = "Xóa mục tìm kiếm này")
                         .padding(horizontal = 13.dp, vertical = 8.dp)) {
                         Text(h.keyword, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
                 if (history.size > 3) Box(Modifier.size(36.dp).clip(RoundedCornerShape(18.dp)).background(colors.surfaceContainer)
                     .clickable(role = Role.Button) { expanded = !expanded }.testTag("search_history_expand"), contentAlignment = Alignment.Center) {
-                    SearchChevron(if (expanded) "收起搜索历史" else "展开搜索历史", Modifier.size(18.dp).graphicsLayer { rotationZ = if (expanded) -90f else 90f })
+                    SearchChevron(if (expanded) "Thu gọn lịch sử tìm kiếm" else "Mở rộng lịch sử tìm kiếm", Modifier.size(18.dp).graphicsLayer { rotationZ = if (expanded) -90f else 90f })
                 }
             }
         }
         val unique = remember(recommendations) { recommendations.distinctBy { it.name } }
         if (!roomSearch && unique.isNotEmpty()) Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                SectionTitle("猜你喜欢", Modifier.weight(1f))
+                SectionTitle("Có thể bạn thích", Modifier.weight(1f))
                 Box(Modifier.size(36.dp).clickable(role = Role.Button) { recommendationOffset = (recommendationOffset + 6) % unique.size },
                     contentAlignment = Alignment.Center) {
-                    Icon(Icons.Default.Refresh, "换一批", Modifier.size(18.dp), tint = colors.onSurface.copy(alpha = .38f))
+                    Icon(Icons.Default.Refresh, "Đổi danh sách", Modifier.size(18.dp), tint = colors.onSurface.copy(alpha = .38f))
                 }
             }
             val offset = recommendationOffset % unique.size
@@ -89,10 +89,10 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             LazyRow(Modifier.fillMaxWidth().testTag("search_rankings"), state = carousel,
                 flingBehavior = rememberSnapFlingBehavior(carousel), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (charts.charts.isEmpty()) item(key = "hot") {
-                    SearchRankingCard("热搜榜", "大家正在搜", Modifier.width(cardWidth)) {
+                    SearchRankingCard("Bảng tìm kiếm thịnh hành", "Mọi người đang tìm kiếm", Modifier.width(cardWidth)) {
                         if (landing.loading) LoadingTextList(3)
-                        else if (landing.error != null) { Text("热搜暂时不可用", fontSize = 13.sp); MusicTextAction("重新加载", onRetryHot, Modifier.testTag("search_hot_retry")) }
-                        else if (landing.words.isEmpty()) Text("暂无热搜", fontSize = 13.sp)
+                        else if (landing.error != null) { Text("Tạm thời không thể tải tìm kiếm thịnh hành", fontSize = 13.sp); MusicTextAction("Tải lại", onRetryHot, Modifier.testTag("search_hot_retry")) }
+                        else if (landing.words.isEmpty()) Text("Chưa có nội dung thịnh hành", fontSize = 13.sp)
                         landing.words.take(8).forEachIndexed { index, word ->
                             RankingRow(index, word.displayText, word.description, Modifier.testTag("search_hot_$index")) { onSearch(word.text) }
                         }
@@ -104,22 +104,22 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     SearchRankingCard(chart.name, "", Modifier.width(cardWidth).testTag("search_chart_${chart.id}")) {
                         if (page.loading) LoadingTextList(3)
                         else if (page.error != null) {
-                            Text("榜单暂时不可用", fontSize = 13.sp)
-                            MusicTextAction("重新加载", { onLoadChart(chart.id, true) }, Modifier.testTag("search_chart_retry_${chart.id}"))
-                        } else if (page.words.isEmpty()) Text("暂无热搜词", fontSize = 13.sp)
+                            Text("Tạm thời không thể tải bảng xếp hạng", fontSize = 13.sp)
+                            MusicTextAction("Tải lại", { onLoadChart(chart.id, true) }, Modifier.testTag("search_chart_retry_${chart.id}"))
+                        } else if (page.words.isEmpty()) Text("Chưa có từ khóa thịnh hành", fontSize = 13.sp)
                         page.words.take(10).forEachIndexed { index, word ->
                             RankingRow(index, word.displayText, word.description, Modifier.testTag("search_chart_word_${chart.id}_$index")) { onSearch(word.text) }
                         }
                     }
                 }
                 if (charts.error != null) item(key = "charts_status") {
-                    SearchRankingCard("音乐榜单", "", Modifier.width(cardWidth)) {
+                    SearchRankingCard("Bảng xếp hạng nhạc", "", Modifier.width(cardWidth)) {
                         if (charts.loading) LoadingTextList(3)
-                        else { Text("榜单暂时不可用", fontSize = 13.sp); MusicTextAction("重新加载", onRetryCharts) }
+                        else { Text("Tạm thời không thể tải bảng xếp hạng", fontSize = 13.sp); MusicTextAction("Tải lại", onRetryCharts) }
                     }
                 }
                 if (recent.isNotEmpty()) item(key = "recent") {
-                    SearchRankingCard("最近播放", "接着发现喜欢的音乐", Modifier.width(cardWidth)) {
+                    SearchRankingCard("Phát gần đây", "Tiếp tục khám phá nhạc bạn yêu thích", Modifier.width(cardWidth)) {
                         recent.take(8).forEachIndexed { index, song -> RankingRow(index, song.name, song.artists) { onSearch(song.name) } }
                     }
                 }
@@ -140,7 +140,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         Row(Modifier.fillMaxWidth().heightIn(min = 36.dp).then(if (onOpen != null) Modifier.clickable(role = Role.Button, onClick = onOpen) else Modifier),
             verticalAlignment = Alignment.CenterVertically) {
             Text(title, Modifier.weight(1f), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            if (onOpen != null) SearchChevron("查看完整$title", Modifier.size(18.dp))
+            if (onOpen != null) SearchChevron("Xem đầy đủ$title", Modifier.size(18.dp))
         }
         if (subtitle.isNotBlank()) Text(subtitle, Modifier.padding(bottom = 10.dp), fontSize = 13.sp, color = colors.onSurface.copy(alpha = .4f))
         content()
@@ -160,14 +160,14 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val colors = MiuixTheme.colorScheme
     LazyColumn(modifier.testTag("search_suggestions"), contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)) {
         item { header() }
-        item { Text("搜索建议", Modifier.padding(bottom = 8.dp), fontSize = 13.sp, color = colors.onSurface.copy(alpha = .45f)) }
+        item { Text("Gợi ý tìm kiếm", Modifier.padding(bottom = 8.dp), fontSize = 13.sp, color = colors.onSurface.copy(alpha = .45f)) }
         itemsIndexed(suggestions.words, key = { _, word -> word }) { index, word ->
             SettingsPreference(word, modifier = Modifier.testTag("search_suggestion_$index"), onClick = { onSearch(word) },
                 leading = { Icon(MusicIcons.Search, null, Modifier.size(20.dp), tint = colors.onSurfaceVariantSummary) })
         }
         if (suggestions.words.isEmpty()) item {
             if (suggestions.loading) LoadingTextList(3, leading = true)
-            else MusicTextAction("搜索“$query”", { onSearch(query) }, Modifier.fillMaxWidth().testTag("search_suggestion_direct"))
+            else MusicTextAction("Tìm kiếm “$query”", { onSearch(query) }, Modifier.fillMaxWidth().testTag("search_suggestion_direct"))
         }
     }
 }

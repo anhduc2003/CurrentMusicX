@@ -1,47 +1,47 @@
-# Android 网页链接
+# Liên kết web Android
 
-应用接收 HTTP/HTTPS 链接，冷启动和已运行时均可打开：
+Ứng dụng tiếp nhận liên kết HTTP/HTTPS, có thể mở khi khởi động nguội hoặc khi đang chạy:
 
-- 网易云 `music.163.com`、`y.music.163.com` 的歌曲、歌单、专辑、歌手、MV；支持 `/#/song?id=…`、`/song?id=…`、`/m/song?id=…` 等形式。
-- `163cn.tv` 短链接：匿名请求，最多跟随 5 次 HTTP 重定向，逐跳检查域名；不执行网页脚本，不访问任意跳转目标。
-- 网易云一起听邀请：`https://st.music.163.com/listen-together/share/index.html?roomId=…&inviterId=…`，以及重定向到该地址的 `163cn.tv` 短链接。打开“双人一起听”并预填邀请，用户确认后加入；未登录时先登录，已在其他会话时先退出。`st.music.163.com` 也需要用户在系统默认打开设置中允许。
-- CurrentMusic 四个内置站点的 `/app/#/song/…`、`/app/#/ncmpl/…`、`/app/#/pl/…`、`/app/#/album/…`、`/app/#/artist/…`、`/app/#/mv/…`，以及首页。站点根目录的同类 hash 链接也受支持。
+- Bài hát, danh sách phát, album, nghệ sĩ và MV trên `music.163.com`, `y.music.163.com` của Nhạc Vân NetEase; hỗ trợ các dạng như `/#/song?id=…`, `/song?id=…`, `/m/song?id=…`.
+- Liên kết ngắn `163cn.tv`: yêu cầu ẩn danh, theo tối đa 5 lần chuyển hướng HTTP và kiểm tra tên miền ở từng bước; không chạy tập lệnh web, không truy cập đích chuyển hướng tùy ý.
+- Lời mời nghe cùng nhau trên Nhạc Vân NetEase: `https://st.music.163.com/listen-together/share/index.html?roomId=…&inviterId=…` và liên kết ngắn `163cn.tv` chuyển hướng đến địa chỉ này. Mở “Nghe cùng nhau hai người” và điền sẵn lời mời; người dùng xác nhận rồi mới tham gia. Nếu chưa đăng nhập thì đăng nhập trước; nếu đang ở phiên khác thì thoát trước. Người dùng cũng cần cho phép `st.music.163.com` trong cài đặt mở mặc định của hệ thống.
+- Các đường dẫn `/app/#/song/…`, `/app/#/ncmpl/…`, `/app/#/pl/…`, `/app/#/album/…`, `/app/#/artist/…`, `/app/#/mv/…` và trang chủ của bốn trang web tích hợp sẵn trong CurrentMusic. Các liên kết hash cùng loại ở thư mục gốc của trang web cũng được hỗ trợ.
 
-歌曲链接读取歌曲信息后播放并展开播放器；歌单、专辑、歌手和 MV 打开对应详情页。链接不会登录、修改服务器或自动加入房间；一起听期间不替换当前歌曲。未支持的路由显示提示。
+Liên kết bài hát sẽ tải thông tin bài hát, phát nhạc và mở rộng trình phát; danh sách phát, album, nghệ sĩ và MV sẽ mở trang chi tiết tương ứng. Liên kết không đăng nhập, thay đổi máy chủ hoặc tự động tham gia phòng; trong lúc nghe cùng nhau, bài hát hiện tại sẽ không bị thay thế. Các tuyến đường không được hỗ trợ sẽ hiển thị thông báo.
 
-## 网站验证
+## Xác minh trang web
 
-`assetlinks.json` 是网站部署文件，不是 APK 资源。将其中的关联**合并**到下列各站点的 `https://域名/.well-known/assetlinks.json`，保留其他合法条目：
+`assetlinks.json` là tệp triển khai trên trang web, không phải tài nguyên APK. **Hợp nhất** các liên kết trong tệp này vào `https://tên-miền/.well-known/assetlinks.json` của từng trang web sau đây, đồng thời giữ lại các mục hợp lệ khác:
 
 - `music.20110208.xyz`
 - `cm.bileizhen.top`
 - `currentmusic.geekertao.com`
 - `music.ctcehs.com`
 
-要求 HTTPS 返回 200、`Content-Type: application/json`，不重定向。样例使用现有正式站点公布的 CurrentMusicX 发布签名指纹；部署前与实际发布 APK 的签名核对。保留 `common.get_login_creds` 以继续支持通行密钥，并添加 `common.handle_all_urls`。调试包及 `.verification` 测试包不自动获得正式域名验证。
+Yêu cầu HTTPS trả về mã 200, `Content-Type: application/json` và không chuyển hướng. Ví dụ sử dụng dấu vân tay chữ ký phát hành CurrentMusicX được các trang chính thức hiện có công bố; trước khi triển khai, hãy đối chiếu với chữ ký của APK phát hành thực tế. Giữ lại `common.get_login_creds` để tiếp tục hỗ trợ khóa truy cập và thêm `common.handle_all_urls`. Gói gỡ lỗi và gói kiểm thử `.verification` không tự động được xác minh cho các tên miền chính thức.
 
-仅修改 APK 无法完成网站关联。2026-11-09 检查时，主站和 geekertao 站点只有通行密钥关联，另外两个站点返回 404。此仓库中的配置不会自动部署到这些网站。
+Chỉ sửa APK không thể hoàn tất liên kết trang web. Khi kiểm tra vào ngày 2026-11-09, trang chính và trang geekertao chỉ có liên kết khóa truy cập; hai trang còn lại trả về 404. Cấu hình trong kho lưu trữ này sẽ không tự động được triển khai lên các trang web đó.
 
-网易云域名由第三方控制，不能由本项目添加验证文件。Android 12 及以上进入应用「设置 → 默认打开链接」，在系统页面允许对应域名；具体入口随系统变化，网易云官方客户端可能已占用默认关联。
+Các tên miền của Nhạc Vân NetEase do bên thứ ba kiểm soát, dự án này không thể thêm tệp xác minh. Trên Android 12 trở lên, vào ứng dụng “Cài đặt → Mở liên kết mặc định” và cho phép các tên miền tương ứng trên trang hệ thống; đường dẫn cụ thể thay đổi tùy hệ thống, và ứng dụng chính thức của Nhạc Vân NetEase có thể đã chiếm liên kết mặc định.
 
-## 验收
+## Kiểm thử nghiệm thu
 
-发布签名 APK 安装后，先验证网站关联：
+Sau khi cài APK có chữ ký phát hành, trước tiên hãy xác minh liên kết trang web:
 
 ```sh
 adb shell pm verify-app-links --re-verify com.bileizhen.currentmusic
 adb shell pm get-app-links com.bileizhen.currentmusic
 ```
 
-等待系统验证后，确认 CurrentMusic 域名显示 `verified`。网易云域名需用户允许，不能将其写成自动验证成功。
+Chờ hệ thống xác minh, sau đó xác nhận các tên miền CurrentMusic hiển thị `verified`. Người dùng cần cho phép các tên miền Nhạc Vân NetEase; không được ghi nhận chúng là đã tự động xác minh thành công.
 
-通过聊天或浏览器点击以下链接，分别检查应用关闭、已运行、连续点击不同链接、旋转屏幕和返回键；歌曲需要联网及当前音源支持：
+Nhấn vào các liên kết sau trong ứng dụng trò chuyện hoặc trình duyệt để kiểm tra khi ứng dụng đã đóng, đang chạy, khi nhấn liên tục các liên kết khác nhau, xoay màn hình và dùng nút quay lại; cần có kết nối mạng và nguồn nhạc hiện tại hỗ trợ bài hát:
 
 - `https://music.163.com/song?id=347230`
 - `https://music.163.com/#/playlist?id=3778678`
 - `https://y.music.163.com/m/album?id=32311`
 - `https://music.20110208.xyz/app/#/song/347230`
 - `https://cm.bileizhen.top/app/#/ncmpl/3778678`
-- 使用仍有效的网易云一起听邀请测试：确认打开后仅预填、不自动加入；登录后返回、旋转、连续打开不同邀请仍显示正确内容。正在其他会话时退出后仍保留新邀请；过期邀请的失败由现有加入流程提示。
+- Dùng lời mời nghe cùng nhau trên Nhạc Vân NetEase còn hiệu lực để kiểm thử: xác nhận sau khi mở, lời mời chỉ được điền sẵn chứ không tự động tham gia; sau khi đăng nhập, quay lại, xoay màn hình hoặc mở liên tiếp các lời mời khác nhau, nội dung vẫn hiển thị chính xác. Nếu đang ở phiên khác, sau khi thoát lời mời mới vẫn được giữ lại; lời mời hết hạn sẽ được quy trình tham gia hiện có thông báo lỗi.
 
-指定包名的 `adb shell am start -a android.intent.action.VIEW -d 'URL' -p com.bileizhen.currentmusic` 只能验证应用处理流程，不能证明系统默认分发或域名验证通过。真机验收需额外使用不指定包名的链接打开操作。
+Lệnh `adb shell am start -a android.intent.action.VIEW -d 'URL' -p com.bileizhen.currentmusic` có chỉ định tên gói chỉ có thể xác minh quy trình xử lý của ứng dụng, không chứng minh được việc phân phối mặc định của hệ thống hoặc xác minh tên miền thành công. Khi nghiệm thu trên thiết bị thật, cần thử thêm thao tác mở liên kết mà không chỉ định tên gói.

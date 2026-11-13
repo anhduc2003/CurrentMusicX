@@ -25,8 +25,8 @@ internal fun playerArtistLinks(song: Song?): List<PlayerArtistLink> {
     val names = song.artists.split(" / ")
     return song.artistIds.mapIndexedNotNull { index, id ->
         if (id <= 0) null else PlayerArtistLink(
-            if (names.size == song.artistIds.size) names[index].ifBlank { "艺人 ${index + 1}" }
-            else "艺人 ${index + 1}", id)
+            if (names.size == song.artistIds.size) names[index].ifBlank { "Nghệ sĩ ${index + 1}" }
+            else "Nghệ sĩ ${index + 1}", id)
     }.distinctBy { it.id }
 }
 
@@ -55,7 +55,7 @@ internal class PlayerSongNavigation(val artistsEnabled: Boolean, val albumEnable
         currentNavigate(playerAlbumRoute(resolved ?: song))
     }
     chooseBiography?.let { biography ->
-        MusicChoiceDialog(if (biography) "选择艺人百科" else "选择歌手", { chooseBiography = null }) {
+        MusicChoiceDialog(if (biography) "Chọn bách khoa nghệ sĩ" else "Chọn ca sĩ", { chooseBiography = null }) {
             Column(Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
                 artists.forEach { artist ->
                     MusicDestinationRow(artist.name, {

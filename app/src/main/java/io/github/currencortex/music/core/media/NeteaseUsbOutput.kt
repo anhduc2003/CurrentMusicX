@@ -29,7 +29,7 @@ internal object NeteaseUsbBridge {
     @Synchronized fun load(context: Context) {
         if (loaded) return
         check(BuildConfig.NETEASE_ORIGINAL_EFFECTS && android.os.Build.SUPPORTED_ABIS.firstOrNull() == "arm64-v8a") {
-            "[USB_ABI] 本构建未内置 arm64 网易云 USB 引擎"
+            "[USB_ABI] Bản dựng này không tích hợp engine USB Nhạc Vân NetEase arm64"
         }
         val binary = File(context.applicationInfo.nativeLibraryDir, "libncmusbaudio.so")
         check(binary.isFile && binary.inputStream().use { input ->
@@ -37,12 +37,12 @@ internal object NeteaseUsbBridge {
             val bytes = ByteArray(16384)
             while (true) { val count = input.read(bytes); if (count < 0) break; digest.update(bytes, 0, count) }
             digest.digest().joinToString("") { "%02x".format(it.toInt() and 255) } == SHA256
-        }) { "[USB_DRIVER_HASH] 网易云 USB 引擎缺失或版本不匹配" }
+        }) { "[USB_DRIVER_HASH] Engine USB Nhạc Vân NetEase không tồn tại hoặc phiên bản không khớp" }
         try {
             System.loadLibrary("ncmusbaudio")
             System.loadLibrary("currentmusic_netease_usb")
-            check(checkAbi()) { "[USB_DRIVER_ABI] USB 引擎接口校验失败" }
-        } catch (e: LinkageError) { throw IllegalStateException("[USB_DRIVER_LOAD] USB 引擎或适配库加载失败", e) }
+            check(checkAbi()) { "[USB_DRIVER_ABI] Kiểm tra giao diện engine USB thất bại" }
+        } catch (e: LinkageError) { throw IllegalStateException("[USB_DRIVER_LOAD] Tải engine USB hoặc thư viện tương thích thất bại", e) }
         loaded = true
     }
     external fun checkAbi(): Boolean
@@ -83,16 +83,16 @@ internal class NeteaseUsbStream private constructor(
     override val output: AudioOutput get() = outputImpl
     fun snapshot(): io.github.currencortex.music.core.media.engine.UsbOutputSnapshot {
         val wire = session.pcm.wireFormat
-        val capability = if (!declared.valid) "系统未提供有效 USB 描述符；DAC 能力未验证" else {
+        val capability = if (!declared.valid) "Hệ thống không cung cấp mô tả USB hợp lệ; chưa xác minh khả năng DAC" else {
             val entries = declared.formats.take(8).joinToString("；") { value ->
                 val rates = when {
                     value.discreteRates.isNotEmpty() -> value.discreteRates.joinToString("/") + " Hz"
                     value.continuousRateRange != null -> "${value.continuousRateRange.first}–${value.continuousRateRange.last} Hz"
-                    else -> "时钟范围未查询"
+                    else -> "Chưa truy vấn phạm vi xung nhịp"
                 }
                 "UAC${value.uacVersion} ${value.channels}ch/${value.validBits}bit/${value.subslotBytes}B $rates"
             }
-            "描述符声明 ${declared.formats.size} 个 PCM alternate：${entries.ifBlank { "无可解析声明" }}；实际接受能力未验证"
+            "Mô tả khai báo ${declared.formats.size} alternate PCM: ${entries.ifBlank { "Không có khai báo nào phân tích được" }}; chưa xác minh khả năng thực tế"
         }
         return io.github.currencortex.music.core.media.engine.UsbOutputSnapshot(deviceLabel,
             io.github.currencortex.music.core.media.engine.AudioPcmFormat(wire.rate, wire.encoding, wire.channels), capability)
@@ -102,7 +102,7 @@ internal class NeteaseUsbStream private constructor(
             @Suppress("DEPRECATION") val device = intent.getParcelableExtra<android.hardware.usb.UsbDevice>(UsbManager.EXTRA_DEVICE)
             if (intent.action == UsbManager.ACTION_USB_DEVICE_DETACHED && device?.deviceId == deviceId) {
                 CurrentMusicAudioDiagnostics.record("usbHost.finalState=DISCONNECTED")
-                report("USB 独占（网易云）已停止：[USB_DISCONNECTED] USB DAC 已断开")
+                report("USB độc quyền (Nhạc Vân NetEase) đã dừng: [USB_DISCONNECTED] DAC USB đã ngắt kết nối")
                 cleanup.execute { close() }
             }
         }
@@ -113,7 +113,7 @@ internal class NeteaseUsbStream private constructor(
         registered = true
         session.verify() // Catch detach between open and receiver registration.
     }
-    override fun verify() { check(!closed.get()) { "[USB_CLOSED] USB 输出已释放" }; outputImpl.verify() }
+    override fun verify() { check(!closed.get()) { "[USB_CLOSED] Đầu ra USB đã được giải phóng" }; outputImpl.verify() }
     @Synchronized override fun close() {
         if (!closed.compareAndSet(false, true)) return
         try { if (registered) { registered = false; context.unregisterReceiver(detached) } }
@@ -133,10 +133,10 @@ internal class NeteaseUsbStream private constructor(
                 "vendor=${device.vendorId} product=${device.productId} permission=$permitted decoded=$pcm requested=${pcm.wireFormat} AndroidMixer=unused")
             if (pcm.encoding == 21) CurrentMusicAudioDiagnostics.record("usbHost.pcmAdaptation=packed24_to_signed32_left_aligned resample=false bitPerfect=not_claimed")
             CurrentMusicAudioDiagnostics.record("usbHost.volume=system_media_times_player software_attenuation=true bitPerfect=not_claimed")
-            check(permitted) { "[USB_PERMISSION] 请在音频输出设置中授权访问 USB DAC" }
-            val connection = manager.openDevice(device) ?: error("[USB_OPEN] Android 无法打开已授权的 USB DAC")
+            check(permitted) { "[USB_PERMISSION] Vui lòng cấp quyền truy cập DAC USB trong phần cài đặt đầu ra âm thanh" }
+            val connection = manager.openDevice(device) ?: error("[USB_OPEN] Android không thể mở DAC USB đã được cấp quyền")
             val declared = try { UsbAudioDescriptorParser.parse(connection.rawDescriptors) }
-                catch (_: Exception) { UsbAudioDescriptorReport(emptyList(), "系统未提供描述符") }
+                catch (_: Exception) { UsbAudioDescriptorReport(emptyList(), "Hệ thống không cung cấp mô tả") }
             CurrentMusicAudioDiagnostics.record("usbHost.descriptorFormats=${declared.formats.size} " +
                 "descriptorRead=${if (declared.valid) "OK" else "INVALID"} " +
                 "rates=descriptor_declarations UAC2_clock_ranges=not_queried hardwareAcceptance=unverified")
@@ -145,7 +145,7 @@ internal class NeteaseUsbStream private constructor(
             val stream = NeteaseUsbStream(app, session, device.deviceId, NeteaseUsbDevices.label(device), declared, report)
             try { stream.register() } catch (e: Exception) { stream.close(); throw e }
             CurrentMusicAudioDiagnostics.record("usbHost.finalState=OPENED bitPerfect=not_claimed positionClock=engine_queue_estimate")
-            report("USB 独占（网易云）· 已打开 ${NeteaseUsbDevices.label(device)} · ${pcm.rate} Hz / ${if (pcm.encoding == 21) "PCM 24-bit 无损扩展至 32-bit" else "PCM ${if (pcm.encoding == 2) 16 else 32}-bit"} / ${pcm.channels} 声道 · 等待传输")
+            report("USB độc quyền (Nhạc Vân NetEase) · Đã mở ${NeteaseUsbDevices.label(device)} · ${pcm.rate} Hz / ${if (pcm.encoding == 21) "PCM 24-bit không mất dữ liệu mở rộng thành 32-bit" else "PCM ${if (pcm.encoding == 2) 16 else 32}-bit"} / ${pcm.channels} kênh · Đang chờ truyền dữ liệu")
             return stream
         }
     }
@@ -168,7 +168,7 @@ private class OriginalUsbOutput(private val session: NeteaseUsbSession, private 
         session.verify()
         val pendingUs = bytes / session.pcm.frameBytes * 1_000_000 / sampleRate - lastPosition
         if (playing && pendingUs > 20000 && SystemClock.elapsedRealtime() - lastAdvance > 5000)
-            error("[USB_STALLED] USB 输出超过 5 秒未前进，请检查 DAC 和完整诊断")
+            error("[USB_STALLED] Đầu ra USB không tiến triển trong hơn 5 giây, vui lòng kiểm tra DAC và chẩn đoán đầy đủ")
     }
     override fun play() { session.play(true); playing = true; lastAdvance = SystemClock.elapsedRealtime() }
     override fun pause() { session.play(false); playing = false }
@@ -185,7 +185,7 @@ private class OriginalUsbOutput(private val session: NeteaseUsbSession, private 
             if (!announced) {
                 announced = true
                 CurrentMusicAudioDiagnostics.record("usbHost.finalState=ADVANCING bitPerfect=not_claimed")
-                report("USB 独占（网易云）· PCM ${if (session.pcm.encoding == 2) 16 else 32}-bit · $sampleRate Hz · 引擎进度已前进；非 DAC 硬件校验")
+                report("USB độc quyền (Nhạc Vân NetEase) · PCM ${if (session.pcm.encoding == 2) 16 else 32}-bit · $sampleRate Hz · Tiến độ engine đã tăng; chưa kiểm tra phần cứng DAC")
                 listeners.toList().forEach { it.onPositionAdvancing(System.currentTimeMillis()) }
             }
         }

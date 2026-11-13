@@ -23,10 +23,10 @@ import top.yukonga.miuix.kmp.basic.TextButton
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable fun SongLikeSheet(selection: SongLikeSelection, toggle: (LikeDestination) -> Unit, dismiss: () -> Unit) {
-    MusicDialog("收录到哪个「我喜欢」？", dismiss, edgeToEdgeContent = true, footer = { MusicDialogButton("关闭", onClick = dismiss) }) {
+    MusicDialog("Thêm vào mục «Yêu thích» nào?", dismiss, edgeToEdgeContent = true, footer = { MusicDialogButton("Đóng", onClick = dismiss) }) {
         Column(Modifier.testTag("song_like_sheet")) {
-            LikeRow("CurrentMusic · 我喜欢的音乐", selection.currentMusic, LikeDestination.CURRENT_MUSIC, toggle)
-            LikeRow("网易云音乐 APP · 我喜欢的音乐", selection.netease, LikeDestination.NETEASE, toggle)
+            LikeRow("CurrentMusic · Nhạc yêu thích", selection.currentMusic, LikeDestination.CURRENT_MUSIC, toggle)
+            LikeRow("ỨNG DỤNG Nhạc Vân NetEase · Nhạc yêu thích", selection.netease, LikeDestination.NETEASE, toggle)
         }
     }
 }
@@ -35,11 +35,11 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val colors = MiuixTheme.colorScheme
     val ink = if (state.liked == true) colors.primary else colors.onSurface
     val summary = when {
-        state.busy -> if (state.liked == null) "正在读取收录状态…" else "正在更新…"
-        state.error != null -> state.error + "，点击重试"
-        state.liked == true -> "已收录，点击移出"
-        else -> "未收录，点击加入"
-    } + if (target == LikeDestination.NETEASE && !state.busy && state.error == null) " · 红心同步到网易云 APP" else ""
+        state.busy -> if (state.liked == null) "Đang đọc trạng thái thêm…" else "Đang cập nhật…"
+        state.error != null -> state.error + ", nhấn để thử lại"
+        state.liked == true -> "Đã thêm, nhấn để xóa"
+        else -> "Chưa thêm, nhấn để thêm"
+    } + if (target == LikeDestination.NETEASE && !state.busy && state.error == null) " · Trái tim được đồng bộ với ứng dụng Nhạc Vân NetEase" else ""
     Row(Modifier.fillMaxWidth().testTag("like_destination_${target.name}")
         .clickable(enabled = !state.busy, role = Role.Button) { toggle(target) }
         .semantics { selected = state.liked == true }.heightIn(min = 76.dp).padding(horizontal = 24.dp, vertical = 12.dp),

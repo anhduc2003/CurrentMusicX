@@ -68,7 +68,7 @@ internal class RecordShelfPreview(context: Context, private val container: AppCo
         override fun release() { player.release() }
     }, resolve = { song ->
         check(!container.audioOutput.state.value.mode.rawPcm) {
-            "${container.audioOutput.state.value.mode.label} 使用独占 USB 输出，请使用主播放器播放歌曲"
+            "${container.audioOutput.state.value.mode.label} đang sử dụng đầu ra USB độc quyền, vui lòng dùng trình phát chính để phát bài hát"
         }
         coroutineScope {
             val request = container.audioRequest(song, container.musicSettings.state.value.quality)

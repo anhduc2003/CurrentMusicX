@@ -29,7 +29,7 @@ import kotlin.math.*
 /** Touch and accessibility selection share the same index; dragging stays inside this chart. */
 @Composable internal fun AdminChart(values: List<Long>, label: String, labels: List<String>, bytes: Boolean = false,
     line: Boolean = false, secondary: List<Long> = emptyList(), tag: String = "admin_chart") {
-    if (values.isEmpty()) { Text("暂无记录", fontSize = 13.sp); return }
+    if (values.isEmpty()) { Text("Chưa có bản ghi", fontSize = 13.sp); return }
     val data = values.map { it.coerceAtLeast(0) }
     val ceiling = niceMaximum(data.maxOrNull() ?: 0)
     val secondCeiling = niceMaximum(secondary.maxOrNull() ?: 0)
@@ -42,14 +42,14 @@ import kotlin.math.*
     val index = selected.takeIf { it in data.indices }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("● $label", fontSize = 11.sp, color = primary)
-        if (secondary.isNotEmpty()) Text("● 活跃用户", fontSize = 11.sp, color = secondaryColor)
+        if (secondary.isNotEmpty()) Text("● Người dùng hoạt động", fontSize = 11.sp, color = secondaryColor)
     }
     Box(Modifier.fillMaxWidth().heightIn(min = 52.dp).clip(RoundedCornerShape(10.dp))
         .background(primary.copy(alpha = if (index != null) .08f else 0f)).padding(horizontal = 10.dp, vertical = 7.dp)) {
-        if (index == null) Text("点按或横向拖动图表查看数据", fontSize = 12.sp, color = ink)
+        if (index == null) Text("Chạm hoặc kéo ngang biểu đồ để xem dữ liệu", fontSize = 12.sp, color = ink)
         else Column {
             Text(labels.getOrElse(index) { "${index + 1}" }, fontSize = 11.sp, color = ink)
-            Text("$label ${format(data[index])}" + if (secondary.isNotEmpty()) " · 活跃 ${adminCount(secondary.getOrElse(index) { 0 })} 人" else "",
+            Text("$label ${format(data[index])}" + if (secondary.isNotEmpty()) " · Hoạt động ${adminCount(secondary.getOrElse(index) { 0 })} người" else "",
                 fontSize = 12.sp, color = primary, modifier = Modifier.testTag("${tag}_selection"))
         }
     }
@@ -59,10 +59,9 @@ import kotlin.math.*
         }
         Canvas(Modifier.weight(1f).fillMaxHeight().padding(vertical = 7.dp).testTag(tag)
             .semantics {
-                contentDescription = "$label，${data.size} 个时间点，最大值 ${format(data.maxOrNull() ?: 0)}"
-                stateDescription = index?.let { "${labels.getOrElse(it) { "${it + 1}" }} ${format(data[it])}" } ?: "未选择"
-                customActions = listOf(CustomAccessibilityAction("下一个时间点") { selected = (selected + 1).coerceAtMost(data.lastIndex); true },
-                    CustomAccessibilityAction("上一个时间点") { selected = (selected - 1).coerceAtLeast(0); true })
+contentDescription = "$label，${data.size} mốc thời gian，giá trị tối đa ${format(data.maxOrNull() ?: 0)}"                stateDescription = index?.let { "${labels.getOrElse(it) { "${it + 1}" }} ${format(data[it])}" } ?: "Chưa chọn"
+                customActions = listOf(CustomAccessibilityAction("Mốc thời gian tiếp theo") { selected = (selected + 1).coerceAtMost(data.lastIndex); true },
+                    CustomAccessibilityAction("Mốc thời gian trước đó") { selected = (selected - 1).coerceAtLeast(0); true })
             }
             .pointerInput(data, labels) { detectTapGestures { p -> selected = (p.x / size.width * data.size).toInt().coerceIn(data.indices) } }
             .pointerInput(data, labels) { detectHorizontalDragGestures(onDragStart = { p -> selected = (p.x / size.width * data.size).toInt().coerceIn(data.indices) }) { change, _ ->
@@ -99,9 +98,9 @@ import kotlin.math.*
         Text(labels.lastOrNull().orEmpty(), fontSize = 10.sp, color = ink)
     }
     var details by rememberSaveable(label) { mutableStateOf(false) }
-    MusicTextAction(if (details) "收起明细" else "查看明细", { details = !details })
+    MusicTextAction(if (details) "Thu gọn chi tiết" else "Xem chi tiết", { details = !details })
     if (details) data.indices.reversed().forEach { i -> AdminMetric(labels.getOrElse(i) { "${i + 1}" }, format(data[i]) +
-        if (secondary.isNotEmpty()) " · ${secondary.getOrElse(i) { 0 }} 人" else "") }
+        if (secondary.isNotEmpty()) " · ${secondary.getOrElse(i) { 0 }} người" else "") }
 }
 
 private fun niceMaximum(value: Long): Long {
@@ -112,8 +111,7 @@ private fun niceMaximum(value: Long): Long {
     return (step * 4).toLong().coerceAtLeast(value)
 }
 private fun compactAxis(value: Long) = when {
-    value >= 10000 -> String.format(java.util.Locale.ROOT, "%.1f万", value / 10000.0)
-    value >= 1000 -> String.format(java.util.Locale.ROOT, "%.1fk", value / 1000.0)
+value >= 10000 -> String.format(java.util.Locale.ROOT, "%.1f vạn", value / 10000.0)    value >= 1000 -> String.format(java.util.Locale.ROOT, "%.1fk", value / 1000.0)
     else -> value.toString()
 }
 

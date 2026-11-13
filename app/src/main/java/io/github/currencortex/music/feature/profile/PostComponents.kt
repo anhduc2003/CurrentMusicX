@@ -19,7 +19,7 @@ import top.yukonga.miuix.kmp.basic.*
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 internal fun postAttachmentLabel(type: String) = when (type) {
-    "song" -> "单曲"; "album" -> "专辑"; "artist" -> "歌手"; "playlist" -> "歌单"; else -> "音乐内容"
+    "song" -> "Bài hát"; "album" -> "Album"; "artist" -> "Ca sĩ"; "playlist" -> "Danh sách phát"; else -> "Nội dung âm nhạc"
 }
 
 @Composable internal fun PostAttachmentTile(card: PostAttachment, modifier: Modifier = Modifier,

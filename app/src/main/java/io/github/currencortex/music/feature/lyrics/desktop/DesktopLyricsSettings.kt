@@ -5,9 +5,9 @@ import androidx.datastore.preferences.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
-enum class DesktopEffect(val label: String) { PRECISE("精致"), STAGE("舞台") }
+enum class DesktopEffect(val label: String) { PRECISE("Tinh tế"), STAGE("Sân khấu") }
 // Retain the stored appearance slot so existing preference payloads remain readable.
-enum class DesktopAppearance(val label: String) { ISLAND("灵动岛") }
+enum class DesktopAppearance(val label: String) { ISLAND("Đảo linh hoạt") }
 internal const val DESKTOP_DEFAULT_GLOW_COLOR: Long = 0xFFE0E0E0L
 internal const val DESKTOP_DEFAULT_FONT_SIZE: Float = 20f
 internal const val DESKTOP_ISLAND_FONT_SIZE: Float = 14f

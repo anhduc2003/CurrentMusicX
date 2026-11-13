@@ -34,7 +34,7 @@ class QqLyricsMatchSource(client: OkHttpClient = OkHttpClient(), baseUrl: String
     suspend fun search(query: String): List<LyricsCandidate> = bounded {
         val text = query.trim()
         if (text.isEmpty()) return@bounded emptyList()
-        require(text.length <= OnlineLyricsMatcher.MAX_QUERY_LENGTH) { "搜索关键词过长" }
+        require(text.length <= OnlineLyricsMatcher.MAX_QUERY_LENGTH) { "Từ khóa tìm kiếm quá dài" }
         // The album remains candidate-ranking evidence; including it in QQ's keyword can hide
         // the right recording, especially for long editions and soundtrack catalogue names.
         val parts = text.split(Regex("\\s+-\\s+"))
@@ -54,7 +54,7 @@ class QqLyricsMatchSource(client: OkHttpClient = OkHttpClient(), baseUrl: String
         val noResults = root.number("code") == 0L && (root.number("retcode") ?: 0L) == 0L &&
             root.number("subcode") == 10003L &&
             (((root["data"] as? JsonObject)?.get("song") as? JsonObject)?.get("list") as? JsonArray)?.isEmpty() == true
-        if (!noResults) checkBusiness(root, "搜索")
+        if (!noResults) checkBusiness(root, "tìm kiếm")
         val songs = root.obj("data").obj("song").array("list")
         return songs.asSequence().mapNotNull { value ->
             val row = value as? JsonObject ?: return@mapNotNull null
@@ -74,21 +74,21 @@ class QqLyricsMatchSource(client: OkHttpClient = OkHttpClient(), baseUrl: String
     }
 
     suspend fun load(candidate: LyricsCandidate): LyricsDocument = bounded {
-        require(candidate.source == LyricsMatchSource.QQ_MUSIC && candidate.id.matches(SONG_MID)) { "QQ 音乐歌曲编号无效" }
+        require(candidate.source == LyricsMatchSource.QQ_MUSIC && candidate.id.matches(SONG_MID)) { "Mã bài hát QQ Music không hợp lệ" }
         val root = request("lyric/fcgi-bin/fcg_query_lyric_new.fcg", mapOf("songmid" to candidate.id,
             "format" to "json", "nobase64" to "1", "g_tk" to "5381"))
-        checkBusiness(root, "歌词")
+        checkBusiness(root, "lời bài hát")
         val main = decodeTrack(root.string("lyric"))
-        if (main.isBlank()) throw LyricsMatchException("QQ 音乐未提供这首歌的公开歌词")
+        if (main.isBlank()) throw LyricsMatchException("QQ Music không cung cấp lời bài hát công khai này")
         if (!TIMESTAMP.containsMatchIn(main)) {
-            throw LyricsMatchException("QQ 音乐未提供可用的时间轴歌词，请切换其他来源")
+            throw LyricsMatchException("QQ Music không cung cấp lời bài hát có mốc thời gian khả dụng, vui lòng chuyển sang nguồn khác")
         }
         val translation = decodeTrack(root.string("trans"))
         val romanization = decodeTrack(root.string("roma").ifBlank { root.string("romalrc") })
         val parsed = LyricsParser.parse(buildJsonObject {
             put("lrc", main); put("tlyric", translation); put("romalrc", romanization)
         }).withoutEstimatedTiming()
-        if (parsed.lines.isEmpty()) throw LyricsMatchException("QQ 音乐没有可识别的歌词时间轴")
+        if (parsed.lines.isEmpty()) throw LyricsMatchException("QQ Music không có dòng thời gian lời bài hát nào có thể nhận diện")
         LyricsFileCodec.validate(parsed)
         parsed.copy(metadata = parsed.metadata.copy(source = "QQ Music",
             values = parsed.metadata.values + ("qqMusicId" to listOf(candidate.id))))
@@ -101,23 +101,23 @@ class QqLyricsMatchSource(client: OkHttpClient = OkHttpClient(), baseUrl: String
         continuation.invokeOnCancellation { call.cancel() }
         call.enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                if (continuation.isActive) continuation.resumeWithException(LyricsMatchException("QQ 音乐网络请求失败", e))
+                if (continuation.isActive) continuation.resumeWithException(LyricsMatchException("Yêu cầu mạng QQ Music thất bại", e))
             }
             override fun onResponse(call: Call, response: Response) {
                 try {
                     val root = response.use {
-                        if (!it.isSuccessful) throw LyricsMatchException("QQ 音乐请求失败（HTTP ${it.code}）")
-                        val body = it.body ?: throw LyricsMatchException("QQ 音乐返回了空响应")
-                        if (body.contentLength() > MAX_RESPONSE_BYTES) throw LyricsMatchException("QQ 音乐响应过大")
+                        if (!it.isSuccessful) throw LyricsMatchException("Yêu cầu QQ Music thất bại (HTTP ${it.code})")
+                        val body = it.body ?: throw LyricsMatchException("QQ Music trả về phản hồi trống")
+                        if (body.contentLength() > MAX_RESPONSE_BYTES) throw LyricsMatchException("Phản hồi QQ Music quá lớn")
                         val source = body.source()
                         source.request(MAX_RESPONSE_BYTES.toLong() + 1)
-                        if (source.buffer.size > MAX_RESPONSE_BYTES) throw LyricsMatchException("QQ 音乐响应过大")
+                        if (source.buffer.size > MAX_RESPONSE_BYTES) throw LyricsMatchException("Phản hồi QQ Music quá lớn")
                         try { Json.parseToJsonElement(source.readUtf8()) as? JsonObject ?: throw IOException("Expected an object") }
-                        catch (e: Exception) { throw LyricsMatchException("QQ 音乐响应格式无效", e) }
+                        catch (e: Exception) { throw LyricsMatchException("Định dạng phản hồi QQ Music không hợp lệ", e) }
                     }
                     if (continuation.isActive) continuation.resume(root)
                 } catch (e: Exception) {
-                    if (continuation.isActive) continuation.resumeWithException(if (e is LyricsMatchException) e else LyricsMatchException("QQ 音乐响应读取失败", e))
+                    if (continuation.isActive) continuation.resumeWithException(if (e is LyricsMatchException) e else LyricsMatchException("Đọc phản hồi QQ Music thất bại", e))
                 }
             }
         })
@@ -126,7 +126,7 @@ class QqLyricsMatchSource(client: OkHttpClient = OkHttpClient(), baseUrl: String
     private suspend fun <T> bounded(block: suspend () -> T): T = try { withTimeout(7_000) { block() } }
     catch (e: TimeoutCancellationException) {
         currentCoroutineContext().ensureActive()
-        throw LyricsMatchException("QQ 音乐歌词请求超时", e)
+        throw LyricsMatchException("Yêu cầu lời bài hát QQ Music quá thời gian chờ", e)
     }
 
     companion object {
@@ -137,12 +137,12 @@ class QqLyricsMatchSource(client: OkHttpClient = OkHttpClient(), baseUrl: String
         private val ENTITY = Regex("&(#(?:x[0-9a-fA-F]{1,6}|[0-9]{1,7})|amp|lt|gt|quot|apos|nbsp);")
         private fun JsonObject.string(key: String) = (get(key) as? JsonPrimitive)?.contentOrNull.orEmpty()
         private fun JsonObject.number(key: String) = (get(key) as? JsonPrimitive)?.longOrNull
-        private fun JsonObject.obj(key: String) = get(key) as? JsonObject ?: throw LyricsMatchException("QQ 音乐响应缺少 $key")
-        private fun JsonObject.array(key: String) = get(key) as? JsonArray ?: throw LyricsMatchException("QQ 音乐响应缺少 $key")
+        private fun JsonObject.obj(key: String) = get(key) as? JsonObject ?: throw LyricsMatchException("Phản hồi QQ Music thiếu $key")
+        private fun JsonObject.array(key: String) = get(key) as? JsonArray ?: throw LyricsMatchException("Phản hồi QQ Music thiếu $key")
         private fun checkBusiness(root: JsonObject, action: String) {
-            val code = root.number("code") ?: throw LyricsMatchException("QQ 音乐${action}响应缺少状态码")
+            val code = root.number("code") ?: throw LyricsMatchException("Phản hồi ${action} của QQ Music thiếu mã trạng thái")
             val rejected = listOf(code, root.number("retcode") ?: 0, root.number("subcode") ?: 0).firstOrNull { it != 0L }
-            if (rejected != null) throw LyricsMatchException("QQ 音乐${action}请求失败（$rejected），请切换来源或稍后重试")
+            if (rejected != null) throw LyricsMatchException("Yêu cầu ${action} của QQ Music thất bại ($rejected), vui lòng chuyển nguồn hoặc thử lại sau")
         }
         private fun cleanLabel(value: String) = entities(value).replace(Regex("<[^>]{1,80}>"), "").trim().take(512)
         private fun entities(value: String): String = ENTITY.replace(value) { match ->
@@ -157,13 +157,13 @@ class QqLyricsMatchSource(client: OkHttpClient = OkHttpClient(), baseUrl: String
         private fun decodeTrack(value: String): String {
             if (value.isBlank()) return ""
             val plain = normalizeTrack(value)
-            if (plain.toByteArray(Charsets.UTF_8).size > LyricsFileCodec.MAX_BYTES) throw LyricsMatchException("QQ 音乐歌词文件过大")
+            if (plain.toByteArray(Charsets.UTF_8).size > LyricsFileCodec.MAX_BYTES) throw LyricsMatchException("Tệp lời bài hát QQ Music quá lớn")
             if (TIMESTAMP.containsMatchIn(plain)) return plain
             val bytes = try { Base64.getDecoder().decode(plain.replace(Regex("\\s+"), "")) }
             // nobase64=1 can return ordinary text without timestamps. Missing timing is
             // not an encoding error; the caller requires timing only for the main track.
             catch (_: IllegalArgumentException) { return plain }
-            if (bytes.size > LyricsFileCodec.MAX_BYTES) throw LyricsMatchException("QQ 音乐歌词文件过大")
+            if (bytes.size > LyricsFileCodec.MAX_BYTES) throw LyricsMatchException("Tệp lời bài hát QQ Music quá lớn")
             val decoded = try { Charsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT)
                 .onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes)).toString() }
             // Plain ASCII lyrics can also look like Base64. Only a decoded timed track

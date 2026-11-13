@@ -70,7 +70,7 @@ class PersonalRoamingController(private val repository: PersonalRoamingRepositor
     fun start(choice: RoamingChoice = state.value.choice) {
         if (!state.value.ready) return
         if (player.state.value.mode != PlayerMode.LOCAL) {
-            state.update { it.copy(error = "请先退出一起听，再开启私人漫游") }; return
+            state.update { it.copy(error = "Vui lòng thoát khỏi Nghe cùng nhau trước khi bật chế độ nghe nhạc cá nhân") }; return
         }
         val epoch = ++generation
         job?.cancel(); waitingRevision = null; failedChoice = null
@@ -89,7 +89,7 @@ class PersonalRoamingController(private val repository: PersonalRoamingRepositor
                     if (epoch == generation) state.update { it.copy(loading = false) }
                     return@launch
                 }
-                if (songs.isEmpty()) { failedChoice = choice; state.update { it.copy(loading = false, error = "这个模式暂时没有可播放的推荐，试试其他模式") }; return@launch }
+                if (songs.isEmpty()) { failedChoice = choice; state.update { it.copy(loading = false, error = "Chế độ này hiện chưa có gợi ý nào có thể phát, hãy thử chế độ khác") }; return@launch }
                 if (station == null) original = previousQueue.copy(positionMs = player.state.value.positionMs)
                 val session = UUID.randomUUID().toString()
                 waitingRevision = null
@@ -101,7 +101,7 @@ class PersonalRoamingController(private val repository: PersonalRoamingRepositor
                 preferences.save(sessions.state.value.profile?.uid ?: 0, state.value.settings)
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (error: Exception) {
-                if (epoch == generation) { failedChoice = choice; state.update { it.copy(loading = false, error = error.message ?: "获取漫游推荐失败") } }
+                if (epoch == generation) { failedChoice = choice; state.update { it.copy(loading = false, error = error.message ?: "Không thể lấy gợi ý nghe nhạc ngẫu nhiên") } }
             }
         }
     }
@@ -118,7 +118,7 @@ class PersonalRoamingController(private val repository: PersonalRoamingRepositor
                 ensureActive()
                 if (epoch != generation || station != session || player.queue.state.value.radioSession != session) return@launch
                 if (!player.queue.appendRadio(songs, session)) {
-                    state.update { it.copy(error = "暂时没有新的推荐，可重试或切换模式") }
+                    state.update { it.copy(error = "Hiện chưa có gợi ý mới, bạn có thể thử lại hoặc chuyển chế độ") }
                     if (waitingRevision != null) player.pause()
                 } else {
                     seen.addAll(songs.map { it.id }); while (seen.size > 200) seen.remove(seen.first())
@@ -128,7 +128,7 @@ class PersonalRoamingController(private val repository: PersonalRoamingRepositor
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (error: Exception) {
                 if (epoch == generation) {
-                    state.update { it.copy(error = error.message ?: "补充推荐失败，请重试") }
+                    state.update { it.copy(error = error.message ?: "Không thể bổ sung gợi ý, vui lòng thử lại") }
                     if (waitingRevision != null) player.pause()
                 }
             } finally {

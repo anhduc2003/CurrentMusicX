@@ -40,13 +40,13 @@ class NeteasePlaylistImportRepository(private val transport: NeteaseTransport,
 
     suspend fun submitLinks(links: List<String>, importStar: Boolean): PlaylistImportTask {
         val clean = links.map(::extractImportLink).distinct()
-        require(clean.size in 1..10) { "请填写 1–10 个歌单链接" }
+        require(clean.size in 1..10) { "Vui lòng nhập 1–10 liên kết danh sách phát" }
         val owner = owner()
         val normalized = mutableListOf<String>()
         for (link in clean) {
             val checked = request("/api/playlist/import/url/check", owner, buildJsonObject { put("link", encodeImportUri(link)) })
             require(checked["data"] != null && checked["data"] != JsonNull && checked["data"] != JsonPrimitive(false)) {
-                "网易云暂不支持这个链接，请检查后重试"
+                "Nhạc Vân NetEase hiện chưa hỗ trợ liên kết này, vui lòng kiểm tra rồi thử lại"
             }
             val canonical = ((checked["data"] as? JsonObject)?.get("link") as? JsonPrimitive)?.contentOrNull
             normalized += canonical?.takeIf(String::isNotBlank)?.let(::extractImportLink) ?: link
@@ -55,12 +55,12 @@ class NeteasePlaylistImportRepository(private val transport: NeteaseTransport,
     }
 
     suspend fun submitText(text: String, importStar: Boolean): PlaylistImportTask {
-        require(text.isNotBlank() && text.length <= 20_000) { "请输入歌曲文字，最多 20000 字" }
+        require(text.isNotBlank() && text.length <= 20_000) { "Vui lòng nhập nội dung bài hát, tối đa 20000 ký tự" }
         return submitUrls(owner(), listOf("rpc://playlist/import?text=${text.trim()}"), importStar)
     }
 
     suspend fun submitLocal(songs: List<Song>, importStar: Boolean): PlaylistImportTask {
-        require(songs.size in 1..10_000 && songs.all { it.name.isNotBlank() && !it.video }) { "请选择 1–10000 首有效歌曲" }
+        require(songs.size in 1..10_000 && songs.all { it.name.isNotBlank() && !it.video }) { "Vui lòng chọn 1–10000 bài hát hợp lệ" }
         val multiSongs = buildJsonArray { songs.forEach { song -> add(buildJsonObject {
             put("songName", song.name); put("artistName", song.artists); put("albumName", song.album)
         }) } }
@@ -76,16 +76,16 @@ class NeteasePlaylistImportRepository(private val transport: NeteaseTransport,
             val creator = (row["creator"] as? JsonObject)?.get("userId") ?: row["userId"]
             val id = (row["id"] as? JsonPrimitive)?.longOrNull?.takeIf { it > 0 }
             if ((creator as? JsonPrimitive)?.longOrNull != uid || id == null) null
-            else PlaylistImportTarget(id, (row["name"] as? JsonPrimitive)?.contentOrNull.orEmpty().ifBlank { "歌单 $id" })
+            else PlaylistImportTarget(id, (row["name"] as? JsonPrimitive)?.contentOrNull.orEmpty().ifBlank { "Danh sách phát $id" })
         }.distinctBy { it.id }
     }
 
     suspend fun submitImages(images: List<PlaylistImportImage>, playlistId: Long): PlaylistImportTask {
         require(images.size in 1..9 && images.all { it.bytes.size in 1..(8 * 1024 * 1024) && it.mimeType.startsWith("image/") }) {
-            "请选择 1–9 张图片，每张最多 8 MB"
+            "Vui lòng chọn 1–9 ảnh, mỗi ảnh tối đa 8 MB"
         }
         val owner = owner()
-        require(targets(owner).any { it.id == playlistId }) { "请选择当前网易云账号创建的目标歌单" }
+        require(targets(owner).any { it.id == playlistId }) { "Vui lòng chọn danh sách phát đích do tài khoản Nhạc Vân NetEase hiện tại tạo" }
         val ids = mutableListOf<String>()
         for (image in images) {
             val raw = request("/api/nos/token/whalealloc", owner, buildJsonObject {
@@ -106,7 +106,7 @@ class NeteasePlaylistImportRepository(private val transport: NeteaseTransport,
     }
 
     private suspend fun submitUrls(owner: NeteaseSession, urls: List<String>, importStar: Boolean): PlaylistImportTask {
-        val name = "导入音乐 " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        val name = "Nhập nhạc " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         return create(owner, buildJsonObject {
             put("playlistName", name); put("taskIdForLog", ""); put("rqRefer", "")
             put("songs", buildJsonArray { urls.forEach { url -> add(buildJsonObject {
@@ -124,7 +124,7 @@ class NeteasePlaylistImportRepository(private val transport: NeteaseTransport,
     private fun task(raw: JsonObject, owner: NeteaseSession): PlaylistImportTask {
         val result = raw["data"] as? JsonObject ?: raw
         val id = (result["taskId"] as? JsonPrimitive)?.longOrNull?.takeIf { it > 0 }
-            ?: throw ApiException(ErrorKind.Parse, userMessage = "网易云未返回导入任务编号，请先检查歌单再重试")
+            ?: throw ApiException(ErrorKind.Parse, userMessage = "Nhạc Vân NetEase không trả về mã tác vụ nhập, vui lòng kiểm tra danh sách phát rồi thử lại")
         return PlaylistImportTask(id, owner)
     }
 
@@ -135,7 +135,7 @@ class NeteasePlaylistImportRepository(private val transport: NeteaseTransport,
         val data = raw["data"] as? JsonObject ?: throw ApiException(ErrorKind.Parse)
         val row = (data["tasks"] as? JsonArray)?.filterIsInstance<JsonObject>()
             ?.firstOrNull { (it["id"] as? JsonPrimitive)?.longOrNull == task.id }
-            ?: return PlaylistImportStatus(false, false, message = "任务已提交，等待网易云处理")
+            ?: return PlaylistImportStatus(false, false, message = "Đã gửi tác vụ, đang chờ Nhạc Vân NetEase xử lý")
         val state = when ((row["status"] as? JsonPrimitive)?.contentOrNull) {
             "IMPORTING" -> 1; "COMPLETE" -> 2; "FAILED" -> 3; "PLAYLIST_DELETE" -> 4
             "PLAYLIST_FULL_SOME_SUCCESS" -> 5; "PLAYLIST_FULL_NONE_SUCCESS" -> 6; "RECOGNIZE_NO_SONGS" -> 7
@@ -146,14 +146,14 @@ class NeteasePlaylistImportRepository(private val transport: NeteaseTransport,
         val playlist = (row["playlistId"] as? JsonPrimitive)?.longOrNull?.takeIf { it > 0 }
         val message = (row["msg"] as? JsonPrimitive)?.contentOrNull?.takeIf(String::isNotBlank)?.take(300)
             ?: when (state) {
-                1 -> "网易云正在匹配歌曲并导入"
-                2 -> "导入完成"
-                3 -> "导入失败，请检查歌单内容"
-                4 -> "目标歌单已删除"
-                5 -> "歌单已满，仅部分歌曲导入成功"
-                6 -> "歌单已满，没有歌曲导入成功"
-                7 -> "没有识别到可导入的歌曲"
-                else -> "网易云仍在处理任务"
+                1 -> "Nhạc Vân NetEase đang tìm và nhập bài hát"
+                2 -> "Nhập hoàn tất"
+                3 -> "Nhập thất bại, vui lòng kiểm tra nội dung danh sách phát"
+                4 -> "Danh sách phát đích đã bị xóa"
+                5 -> "Danh sách phát đã đầy, chỉ nhập thành công một phần bài hát"
+                6 -> "Danh sách phát đã đầy, không nhập thành công bài hát nào"
+                7 -> "Không nhận diện được bài hát nào có thể nhập"
+                else -> "Nhạc Vân NetEase vẫn đang xử lý tác vụ"
             }
         return PlaylistImportStatus(finished, successful, listOfNotNull(playlist), message)
     }
@@ -162,8 +162,8 @@ class NeteasePlaylistImportRepository(private val transport: NeteaseTransport,
 internal fun extractImportLink(input: String): String {
     val link = Regex("https?://[^\\s<>\"']+", RegexOption.IGNORE_CASE).find(input)?.value
         ?.trimEnd('，', '。', '；', '、', '！', '？', '」', '』', '】', '）')
-        ?: throw IllegalArgumentException("请粘贴包含 http 或 https 链接的分享内容")
-    require(link.length <= 4096 && runCatching { java.net.URI(link).host?.isNotBlank() == true }.getOrDefault(false)) { "歌单链接无效" }
+        ?: throw IllegalArgumentException("Vui lòng dán nội dung chia sẻ có liên kết http hoặc https")
+    require(link.length <= 4096 && runCatching { java.net.URI(link).host?.isNotBlank() == true }.getOrDefault(false)) { "Liên kết danh sách phát không hợp lệ" }
     return link
 }
 

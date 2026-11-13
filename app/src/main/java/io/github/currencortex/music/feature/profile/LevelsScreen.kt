@@ -37,25 +37,25 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val list = rememberLazyListState()
     LaunchedEffect(trial, state.signedIn) { list.scrollToItem(0) }
     BackHandler(trial != null) { closeTrial() }
-    MusicSubpage(if (trial == null) "等级与成长" else "等级试炼", "levels_screen",
+    MusicSubpage(if (trial == null) "Cấp độ và phát triển" else "Thử thách cấp độ", "levels_screen",
         onBack = { if (trial != null) closeTrial() else onBack() }, actions = {
-            if (trial == null && state.signedIn) MusicTextAction(if (state.loading) "更新中" else "刷新", refresh,
+            if (trial == null && state.signedIn) MusicTextAction(if (state.loading) "Đang cập nhật" else "Làm mới", refresh,
                 enabled = !state.loading && !state.busy)
         }) { topInset ->
         LazyColumn(Modifier.fillMaxSize().testTag("levels_list"), state = list, contentPadding = PaddingValues(
             start = 16.dp, end = 16.dp, top = topInset + 12.dp, bottom = LocalMusicBottomInset.current + 32.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            if (!state.signedIn) item { SettingsHint("登录 CurrentMusic 后查看等级与成长进度") }
-            if (state.loading && state.progress == null) item { SettingsHint("正在获取等级…") }
+            if (!state.signedIn) item { SettingsHint("Đăng nhập CurrentMusic để xem cấp độ và tiến độ phát triển") }
+            if (state.loading && state.progress == null) item { SettingsHint("Đang lấy thông tin cấp độ…") }
             state.error?.let { error -> item { SettingsGroup {
                 SettingsHint(error, error = true)
-                if (trial == null) MusicTextAction("重试", refresh, Modifier.padding(horizontal = 16.dp),
+                if (trial == null) MusicTextAction("Thử lại", refresh, Modifier.padding(horizontal = 16.dp),
                     enabled = !state.loading && !state.busy)
             } } }
             if (trial != null) {
                 item { SettingsGroup { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("已完成 ${state.answers.count { it >= 0 }} / ${trial.questions.size} 题", fontWeight = FontWeight.SemiBold)
-                    state.rules?.trial?.let { Text("满分 ${it.maxScore} 分，${it.passScore} 分及格。提交后可查看成绩。", fontSize = 13.sp) }
+                    Text("Đã hoàn thành ${state.answers.count { it >= 0 }} / ${trial.questions.size} câu", fontWeight = FontWeight.SemiBold)
+                    state.rules?.trial?.let { Text("Tối đa ${it.maxScore} điểm, đạt ${it.passScore} điểm là đỗ. Nộp bài xong có thể xem kết quả.", fontSize = 13.sp) }
                 } } }
                 itemsIndexed(trial.questions) { index, question -> SettingsGroup {
                     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -72,7 +72,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                         }
                     }
                 } }
-                item { MusicTextAction(if (state.busy) "正在提交…" else "提交答案", submit,
+                item { MusicTextAction(if (state.busy) "Đang nộp…" else "Nộp câu trả lời", submit,
                     Modifier.fillMaxWidth().testTag("submit_level_trial"), enabled = state.canSubmit) }
             } else {
                 val progress = state.progress
@@ -81,40 +81,40 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(userLevelLabel(progress.level).orEmpty(), Modifier.testTag("current_user_level"),
                             fontSize = 28.sp, fontWeight = FontWeight.SemiBold, color = MiuixTheme.colorScheme.primary)
-                        Text("累计 ${progress.points} 积分", Modifier.testTag("current_user_points"), fontSize = 17.sp)
+                        Text("Tổng cộng ${progress.points} điểm", Modifier.testTag("current_user_points"), fontSize = 17.sp)
                         rules?.let {
                             val next = it.next(progress)
-                            Text(if (progress.level == it.trial.plusLevel) "已通过等级试炼"
-                                else if (next == null) "已达到常规最高等级，可参加等级试炼"
-                                else "距 ${userLevelLabel(next.level)} 还需 ${(next.points - progress.points).coerceAtLeast(0)} 积分",
+                            Text(if (progress.level == it.trial.plusLevel) "Đã vượt qua thử thách cấp độ"
+                                else if (next == null) "Đã đạt cấp độ thông thường cao nhất, có thể tham gia thử thách cấp độ"
+                                else "Còn ${(next.points - progress.points).coerceAtLeast(0)} điểm nữa để đạt ${userLevelLabel(next.level)}",
                                 fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
                         }
                     }
                 } }
                 state.result?.let { result -> item { SettingsGroup {
-                    SettingsHint("试炼得分 ${result.score} · ${if (result.passed) "已通过" else "未通过，可再次挑战"}",
+                    SettingsHint("Điểm thử thách ${result.score} · ${if (result.passed) "Đã vượt qua" else "Chưa vượt qua, có thể thử lại"}",
                         modifier = Modifier.testTag("level_trial_result"))
                 } } }
                 if (rules != null && progress != null) {
-                    item { SettingsListHeader("今日成长") }
+                    item { SettingsListHeader("Phát triển hôm nay") }
                     item { SettingsGroup { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("每日最多 ${rules.dailyMaximum} 分", fontWeight = FontWeight.Medium)
-                        Text("按 ${if (rules.timeZone == "Asia/Shanghai") "北京时间" else rules.timeZone} 零点换日，同一账号各设备共享额度。", fontSize = 12.sp)
+                        Text("Tối đa ${rules.dailyMaximum} điểm mỗi ngày", fontWeight = FontWeight.Medium)
+                        Text("Ngày mới bắt đầu lúc 0 giờ ${if (rules.timeZone == "Asia/Shanghai") "giờ Bắc Kinh" else rules.timeZone}; hạn mức được dùng chung trên các thiết bị của cùng một tài khoản.", fontSize = 12.sp)
                         if (rules.pointSources.any { it.id == "listen" })
-                            Text("有效收听满 ${rules.listenSeconds} 秒后计分，同一歌曲每天计一次。积分同步后更新。", fontSize = 12.sp)
+                            Text("Nghe hợp lệ từ ${rules.listenSeconds} giây trở lên để được tính điểm; mỗi bài hát chỉ được tính một lần mỗi ngày. Điểm sẽ cập nhật sau khi đồng bộ.", fontSize = 12.sp)
                     } } }
                     items(rules.pointSources, key = { "points-${it.id}" }) { source -> SettingsGroup {
                         SettingsPreference(pointSourceLabel(source.id),
-                            "每次 ${source.points} 分 · 今日 ${progress.today[source.id] ?: 0} / ${source.dailyLimit} 次")
+                            "${source.points} điểm mỗi lần · Hôm nay ${progress.today[source.id] ?: 0} / ${source.dailyLimit} lần")
                     } }
-                    item { SettingsListHeader("等级规则") }
+                    item { SettingsListHeader("Quy tắc cấp độ") }
                     item { SettingsGroup { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        rules.levels.sortedBy { it.level }.forEach { Text("${userLevelLabel(it.level)} · ${it.points} 积分", fontSize = 14.sp) }
+                        rules.levels.sortedBy { it.level }.forEach { Text("${userLevelLabel(it.level)} · ${it.points} điểm", fontSize = 14.sp) }
                     } } }
                     item { SettingsGroup { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("${userLevelLabel(rules.trial.plusLevel)} 试炼", fontWeight = FontWeight.Medium)
-                        Text("达到 ${userLevelLabel(rules.trial.level)} 后参加，共 ${rules.trial.questionCount} 题，${rules.trial.passScore} 分及格。", fontSize = 13.sp)
-                        MusicTextAction(if (state.busy) "正在加载题目…" else "开始试炼", startTrial,
+                        Text("Thử thách ${userLevelLabel(rules.trial.plusLevel)}", fontWeight = FontWeight.Medium)
+                        Text("Đạt ${userLevelLabel(rules.trial.level)} để tham gia; gồm ${rules.trial.questionCount} câu, đạt ${rules.trial.passScore} điểm là đỗ.", fontSize = 13.sp)
+                        MusicTextAction(if (state.busy) "Đang tải câu hỏi…" else "Bắt đầu thử thách", startTrial,
                             Modifier.testTag("start_level_trial"), enabled = state.canStartTrial)
                     } } }
                 }
@@ -124,9 +124,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 }
 
 private fun pointSourceLabel(id: String) = when (id) {
-    "visit" -> "每日访问"
-    "listen" -> "听歌"
-    "post" -> "发布帖子"
-    "comment" -> "评论他人的帖子"
+    "visit" -> "Truy cập hằng ngày"
+    "listen" -> "Nghe nhạc"
+    "post" -> "Đăng bài viết"
+    "comment" -> "Bình luận bài viết của người khác"
     else -> id
 }

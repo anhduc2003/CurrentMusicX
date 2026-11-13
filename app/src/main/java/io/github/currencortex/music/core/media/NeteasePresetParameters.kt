@@ -16,7 +16,7 @@ class NeteasePresetParameters private constructor(
 
     /** Call only on the DSP owner thread, with the original library already loaded. */
     fun applyTo(effects: AudioEffects) {
-        check(effects.nativeInstance != 0L) { "网易云音效引擎尚未初始化" }
+        check(effects.nativeInstance != 0L) { "Bộ máy hiệu ứng âm thanh Nhạc Vân NetEase chưa được khởi tạo" }
         effects.resetParams()
         calls.forEach { it.run(effects) }
         effects.setON(true)
@@ -36,7 +36,7 @@ class NeteasePresetParameters private constructor(
         fun fromJson(text: String, preferAev2: Boolean = true, soundType: Int = 1, channels: Int = 2,
             resolveResource: (String) -> String? = { null }): NeteasePresetParameters {
             require(text.length <= MAX_JSON_BYTES && text.toByteArray(Charsets.UTF_8).size <= MAX_JSON_BYTES) {
-                "音效参数文件过大"
+                "Tệp tham số hiệu ứng âm thanh quá lớn"
             }
             var depth = 0
             var quoted = false
@@ -48,25 +48,25 @@ class NeteasePresetParameters private constructor(
                     else if (char == '"') quoted = false
                 } else when (char) {
                     '"' -> quoted = true
-                    '{', '[' -> { depth++; require(depth <= 12) { "音效参数嵌套过深" } }
+                    '{', '[' -> { depth++; require(depth <= 12) { "Tham số hiệu ứng âm thanh lồng quá sâu" } }
                     '}', ']' -> depth--
                 }
             }
             val envelope = JSONObject(text)
-            require(channels in 1..12) { "音效声道数量无效" }
+            require(channels in 1..12) { "Số lượng kênh âm thanh không hợp lệ" }
             val version = envelope.opt("version")
-            require(version == null || version is String && version in setOf("v1", "v2", "v3")) { "音效参数版本无效" }
+            require(version == null || version is String && version in setOf("v1", "v2", "v3")) { "Phiên bản tham số hiệu ứng âm thanh không hợp lệ" }
             // Current full-surround materials contain separate stereo / 5.1 / 7.1.4
             // plans. Select the sink's plan; never merge their delays or EQ bands.
             val document = if (version == "v3") {
-                require(envelope.keys().asSequence().all { it in setOf("0", "2", "6", "12", "version", "effect_name") }) { "音效包含未知声道配置" }
+                require(envelope.keys().asSequence().all { it in setOf("0", "2", "6", "12", "version", "effect_name") }) { "Hiệu ứng âm thanh chứa cấu hình kênh không xác định" }
                 val key = if (channels == 1) "2" else channels.toString()
                 val selected = if (envelope.has(key)) envelope.opt(key) else envelope.opt("0")
-                selected as? JSONObject ?: throw IllegalArgumentException("音效缺少当前声道的参数")
+                selected as? JSONObject ?: throw IllegalArgumentException("Hiệu ứng âm thanh thiếu tham số cho kênh hiện tại")
             } else JSONObject(envelope.toString()).apply { remove("version") }
-            require(document.keys().asSequence().all { it in moduleNames || it == "aev2" || it == "order" || it == "effect_name" }) { "音效包含未知处理模块" }
+            require(document.keys().asSequence().all { it in moduleNames || it == "aev2" || it == "order" || it == "effect_name" }) { "Hiệu ứng âm thanh chứa mô-đun xử lý không xác định" }
             val newer = if (document.has("aev2") && !document.isNull("aev2"))
-                document.opt("aev2") as? JSONObject ?: throw IllegalArgumentException("aev2 格式无效") else null
+                document.opt("aev2") as? JSONObject ?: throw IllegalArgumentException("Định dạng aev2 không hợp lệ") else null
             fun hasEffect(o: JSONObject) = moduleNames.any { o.has(it) && !o.isNull(it) }
             val useNew = (preferAev2 || soundType == 9 || !hasEffect(document)) && newer != null && hasEffect(newer)
             val selected = if (useNew) newer else JSONObject(document.toString()).apply { remove("aev2") }
@@ -75,7 +75,7 @@ class NeteasePresetParameters private constructor(
 
         /** Bytes must already have passed the original NCAE container verification/decoder. */
         fun fromFir(decodedBytes: ByteArray): NeteasePresetParameters {
-            require(decodedBytes.isNotEmpty() && decodedBytes.size <= MAX_FIR_BYTES) { "FIR 音效数据大小无效" }
+            require(decodedBytes.isNotEmpty() && decodedBytes.size <= MAX_FIR_BYTES) { "Kích thước dữ liệu hiệu ứng âm thanh FIR không hợp lệ" }
             val owned = decodedBytes.copyOf()
             return NeteasePresetParameters(setOf("fir"), listOf(
                 Call("setFIRParams", listOf(owned.size)) { it.setFIRParams(owned) },
@@ -94,15 +94,15 @@ class NeteasePresetParameters private constructor(
         fun parse(): NeteasePresetParameters {
             root.only(*(moduleNames + setOf("order", "effect_name")).toTypedArray())
             root.metadata("effect_name")
-            require(root.length() > 0) { "音效参数为空" }
+            require(root.length() > 0) { "Tham số hiệu ứng âm thanh trống" }
             root.arrayOrNull("order")?.let { array ->
-                require(array.length() <= 32) { "音效链条过长" }
+                require(array.length() <= 32) { "Chuỗi hiệu ứng âm thanh quá dài" }
                 val order = Array(array.length()) { i ->
-                    val value = array.opt(i) as? String ?: throw IllegalArgumentException("音效链名称格式无效")
-                    require(value.isNotBlank() && value.length <= 80 && value.none { it.code < 32 }) { "音效链名称无效" }
+                    val value = array.opt(i) as? String ?: throw IllegalArgumentException("Định dạng tên chuỗi hiệu ứng âm thanh không hợp lệ")
+                    require(value.isNotBlank() && value.length <= 80 && value.none { it.code < 32 }) { "Tên chuỗi hiệu ứng âm thanh không hợp lệ" }
                     value
                 }
-                require(order.distinct().size == order.size) { "音效链包含重复模块" }
+                require(order.distinct().size == order.size) { "Chuỗi hiệu ứng âm thanh chứa mô-đun trùng lặp" }
                 if (order.isNotEmpty()) call("setCustomEffectChainOrder", order.toList()) {
                     // The original Java applier also continues when this optional
                     // order is rejected (e.g. vendor lists containing effect_name).
@@ -124,7 +124,7 @@ class NeteasePresetParameters private constructor(
             root.module("chorus")?.let(::chorus)
             root.module("flanger")?.let(::flanger)
             root.module("dly")?.let(::delay)
-            require(!(root.has("channelDelay") && root.has("channeldelay"))) { "重复的声道延迟模块" }
+            require(!(root.has("channelDelay") && root.has("channeldelay"))) { "Mô-đun độ trễ kênh bị lặp" }
             (root.module("channelDelay") ?: root.module("channeldelay"))?.let(::channelDelay)
             root.module("earFinger")?.let(::earFinger)
             root.module("hearAudio")?.let(::hearing)
@@ -136,7 +136,7 @@ class NeteasePresetParameters private constructor(
             val on = o.on()
             val gains = o.arrayOrNull("eqs")?.floats(10, 10, -60f, 24f)
             if (on) {
-                requireNotNull(gains) { "音效缺少 10 段均衡器参数" }
+                requireNotNull(gains) { "Hiệu ứng âm thanh thiếu tham số bộ cân bằng 10 băng tần" }
                 call("setGraphEQGains", gains.toList()) { it.setGraphEQGains(gains) }
             }
             call("setGraphEQON", on) { it.setGraphEQON(on) }
@@ -184,7 +184,7 @@ class NeteasePresetParameters private constructor(
             val er = o.module("er")?.also { it.only("on", "pattern", "rsize", "sdelay") }
             val rvb = o.module("rvb")?.also {
                 it.only("pdelay", "dtime", "hfdamping", "density", "rshape", "q", "diffusion", "swidth", "on")
-                if (it.has("on")) require(it.opt("on") is Boolean) { "混响参数标记无效" }
+                if (it.has("on")) require(it.opt("on") is Boolean) { "Cờ tham số hồi âm không hợp lệ" }
             }
             val tc = o.module("tc")?.also { it.only("on", "f") }
             tc?.arrayOrNull("f")?.objects(32)?.forEach {
@@ -216,7 +216,7 @@ class NeteasePresetParameters private constructor(
                 tc?.let {
                     val enabled = it.on()
                     val bands = it.arrayOrNull("f")
-                    require(!enabled || bands != null) { "混响滤波参数不完整" }
+                    require(!enabled || bands != null) { "Tham số bộ lọc hồi âm chưa đầy đủ" }
                     bands?.objects(4)?.forEach { b ->
                         b.only("band", "insert", "curve", "gain", "freq", "q", "name")
                         val band = b.i("band", 0, 3)
@@ -264,7 +264,7 @@ class NeteasePresetParameters private constructor(
             if (on) {
                 val gain = o.f("gain", -60f, 24f)
                 call("setParametricEQParams", gain) { it.setParametricEQParams(gain) }
-                requireNotNull(filters) { "参数均衡器缺少滤波器" }
+                requireNotNull(filters) { "Bộ cân bằng tham số thiếu bộ lọc" }
             }
             filters?.forEach { b ->
                 b.only("band", "type", "gain", "freq", "q", "on")
@@ -277,7 +277,7 @@ class NeteasePresetParameters private constructor(
                     val gain = if (b.has("gain")) b.f("gain", -60f, 24f) else 0f
                     val freq = if (b.has("freq")) b.f("freq", if (enabled) 1f else 0f, 192_000f) else 0f
                     val q = if (b.has("q")) b.f("q", 0f, 100f) else 0f
-                    require(!enabled || freq > 0f) { "启用的均衡器滤波器频率必须大于零" }
+                    require(!enabled || freq > 0f) { "Tần số bộ lọc của bộ cân bằng đang bật phải lớn hơn không" }
                     // Original low/high-pass and shelving presets legitimately use
                     // Q=0; the native filter interprets it according to its type.
                     call("setParametricEQFilterParams", band, type, gain, freq, q, enabled) { e -> e.setParametricEQFilterParams(band, type, gain, freq, q, enabled) }
@@ -290,7 +290,7 @@ class NeteasePresetParameters private constructor(
             o.only("on", "threshold", "ratio", "attack", "release", "range", "pregain", "postgain", "postGain", "core", "useable")
             val on = o.on()
             if (on) {
-                require(!(o.has("postgain") && o.has("postGain"))) { "重复的压缩器增益字段" }
+                require(!(o.has("postgain") && o.has("postGain"))) { "Trường khuếch đại bộ nén bị lặp" }
                 val t = o.f("threshold", -120f, 24f); val r = o.f("ratio", 1f, 100f)
                 // The original AI master uses zero attack/release for its pregain-only compressor.
                 val a = o.f("attack", 0f, 60f); val rel = o.f("release", 0f, 120f)
@@ -303,7 +303,7 @@ class NeteasePresetParameters private constructor(
 
         private fun limiter(o: JSONObject) {
             o.only("on", "threshold", "attack", "release", "outputgain", "infiniteRatio", "ratio", "useable", "core")
-            if (o.has("core")) require(o.opt("core") is Boolean) { "限幅器标记无效" }
+            if (o.has("core")) require(o.opt("core") is Boolean) { "Cờ bộ giới hạn không hợp lệ" }
             if (o.on()) {
                 val t = o.f("threshold", -120f, 24f); val a = o.f("attack", 0.000001f, 60f)
                 val r = o.f("release", 0.000001f, 120f); val g = o.f("outputgain", -60f, 24f)
@@ -348,7 +348,7 @@ class NeteasePresetParameters private constructor(
             o.only("on", "type", "hold", "st", "lt", "attack", "release", "lookahead", "minisize", "xyknee", "xypoints", "useable")
             val on = o.on()
             val points = o.arrayOrNull("xypoints")?.let { array ->
-                require(array.length() <= 256) { "ALC 控制点过多" }
+                require(array.length() <= 256) { "Quá nhiều điểm điều khiển ALC" }
                 FloatArray(array.length()) { index ->
                     if (array.isNull(index)) 0f else finiteValue(array.opt(index), "xypoints")
                 }
@@ -433,7 +433,7 @@ class NeteasePresetParameters private constructor(
             val mixes = o.arrayOrNull("dryWet")
             if (on && delays != null && mixes != null) {
                 // The original applier truncates to the smaller list and the native 12-channel limit.
-                require(delays.length() <= 256 && mixes.length() <= 256) { "声道延迟数组过长" }
+                require(delays.length() <= 256 && mixes.length() <= 256) { "Mảng độ trễ kênh quá dài" }
                 val count = minOf(delays.length(), mixes.length(), 12)
                 val d = FloatArray(count) { finiteValue(delays.opt(it), "delayMs") }
                 val m = FloatArray(count) { finiteValue(mixes.opt(it), "dryWet") }
@@ -447,9 +447,9 @@ class NeteasePresetParameters private constructor(
             o.only("on", "mHrtfPath", "useable")
             val on = o.on()
             if (on) {
-                val path = o.opt("mHrtfPath") as? String ?: throw IllegalArgumentException("耳纹音效缺少 HRTF 资源")
-                val local = resolveResource(path) ?: throw IllegalArgumentException("耳纹音效需要经过验证的本地 HRTF 资源")
-                require(local.isNotBlank() && local.length <= 4096 && '\u0000' !in local) { "HRTF 资源路径无效" }
+                val path = o.opt("mHrtfPath") as? String ?: throw IllegalArgumentException("Hiệu ứng âm thanh vân tai thiếu tài nguyên HRTF")
+                val local = resolveResource(path) ?: throw IllegalArgumentException("Hiệu ứng âm thanh vân tai cần tài nguyên HRTF cục bộ đã được xác thực")
+                require(local.isNotBlank() && local.length <= 4096 && '\u0000' !in local) { "Đường dẫn tài nguyên HRTF không hợp lệ" }
                 call("setEarFingerParams", local) { it.setEarFingerParams(local) }
             }
             call("setEarFingerAudioON", on) { it.setEarFingerAudioON(on) }
@@ -459,7 +459,7 @@ class NeteasePresetParameters private constructor(
             o.only("on", "mEarLoss", "useable")
             val on = o.on()
             if (on) {
-                val losses = o.arrayOrNull("mEarLoss") ?: throw IllegalArgumentException("听力补偿缺少听力曲线")
+                val losses = o.arrayOrNull("mEarLoss") ?: throw IllegalArgumentException("Bù thính lực thiếu đường cong thính lực")
                 val values = losses.floats(1, 64, -Float.MAX_VALUE, Float.MAX_VALUE)
                 call("setHearAudioON", true) { it.setHearAudioON(true) }
                 call("setHearAudioGram", values.toList()) { it.setHearAudioGram(values) }
@@ -467,9 +467,9 @@ class NeteasePresetParameters private constructor(
         }
 
         private fun finiteValue(value: Any?, name: String): Float {
-            val n = value as? Number ?: throw IllegalArgumentException("音效参数 $name 需要数值")
+            val n = value as? Number ?: throw IllegalArgumentException("Tham số hiệu ứng âm thanh $name phải là giá trị số")
             val d = n.toDouble(); val f = d.toFloat()
-            require(d.isFinite() && f.isFinite()) { "音效参数 $name 不是有限数值" }
+            require(d.isFinite() && f.isFinite()) { "Tham số hiệu ứng âm thanh $name không phải là giá trị hữu hạn" }
             return f
         }
 
@@ -479,79 +479,79 @@ class NeteasePresetParameters private constructor(
 
         private fun JSONObject.only(vararg names: String) {
             val supported = names.toSet()
-            keys().forEach { key -> require(key in supported) { "暂不支持的网易云音效参数：$key" } }
+            keys().forEach { key -> require(key in supported) { "Tham số hiệu ứng âm thanh Nhạc Vân NetEase chưa được hỗ trợ: $key" } }
             if (has("useable")) b("useable")
             if (has("core")) b("core")
         }
 
         private fun JSONObject.module(name: String): JSONObject? {
             if (!has(name) || isNull(name)) return null
-            return opt(name) as? JSONObject ?: throw IllegalArgumentException("音效模块 $name 格式无效")
+            return opt(name) as? JSONObject ?: throw IllegalArgumentException("Định dạng mô-đun hiệu ứng âm thanh $name không hợp lệ")
         }
 
         private fun JSONObject.on(): Boolean = b("on")
         private fun JSONObject.b(name: String): Boolean =
-            if (!has(name)) false else opt(name) as? Boolean ?: throw IllegalArgumentException("音效参数 $name 需要布尔值")
+            if (!has(name)) false else opt(name) as? Boolean ?: throw IllegalArgumentException("Tham số hiệu ứng âm thanh $name phải là giá trị Boolean")
 
         private fun JSONObject.f(name: String, min: Float, max: Float): Float {
-            val number = opt(name) as? Number ?: throw IllegalArgumentException("音效参数 $name 需要数值")
+            val number = opt(name) as? Number ?: throw IllegalArgumentException("Tham số hiệu ứng âm thanh $name phải là giá trị số")
             val double = number.toDouble()
-            require(double.isFinite() && double >= min.toDouble() && double <= max.toDouble()) { "音效参数 $name 超出支持范围" }
+            require(double.isFinite() && double >= min.toDouble() && double <= max.toDouble()) { "Tham số hiệu ứng âm thanh $name vượt quá phạm vi hỗ trợ" }
             return double.toFloat()
         }
 
         private fun JSONObject.i(name: String, min: Int, max: Int): Int {
-            val n = opt(name) as? Number ?: throw IllegalArgumentException("音效参数 $name 需要整数")
+            val n = opt(name) as? Number ?: throw IllegalArgumentException("Tham số hiệu ứng âm thanh $name phải là số nguyên")
             val d = n.toDouble()
-            require(d.isFinite() && d >= min && d <= max && d == d.toInt().toDouble()) { "音效参数 $name 超出支持范围" }
+            require(d.isFinite() && d >= min && d <= max && d == d.toInt().toDouble()) { "Tham số hiệu ứng âm thanh $name vượt quá phạm vi hỗ trợ" }
             return d.toInt()
         }
 
         private fun JSONObject.arrayOrNull(name: String): JSONArray? {
             if (!has(name) || isNull(name)) return null
-            return opt(name) as? JSONArray ?: throw IllegalArgumentException("音效参数 $name 需要数组")
+            return opt(name) as? JSONArray ?: throw IllegalArgumentException("Tham số hiệu ứng âm thanh $name phải là mảng")
         }
 
         private fun JSONArray.floats(minCount: Int, maxCount: Int, min: Float, max: Float): FloatArray {
-            require(length() in minCount..maxCount) { "音效数组长度无效" }
+            require(length() in minCount..maxCount) { "Độ dài mảng hiệu ứng âm thanh không hợp lệ" }
             return FloatArray(length()) { i ->
-                val n = opt(i) as? Number ?: throw IllegalArgumentException("音效数组需要数值")
+                val n = opt(i) as? Number ?: throw IllegalArgumentException("Mảng hiệu ứng âm thanh phải chứa giá trị số")
                 val d = n.toDouble()
-                require(d.isFinite() && d >= min.toDouble() && d <= max.toDouble()) { "音效数组数值超出支持范围" }
+                require(d.isFinite() && d >= min.toDouble() && d <= max.toDouble()) { "Giá trị số trong mảng hiệu ứng âm thanh vượt quá phạm vi hỗ trợ" }
                 d.toFloat()
             }
         }
 
         private fun JSONArray.objects(maxCount: Int): List<JSONObject> {
-            require(length() <= maxCount) { "音效滤波器数量过多" }
-            return List(length()) { opt(it) as? JSONObject ?: throw IllegalArgumentException("音效滤波器格式无效") }
+            require(length() <= maxCount) { "Quá nhiều bộ lọc hiệu ứng âm thanh" }
+            return List(length()) { opt(it) as? JSONObject ?: throw IllegalArgumentException("Định dạng bộ lọc hiệu ứng âm thanh không hợp lệ") }
         }
 
         private fun JSONObject.metadata(key: String) {
-            if (has(key)) require(opt(key) is String && getString(key).length <= 512) { "音效元数据无效" }
+            if (has(key)) require(opt(key) is String && getString(key).length <= 512) { "Siêu dữ liệu hiệu ứng âm thanh không hợp lệ" }
         }
 
         private fun JSONObject.validateNumbers(depth: Int = 0) {
-            require(depth <= 8) { "音效参数嵌套过深" }
+            require(depth <= 8) { "Tham số hiệu ứng âm thanh lồng nhau quá sâu" }
             keys().forEach { name ->
                 when (val value = opt(name)) {
-                    is Number -> require(value.toDouble().isFinite()) { "音效参数 $name 不是有限数值" }
+                    is Number -> require(value.toDouble().isFinite()) { "Tham số hiệu ứng âm thanh $name không phải là giá trị hữu hạn" }
                     is JSONObject -> value.validateNumbers(depth + 1)
                     is JSONArray -> {
                         val maxCount = if (name in setOf("xypoints", "delayMs", "dryWet")) 256 else 64
-                        require(value.length() <= maxCount) { "音效参数数组过长" }
+                        require(value.length() <= maxCount) { "Mảng tham số hiệu ứng âm thanh quá dài" }
                         repeat(value.length()) { i ->
                             when (val entry = value.opt(i)) {
-                                is Number -> require(entry.toDouble().isFinite()) { "音效数组包含无效数值" }
+                                is Number -> require(entry.toDouble().isFinite()) { "Mảng hiệu ứng âm thanh chứa giá trị không hợp lệ" }
                                 is JSONObject -> entry.validateNumbers(depth + 1)
-                                else -> require(name == "xypoints" && entry == JSONObject.NULL) { "音效数组数据无效" }
+                                else -> require(name == "xypoints" && entry == JSONObject.NULL) { "Dữ liệu mảng hiệu ứng âm thanh không hợp lệ" }
                             }
                         }
                     }
                     is Boolean -> Unit
                     is String -> require(name in setOf("fileName", "effect_name", "name") &&
-                        value.length <= if (name == "fileName") 1024 else 512) { "音效参数 $name 格式无效" }
-                    else -> throw IllegalArgumentException("音效参数 $name 格式无效")
+                        value.length <= if (name == "fileName") 1024 else 512) { "Định dạng tham số hiệu ứng âm thanh $name không hợp lệ" }
+                    else -> throw IllegalArgumentException("Định dạng tham số hiệu ứng âm thanh $name không hợp lệ")
                 }
             }
         }

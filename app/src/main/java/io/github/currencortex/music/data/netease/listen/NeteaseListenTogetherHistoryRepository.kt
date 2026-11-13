@@ -115,7 +115,7 @@ internal class NeteaseListenTogetherHistoryRepository(private val transport: Net
 
     private fun masked(item: JsonObject, user: ListenTogetherParticipant): ListenTogetherParticipant {
         val display = item.obj("matchPlayInfo")?.obj("maskDisplay")
-        return user.copy(masked = true, nickname = display?.text("peerDisplayName").orEmpty().ifBlank { "匿名听友" },
+        return user.copy(masked = true, nickname = display?.text("peerDisplayName").orEmpty().ifBlank { "Người nghe ẩn danh" },
             avatarUrl = display?.obj("peerMaskAsset")?.text("assetUrl").orEmpty().https())
     }
 

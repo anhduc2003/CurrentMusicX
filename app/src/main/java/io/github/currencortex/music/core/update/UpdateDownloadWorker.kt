@@ -31,8 +31,8 @@ class WorkManagerUpdateBackground(context: Context) : UpdateBackground {
         val data = if (task.state.isFinished) task.outputData else task.progress
         val download = when (task.state) {
             WorkInfo.State.SUCCEEDED -> data.getString("file")?.let(::File)?.takeIf { it.isFile }?.let(UpdateDownloadState::Ready)
-                ?: UpdateDownloadState.Failed("安装包缓存已清理，请重新下载")
-            WorkInfo.State.FAILED -> UpdateDownloadState.Failed(data.getString("error") ?: "下载失败，请重试")
+                ?: UpdateDownloadState.Failed("Tệp cài đặt đã bị xóa khỏi bộ nhớ đệm, vui lòng tải xuống lại")
+            WorkInfo.State.FAILED -> UpdateDownloadState.Failed(data.getString("error") ?: "Tải xuống thất bại, vui lòng thử lại")
             WorkInfo.State.CANCELLED -> UpdateDownloadState.Idle
             else -> UpdateDownloadState.Downloading(data.getLong("received", 0), release.size)
         }
@@ -106,7 +106,7 @@ open class UpdateDownloadWorker(context: Context, params: WorkerParameters) : Co
                 else -> Result.failure()
             }
         } catch (cancelled: CancellationException) { throw cancelled }
-        catch (error: Exception) { Result.failure(workDataOf("error" to (error.message ?: "下载失败，请重试"))) }
+        catch (error: Exception) { Result.failure(workDataOf("error" to (error.message ?: "Tải xuống thất bại, vui lòng thử lại"))) }
     }
 
     private fun progress(state: UpdateTransferState, vararg extra: Pair<String, Any?>): Data {
@@ -120,22 +120,22 @@ open class UpdateDownloadWorker(context: Context, params: WorkerParameters) : Co
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     private fun notification(release: AppRelease): NotificationCompat.Builder {
         applicationContext.getSystemService(NotificationManager::class.java).createNotificationChannel(
-            NotificationChannel(CHANNEL, "应用更新", NotificationManager.IMPORTANCE_LOW))
+            NotificationChannel(CHANNEL, "Cập nhật ứng dụng", NotificationManager.IMPORTANCE_LOW))
         return NotificationCompat.Builder(applicationContext, CHANNEL).setSmallIcon(android.R.drawable.stat_sys_download)
             .setContentTitle("CurrentMusic v${release.version}").setContentIntent(openIntent()).setOnlyAlertOnce(true)
     }
     private fun foreground(release: AppRelease, state: UpdateTransferState): ForegroundInfo {
         val download = state.download as? UpdateDownloadState.Downloading
         val percent = ((download?.received ?: 0L).toDouble() / release.size.coerceAtLeast(1) * 100).toInt().coerceIn(0, 100)
-        val notification = notification(release).setContentText("${state.activeSource?.label ?: "等待网络"} · $percent%")
+        val notification = notification(release).setContentText("${state.activeSource?.label ?: "Đang chờ mạng"} · $percent%")
             .setProgress(100, percent, download == null).setOngoing(true)
-            .addAction(0, "取消下载", WorkManager.getInstance(applicationContext).createCancelPendingIntent(id)).build()
+            .addAction(0, "Hủy tải xuống", WorkManager.getInstance(applicationContext).createCancelPendingIntent(id)).build()
         return if (Build.VERSION.SDK_INT >= 29) ForegroundInfo(FOREGROUND, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
             else ForegroundInfo(FOREGROUND, notification)
     }
     private fun completeNotification(release: AppRelease, success: Boolean) {
         val notification = notification(release).setSmallIcon(if (success) android.R.drawable.stat_sys_download_done else android.R.drawable.stat_notify_error)
-            .setContentText(if (!success) "下载失败，点击查看并重试" else "下载完成，点击查看").setAutoCancel(true).build()
+            .setContentText(if (!success) "Tải xuống thất bại, nhấn để xem và thử lại" else "Tải xuống hoàn tất, nhấn để xem").setAutoCancel(true).build()
         runCatching { applicationContext.getSystemService(NotificationManager::class.java).notify(COMPLETE, notification) }
     }
     companion object {

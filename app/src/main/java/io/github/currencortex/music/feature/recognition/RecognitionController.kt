@@ -84,11 +84,11 @@ class RecognitionController(private val scope: CoroutineScope, private val recor
                         lyricWindows.close(cause)
                     }
                     fun validate(samples: ShortArray) {
-                        check(samples.size >= 16_000) { "片段太短，请至少听满 2 秒后再识别" }
-                        check(samples.size <= 120_000) { "识别片段过长，请重新录音" }
+                        check(samples.size >= 16_000) { "Đoạn âm thanh quá ngắn, vui lòng nghe ít nhất 2 giây rồi nhận dạng" }
+                        check(samples.size <= 120_000) { "Đoạn âm thanh nhận dạng quá dài, vui lòng ghi âm lại" }
                         check(samples.any { it != 0.toShort() }) {
-                            if (source == RecognitionAudioSource.SYSTEM) "未采集到系统声音，请播放音乐或切换录制授权方式"
-                            else "未采集到麦克风声音，请检查麦克风隐私开关、录音占用或靠近音源"
+                            if (source == RecognitionAudioSource.SYSTEM) "Không thu được âm thanh hệ thống, vui lòng phát nhạc hoặc đổi cách cấp quyền ghi âm"
+                            else "Không thu được âm thanh từ micrô, vui lòng kiểm tra công tắc quyền riêng tư của micrô, ứng dụng đang sử dụng micrô hoặc thử đặt micrô gần nguồn âm hơn"
                         }
                     }
                     val capture = launch {
@@ -102,7 +102,7 @@ class RecognitionController(private val scope: CoroutineScope, private val recor
                             publish { it.copy(phase = RecognitionPhase.RECOGNIZING, level = 0f) }
                             closeWindows()
                         } catch (timeout: TimeoutCancellationException) {
-                            closeWindows(IllegalStateException("采集声音超时，请切换采集方式", timeout))
+                            closeWindows(IllegalStateException("Hết thời gian chờ thu âm thanh, vui lòng đổi cách thu", timeout))
                         } catch (failure: Throwable) {
                             closeWindows(failure)
                         }
@@ -129,7 +129,7 @@ class RecognitionController(private val scope: CoroutineScope, private val recor
                                 } catch (timeout: TimeoutCancellationException) {
                                     currentCoroutineContext().ensureActive()
                                     result = BranchResult(failure = IllegalStateException(if (analyzing)
-                                        "声音处理超时，请重试" else "网易云匹配超时，请检查网络后重试", timeout))
+                                        "Hết thời gian chờ xử lý âm thanh, vui lòng thử lại" else "Hết thời gian chờ nhận dạng với Nhạc Vân NetEase, vui lòng kiểm tra mạng rồi thử lại", timeout))
                                 } catch (cancelled: CancellationException) { throw cancelled }
                                 catch (failure: Exception) { result = BranchResult(failure = failure) }
                                 finally { samples.fill(0) }
@@ -150,7 +150,7 @@ class RecognitionController(private val scope: CoroutineScope, private val recor
                                 result = BranchResult(songs = songs)
                             } catch (timeout: TimeoutCancellationException) {
                                 currentCoroutineContext().ensureActive()
-                                result = BranchResult(failure = IllegalStateException("歌词辅助匹配超时，请检查网络后重试", timeout))
+                                result = BranchResult(failure = IllegalStateException("Hết thời gian chờ ghép lời bài hát hỗ trợ, vui lòng kiểm tra mạng rồi thử lại", timeout))
                             } finally { samples.fill(0) }
                         } catch (cancelled: CancellationException) { throw cancelled }
                         catch (closed: kotlinx.coroutines.channels.ClosedReceiveChannelException) {
@@ -179,8 +179,8 @@ class RecognitionController(private val scope: CoroutineScope, private val recor
                         }
                         completed.firstNotNullOfOrNull { it.failure }?.let { throw it }
                         publish { it.copy(phase = RecognitionPhase.NO_MATCH, level = 0f,
-                            message = if (source == RecognitionAudioSource.SYSTEM) "暂时没有识别到，请播放歌曲原声，或切换采集方式"
-                            else "暂时没有识别到，靠近音源再试一次") }
+                            message = if (source == RecognitionAudioSource.SYSTEM) "Chưa nhận dạng được, vui lòng phát bản nhạc gốc hoặc đổi cách thu âm"
+                            else "Chưa nhận dạng được, hãy thử lại khi đặt gần nguồn âm hơn") }
                     } finally {
                         stopWorkers()
                         results.cancel()
@@ -188,12 +188,12 @@ class RecognitionController(private val scope: CoroutineScope, private val recor
                 } }
             } catch (timeout: TimeoutCancellationException) {
                 currentCoroutineContext().ensureActive()
-                publish { it.copy(phase = RecognitionPhase.ERROR, level = 0f, message = "识曲超时，请检查网络或切换采集方式后重试") }
+                publish { it.copy(phase = RecognitionPhase.ERROR, level = 0f, message = "Hết thời gian chờ nhận dạng bài hát, vui lòng kiểm tra mạng hoặc đổi cách thu âm rồi thử lại") }
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (failure: Exception) {
                 publish { it.copy(phase = RecognitionPhase.ERROR, level = 0f,
-                    message = if (failure is SecurityException) "录音权限已关闭，请重新授权"
-                    else failure.message?.take(180) ?: "识曲失败，请重试") }
+                    message = if (failure is SecurityException) "Quyền ghi âm đã bị tắt, vui lòng cấp quyền lại"
+                    else failure.message?.take(180) ?: "Nhận dạng bài hát thất bại, vui lòng thử lại") }
             }
         }
     }

@@ -41,45 +41,45 @@ class SongDownloadEngine(
     suspend fun download(song: Song, quality: AudioQuality, tree: Uri?, attempt: String,
         progress: suspend (SongDownloadProgress) -> Unit): SongDownloadResult = withContext(Dispatchers.IO) {
         require(attempt.matches(Regex("[a-zA-Z0-9-]+")))
-        require(!song.video) { "视频暂不支持歌曲下载" }
-        val folder = File(cache, attempt).apply { check(mkdirs() || isDirectory) { "下载缓存不可用" } }
+        require(!song.video) { "Hiện chưa hỗ trợ tải bài hát dạng video" }
+        val folder = File(cache, attempt).apply { check(mkdirs() || isDirectory) { "Bộ nhớ đệm tải xuống không khả dụng" } }
         val warnings = mutableListOf<String>()
         try {
-            progress(SongDownloadProgress("获取歌曲与音质"))
+            progress(SongDownloadProgress("Đang lấy bài hát và chất lượng âm thanh"))
             val source = resolve(song, quality)
             val info = try { detail(song) } catch (e: CancellationException) { throw e }
-                catch (_: Exception) { warnings += "部分歌曲信息使用列表数据"; song }
-            progress(SongDownloadProgress("下载音频"))
+                catch (_: Exception) { warnings += "Một phần thông tin bài hát được lấy từ dữ liệu danh sách"; song }
+            progress(SongDownloadProgress("Đang tải âm thanh"))
             val raw = File(folder, "audio.download")
-            fetch(source.url, raw, 512L * 1024 * 1024) { received, total -> progress(SongDownloadProgress("下载音频", received, total)) }
+            fetch(source.url, raw, 512L * 1024 * 1024) { received, total -> progress(SongDownloadProgress("Đang tải âm thanh", received, total)) }
             if (source.md5.matches(Regex("[a-fA-F0-9]{32}"))) {
                 val digest = MessageDigest.getInstance("MD5")
                 raw.inputStream().use { input -> val buffer = ByteArray(65536)
                     while (true) { currentCoroutineContext().ensureActive(); val count = input.read(buffer); if (count < 0) break; digest.update(buffer, 0, count) } }
-                check(digest.digest().joinToString("") { "%02x".format(it) }.equals(source.md5, true)) { "音频校验失败，请重新下载" }
+                check(digest.digest().joinToString("") { "%02x".format(it) }.equals(source.md5, true)) { "Xác minh âm thanh thất bại, vui lòng tải xuống lại" }
             }
             val format = AudioDownloadFormat.detect(raw)
             val audio = File(folder, "audio.${if (format == "aac") "m4a" else format}")
-            if (format == "aac") remuxAac(raw, audio) else check(raw.renameTo(audio)) { "音频文件准备失败" }
-            progress(SongDownloadProgress("获取封面与歌词"))
+            if (format == "aac") remuxAac(raw, audio) else check(raw.renameTo(audio)) { "Chuẩn bị tệp âm thanh thất bại" }
+            progress(SongDownloadProgress("Đang lấy ảnh bìa và lời bài hát"))
             val document = try { lyrics(info) } catch (e: CancellationException) { throw e }
-                catch (_: Exception) { warnings += "歌词获取失败"; LyricsDocument() }
+                catch (_: Exception) { warnings += "Không lấy được lời bài hát"; LyricsDocument() }
             val lrc = DownloadLyrics.lrc(info, document)
-            if (lrc.isBlank() && "歌词获取失败" !in warnings) warnings += "暂未获取到歌词"
-            val cover = if (info.cover.isBlank()) { warnings += "此歌曲暂无封面"; null } else try {
+            if (lrc.isBlank() && "Không lấy được lời bài hát" !in warnings) warnings += "Hiện chưa lấy được lời bài hát"
+            val cover = if (info.cover.isBlank()) { warnings += "Bài hát này hiện chưa có ảnh bìa"; null } else try {
                 val image = File(folder, "cover.download")
                 fetch(info.cover, image, 12L * 1024 * 1024) { _, _ -> }
                 normalizeCover(image)
             } catch (e: CancellationException) { throw e }
-                catch (_: Exception) { warnings += "封面获取失败"; null }
+                catch (_: Exception) { warnings += "Không lấy được ảnh bìa"; null }
             currentCoroutineContext().ensureActive()
             guard()
-            progress(SongDownloadProgress("写入歌曲信息"))
+            progress(SongDownloadProgress("Đang ghi thông tin bài hát"))
             SongTagWriter.write(audio, info, lrc, cover)
             val files = mutableListOf(SongDownloadFile(audio, AudioDownloadFormat.mime(audio.extension)))
             if (lrc.isNotBlank()) files += SongDownloadFile(File(folder, "lyrics.lrc").apply { writeText(lrc, Charsets.UTF_8) }, "application/octet-stream")
             if (cover != null) files += SongDownloadFile(File(folder, "cover.jpg").apply { writeBytes(cover.bytes) }, "image/jpeg")
-            progress(SongDownloadProgress("保存到下载文件夹"))
+            progress(SongDownloadProgress("Đang lưu vào thư mục tải xuống"))
             val saved = store.save(SongDownloadNames.base(info), files, tree)
             SongDownloadResult(saved, warnings.joinToString("；"), source.qualityLabel)
         } finally {
@@ -94,11 +94,11 @@ class SongDownloadEngine(
     private fun normalizeCover(file: File): DownloadCover {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeFile(file.path, bounds)
-        require(bounds.outWidth > 0 && bounds.outHeight > 0) { "封面格式无效" }
+        require(bounds.outWidth > 0 && bounds.outHeight > 0) { "Định dạng ảnh bìa không hợp lệ" }
         var sample = 1
         while (maxOf(bounds.outWidth, bounds.outHeight) / sample > 1200) sample *= 2
         val bitmap = BitmapFactory.decodeFile(file.path, BitmapFactory.Options().apply { inSampleSize = sample })
-            ?: throw IOException("封面无法读取")
+            ?: throw IOException("Không thể đọc ảnh bìa")
         return try {
             val output = ByteArrayOutputStream()
             check(bitmap.compress(Bitmap.CompressFormat.JPEG, 92, output))
@@ -113,7 +113,7 @@ class SongDownloadEngine(
             extractor.setDataSource(input.path)
             val track = (0 until extractor.trackCount).firstOrNull {
                 extractor.getTrackFormat(it).getString(MediaFormat.KEY_MIME) == "audio/mp4a-latm"
-            } ?: throw IOException("AAC 音频无法读取")
+            } ?: throw IOException("Không thể đọc âm thanh AAC")
             val format = extractor.getTrackFormat(track)
             extractor.selectTrack(track)
             val activeMuxer = MediaMuxer(output.path, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4).also { muxer = it }
@@ -125,7 +125,7 @@ class SongDownloadEngine(
                 currentCoroutineContext().ensureActive(); buffer.clear()
                 val count = extractor.readSampleData(buffer, 0)
                 if (count < 0) break
-                check(extractor.sampleFlags and MediaExtractor.SAMPLE_FLAG_ENCRYPTED == 0) { "当前音源无法保存，请尝试其他音质" }
+                check(extractor.sampleFlags and MediaExtractor.SAMPLE_FLAG_ENCRYPTED == 0) { "Không thể lưu nguồn âm thanh hiện tại, vui lòng thử chất lượng âm thanh khác" }
                 val flags = if (extractor.sampleFlags and MediaExtractor.SAMPLE_FLAG_SYNC != 0) MediaCodec.BUFFER_FLAG_KEY_FRAME else 0
                 info.set(0, count, extractor.sampleTime, flags)
                 activeMuxer.writeSampleData(target, buffer, info); extractor.advance()
@@ -145,7 +145,7 @@ object AudioDownloadFormat {
             starts("fLaC") -> "flac"
             starts("OggS") -> {
                 if (head.toString(Charsets.ISO_8859_1).contains("OpusHead"))
-                    throw IOException("Opus 格式暂不支持写入歌曲信息，请选择标准或无损音质")
+                    throw IOException("Hiện chưa hỗ trợ ghi thông tin bài hát cho định dạng Opus, vui lòng chọn chất lượng tiêu chuẩn hoặc không mất dữ liệu")
                 "ogg"
             }
             starts("RIFF") && head.size >= 12 && head.copyOfRange(8, 12).toString(Charsets.US_ASCII) == "WAVE" -> "wav"
@@ -153,7 +153,7 @@ object AudioDownloadFormat {
             starts("ID3") -> "mp3"
             head.size >= 2 && head[0].toInt() and 255 == 255 && head[1].toInt() and 246 == 240 -> "aac"
             head.size >= 2 && head[0].toInt() and 255 == 255 && head[1].toInt() and 224 == 224 && head[1].toInt() and 6 != 0 -> "mp3"
-            else -> throw IOException("当前音频格式暂不支持下载，请尝试标准或无损音质")
+            else -> throw IOException("Hiện chưa hỗ trợ tải định dạng âm thanh này, vui lòng thử chất lượng tiêu chuẩn hoặc không mất dữ liệu")
         }
     }
     fun mime(format: String) = when (format.lowercase(Locale.ROOT)) {

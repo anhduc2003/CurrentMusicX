@@ -116,7 +116,7 @@ class DesktopLyricsHost(private val context: Context, private val lyrics: StateF
         if (closed) return
         if (!current.enabled && !recognizing) { remove(); return }
         if (!Settings.canDrawOverlays(context)) {
-            remove(); status.value = DesktopWindowStatus(error = "悬浮窗权限已关闭，请在应用内主动开启")
+            remove(); status.value = DesktopWindowStatus(error = "Quyền hiển thị trên ứng dụng khác đã bị tắt, vui lòng chủ động bật quyền này trong ứng dụng")
             scope.launch { preferences.edit { it.copy(enabled = false) } }; return
         }
         if (view == null) add()
@@ -195,7 +195,7 @@ class DesktopLyricsHost(private val context: Context, private val lyrics: StateF
         }
         val p = WindowManager.LayoutParams(1, islandSurfaceHeight(safeHeight = area().height),
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, flags(), PixelFormat.TRANSLUCENT).apply {
-            gravity = Gravity.TOP or Gravity.LEFT; title = "CurrentMusic 桌面歌词"; softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
+            gravity = Gravity.TOP or Gravity.LEFT; title = "Lời bài hát trên màn hình CurrentMusic"; softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
             // DEFAULT cutout mode shoves overlay frames below the bar/cutout, defeating the full-screen island span.
             if (Build.VERSION.SDK_INT >= 30) layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
             else if (Build.VERSION.SDK_INT >= 28) layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
@@ -209,7 +209,7 @@ class DesktopLyricsHost(private val context: Context, private val lyrics: StateF
         owner = life; view = root; composition = compose; params = p
         root.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> updateWindow() }
         try { window.addView(root, p) }
-        catch (failure: RuntimeException) { android.util.Log.e("DesktopLyrics", "Cannot add overlay", failure); remove(); status.value = DesktopWindowStatus(error = "无法显示悬浮歌词，请检查悬浮窗权限"); scope.launch { preferences.edit { it.copy(enabled = false) } } }
+         catch (failure: RuntimeException) { android.util.Log.e("DesktopLyrics", "Cannot add overlay", failure); remove(); status.value = DesktopWindowStatus(error = "Không thể hiển thị lời bài hát nổi, vui lòng kiểm tra quyền hiển thị trên ứng dụng khác"); scope.launch { preferences.edit { it.copy(enabled = false) } } }
     }
     private fun islandSurfaceHeight(safeHeight: Int): Int = desktopIslandSurfaceHeight(
         visual.resources.displayMetrics.density, visual.resources.configuration.fontScale, safeHeight)
@@ -308,13 +308,13 @@ class DesktopLyricsHost(private val context: Context, private val lyrics: StateF
                     }
                     true
                 }
-                contentDescription = "灵动岛：点击封面播放或暂停，点击歌词切换帧率，左右滑动切歌"
+                 contentDescription = "Đảo linh động: nhấn vào ảnh bìa để phát hoặc tạm dừng, nhấn vào lời bài hát để chuyển đổi tốc độ khung hình, vuốt sang trái hoặc phải để chuyển bài"
             }
             val p = WindowManager.LayoutParams(width, height, WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSLUCENT).apply {
                 gravity = Gravity.TOP or Gravity.LEFT
-                this.x = x; this.y = y; title = "CurrentMusic 灵动岛点击"
+                 this.x = x; this.y = y; title = "Đảo linh động CurrentMusic khi nhấn"
                 if (Build.VERSION.SDK_INT >= 28) layoutInDisplayCutoutMode = visualParams.layoutInDisplayCutoutMode
             }
             try {
@@ -328,10 +328,10 @@ class DesktopLyricsHost(private val context: Context, private val lyrics: StateF
                 try { window.updateViewLayout(target, p) } catch (_: RuntimeException) { removeIslandTouchWindow() }
             }
         }
-        islandTouchView?.contentDescription = if (recognizing) "${io.github.currencortex.music.feature.recognition.recognitionIslandTitle(RecognitionDesktopSession.state.value)}，听歌识曲，点击识别或查看结果，长按关闭"
-            else if (effectNotices.value?.action != null) "${effectNotices.value?.message}，点击${effectNotices.value?.action?.label}"
-            else if (effectNotices.value.isUpdateInstallNotice()) "CurrentMusic 更新下载完成，点击查看"
-            else "灵动岛：点击封面播放或暂停，点击歌词切换帧率，左右滑动切歌"
+         islandTouchView?.contentDescription = if (recognizing) "${io.github.currencortex.music.feature.recognition.recognitionIslandTitle(RecognitionDesktopSession.state.value)}，Nhận diện bài hát, nhấn để nhận diện hoặc xem kết quả, nhấn giữ để đóng"
+             else if (effectNotices.value?.action != null) "${effectNotices.value?.message}，nhấn${effectNotices.value?.action?.label}"
+             else if (effectNotices.value.isUpdateInstallNotice()) "CurrentMusic đã tải xong bản cập nhật, nhấn để xem"
+             else "Đảo linh động: nhấn vào ảnh bìa để phát hoặc tạm dừng, nhấn vào lời bài hát để chuyển đổi tốc độ khung hình, vuốt sang trái hoặc phải để chuyển bài"
     }
     private fun placement(area: DesktopSafeArea, width: Int, height: Int): DesktopPlacement {
         // The pill may cross bar and cutout insets; only the physical bounds keep it on screen.
@@ -389,15 +389,15 @@ class DesktopLyricsHost(private val context: Context, private val lyrics: StateF
     private fun notification() {
         if (view == null || noticePosted) return
         noticePosted = true
-        notifications.createNotificationChannel(NotificationChannel(CHANNEL, "桌面歌词控制", NotificationManager.IMPORTANCE_LOW).apply { setShowBadge(false) })
+         notifications.createNotificationChannel(NotificationChannel(CHANNEL, "Điều khiển lời bài hát trên màn hình", NotificationManager.IMPORTANCE_LOW).apply { setShowBadge(false) })
         fun command(action: String, code: Int) = PendingIntent.getBroadcast(context, code,
             Intent(action).setPackage(context.packageName), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val open = PendingIntent.getActivity(context, 813, settingsIntent(context), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val notice = NotificationCompat.Builder(context, CHANNEL).setSmallIcon(android.R.drawable.ic_media_play)
-            .setContentTitle("桌面歌词")
-            .setContentText("点击切换歌词与帧率 · 左右滑动切歌 · 点击通知调整高度")
+             .setContentTitle("Lời bài hát trên màn hình")
+             .setContentText("Nhấn để chuyển đổi lời bài hát và tốc độ khung hình · Vuốt sang trái hoặc phải để chuyển bài · Nhấn vào thông báo để điều chỉnh chiều cao")
             .setContentIntent(open).setOngoing(true).setOnlyAlertOnce(true).setSilent(true)
-            .addAction(0, "设置", open).addAction(0, "关闭", command(CLOSE, 812)).build()
+             .addAction(0, "Cài đặt", open).addAction(0, "Đóng", command(CLOSE, 812)).build()
         try { notifications.notify(NOTICE, notice) } catch (_: SecurityException) { /* The settings page can still disable the overlay. */ }
     }
     private fun remove() {

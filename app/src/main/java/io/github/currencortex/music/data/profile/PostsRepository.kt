@@ -47,7 +47,7 @@ class PostsRepository(private val api: ApiClient, private val session: () -> Req
                 "song" -> text("artists")
                 "album" -> text("artist")
                 "artist" -> text("alias")
-                else -> listOf(text("creator"), text("trackCount").takeIf { it.isNotBlank() }?.let { "$it 首" }.orEmpty())
+                 else -> listOf(text("creator"), text("trackCount").takeIf { it.isNotBlank() }?.let { "$it bài" }.orEmpty())
                     .filter(String::isNotBlank).joinToString(" · ")
             }
             validMusicAttachments(listOf(PostAttachment(type, id, text("name"), sub,

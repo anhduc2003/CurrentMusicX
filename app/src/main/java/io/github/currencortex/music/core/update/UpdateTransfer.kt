@@ -66,7 +66,7 @@ class UpdateTransfer(private val downloader: UpdateDownload, private val install
             activeSource = sources.first(), attempt = 1, totalSources = sources.size)
         if (background != null) {
             try { backgroundId = background.start(value, sources.first()) }
-            catch (error: Exception) { mutable.update { it.copy(download = UpdateDownloadState.Failed(error.message ?: "无法开始后台下载")) } }
+            catch (error: Exception) { mutable.update { it.copy(download = UpdateDownloadState.Failed(error.message ?: "Không thể bắt đầu tải xuống nền")) } }
             return
         }
         job = scope.launch {
@@ -86,16 +86,16 @@ class UpdateTransfer(private val downloader: UpdateDownload, private val install
                         return@launch
                     } catch (error: IOException) {
                         ensureActive()
-                        failures += "${candidate.label}：${error.message?.take(120) ?: "连接失败"}"
+                        failures += "${candidate.label}：${error.message?.take(120) ?: "Kết nối thất bại"}"
                     }
                 }
                 if (release == value && generation == request) mutable.update {
-                    it.copy(download = UpdateDownloadState.Failed("所有下载源均失败，请稍后重试。\n" + failures.joinToString("\n"))) }
+                    it.copy(download = UpdateDownloadState.Failed("Tất cả nguồn tải xuống đều thất bại, vui lòng thử lại sau。\n" + failures.joinToString("\n"))) }
             } catch (cancelled: CancellationException) {
                 if (release == value && generation == request) mutable.value = UpdateTransferState()
                 throw cancelled
             } catch (error: Exception) {
-                if (release == value && generation == request) mutable.update { it.copy(download = UpdateDownloadState.Failed(error.message ?: "下载失败，请重试")) }
+                if (release == value && generation == request) mutable.update { it.copy(download = UpdateDownloadState.Failed(error.message ?: "Tải xuống thất bại, vui lòng thử lại")) }
             }
         }
     }
@@ -115,12 +115,12 @@ class UpdateTransfer(private val downloader: UpdateDownload, private val install
         scope.launch {
             try {
                 when (installer.request(file, value)) {
-                    UpdateInstallResult.STARTED -> mutable.update { it.copy(permissionRequired = false, message = "已请求系统安装") }
+                    UpdateInstallResult.STARTED -> mutable.update { it.copy(permissionRequired = false, message = "Đã yêu cầu hệ thống cài đặt") }
                     UpdateInstallResult.PERMISSION_REQUIRED -> mutable.update { it.copy(permissionRequired = true,
-                        message = "请允许安装未知应用，返回后继续请求安装") }
+                        message = "Vui lòng cho phép cài đặt ứng dụng không xác định, sau khi quay lại hãy tiếp tục yêu cầu cài đặt") }
                 }
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (error: Exception) { mutable.update { it.copy(message = error.message ?: "无法请求系统安装", permissionRequired = false) } }
+            catch (error: Exception) { mutable.update { it.copy(message = error.message ?: "Không thể yêu cầu hệ thống cài đặt", permissionRequired = false) } }
             finally { mutable.update { it.copy(installing = false) } }
         }
     }

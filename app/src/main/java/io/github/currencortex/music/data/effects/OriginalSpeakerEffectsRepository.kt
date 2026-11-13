@@ -14,7 +14,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 enum class OriginalSpeakerScene(val wireName: String, val label: String) {
-    NORMAL("normal", "通用模式"), SHOWER("shower", "浴室"), SLEEP("sleep", "睡前陪伴")
+    NORMAL("normal", "Chế độ chung"), SHOWER("shower", "Phòng tắm"), SLEEP("sleep", "Đồng hành trước khi ngủ")
 }
 
 data class OriginalSpeakerEntitlement(val userId: Long = 0, val canUse: Boolean = false, val expiresAt: Long = 0)
@@ -62,9 +62,9 @@ class OriginalSpeakerEffectsRepository(private val transport: NeteaseTransport,
     /** Bounds and verifies actual downloaded bytes; no cookies are sent to the material CDN. */
     suspend fun download(material: OriginalSpeakerMaterial): NcaeDecoded = withContext(Dispatchers.IO) {
         val owner = transport.sessions.snapshot()
-        val url = requireNotNull(originalSpeakerMaterialUrl(material.url)) { "外放音效素材地址无效" }
-        require(material.size in 1..MAX_SPEAKER_BYTES.toLong()) { "外放音效素材大小无效" }
-        require(material.md5.matches(Regex("[a-fA-F0-9]{32}"))) { "外放音效校验信息无效" }
+        val url = requireNotNull(originalSpeakerMaterialUrl(material.url)) { "Địa chỉ tài nguyên hiệu ứng âm thanh loa ngoài không hợp lệ" }
+        require(material.size in 1..MAX_SPEAKER_BYTES.toLong()) { "Kích thước tài nguyên hiệu ứng âm thanh loa ngoài không hợp lệ" }
+        require(material.md5.matches(Regex("[a-fA-F0-9]{32}"))) { "Thông tin kiểm tra hiệu ứng âm thanh loa ngoài không hợp lệ" }
         val response = suspendCancellableCoroutine<Response> { continuation ->
             val call = materials.newCall(Request.Builder().url(url).build())
             continuation.invokeOnCancellation { call.cancel() }
@@ -78,9 +78,9 @@ class OriginalSpeakerEffectsRepository(private val transport: NeteaseTransport,
             })
         }
         response.use {
-                check(response.isSuccessful) { "外放音效素材下载失败" }
+                check(response.isSuccessful) { "Tải tài nguyên hiệu ứng âm thanh loa ngoài thất bại" }
                 val body = requireNotNull(response.body)
-                require(body.contentLength() <= MAX_SPEAKER_BYTES) { "外放音效素材过大" }
+                require(body.contentLength() <= MAX_SPEAKER_BYTES) { "Tài nguyên hiệu ứng âm thanh loa ngoài quá lớn" }
                 val bytes = body.byteStream().use { input ->
                     val output = ByteArrayOutputStream()
                     val buffer = ByteArray(8192)
@@ -88,14 +88,14 @@ class OriginalSpeakerEffectsRepository(private val transport: NeteaseTransport,
                         currentCoroutineContext().ensureActive()
                         val count = input.read(buffer)
                         if (count < 0) break
-                        require(output.size() + count <= MAX_SPEAKER_BYTES) { "外放音效素材过大" }
+                        require(output.size() + count <= MAX_SPEAKER_BYTES) { "Tài nguyên hiệu ứng âm thanh loa ngoài quá lớn" }
                         output.write(buffer, 0, count)
                     }
                     output.toByteArray()
                 }
                 require(bytes.size.toLong() == material.size && MessageDigest.getInstance("MD5").digest(bytes)
                     .joinToString("") { "%02x".format(it.toInt() and 255) }.equals(material.md5, true)) {
-                    "外放音效素材校验失败"
+                    "Kiểm tra tài nguyên hiệu ứng âm thanh loa ngoài thất bại"
                 }
                 transport.sessions.check(owner)
                 NcaeDecoder.decode(bytes)

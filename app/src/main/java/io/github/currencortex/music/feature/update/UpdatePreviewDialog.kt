@@ -49,13 +49,13 @@ fun UpdatePreviewDialog(initialVersion: String, onDismiss: () -> Unit, onConfirm
     fun submit() {
         if (valid && confirmed == null) { confirmed = candidate; dismiss() }
     }
-    UpdateOptionsDialog(title = "版本形变预览",
-        summary = "输入想看的版本，例如 1.1.15、2.0、17 或 2.0-beta。",
+    UpdateOptionsDialog(title = "Xem trước biến thể phiên bản",
+        summary = "Nhập phiên bản bạn muốn xem, chẳng hạn 1.1.15、2.0、17 hoặc 2.0-beta。"
         onDismiss = ::dismiss,
         onDismissFinished = { confirmed?.let { version -> confirmed = null; confirm(version) } },
         actions = {
-            UpdateDialogAction("取消", ::dismiss, Modifier.weight(1f).testTag("update_preview_cancel"))
-            UpdateDialogAction("开始预览", ::submit, Modifier.weight(1f).testTag("update_preview_confirm"), enabled = valid)
+            UpdateDialogAction("Hủy", ::dismiss, Modifier.weight(1f).testTag("update_preview_cancel"))
+            UpdateDialogAction("Bắt đầu xem trước", ::submit, Modifier.weight(1f).testTag("update_preview_confirm"), enabled = valid)
         }) {
         val colors = MiuixTheme.colorScheme
         Column(Modifier.fillMaxWidth().testTag("update_preview_dialog")) {
@@ -66,7 +66,7 @@ fun UpdatePreviewDialog(initialVersion: String, onDismiss: () -> Unit, onConfirm
                     textStyle = TextStyle(color = colors.onBackground, fontSize = 19.sp, fontWeight = FontWeight.Medium),
                     cursorBrush = SolidColor(colors.primary),
                     modifier = Modifier.weight(1f).focusRequester(focus).onFocusChanged { focused = it.isFocused }
-                        .testTag("update_preview_version").semantics { contentDescription = "目标版本" })
+                        .testTag("update_preview_version").semantics { contentDescription = "Phiên bản đích" })
                 Text("${input.text.length}/32", Modifier.padding(start = 8.dp).testTag("update_preview_count"),
                     fontSize = 12.sp, color = if (input.text.length > 32) colors.error else colors.onSurfaceVariantSummary)
                 Box(Modifier.padding(start = 4.dp).size(44.dp).clip(CircleShape)
@@ -75,15 +75,15 @@ fun UpdatePreviewDialog(initialVersion: String, onDismiss: () -> Unit, onConfirm
                     }.testTag("update_preview_clear"), contentAlignment = Alignment.Center) {
                     Box(Modifier.size(20.dp).clip(CircleShape).background(colors.onSurfaceVariantSummary.copy(alpha = .65f)),
                         contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.Close, "清空版本", Modifier.size(14.dp), tint = colors.background)
+                        Icon(Icons.Default.Close, "Xóa phiên bản", Modifier.size(14.dp), tint = colors.background)
                     }
                 }
             }
             Spacer(Modifier.fillMaxWidth().height(if (focused) 1.5.dp else 1.dp)
                 .background(if (focused) colors.primary else colors.onSurfaceVariantSummary.copy(alpha = .3f)))
-            Text(if (input.text.length > 32) "版本文字最多 32 个字符"
-                else if (candidate.isNotEmpty() && !valid) "版本号不能包含空白或控制字符"
-                else "仅预览数字形变，不会更改实际版本或下载内容。",
+            Text(if (input.text.length > 32) "Văn bản phiên bản tối đa 32 ký tự"
+                else if (candidate.isNotEmpty() && !valid) "Số phiên bản không được chứa khoảng trắng hoặc ký tự điều khiển"
+                else "Chỉ xem trước biến thể số, không thay đổi phiên bản thực tế hoặc nội dung tải xuống。",
                 Modifier.padding(top = 12.dp), fontSize = 12.sp, lineHeight = 19.sp,
                 color = if (candidate.isNotEmpty() && !valid) colors.error else colors.onSurfaceVariantSummary)
         }

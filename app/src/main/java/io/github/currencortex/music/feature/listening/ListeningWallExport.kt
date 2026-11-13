@@ -73,7 +73,7 @@ import kotlin.math.absoluteValue
     var kind by rememberSaveable(covers, title) { mutableStateOf<String?>(null) }
     Row(modifier.fillMaxWidth().padding(horizontal = ((if (overlay) 16.667f else 4f) * scale).dp,
         vertical = ((if (overlay) 0f else 19f) * scale).dp), horizontalArrangement = Arrangement.spacedBy(((if (overlay) 16.667f else 12f) * scale).dp)) {
-        listOf(ListeningExportKind.POSTER to "生成海报", ListeningExportKind.WALLPAPER to "生成壁纸").forEach { (type, label) ->
+        listOf(ListeningExportKind.POSTER to "Tạo poster", ListeningExportKind.WALLPAPER to "Tạo hình nền").forEach { (type, label) ->
             GlassActionButton(label, { kind=type.name },
                 Modifier.weight(1f).testTag("listening_export_${type.name.lowercase()}"),
                 primary=type==ListeningExportKind.POSTER, enabled=actualCovers.isNotEmpty(),
@@ -121,24 +121,24 @@ import kotlin.math.absoluteValue
     val selected = choices[template.index] ?: listeningExportCoverIndices(template, covers.size)
     fun export(share: Boolean) {
         if (busy || documents.busy) return
-        if (template.locked(info)) { error = "此网易云模板需要当前账号的会员权限。可以继续选择其他模板。"; return }
+         if (template.locked(info)) { error = "Mẫu Nhạc Vân NetEase này yêu cầu tài khoản hiện tại có quyền hội viên. Bạn có thể tiếp tục chọn mẫu khác."; return }
         busy = true; error = null
         scope.launch {
             try {
                 val file = session.shareCopy(template, selected)
                 if (share) {
-                    context.startActivity(Intent.createChooser(listeningExportShareIntent(context, file), "分享唱片墙"))
+                     context.startActivity(Intent.createChooser(listeningExportShareIntent(context, file), "Chia sẻ tường đĩa nhạc"))
                 } else if (Build.VERSION.SDK_INT >= 29) {
                     try {
-                        saveListeningExportToGallery(context, file, "${title}-${if (kind == ListeningExportKind.POSTER) "唱片海报" else "手机壁纸"}-${System.currentTimeMillis()}.png")
+                         saveListeningExportToGallery(context, file, "${title}-${if (kind == ListeningExportKind.POSTER) "Poster đĩa nhạc" else "Hình nền điện thoại"}-${System.currentTimeMillis()}.png")
                     } finally { file.delete() }
-                    Toast.makeText(context, "已保存到相册 · CurrentMusicX", Toast.LENGTH_SHORT).show()
+                     Toast.makeText(context, "Đã lưu vào thư viện ảnh · CurrentMusicX", Toast.LENGTH_SHORT).show()
                 } else {
                     try { documents.exportFile(file, "${title}-${template.label}.png") }
                     finally { file.delete() }
                 }
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (_: Exception) { error = "导出失败，请检查图片网络连接后重试" }
+             catch (_: Exception) { error = "Xuất không thành công, vui lòng kiểm tra kết nối mạng hình ảnh rồi thử lại" }
             finally { busy = false }
         }
     }
@@ -203,7 +203,7 @@ import kotlin.math.absoluteValue
                 val primaryShare = kind == ListeningExportKind.POSTER
                 Column(Modifier.fillMaxWidth().offset(y = previewTop + previewHeight + vh * 93f), horizontalAlignment = Alignment.CenterHorizontally) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                        GlassActionButton(if(busy) "生成中…" else if(primaryShare) "分享唱片墙" else "保存壁纸",
+                         GlassActionButton(if(busy) "Đang tạo…" else if(primaryShare) "Chia sẻ tường đĩa nhạc" else "Lưu hình nền",
                             { export(primaryShare) }, Modifier.width((220*scale).dp).testTag("listening_export_primary"),
                             primary=true, enabled=!busy && !carousel.isScrollInProgress, minHeight=(46*scale).dp)
 
@@ -212,9 +212,9 @@ import kotlin.math.absoluteValue
                 }
                 SettingsFloatingHeader(background=Color(0xFF4E4E4E),toolbarHeight=(54*scale).dp) {
                     Box(Modifier.fillMaxWidth().statusBarsPadding().height((54*scale).dp)) {
-                        FootprintText(if(kind==ListeningExportKind.POSTER) "唱片海报" else "手机壁纸",
+                         FootprintText(if(kind==ListeningExportKind.POSTER) "Poster đĩa nhạc" else "Hình nền điện thoại",
                             Modifier.align(Alignment.Center),size=17f,color=Color.White,weight=FontWeight.SemiBold)
-                        GlassIconButton(onClose,"返回",Modifier.align(Alignment.CenterStart).padding(start=12.dp)
+                         GlassIconButton(onClose,"Quay lại",Modifier.align(Alignment.CenterStart).padding(start=12.dp)
                             .testTag("listening_export_close")) {
                             Icon(MusicIcons.Back,null,tint=MiuixTheme.colorScheme.onBackground)
                         }
@@ -249,15 +249,15 @@ private val ExportEaseInOut = CubicBezierEasing(.42f, 0f, .58f, 1f)
                     listeningExportHit(template, point.x / size.width * 1125, point.y / size.width * 1125)?.let(onCover)
                 })
             }.testTag("listening_export_template_${template.index}"), contentAlignment = Alignment.Center) {
-            if (path != null) AsyncImage(File(requireNotNull(path)), "${template.label}预览",
+             if (path != null) AsyncImage(File(requireNotNull(path)), "Xem trước ${template.label}",
                 Modifier.align(Alignment.TopStart).requiredSize(width, width/template.aspectRatio), contentScale = ContentScale.FillBounds)
-            else FootprintText(if (failed) "图片加载失败，点此重试" else "正在生成预览…", Modifier.clickable(enabled = failed) { attempt++ }.padding(16.dp),
+             else FootprintText(if (failed) "Tải hình ảnh không thành công, chạm để thử lại" else "Đang tạo bản xem trước…", Modifier.clickable(enabled = failed) { attempt++ }.padding(16.dp),
                 size = 14f, color = if (template.dark) Color.White else Color(0xFF283248))
             if (template.kind == ListeningExportKind.WALLPAPER) {
                 CompositionLocalProvider(LocalFootprintScale provides 1f) { WallpaperLockPreview(template.dark, width.value) }
             }
             if (template.layout == ListeningExportLayout.SCATTER && info.isCloud) AsyncImage(Media + "preview_vip_corner_pic.4a0c777c.png",
-                if (template.locked(info)) "会员专享模板" else "会员模板", Modifier.align(Alignment.TopEnd).width(width * .169778f).height(width * .070222f))
+                 if (template.locked(info)) "Mẫu dành riêng cho hội viên" else "Mẫu hội viên", Modifier.align(Alignment.TopEnd).width(width * .169778f).height(width * .070222f))
         }
     }
 }
@@ -295,7 +295,7 @@ internal fun listeningExportShareIntent(context: android.content.Context, file: 
     return Intent(Intent.ACTION_SEND).apply {
         type = "image/png"
         putExtra(Intent.EXTRA_STREAM, uri)
-        clipData = ClipData.newUri(context.contentResolver, "唱片墙", uri)
+         clipData = ClipData.newUri(context.contentResolver, "Tường đĩa nhạc", uri)
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
 }

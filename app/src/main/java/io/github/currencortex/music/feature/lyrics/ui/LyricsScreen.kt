@@ -131,7 +131,7 @@ private suspend fun awaitLyricsDisplayFrame(): Long = kotlinx.coroutines.suspend
         }
         if (!minimal && interlude != null && browseAnchor == null)
             LyricsInterludeView(interlude!!, effectivePosition, Modifier.align(Alignment.TopStart).padding(16.dp))
-        if (!minimal && browseAnchor != null) BasicText("回到当前歌词",
+        if (!minimal && browseAnchor != null) BasicText("Quay lại lời bài hát hiện tại",
             Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp).testTag("lyrics_follow")
                 .background(Color.White.copy(alpha = .14f), RoundedCornerShape(24.dp))
                 .clickable(role = Role.Button) { followRequest++ }.padding(horizontal = 20.dp, vertical = 14.dp),

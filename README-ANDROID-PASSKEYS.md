@@ -1,36 +1,36 @@
-# Android 原生通行密钥：后端适配方案
+# Khóa truy cập gốc trên Android: phương án điều chỉnh backend
 
-本方案对应 CurrentMusicX 的原生登录入口。客户端使用 Android Credential Manager，**不打开网页，不伪造 HTTPS 网页 Origin**。后端部署以下改动之前，生产环境的原生通行密钥登录仍不可用；密码、邮箱验证码、密保和验证器登录不受此限制。
+Phương án này áp dụng cho lối đăng nhập gốc của CurrentMusicX. Ứng dụng khách sử dụng Android Credential Manager, **không mở trang web, không giả mạo Origin của trang HTTPS**. Trước khi triển khai các thay đổi dưới đây ở backend, tính năng đăng nhập bằng khóa truy cập gốc vẫn chưa dùng được trong môi trường production; đăng nhập bằng mật khẩu, mã xác minh email, câu hỏi bảo mật và ứng dụng xác thực không bị ảnh hưởng.
 
-## 1. 当前差异与本次客户端范围
+## 1. Khác biệt hiện tại và phạm vi ứng dụng khách lần này
 
-核对依据：后端 `backrooms-yrc/CurrentMusic` 的 `b51e197b13a83cd418e915bd660aeb2a2ff07a34`。
+Căn cứ đối chiếu: `b51e197b13a83cd418e915bd660aeb2a2ff07a34` của backend `backrooms-yrc/CurrentMusic`.
 
-- [`backend/cm_passkeys.py`](https://github.com/backrooms-yrc/CurrentMusic/blob/b51e197b13a83cd418e915bd660aeb2a2ff07a34/backend/cm_passkeys.py)：`configured_origins()` 只允许 HTTPS；`origin_check()` 用 URL hostname 推导 RP ID；`begin()` 与 `finish()` 都依赖它。
-- [`backend/cm_server.py`](https://github.com/backrooms-yrc/CurrentMusic/blob/b51e197b13a83cd418e915bd660aeb2a2ff07a34/backend/cm_server.py)：通行密钥路由从 HTTP `Origin` 头读取来源，再交给 `cm_passkeys`。
-- 主站 `/.well-known/assetlinks.json` 本次检查返回 404；不带网页 Origin 调用 options 返回 403，并要求使用 HTTPS 网页入口。
+- [`backend/cm_passkeys.py`](https://github.com/backrooms-yrc/CurrentMusic/blob/b51e197b13a83cd418e915bd660aeb2a2ff07a34/backend/cm_passkeys.py)：`configured_origins()` chỉ cho phép HTTPS; `origin_check()` suy ra RP ID từ hostname URL; cả `begin()` và `finish()` đều phụ thuộc vào hàm này.
+- [`backend/cm_server.py`](https://github.com/backrooms-yrc/CurrentMusic/blob/b51e197b13a83cd418e915bd660aeb2a2ff07a34/backend/cm_server.py)：các tuyến khóa truy cập đọc nguồn từ tiêu đề HTTP `Origin`, rồi chuyển cho `cm_passkeys` xử lý.
+- Lần kiểm tra này, `/.well-known/assetlinks.json` trên trang chính trả về 404; gọi options mà không có Origin của trang web trả về 403 và yêu cầu sử dụng lối vào trang HTTPS.
 
-客户端本次实现：**读取已有通行密钥并登录**。不包含原生创建／撤销通行密钥；已有凭据必须属于下述相同 RP ID。其他 CDN 域名下创建的凭据不会自动迁移。
+Phần triển khai ở ứng dụng khách lần này: **đọc khóa truy cập hiện có để đăng nhập**. Không bao gồm việc tạo/thu hồi khóa truy cập gốc; thông tin xác thực hiện có phải thuộc cùng RP ID nêu dưới đây. Thông tin xác thực được tạo dưới tên miền CDN khác sẽ không tự động được chuyển.
 
-## 2. 固定身份、域名与证书
+## 2. Danh tính, tên miền và chứng chỉ cố định
 
-| 项目 | 值 |
+| Hạng mục | Giá trị |
 | --- | --- |
-| 正式包名 | `com.bileizhen.currentmusic` |
-| 内置线路的认证 API | `https://music.20110208.xyz/cm/` |
+| Tên gói chính thức | `com.bileizhen.currentmusic` |
+| API xác thực của tuyến tích hợp sẵn | `https://music.20110208.xyz/cm/` |
 | RP ID | `music.20110208.xyz` |
-| 正式签名 SHA-256 | `FC:3E:63:07:9B:8E:69:AE:A7:AB:73:48:28:46:DA:09:39:D6:CD:12:DA:F0:AF:FF:AA:9A:2E:93:FB:FC:CF:35` |
+| SHA-256 chữ ký chính thức | `FC:3E:63:07:9B:8E:69:AE:A7:AB:73:48:28:46:DA:09:39:D6:CD:12:DA:F0:AF:FF:AA:9A:2E:93:FB:FC:CF:35` |
 | Android Origin | `android:apk-key-hash:_D5jB5uOaa6nq3NIKEbaCTnWzRLa8K__qpouk_v8zzU` |
 
-指纹来自本地 Gradle 正式签名配置的 `signingReport`，为公开证书信息。上线前必须再用实际发布 APK 的 `apksigner verify --print-certs` 核对；若实际分发签名不同，应同时更新 DAL 与后端来源白名单。
+Dấu vân tay lấy từ `signingReport` trong cấu hình ký bản phát hành Gradle cục bộ; đây là thông tin chứng chỉ công khai. Trước khi phát hành, phải kiểm tra lại bằng `apksigner verify --print-certs` trên APK phát hành thực tế; nếu chữ ký phân phối thực tế khác, cần cập nhật cả DAL lẫn danh sách cho phép nguồn ở backend.
 
-Origin 后缀是 **证书 DER 字节的 SHA-256 摘要，经 Base64URL 无填充编码**，不是十六进制文本的 Base64。客户端读取当前 APK 签名计算它，Credential Manager 也会以实际签名生成 `clientDataJSON.origin`。
+Hậu tố Origin là **bản tóm tắt SHA-256 của byte DER chứng chỉ, được mã hóa Base64URL không đệm**, không phải Base64 của chuỗi thập lục phân. Ứng dụng khách đọc chữ ký APK hiện tại để tính giá trị này; Credential Manager cũng tạo `clientDataJSON.origin` bằng chữ ký thực tế.
 
-内置主站／CDN 的通行密钥请求始终固定到主站，其他音乐请求仍按现有线路选择。自定义服务器保持自己的 HTTPS 地址及 hostname 作为 RP ID，需要自行配置关联和后端来源映射。普通 HTTP 自定义服务器不支持此入口。
+Các yêu cầu khóa truy cập của trang chính/CDN tích hợp sẵn luôn được gửi đến trang chính; các yêu cầu nhạc khác vẫn chọn tuyến theo cách hiện tại. Máy chủ tùy chỉnh giữ nguyên địa chỉ HTTPS và hostname của máy chủ đó làm RP ID; bạn cần tự cấu hình liên kết và ánh xạ nguồn ở backend. Máy chủ tùy chỉnh dùng HTTP thông thường không hỗ trợ lối vào này.
 
-## 3. 发布 Digital Asset Links
+## 3. Phát hành Digital Asset Links
 
-在 **域名根路径** `https://music.20110208.xyz/.well-known/assetlinks.json` 发布以下内容，不要放在 `/cm/` 下：
+Phát hành nội dung sau tại `https://music.20110208.xyz/.well-known/assetlinks.json` ở **đường dẫn gốc của tên miền**, không đặt dưới `/cm/`：
 
 ```json
 [
@@ -47,18 +47,18 @@ Origin 后缀是 **证书 DER 字节的 SHA-256 摘要，经 Base64URL 无填充
 ]
 ```
 
-要求 HTTPS 证书可信、直接返回 200、`Content-Type: application/json`、无需登录且不经过验证码／登录跳转。正式域名不要加入通用 debug 签名；隔离测试包 `com.bileizhen.currentmusic.verification` 应使用测试域名和单独关联。
+Yêu cầu chứng chỉ HTTPS đáng tin cậy, trả về trực tiếp mã 200, có `Content-Type: application/json`, không cần đăng nhập và không chuyển hướng qua CAPTCHA/đăng nhập. Không thêm chữ ký debug dùng chung vào tên miền chính thức; gói kiểm thử riêng `com.bileizhen.currentmusic.verification` nên dùng tên miền kiểm thử và liên kết riêng.
 
-参考：[Android Credential Manager 前置要求](https://developer.android.com/identity/credential-manager/prerequisites)。
+Tham khảo: [Yêu cầu cần đáp ứng trước khi sử dụng Android Credential Manager](https://developer.android.com/identity/credential-manager/prerequisites)。
 
-## 4. 后端改动位置
+## 4. Vị trí thay đổi backend
 
 ### `backend/cm_passkeys.py`
 
-保留现有网页来源配置，新增独立的 **Android Origin → RP ID 精确映射**。例如配置 `CM_PASSKEY_ANDROID_ORIGINS` 为 JSON 字典；不要把 Android 字符串混入仅允许 HTTPS 的 `CM_PASSKEY_ORIGINS`。
+Giữ nguyên cấu hình nguồn trang web hiện có, đồng thời thêm **ánh xạ chính xác riêng từ Android Origin → RP ID**. Ví dụ, cấu hình `CM_PASSKEY_ANDROID_ORIGINS` dưới dạng từ điển JSON; không trộn chuỗi Android vào `CM_PASSKEY_ORIGINS`, vốn chỉ cho phép HTTPS.
 
 ```python
-# 示例：实际应从经过严格校验的服务端配置读取。
+# Ví dụ: thực tế cần đọc từ cấu hình phía máy chủ đã được kiểm tra nghiêm ngặt.
 ANDROID_ORIGINS = {
     "android:apk-key-hash:_D5jB5uOaa6nq3NIKEbaCTnWzRLa8K__qpouk_v8zzU":
         "music.20110208.xyz",
@@ -68,33 +68,33 @@ def origin_check(origin):
     if origin in ANDROID_ORIGINS:
         return ANDROID_ORIGINS[origin]
     if origin not in ORIGINS:
-        raise Error("此应用或网页尚未获准使用通行密钥", 403)
+        raise Error("Ứng dụng hoặc trang web này chưa được phép sử dụng khóa truy cập", 403)
     return urlparse(origin).hostname
 ```
 
-这是适配思路，不能用 `startswith('android:')` 放开全部应用，也不能从请求体接受任意 RP ID。配置加载时验证哈希是 32 字节摘要的无填充 Base64URL、RP ID 是明确允许的域名，不接受通配符。未配置 Android 映射时保持拒绝。
+Đây là hướng thích ứng; không thể dùng `startswith('android:')` để mở quyền cho tất cả ứng dụng, cũng không thể nhận RP ID tùy ý từ phần thân yêu cầu. Khi tải cấu hình, hãy xác minh hàm băm là Base64URL không đệm của bản tóm tắt 32 byte, RP ID là tên miền được cho phép rõ ràng và không chấp nhận ký tự đại diện. Nếu chưa cấu hình ánh xạ Android thì tiếp tục từ chối.
 
-`begin()` 按映射返回正确的 `publicKey.rpId`。`finish()` 必须同时校验：
+`begin()` trả về `publicKey.rpId` chính xác theo ánh xạ. `finish()` phải đồng thời xác minh:
 
-1. 本次请求来源属于白名单，且与创建挑战时保存的来源一致。
-2. `clientDataJSON.origin` 精确等于挑战绑定的 Android Origin；使用 WebAuthn 库的 `expected_origin` 校验。
-3. `expected_challenge`、`expected_rp_id`、签名、credential ID、用户句柄、账号状态和签名计数符合现有规则。
-4. 保持 `require_user_verification=True`，不降级为仅触摸确认。
-5. 保持 5 分钟有效期、单次消费、事务处理和注册时的账号／会话绑定。
+1. Nguồn của yêu cầu hiện tại thuộc danh sách cho phép và khớp với nguồn đã lưu khi tạo thử thách.
+2. `clientDataJSON.origin` khớp chính xác với Android Origin được liên kết với thử thách; dùng `expected_origin` của thư viện WebAuthn để xác minh.
+3. `expected_challenge`, `expected_rp_id`, chữ ký, credential ID, user handle, trạng thái tài khoản và bộ đếm chữ ký tuân theo các quy tắc hiện có.
+4. Giữ nguyên `require_user_verification=True`, không hạ cấp xuống chỉ xác nhận bằng thao tác chạm.
+5. Giữ nguyên thời hạn hiệu lực 5 phút, cơ chế chỉ sử dụng một lần, xử lý giao dịch và liên kết tài khoản／phiên trong quá trình đăng ký.
 
-HTTP `Origin` 只用于选择和绑定流程，**不是身份凭据**；可信结论来自对绑定数据和签名的完整验证。继续把实际 Android Origin 存进挑战的 `origin` 列，无需把它转换为网页来源。建议额外保存挑战创建时的 RP ID；如果采用动态映射，则变更配置时清理旧挑战，不能让同一挑战在新旧 RP 间漂移。
+HTTP `Origin` chỉ dùng để chọn và liên kết quy trình, **không phải thông tin xác thực danh tính**; kết luận về độ tin cậy đến từ việc xác minh đầy đủ dữ liệu liên kết và chữ ký. Tiếp tục lưu Android Origin thực tế vào cột `origin` của thử thách; không cần chuyển đổi nó thành nguồn trang web. Nên lưu thêm RP ID tại thời điểm tạo thử thách; nếu dùng ánh xạ động, hãy xóa các thử thách cũ khi thay đổi cấu hình, không để cùng một thử thách chuyển đổi giữa RP cũ và mới.
 
-上述映射同时适用于后端现有注册与验证函数；本次客户端只调用 login 接口。无需修改账户登录 token 格式或把 2FA／密保加到已经完成用户验证的 passkey 登录后。
+Ánh xạ nêu trên cũng áp dụng cho các hàm đăng ký và xác minh hiện có ở backend; lần này client chỉ gọi API đăng nhập. Không cần sửa định dạng token đăng nhập tài khoản hoặc thêm 2FA／câu hỏi bảo mật sau khi đăng nhập bằng passkey đã hoàn tất xác minh người dùng.
 
-### `backend/cm_server.py` 与反向代理
+### `backend/cm_server.py` và proxy ngược
 
-沿用现有 `/auth/passkeys/login/options` 与 `/auth/passkeys/login/verify`。确认反向代理转发 `Origin: android:apk-key-hash:…`，没有把它替换为主站 HTTPS Origin，也没有提前按网页 CORS 白名单拒绝原生请求。只允许上述精确来源，不放宽网页跨域策略。
+Tiếp tục dùng `/auth/passkeys/login/options` và `/auth/passkeys/login/verify` hiện có. Xác nhận proxy ngược chuyển tiếp `Origin: android:apk-key-hash:…`, không thay thế nó bằng HTTPS Origin của trang chính và không từ chối yêu cầu gốc theo danh sách cho phép CORS của trang web. Chỉ cho phép chính xác các nguồn nêu trên, không nới lỏng chính sách truy cập chéo nguồn của trang web.
 
-若需要统一返回新的稳定错误码，可增加 `errorCode: "native_passkey_not_configured"`，但仍须保留可读的 `error` 字段。本次客户端兼容目前后端的 403 文本；升级错误码后应同步补充客户端映射。
+Nếu cần trả về mã lỗi ổn định mới thống nhất, có thể thêm `errorCode: "native_passkey_not_configured"`, nhưng vẫn phải giữ lại trường `error` dễ đọc. Client lần này tương thích với văn bản 403 của backend hiện tại; sau khi nâng cấp mã lỗi, cần đồng bộ bổ sung ánh xạ ở client.
 
-## 5. 与客户端一致的请求契约
+## 5. Hợp đồng yêu cầu thống nhất với client
 
-### 获取认证选项
+### Lấy tùy chọn xác thực
 
 ```http
 POST /cm/auth/passkeys/login/options
@@ -104,14 +104,14 @@ Origin: android:apk-key-hash:_D5jB5uOaa6nq3NIKEbaCTnWzRLa8K__qpouk_v8zzU
 {"platform":"app"}
 ```
 
-响应保持现有结构，可额外返回 `expiresIn`：
+Giữ nguyên cấu trúc hiện có của phản hồi, có thể trả thêm `expiresIn`:
 
 ```json
 {
-  "challengeToken": "<不透明的一次性挑战凭据>",
+  "challengeToken": "<thông tin xác thực thử thách dùng một lần, không trong suốt>",
   "expiresIn": 300,
   "publicKey": {
-    "challenge": "<Base64URL 随机挑战>",
+    "challenge": "<thử thách ngẫu nhiên Base64URL>",
     "rpId": "music.20110208.xyz",
     "userVerification": "required",
     "allowCredentials": []
@@ -119,9 +119,9 @@ Origin: android:apk-key-hash:_D5jB5uOaa6nq3NIKEbaCTnWzRLa8K__qpouk_v8zzU
 }
 ```
 
-客户端仅在 RP ID 与固定认证域名一致、要求用户验证时调用系统 Credential Manager。未返回 `expiresIn` 时按现有协议使用 300 秒；返回值最多允许 300 秒。
+Client chỉ gọi Credential Manager của hệ thống khi RP ID khớp với tên miền xác thực cố định và yêu cầu xác minh người dùng. Nếu không trả về `expiresIn`, hãy dùng 300 giây theo giao thức hiện có; giá trị trả về tối đa là 300 giây.
 
-### 提交凭据
+### Gửi thông tin xác thực
 
 ```http
 POST /cm/auth/passkeys/login/verify
@@ -129,7 +129,7 @@ Content-Type: application/json
 Origin: android:apk-key-hash:_D5jB5uOaa6nq3NIKEbaCTnWzRLa8K__qpouk_v8zzU
 
 {
-  "challengeToken": "<上一步返回值>",
+  "challengeToken": "<giá trị trả về ở bước trước>",
   "credential": {
     "id": "<credential ID>",
     "rawId": "<Base64URL credential ID>",
@@ -141,30 +141,30 @@ Origin: android:apk-key-hash:_D5jB5uOaa6nq3NIKEbaCTnWzRLa8K__qpouk_v8zzU
       "userHandle": "<Base64URL userHandle>"
     }
   },
-  "device": "<现有设备描述>",
+  "device": "<mô tả thiết bị hiện có>",
   "platform": "app"
 }
 ```
 
-验签成功仍返回 `{ "token": "…", "user": { "id": 123, ... } }`。两个接口均为匿名登录请求，不携带已有账号的 Bearer token；客户端仅在验签响应合法后保存新会话。取消、超时、账号／服务器切换或认证失败均不得保存会话。
+Sau khi xác minh chữ ký thành công, vẫn trả về `{ "token": "…", "user": { "id": 123, ... } }`. Cả hai API đều là yêu cầu đăng nhập ẩn danh, không gửi Bearer token của tài khoản hiện có; client chỉ lưu phiên mới sau khi phản hồi xác minh chữ ký hợp lệ. Không được lưu phiên khi người dùng hủy, hết thời gian chờ, chuyển đổi tài khoản／máy chủ hoặc xác thực thất bại.
 
-参考：[Android 原生通行密钥登录](https://developer.android.com/identity/passkeys/sign-in-with-passkeys)。
+Tham khảo: [Đăng nhập bằng mật khẩu khóa gốc Android](https://developer.android.com/identity/passkeys/sign-in-with-passkeys).
 
-## 6. 联调与上线验收
+## 6. Kiểm thử tích hợp và nghiệm thu trước khi phát hành
 
-先为后端补测试，再部署测试环境：
+Trước tiên, bổ sung kiểm thử cho backend, sau đó triển khai môi trường kiểm thử:
 
-- 正式白名单 Android Origin 可创建挑战，任意其他签名、任意 Android 前缀、缺少 Origin 均失败。
-- 合法 Android 签名断言成功；伪造 HTTP Origin 但 `clientDataJSON.origin` 不符、错误 RP ID、错误 challenge、无 UV、错误签名、其他用户句柄均失败。
-- 挑战过期、重复提交、网页挑战与 Android 互换、其他凭据／账号、禁用账号、计数器回退均按原规则拒绝。
-- 原有四个 HTTPS 网页来源的绑定／登录仍正常；新来源支持不扩大网页许可。
-- 反向代理保留 Android Origin，DAL 以正确内容类型直接返回 200。
+- Origin Android trong danh sách cho phép chính thức có thể tạo thử thách; mọi chữ ký khác, mọi tiền tố Android khác và trường hợp thiếu Origin đều thất bại.
+- Xác minh chữ ký Android hợp lệ thành công; Origin HTTP giả mạo nhưng `clientDataJSON.origin` không khớp, RP ID sai, challenge sai, không có UV, chữ ký sai và handle người dùng khác đều thất bại.
+- Thử thách hết hạn, gửi lặp lại, dùng thay thế thử thách web và Android, thông tin xác thực／tài khoản khác, tài khoản bị vô hiệu hóa và bộ đếm bị giảm đều bị từ chối theo quy tắc hiện hành.
+- Việc liên kết／đăng nhập từ bốn nguồn HTTPS trên web hiện có vẫn hoạt động bình thường; hỗ trợ nguồn mới không mở rộng phạm vi cho phép trên web.
+- Proxy ngược giữ nguyên Android Origin; DAL trả về trực tiếp với loại nội dung chính xác và mã 200.
 
-再使用**正式签名 APK**和可信设备凭据提供程序进行端到端验收：
+Sau đó, dùng **APK ký chính thức** và nhà cung cấp thông tin xác thực trên thiết bị đáng tin cậy để nghiệm thu đầu cuối:
 
-1. 在主站 RP 下已有可发现通行密钥，系统能展示并完成登录。
-2. 主站与各内置 CDN 选择下均使用同一 RP；自定义服务器不串到主站账号。
-3. 取消系统弹窗、没有凭据、设备不支持、网络中断、后台恢复、切换账号不会误登录或泄漏凭据。
-4. 原密码登录、邮箱验证码及其密保／验证器第二步仍可使用。
+1. Có sẵn khóa truy cập có thể phát hiện dưới RP của trang chính; hệ thống có thể hiển thị và hoàn tất đăng nhập.
+2. Trang chính và từng CDN tích hợp đều sử dụng cùng một RP khi được chọn; máy chủ tùy chỉnh không dùng lẫn tài khoản của trang chính.
+3. Hủy cửa sổ bật lên của hệ thống, không có thông tin xác thực, thiết bị không hỗ trợ, mất kết nối mạng, khôi phục ứng dụng chạy nền hoặc chuyển đổi tài khoản không được khiến người dùng vô tình đăng nhập hay làm lộ thông tin xác thực.
+4. Đăng nhập bằng mật khẩu, mã xác minh email và bước thứ hai bằng câu hỏi bảo mật／ứng dụng xác thực vẫn hoạt động.
 
-客户端模拟服务端测试可以验证协议、状态隔离和取消处理，但不能替代上述真实 Credential Manager、DAL 和后端验签验收。仅添加入口不代表线上原生通行密钥登录已经可用。
+Kiểm thử phía máy khách mô phỏng máy chủ có thể xác minh giao thức, việc cách ly trạng thái và xử lý thao tác hủy, nhưng không thể thay thế nghiệm thu thực tế đối với Credential Manager, DAL và việc xác minh chữ ký phía backend nêu trên. Chỉ thêm lối vào không có nghĩa là tính năng đăng nhập bằng khóa truy cập gốc trên môi trường trực tuyến đã khả dụng.

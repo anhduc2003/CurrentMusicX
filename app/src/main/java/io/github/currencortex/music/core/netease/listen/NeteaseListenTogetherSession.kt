@@ -80,12 +80,12 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
     }
 
     fun create() = operation(ListenTogetherOperation.CREATE) { epoch ->
-        check(active == null && player.state.value.mode == PlayerMode.LOCAL) { "请先退出一起听" }
+        check(active == null && player.state.value.mode == PlayerMode.LOCAL) { "Vui lòng thoát chế độ nghe cùng nhau trước" }
         val expected = repo.captureSession()
         checkEpoch(epoch)
         val original = player.queue.state.value
         val playback = player.state.value
-        check(original.current == null || songId(original.current) != null) { "请先选择一首网易云歌曲" }
+        check(original.current == null || songId(original.current) != null) { "Vui lòng chọn một bài hát Nhạc Vân NetEase trước" }
         val room = repo.create(expected)
         checkEpoch(epoch)
         repo.checkSession(expected)
@@ -111,7 +111,7 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
     }
 
     fun join(inviteText: String) = operation(ListenTogetherOperation.JOIN) { epoch ->
-        check(active == null && player.state.value.mode == PlayerMode.LOCAL) { "请先退出一起听" }
+        check(active == null && player.state.value.mode == PlayerMode.LOCAL) { "Vui lòng thoát chế độ nghe cùng nhau trước" }
         val expected = repo.captureSession()
         val invitation = repo.resolveInvitation(inviteText)
         checkEpoch(epoch)
@@ -123,12 +123,12 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
     }
 
     fun resume() = operation(ListenTogetherOperation.RESTORE) { epoch ->
-        check(active == null && player.state.value.mode == PlayerMode.LOCAL) { "请先退出一起听" }
+        check(active == null && player.state.value.mode == PlayerMode.LOCAL) { "Vui lòng thoát chế độ nghe cùng nhau trước" }
         val expected = repo.captureSession()
         checkEpoch(epoch)
         val remote = repo.status(expected)
         checkEpoch(epoch)
-        val room = remote.room.takeIf { remote.inRoom } ?: error("没有可恢复的网易云一起听会话")
+        val room = remote.room.takeIf { remote.inRoom } ?: error("Không có phiên nghe cùng nhau Nhạc Vân NetEase nào để khôi phục")
         repo.restoreDevice(expected, room.roomId)
         checkEpoch(epoch)
         startRoom(room, expected, epoch) { synchronize(it, members = true) }
@@ -172,7 +172,7 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
         checkEpoch(epoch)
         repo.checkSession(expected)
         try {
-            check(player.beginExternal(PlayerMode.ROOM, this)) { "无法启动双人一起听" }
+            check(player.beginExternal(PlayerMode.ROOM, this)) { "Không thể bắt đầu nghe cùng nhau" }
             checkEpoch(epoch)
             repo.checkSession(expected)
             val current = Active(room.roomId, expected, epoch)
@@ -249,7 +249,7 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
                         ErrorKind.NeteaseBindingRequired, ErrorKind.NotFound, ErrorKind.Forbidden)) {
                         disconnect(message(error)); return@launch
                     }
-                    state.update { it.copy(connected = false, error = "同步失败：${message(error)}，正在重试") }
+                    state.update { it.copy(connected = false, error = "Đồng bộ thất bại: ${message(error)}，đang thử lại") }
                     backoff = (backoff * 2).coerceAtMost(15000)
                 }
                 delay(backoff)
@@ -312,7 +312,7 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
         valid(current)
         if (current.loadedSongId != playback.targetSongId) {
             val song = current.songs[playback.targetSongId] ?: detail(playback.targetSongId).also {
-                check(songId(it) == playback.targetSongId) { "歌曲信息与同步指令不匹配" }
+                check(songId(it) == playback.targetSongId) { "Thông tin bài hát không khớp với lệnh đồng bộ" }
                 current.songs[playback.targetSongId] = it
             }
             valid(current)
@@ -349,7 +349,7 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
         val mode = when (current.queue.playMode) {
             "RANDOM" -> PlaybackMode.SHUFFLE; "SINGLE_LOOP" -> PlaybackMode.ONE; else -> PlaybackMode.LIST
         }
-        _queue.value = QueueSnapshot(ids.map { current.songs[it] ?: Song(it, "歌曲信息加载中…") },
+        _queue.value = QueueSnapshot(ids.map { current.songs[it] ?: Song(it, "Đang tải thông tin bài hát…") },
             ids.indexOf(current.loadedSongId), mode = mode)
         val missing = ids.filterNot { it in current.songs }
         if (missing.isEmpty()) {
@@ -364,12 +364,12 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
                     valid(current)
                     loaded.forEach { song -> songId(song)?.takeIf { it in ids }?.let { current.songs[it] = song } }
                     val latest = current.queue.songIds
-                    _queue.update { it.copy(songs = latest.map { id -> current.songs[id] ?: Song(id, "歌曲 $id") }) }
+                    _queue.update { it.copy(songs = latest.map { id -> current.songs[id] ?: Song(id, "Bài hát $id") }) }
                     state.update { it.copy(queueLoading = false,
-                        queueError = if (latest.any { id -> id !in current.songs }) "部分歌曲信息暂不可用，可刷新重试" else null) }
+                        queueError = if (latest.any { id -> id !in current.songs }) "Một số thông tin bài hát hiện không khả dụng, bạn có thể làm mới để thử lại" else null) }
                 } catch (cancelled: CancellationException) { throw cancelled }
                 catch (_: Exception) { if (active === current) state.update {
-                    it.copy(queueLoading = false, queueError = "歌曲信息加载失败，可刷新重试")
+                    it.copy(queueLoading = false, queueError = "Tải thông tin bài hát thất bại, bạn có thể làm mới để thử lại")
                 } }
             }
         }
@@ -377,7 +377,7 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
 
     fun selectSong(id: Long) = command { current ->
         synchronize(current, members = false); valid(current)
-        check(id in current.queue.songIds) { "这首歌已被移出一起听歌单" }
+        check(id in current.queue.songIds) { "Bài hát này đã bị xóa khỏi danh sách nghe cùng nhau" }
         if (id != current.loadedSongId) {
             // Desktop drops PLAY_COMMAND targets absent from its local shared list.
             // Publish the room list first so its PLAYLIST event precedes this cut.
@@ -403,10 +403,10 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
     }
 
     override fun enqueue(song: Song, next: Boolean) = command { current ->
-        val id = songId(song) ?: error("双人一起听仅支持网易云歌曲")
+        val id = songId(song) ?: error("Chế độ nghe cùng nhau chỉ hỗ trợ bài hát Nhạc Vân NetEase")
         synchronize(current, members = false); valid(current)
         if (id in current.queue.songIds) return@command
-        check(current.queue.songIds.size < MAX_QUEUE) { "一起听队列已满，请先移除歌曲" }
+        check(current.queue.songIds.size < MAX_QUEUE) { "Hàng đợi nghe cùng nhau đã đầy, vui lòng xóa bài hát trước" }
         current.songs[id] = song
         val ids = current.queue.songIds.toMutableList()
         val position = if (next) (ids.indexOf(current.loadedSongId) + 1).coerceIn(0, ids.size) else ids.size
@@ -438,7 +438,7 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
     }
 
     fun setQueueMode(mode: PlaybackMode) = command { current ->
-        check(mode != PlaybackMode.HEART) { "一起听暂不支持本机心动模式" }
+        check(mode != PlaybackMode.HEART) { "Chế độ nghe cùng nhau hiện chưa hỗ trợ chế độ yêu thích trên thiết bị này" }
         synchronize(current, members = false); valid(current)
         replaceQueue(current, current.queue.songIds, when (mode) {
             PlaybackMode.SHUFFLE -> "RANDOM"; PlaybackMode.ONE -> "SINGLE_LOOP"; else -> "ORDER_LOOP"
@@ -448,7 +448,7 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
     fun setRecommendation(enabled: Boolean) = command { current ->
         val result = repo.setRecommendation(current.expected, current.roomId, enabled)
         valid(current)
-        check(result.success) { result.message.ifBlank { "无法更改心动推荐，请检查网易云会员权限" } }
+        check(result.success) { result.message.ifBlank { "Không thể thay đổi đề xuất yêu thích, vui lòng kiểm tra quyền hội viên Nhạc Vân NetEase" } }
         state.update { it.copy(room = it.room?.copy(openHeartRcmd = enabled)) }
         metadataIds = emptyList()
         synchronize(current, members = false)
@@ -459,11 +459,11 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
     private fun command(block: suspend (Active) -> Unit) = operation { active?.let { valid(it); block(it) } }
     override fun play(playing: Boolean) = command { current ->
         val target = current.loadedSongId.takeIf { it > 0 } ?: current.queue.songIds.firstOrNull()
-            ?: error("请先点一首网易云歌曲")
+            ?: error("Vui lòng nhấn chọn một bài hát Nhạc Vân NetEase trước")
         sendPlayback(current, if (playing) "PLAY" else "PAUSE", target, playing, player.state.value.positionMs)
     }
     override fun seek(position: Long) = command { current ->
-        check(current.loadedSongId > 0) { "请先点一首网易云歌曲" }
+        check(current.loadedSongId > 0) { "Vui lòng nhấn chọn một bài hát Nhạc Vân NetEase trước" }
         sendPlayback(current, "PROGRESS", current.loadedSongId, player.state.value.showPause, position)
     }
     private fun advance(direction: Int, automatic: Boolean = false) = command { current ->
@@ -479,7 +479,7 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
     override fun next() = advance(1)
     override fun previous() = advance(-1)
     override fun ended() { if (state.value.room?.creatorId == active?.expected?.credential?.profile?.uid) advance(1, automatic = true) }
-    override fun failed() { state.update { it.copy(error = "当前歌曲播放失败，可重试或切换歌曲") } }
+    override fun failed() { state.update { it.copy(error = "Phát bài hát hiện tại thất bại, bạn có thể thử lại hoặc chuyển bài") } }
     /** The original client reserves its own vector entry before sending; failed requests cannot reuse it. */
     private fun reserveQueueVersion(current: Active): List<ListenTogetherVersion> {
         val uid = current.expected.credential.profile!!.uid
@@ -489,8 +489,8 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
         return current.queue.version.filterNot { it.userId == uid } + ListenTogetherVersion(uid, next, previous?.outerId)
     }
     override fun request(song: Song) = command { current ->
-        val id = songId(song) ?: error("双人一起听仅支持网易云歌曲")
-        check(id in current.queue.songIds || current.queue.songIds.size < MAX_QUEUE) { "一起听队列已满，请先移除歌曲" }
+        val id = songId(song) ?: error("Chế độ nghe cùng nhau chỉ hỗ trợ bài hát Nhạc Vân NetEase")
+        check(id in current.queue.songIds || current.queue.songIds.size < MAX_QUEUE) { "Hàng đợi nghe cùng nhau đã đầy, vui lòng xóa bài hát trước" }
         current.songs[id] = song
         val queue = current.queue.copy(songIds = (current.queue.songIds + id).distinct(),
             randomSongIds = if (current.queue.playMode == "RANDOM")
@@ -512,7 +512,7 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
         var confirmed = false
         try { repo.leave(current.expected, current.roomId); valid(current); confirmed = true }
         catch (cancelled: CancellationException) { throw cancelled }
-        catch (_: Exception) { failure = "已退出本机，远端会话结束尚未确认" }
+        catch (_: Exception) { failure = "Đã thoát trên thiết bị này, chưa xác nhận kết thúc phiên từ xa" }
         finally { if (active === current) { if (confirmed) finishRoom(current) else disconnect(failure) } }
     }
     private fun finishRoom(current: Active) {
@@ -536,8 +536,8 @@ class NeteaseListenTogetherSession internal constructor(private val repo: Listen
     fun dismissError() { state.update { it.copy(error = null) } }
     private fun message(error: Throwable): String = when (error) {
         is ApiException -> error.kind.message
-        is IllegalStateException, is IllegalArgumentException -> error.message ?: "无法执行一起听操作"
-        else -> "一起听连接失败，请重试"
+        is IllegalStateException, is IllegalArgumentException -> error.message ?: "Không thể thực hiện thao tác nghe cùng nhau"
+        else -> "Kết nối Nghe cùng nhau thất bại, vui lòng thử lại"
     }
     private fun songId(song: Song?): Long? = song?.takeIf { !it.video && it.musicSource == MusicSource.NETEASE && it.navidrome == null }
         ?.let { it.externalIds.neteaseId?.toLongOrNull() ?: it.id }?.takeIf { it > 0 }

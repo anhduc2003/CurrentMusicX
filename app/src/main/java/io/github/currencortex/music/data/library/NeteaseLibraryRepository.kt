@@ -140,7 +140,7 @@ class NeteaseLibraryRepository(private val api: ApiClient, private val binding: 
             val ids = likedIds.filterNot { it in orderedSet } + orderedIds
             val tracks = songs(ids, expected, embedded)
             if (expected != session()) throw ApiException(ErrorKind.Unauthorized)
-            info.copy(name = "我喜欢的音乐", songs = tracks, count = tracks.size)
+             info.copy(name = "Nhạc tôi yêu thích", songs = tracks, count = tracks.size)
         }
     }
     suspend fun add(id: Long, song: Song) = addAll(id, listOf(song))

@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 data class EmbyNavigation(val selected: Int, val onSelect: (Int) -> Unit) {
     companion object {
         val kinds = listOf("songs", "artists", "playlists", "likes")
-        val labels = listOf("歌曲", "艺术家", "歌单", "我喜欢")
+        val labels = listOf("Bài hát", "Nghệ sĩ", "Danh sách phát", "Yêu thích")
         val icons = listOf(MusicIcons.Headphones, MusicIcons.Account, MusicIcons.List, MusicIcons.Heart)
     }
 }
@@ -60,18 +60,18 @@ data class EmbyNavigation(val selected: Int, val onSelect: (Int) -> Unit) {
     fun back() { if (settings && account.configured) settings = false else if (!vm.back()) onBack() }
     BackHandler(settings || vm.nested) { back() }
     Box(Modifier.fillMaxSize()) {
-    MusicSubpage(if (configuration) "Emby 账号" else state.route.title, "emby_screen", ::back,
+    MusicSubpage(if (configuration) "Tài khoản Emby" else state.route.title, "emby_screen", ::back,
         toolbar = if (configuration) null else ({
             GlassSearchToolbar(state.route.title, 1f, ::back, searching, {
                 searching = it
                 if (!it && state.route.kind == "search") vm.back()
             }, query, { query = it },
-                action = GlassToolbarAction(Icons.Outlined.Refresh, "刷新曲库", { vm.refresh() }, "emby_refresh"),
-                trailing = GlassToolbarAction(MusicIcons.Account, "账号设置", { settings = true }, "emby_account"),
+                action = GlassToolbarAction(Icons.Outlined.Refresh, "Làm mới thư viện nhạc", { vm.refresh() }, "emby_refresh"),
+                trailing = GlassToolbarAction(MusicIcons.Account, "Cài đặt tài khoản", { settings = true }, "emby_account"),
                 modifier = Modifier.testTag("emby_screen_toolbar"), inputTag = "emby_query", searchTag = "emby_search",
-                placeholder = "搜索 Emby 歌曲", onSubmit = { vm.search(query) })
+                placeholder = "Tìm kiếm bài hát Emby", onSubmit = { vm.search(query) })
         }), actions = {
-        if (account.configured) GlassIconButton({ settings = !configuration }, if (configuration) "返回曲库" else "账号设置",
+        if (account.configured) GlassIconButton({ settings = !configuration }, if (configuration) "Quay lại thư viện nhạc" else "Cài đặt tài khoản",
             Modifier.testTag("emby_account")) {
             Icon(if (configuration) MusicIcons.List else MusicIcons.Account, null, Modifier.size(22.dp))
         }
@@ -110,20 +110,20 @@ data class EmbyNavigation(val selected: Int, val onSelect: (Int) -> Unit) {
                 itemsIndexed(state.page.songs, key = { index, song -> "$index:${song.id}" }) { index, song ->
                     PlaylistTrack(song, queue.current?.id == song.id, likes[song.id] == true,
                         { if (vm.container.playerController.state.value.mode == io.github.currencortex.music.core.media.PlayerMode.LOCAL)
-                            play(state.page.songs, index) else vm.error.value = "请先退出一起听" },
+                            play(state.page.songs, index) else vm.error.value = "Vui lòng thoát khỏi chế độ nghe cùng trước" },
                         { vm.enqueue(song, true) }, { vm.enqueue(song, false) }) {
                         val dismiss = LocalDismissSongMenu.current
-                        MusicDestinationRow(if (likes[song.id] == true) "取消喜欢" else "喜欢", { dismiss(); vm.toggleLike(song) }, enabled = !busy)
+                        MusicDestinationRow(if (likes[song.id] == true) "Bỏ thích" else "Thích", { dismiss(); vm.toggleLike(song) }, enabled = !busy)
                     }
                 }
                 if (state.loading) item("loading") { LoadingSongList(4) }
                 state.error?.let { message -> item("error") {
                     Text(message, color = MiuixTheme.colorScheme.error)
-                    MusicTextAction("重试", { vm.refresh(state.loaded && state.page.more) })
+                    MusicTextAction("Thử lại", { vm.refresh(state.loaded && state.page.more) })
                 } }
                 if (state.loaded && !state.loading && state.page.entries.isEmpty() && state.page.songs.isEmpty())
-                    item("empty") { Text("这里还没有音乐", Modifier.padding(vertical = 32.dp)) }
-                if (state.page.more && !state.loading) item("more") { MusicTextAction("加载更多", { vm.refresh(true) }) }
+                    item("empty") { Text("Chưa có nhạc ở đây", Modifier.padding(vertical = 32.dp)) }
+                if (state.page.more && !state.loading) item("more") { MusicTextAction("Tải thêm", { vm.refresh(true) }) }
             }
         }
     }
@@ -152,26 +152,26 @@ data class EmbyNavigation(val selected: Int, val onSelect: (Int) -> Unit) {
     SettingsUiScope {
         LazyColumn(Modifier.fillMaxSize().imePadding(), contentPadding = musicScrollPadding(PaddingValues(16.dp, inset + 8.dp, 16.dp, 32.dp)),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            item { SettingsHint("连接 Emby 音乐库，按需分页读取，原音质播放。登录令牌加密保存在本机，不保存密码。") }
-            if (account.configured) item { SettingsSection("当前账号", MusicIcons.Device) {
+            item { SettingsHint("Kết nối thư viện nhạc Emby, tải theo từng trang khi cần và phát với chất lượng gốc. Mã thông báo đăng nhập được mã hóa và lưu trên thiết bị; mật khẩu không được lưu.") }
+            if (account.configured) item { SettingsSection("Tài khoản hiện tại", MusicIcons.Device) {
                 SettingsPreference(account.username, account.server)
-                SettingsHint(if (account.download) "服务器允许下载原文件" else "此账号未开放下载权限，可在线播放")
+                SettingsHint(if (account.download) "Máy chủ cho phép tải tệp gốc" else "Tài khoản này không có quyền tải xuống, nhưng có thể nghe trực tuyến")
             } }
-            item { SettingsSection("服务器连接", MusicIcons.Storage) {
+            item { SettingsSection("Kết nối máy chủ", MusicIcons.Storage) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    TextField(server, { server = it; vm.error.value = null }, label = "服务器地址", singleLine = true, enabled = !busy,
+                    TextField(server, { server = it; vm.error.value = null }, label = "Địa chỉ máy chủ", singleLine = true, enabled = !busy,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri), modifier = Modifier.testTag("emby_server"))
-                    TextField(username, { username = it; vm.error.value = null }, label = "用户名", singleLine = true, enabled = !busy, modifier = Modifier.testTag("emby_username"))
-                    TextField(password, { password = it; vm.error.value = null }, label = "密码", singleLine = true, enabled = !busy,
+                    TextField(username, { username = it; vm.error.value = null }, label = "Tên người dùng", singleLine = true, enabled = !busy, modifier = Modifier.testTag("emby_username"))
+                    TextField(password, { password = it; vm.error.value = null }, label = "Mật khẩu", singleLine = true, enabled = !busy,
                         visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = { connect() }),
                         modifier = Modifier.testTag("emby_password"))
                     error?.let { Text(it, color = MiuixTheme.colorScheme.error) }
                 }
             } }
-            item { GlassActionButton(if (busy) "正在连接…" else if (account.configured) "更换连接" else "连接服务器", ::connect,
+            item { GlassActionButton(if (busy) "Đang kết nối…" else if (account.configured) "Đổi kết nối" else "Kết nối máy chủ", ::connect,
                 primary = true, enabled = canConnect, modifier = Modifier.fillMaxWidth().testTag("emby_connect")) }
-            if (account.configured) item { MusicTextAction("断开连接", { password = ""; vm.disconnect() }, enabled = !busy) }
+            if (account.configured) item { MusicTextAction("Ngắt kết nối", { password = ""; vm.disconnect() }, enabled = !busy) }
         }
     }
 }

@@ -39,7 +39,7 @@ class RecognitionAacEncoder {
             val deadline = SystemClock.elapsedRealtime() + 8_000
             while (!outputEnded) {
                 currentCoroutineContext().ensureActive()
-                check(SystemClock.elapsedRealtime() < deadline) { "歌词识别音频编码超时" }
+                check(SystemClock.elapsedRealtime() < deadline) { "Mã hóa âm thanh nhận diện lời bài hát quá thời gian" }
                 if (!inputEnded) {
                     val index = encoder.dequeueInputBuffer(10_000)
                     if (index >= 0) {
@@ -64,14 +64,14 @@ class RecognitionAacEncoder {
                             try {
                                 buffer.get(packet)
                                 output.write(adtsHeader(packet.size)); output.write(packet)
-                                check(output.size() <= 128_000) { "歌词识别音频过大" }
+                                check(output.size() <= 128_000) { "Âm thanh nhận diện lời bài hát quá lớn" }
                             } finally { packet.fill(0) }
                         }
                         outputEnded = info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0
                     } finally { encoder.releaseOutputBuffer(index, false) }
                 }
             }
-            check(output.size() > 7) { "无法生成歌词识别音频" }
+            check(output.size() > 7) { "Không thể tạo âm thanh nhận diện lời bài hát" }
             output.toByteArray()
         } finally {
             runCatching { codec?.stop() }; runCatching { codec?.release() }

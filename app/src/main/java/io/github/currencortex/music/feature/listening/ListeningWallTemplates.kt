@@ -22,10 +22,10 @@ internal data class ListeningWallTemplate(val index: Int, val kind: ListeningExp
     val layout: ListeningExportLayout get() = ListeningExportLayout.entries[index % 3]
     val height: Int get() = if (kind == ListeningExportKind.WALLPAPER) 2436 else if (layout == ListeningExportLayout.MOSAIC) 2205 else 2106
     val aspectRatio: Float get() = 1125f / height
-    val label: String get() = (if (dark) "深色" else "浅色") + " · " + when (layout) {
-        ListeningExportLayout.GRID -> "整齐唱片"
-        ListeningExportLayout.SCATTER -> "散落唱片"
-        ListeningExportLayout.MOSAIC -> "大小拼贴"
+    val label: String get() = (if (dark) "Tối" else "Sáng") + " · " + when (layout) {
+        ListeningExportLayout.GRID -> "Đĩa nhạc ngay ngắn"
+        ListeningExportLayout.SCATTER -> "Đĩa nhạc rải rác"
+        ListeningExportLayout.MOSAIC -> "Ghép ảnh nhiều kích thước"
     }
     fun locked(info: ListeningWallExportInfo): Boolean = info.isCloud && layout == ListeningExportLayout.SCATTER && info.cloudVip != true
 }

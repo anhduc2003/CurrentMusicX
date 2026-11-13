@@ -10,7 +10,7 @@ import java.security.MessageDigest
 internal const val LX_MAX_SCRIPT_BYTES = 1024 * 1024
 internal const val LX_MAX_RESPONSE_BYTES = 2 * 1024 * 1024
 internal val lxQualities = listOf("128k", "320k", "flac", "flac24bit")
-internal val lxPlatforms = linkedMapOf("wy" to "网易云")
+internal val lxPlatforms = linkedMapOf("wy" to "Nhạc Vân NetEase")
 
 /** Also applied to saved declarations from versions which exposed other platforms. */
 internal fun lxNeteaseCapabilities(sources: List<LxCapability>): List<LxCapability> {
@@ -22,7 +22,7 @@ internal fun lxNeteaseCapabilities(sources: List<LxCapability>): List<LxCapabili
 @Serializable data class LxSourceInfo(val id: String, val name: String, val description: String = "",
     val version: String = "", val author: String = "", val homepage: String = "",
     val origin: String = "", val capabilities: List<LxCapability> = emptyList()) {
-    val summary get() = (if (lxNeteaseCapabilities(capabilities).isEmpty()) "未声明网易云接口" else "网易云") +
+    val summary get() = (if (lxNeteaseCapabilities(capabilities).isEmpty()) "Chưa khai báo API Nhạc Vân NetEase" else "Nhạc Vân NetEase") +
         version.takeIf(String::isNotBlank)?.let { " · $it" }.orEmpty()
 }
 @Serializable internal class LxStoredSource(val info: LxSourceInfo, val script: String,
@@ -32,21 +32,21 @@ internal fun lxNeteaseCapabilities(sources: List<LxCapability>): List<LxCapabili
 class LxSourceException(message: String, val qualityUnavailable: Boolean = false) : java.io.IOException(message)
 
 internal fun lxScriptInfo(script: String, origin: String = ""): LxSourceInfo {
-    require(script.toByteArray(Charsets.UTF_8).size in 1..LX_MAX_SCRIPT_BYTES) { "音源脚本为空或超过 1 MB" }
+    require(script.toByteArray(Charsets.UTF_8).size in 1..LX_MAX_SCRIPT_BYTES) { "Tập lệnh nguồn nhạc trống hoặc vượt quá 1 MB" }
     val header = Regex("^\\s*/\\*[\\s\\S]*?\\*/").find(script.removePrefix("\uFEFF"))?.value
-        ?: throw IllegalArgumentException("不是有效的落雪音源：缺少脚本信息注释")
+        ?: throw IllegalArgumentException("Không phải nguồn nhạc Luoxue hợp lệ: thiếu chú thích thông tin tập lệnh")
     val fields = Regex("(?m)^\\s*\\*?\\s*@(name|description|version|author|homepage)\\s+([^\\r\\n]+)")
         .findAll(header).associate { it.groupValues[1] to it.groupValues[2].trim() }
     val name = fields["name"].orEmpty()
-    require(name.isNotBlank() && name.length <= 256) { "音源脚本缺少有效名称" }
-    require(fields.values.all { it.length <= 8192 }) { "音源脚本信息过长" }
+    require(name.isNotBlank() && name.length <= 256) { "Tập lệnh nguồn nhạc thiếu tên hợp lệ" }
+    require(fields.values.all { it.length <= 8192 }) { "Thông tin tập lệnh nguồn nhạc quá dài" }
     val id = MessageDigest.getInstance("SHA-256").digest(script.toByteArray()).joinToString("") { "%02x".format(it) }
     return LxSourceInfo(id, name, fields["description"].orEmpty(), fields["version"].orEmpty(),
         fields["author"].orEmpty(), fields["homepage"].orEmpty(), origin)
 }
 
 internal fun lxCapabilities(value: JsonObject): List<LxCapability> {
-    val sources = value["sources"] as? JsonObject ?: throw LxSourceException("音源未声明支持的平台")
+    val sources = value["sources"] as? JsonObject ?: throw LxSourceException("Nguồn nhạc chưa khai báo nền tảng được hỗ trợ")
     return lxPlatforms.keys.mapNotNull { key ->
         val source = sources[key] as? JsonObject ?: return@mapNotNull null
         val actions = (source["actions"] as? JsonArray).orEmpty().mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
@@ -54,17 +54,17 @@ internal fun lxCapabilities(value: JsonObject): List<LxCapability> {
         val declared = (source["qualitys"] as? JsonArray).orEmpty().mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
         val qualities = lxQualities.filter { it in declared }
         qualities.takeIf { it.isNotEmpty() }?.let { LxCapability(key, it) }
-    }.also { if (it.isEmpty()) throw LxSourceException("此音源没有声明网易云播放接口，目前仅支持网易云") }
+    }.also { if (it.isEmpty()) throw LxSourceException("Nguồn nhạc này chưa khai báo API phát nhạc Nhạc Vân NetEase; hiện chỉ hỗ trợ Nhạc Vân NetEase") }
 }
 
 internal data class LxTrackRequest(val platform: String, val quality: String, val data: JsonObject)
 internal fun lxTrackRequest(song: Song, quality: AudioQuality, sources: List<LxCapability>): LxTrackRequest {
     val wy = song.externalIds.neteaseId?.takeIf { it.toLongOrNull()?.let { id -> id > 0 } == true }
         ?: song.id.takeIf { song.musicSource == MusicSource.NETEASE && it > 0 }?.toString()
-    val id = wy ?: throw LxSourceException("落雪音源目前仅支持带有效网易云 ID 的歌曲")
+    val id = wy ?: throw LxSourceException("Nguồn nhạc Luoxue hiện chỉ hỗ trợ bài hát có ID Nhạc Vân NetEase hợp lệ")
     val platform = "wy"
     val supported = lxNeteaseCapabilities(sources).firstOrNull()?.qualities
-        ?: throw LxSourceException("此音源没有声明网易云播放接口，请切换音源")
+        ?: throw LxSourceException("Nguồn nhạc này chưa khai báo API phát nhạc Nhạc Vân NetEase, vui lòng chuyển nguồn nhạc")
     val desired = when (quality) { AudioQuality.STANDARD, AudioQuality.HIGHER -> 0; AudioQuality.EXHIGH -> 1; AudioQuality.LOSSLESS -> 2; AudioQuality.AUTO -> lxQualities.lastIndex; else -> 3 }
     val selected = lxQualities.take(desired + 1).lastOrNull { it in supported }
         ?: lxQualities.first { it in supported }

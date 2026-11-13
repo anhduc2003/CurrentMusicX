@@ -48,9 +48,9 @@ import io.github.currencortex.music.feature.lyrics.ui.*
                 val focused = slot == 0
                 val text = if (matches && current >= 0) lyrics.document.lines.getOrNull(current + slot)?.text.orEmpty()
                     else if (!focused) "" else when {
-                        lyrics.loading || !matches -> "正在加载歌词"
-                        lyrics.document.lines.isEmpty() -> "暂无歌词"
-                        else -> timeline.interlude(LyricsSynchronizer.lyricPosition(clock.value, totalOffset))?.label ?: "音乐正在继续"
+                        lyrics.loading || !matches -> "Đang tải lời bài hát"
+                        lyrics.document.lines.isEmpty() -> "Chưa có lời bài hát"
+                        else -> timeline.interlude(LyricsSynchronizer.lyricPosition(clock.value, totalOffset))?.label ?: "Nhạc vẫn đang tiếp tục"
                     }
                 val weight = lyricsFontWeight(settings.lyricsWeight, focused, settings.lyricsDisplay.fontWeight)
                 BasicText(text.ifBlank { " " }, Modifier.fillMaxWidth().heightIn(min = rowHeight)

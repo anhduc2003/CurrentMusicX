@@ -30,29 +30,29 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 @Composable internal fun ProfilePageTitle(navigate: (String) -> Unit, onSettings: (() -> Unit)?,
     public: Boolean = false, loading: Boolean = false, reload: () -> Unit = {}) {
     val actions: @Composable RowScope.() -> Unit = {
-        if (public) GlassIconButton(reload, "刷新", enabled = !loading) { Icon(MusicIcons.Update, null) }
-        else GlassIconButton({ navigate("user/announcements") }, "公告", Modifier.testTag("me_announcements")) {
+        if (public) GlassIconButton(reload, "Làm mới", enabled = !loading) { Icon(MusicIcons.Update, null) }
+        else GlassIconButton({ navigate("user/announcements") }, "Thông báo", Modifier.testTag("me_announcements")) {
             Icon(MusicIcons.File, null)
         }
-        onSettings?.let { action -> GlassIconButton(action, "设置", Modifier.testTag("me_settings")) {
+     onSettings?.let { action -> GlassIconButton(action, "Cài đặt", Modifier.testTag("me_settings")) {
             Icon(Icons.Outlined.Settings, null)
         } }
     }
     SettingsUiScope {
         if (public) Row(Modifier.fillMaxWidth().height(SettingsToolbarHeight).padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("用户主页", Modifier.weight(1f), fontSize = 24.sp, lineHeight = 30.sp,
+             Text("Trang cá nhân", Modifier.weight(1f), fontSize = 24.sp, lineHeight = 30.sp,
                 fontWeight = FontWeight.SemiBold, color = MiuixTheme.colorScheme.onSurface)
             actions()
         }
-        else SettingsRootTopBar("我的", Modifier.testTag("me_root_toolbar"), actions = actions)
+         else SettingsRootTopBar("Của tôi", Modifier.testTag("me_root_toolbar"), actions = actions)
     }
 }
 
 @Composable internal fun ProfilePageLayout(navigate: (String) -> Unit, onSettings: (() -> Unit)?,
     public: Boolean = false, loading: Boolean = false, reload: () -> Unit = {}, onBack: (() -> Unit)? = null, content: @Composable (Dp) -> Unit) {
-    if (public) MusicSubpage("用户主页", "public_profile", onBack, actions = {
-        GlassIconButton(reload, "刷新", enabled = !loading) { Icon(MusicIcons.Update, null) }
+     if (public) MusicSubpage("Trang cá nhân", "public_profile", onBack, actions = {
+         GlassIconButton(reload, "Làm mới", enabled = !loading) { Icon(MusicIcons.Update, null) }
     }, content = content)
     else SettingsScrollLayout(Modifier.fillMaxSize(), topBar = {
         ProfilePageTitle(navigate, onSettings, loading = loading, reload = reload)
@@ -70,16 +70,16 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 }
 
 @Composable internal fun ProfileLibrarySection(navigate: (String) -> Unit) {
-    SettingsListSection("我的音乐") {
-        ProfileDestination("我喜欢", "收藏的歌曲", MusicIcons.Heart, "open_likes") { navigate("lib/likes") }
+     SettingsListSection("Nhạc của tôi") {
+         ProfileDestination("Yêu thích", "Bài hát đã lưu", MusicIcons.Heart, "open_likes") { navigate("lib/likes") }
         SettingsDivider(52.dp)
-        ProfileDestination("歌单", "创建与收藏的歌单", MusicIcons.List, "open_playlists") { navigate("lib/playlists") }
+         ProfileDestination("Danh sách phát", "Danh sách phát đã tạo và đã lưu", MusicIcons.List, "open_playlists") { navigate("lib/playlists") }
         SettingsDivider(52.dp)
-        ProfileDestination("最近播放", "回顾听过的歌曲", MusicIcons.Update, "open_recent") { navigate("lib/recent") }
+         ProfileDestination("Nghe gần đây", "Xem lại các bài hát đã nghe", MusicIcons.Update, "open_recent") { navigate("lib/recent") }
         SettingsDivider(52.dp)
-        ProfileDestination("听歌时长", "本机与网易云听歌足迹", MusicIcons.Headphones, "open_listening") { navigate("user/listening") }
+         ProfileDestination("Thời lượng nghe nhạc", "Lịch sử nghe nhạc trên thiết bị và Nhạc Vân NetEase", MusicIcons.Headphones, "open_listening") { navigate("user/listening") }
         SettingsDivider(52.dp)
-        ProfileDestination("本地音乐", "手机上的歌曲", MusicIcons.Device, "open_local_music") { navigate("lib/local") }
+         ProfileDestination("Nhạc trên thiết bị", "Bài hát trên điện thoại", MusicIcons.Device, "open_local_music") { navigate("lib/local") }
     }
 }
 
@@ -87,39 +87,39 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 @Composable internal fun ProfileServicesSection(navigate: (String) -> Unit, tasks: Boolean,
     native: Boolean = false, bound: Boolean = true,
     navidromeConfigured: Boolean = false, embyConfigured: Boolean = false) {
-    SettingsListSection("音乐服务") {
-        ProfileDestination(if (native && !bound) "登录网易云" else "网易云账号",
-            if (native && !bound) "需先注册并登录 CurrentMusic" else "绑定账号、同步歌单", MusicIcons.Account, "open_binding") { navigate("user/binding") }
+     SettingsListSection("Dịch vụ âm nhạc") {
+         ProfileDestination(if (native && !bound) "Đăng nhập Nhạc Vân NetEase" else "Tài khoản Nhạc Vân NetEase",
+             if (native && !bound) "Trước tiên hãy đăng ký và đăng nhập CurrentMusic" else "Liên kết tài khoản, đồng bộ danh sách phát", MusicIcons.Account, "open_binding") { navigate("user/binding") }
         if (tasks) {
             SettingsDivider(52.dp)
-            ProfileDestination("网易云任务", "签到、云贝与会员成长", MusicIcons.Check, "open_netease_tasks") { navigate("user/netease-tasks") }
+             ProfileDestination("Nhiệm vụ Nhạc Vân NetEase", "Điểm danh, Vân Bối và tăng cấp hội viên", MusicIcons.Check, "open_netease_tasks") { navigate("user/netease-tasks") }
         }
         SettingsDivider(52.dp)
-        ProfileDestination("导入歌单", "链接、文字、图片与本地歌曲", MusicIcons.Transfer, "profile_playlist_import") { navigate("user/playlist-import") }
+         ProfileDestination("Nhập danh sách phát", "Liên kết, văn bản, hình ảnh và bài hát trên thiết bị", MusicIcons.Transfer, "profile_playlist_import") { navigate("user/playlist-import") }
         if (navidromeConfigured) {
             SettingsDivider(52.dp)
-            ProfileDestination("Navidrome 曲库", "自己的音乐服务器", MusicIcons.Storage, "profile_navidrome") { navigate("navidrome") }
+             ProfileDestination("Thư viện Navidrome", "Máy chủ nhạc của riêng bạn", MusicIcons.Storage, "profile_navidrome") { navigate("navidrome") }
         }
         if (embyConfigured) {
             SettingsDivider(52.dp)
-            ProfileDestination("Emby 曲库", "自己的音乐服务器", MusicIcons.Storage, "profile_emby") { navigate("emby") }
+             ProfileDestination("Thư viện Emby", "Máy chủ nhạc của riêng bạn", MusicIcons.Storage, "profile_emby") { navigate("emby") }
         }
     }
 }
 
 @Composable internal fun ProfileAccountSection(navigate: (String) -> Unit, native: Boolean = false, administrator: Boolean = false) {
-    SettingsListSection("账号") {
-        if (native) ProfileDestination("CurrentMusic 账户", "注册与登录、头像装饰与一起听", MusicIcons.Account,
+     SettingsListSection("Tài khoản") {
+         if (native) ProfileDestination("Tài khoản CurrentMusic", "Đăng ký và đăng nhập, trang trí ảnh đại diện và nghe cùng nhau", MusicIcons.Account,
             "open_currentmusic_login") { navigate("user/login") }
         else {
-            ProfileDestination("等级与成长", "查看积分、每日进度与等级试炼", MusicIcons.Check, "open_levels") { navigate("user/levels") }
+             ProfileDestination("Cấp độ và phát triển", "Xem điểm, tiến độ hằng ngày và thử thách cấp độ", MusicIcons.Check, "open_levels") { navigate("user/levels") }
             SettingsDivider(52.dp)
-            ProfileDestination("头像挂件", "装饰你的头像", MusicIcons.Image, "open_decorations") { navigate("user/decorations") }
+             ProfileDestination("Phụ kiện ảnh đại diện", "Trang trí ảnh đại diện của bạn", MusicIcons.Image, "open_decorations") { navigate("user/decorations") }
             SettingsDivider(52.dp)
-            ProfileDestination("账号与安全", "切换账号、修改密码与退出登录", MusicIcons.Account, "open_security") { navigate("user/security") }
+            ProfileDestination("Tài khoản và bảo mật", "Chuyển đổi tài khoản, đổi mật khẩu và đăng xuất", MusicIcons.Account, "open_security") { navigate("user/security") }
             if (administrator) {
                 SettingsDivider(52.dp)
-                ProfileDestination("管理员面板", "用户、公告、设备与系统管理", MusicIcons.Account, "open_admin") { navigate("user/admin") }
+                ProfileDestination("Bảng điều khiển quản trị viên", "Quản lý người dùng, thông báo, thiết bị và hệ thống", MusicIcons.Account, "open_admin") { navigate("user/admin") }
             }
         }
     }
@@ -132,7 +132,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Row(Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            listOf("点赞" to "${stats.likes}", "收藏" to "${stats.favs}", "歌单" to "${stats.playlists}").forEach { (label, value) ->
+            listOf("Lượt thích" to "${stats.likes}", "Bộ sưu tập" to "${stats.favs}", "Danh sách phát" to "${stats.playlists}").forEach { (label, value) ->
                 Column(Modifier.weight(1f).semantics(mergeDescendants = true) {},
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(3.dp)) {
                     Text(value, fontSize = 22.sp, lineHeight = 28.sp, fontWeight = FontWeight.SemiBold)
@@ -147,12 +147,12 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             val tile = Modifier.weight(1f).background(MiuixTheme.colorScheme.onSurface.copy(alpha = .035f), RoundedCornerShape(16.dp))
                 .padding(horizontal = 12.dp, vertical = 10.dp)
             Column(tile, verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text("听歌天数", fontSize = 12.sp, lineHeight = 16.sp, color = muted)
-                Text("${stats.playDays} 天", fontSize = 15.sp, lineHeight = 20.sp)
+                Text("Số ngày nghe nhạc", fontSize = 12.sp, lineHeight = 16.sp, color = muted)
+                Text("${stats.playDays} ngày", fontSize = 15.sp, lineHeight = 20.sp)
             }
             Column(tile.then(onListening?.let { Modifier.clickable(role = Role.Button, onClick = it).testTag("profile_listening_duration") }
                 ?: Modifier), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text("听歌时长", fontSize = 12.sp, lineHeight = 16.sp, color = muted)
+                Text("Thời lượng nghe nhạc", fontSize = 12.sp, lineHeight = 16.sp, color = muted)
                 Text(listeningDuration(stats.listenMs), fontSize = 15.sp, lineHeight = 20.sp)
             }
         }

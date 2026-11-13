@@ -20,7 +20,7 @@ internal fun originalSpeakerDeviceOverride(model: String, id: Long): OriginalSpe
     val material = if (slot.second.isEmpty()) orientation else orientation[slot.second] as? JsonObject ?: return null
     // ff1/c.d keeps the selected generic negative ID, using the mapped resource metadata.
     return parseOriginalSpeakerMaterial(buildJsonObject {
-        put("materialId", id); put("materialName", material["materialName"] ?: JsonPrimitive("外放音效"))
+        put("materialId", id); put("materialName", material["materialName"] ?: JsonPrimitive("Hiệu ứng âm thanh loa ngoài"))
         put("meta", material["url"] ?: JsonNull); put("md5", material["md5"] ?: JsonNull)
         put("fileSize", material["fileSize"] ?: JsonNull)
     })

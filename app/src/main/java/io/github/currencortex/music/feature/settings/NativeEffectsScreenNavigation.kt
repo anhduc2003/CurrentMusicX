@@ -109,7 +109,7 @@ import top.yukonga.miuix.kmp.basic.Text
         }
     }
     audition.error?.let { message ->
-        MusicDialog(title = "试听提示", onDismiss = vm::stopPreview,
-            content = { Text(message) }, footer = { MusicTextAction("知道了", vm::stopPreview) })
+        MusicDialog(title = "Thông báo nghe thử", onDismiss = vm::stopPreview,
+            content = { Text(message) }, footer = { MusicTextAction("Đã hiểu", vm::stopPreview) })
     }
 }

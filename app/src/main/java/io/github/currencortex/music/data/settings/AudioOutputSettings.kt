@@ -6,11 +6,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 
 enum class AudioOutputMode(val label: String) {
-    AUDIO_TRACK("AudioTrack"), OPENSL_ES("OpenSL ES"), AAUDIO("AAudio"), DIRECT("Direct (beta)"), OBOE("Oboe"), BIT_PERFECT("Bit-perfect"), NETEASE_USB("USB 独占（网易云）");
+    AUDIO_TRACK("AudioTrack"), OPENSL_ES("OpenSL ES"), AAUDIO("AAudio"), DIRECT("Direct (beta)"), OBOE("Oboe"), BIT_PERFECT("Bit-perfect"), NETEASE_USB("USB độc quyền (Nhạc Vân NetEase)");
     val rawPcm get() = this == BIT_PERFECT || this == NETEASE_USB
     val bypassProcessing get() = this == DIRECT || rawPcm
 }
-enum class AudioBufferPolicy(val label: String) { BALANCED("均衡"), RESPONSIVE("快速响应"), RESILIENT("弱网优先") }
+enum class AudioBufferPolicy(val label: String) { BALANCED("Cân bằng"), RESPONSIVE("Phản hồi nhanh"), RESILIENT("Ưu tiên mạng yếu") }
 
 data class AudioOutputSettings(val sampleRate: Int = 0, val deviceKey: String = "", val mode: AudioOutputMode = AudioOutputMode.AUDIO_TRACK,
     val usbDeviceKey: String = "", val bufferPolicy: AudioBufferPolicy = AudioBufferPolicy.BALANCED) {
@@ -23,7 +23,7 @@ class AudioOutputSettingsRepository(private val store: DataStore<Preferences>, s
     private val mode = stringPreferencesKey("audio.output.mode")
     private val usbDevice = stringPreferencesKey("audio.output.usbHostDevice")
     private val buffer = stringPreferencesKey("audio.output.bufferPolicy")
-    val status = MutableStateFlow("尚未创建音频输出")
+    val status = MutableStateFlow("Chưa tạo đầu ra âm thanh")
     val state = store.data.map { AudioOutputSettings(it[rate]?.takeIf(AudioOutputSettings.rates::contains) ?: 0, it[device].orEmpty(),
         AudioOutputMode.entries.firstOrNull { value -> value.name == it[mode] } ?: AudioOutputMode.AUDIO_TRACK, it[usbDevice].orEmpty(),
         AudioBufferPolicy.entries.firstOrNull { value -> value.name == it[buffer] } ?: AudioBufferPolicy.BALANCED) }

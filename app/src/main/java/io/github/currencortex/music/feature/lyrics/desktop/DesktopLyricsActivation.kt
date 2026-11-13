@@ -21,10 +21,10 @@ internal class DesktopLyricsActivation(private val scope: CoroutineScope,
         operation = scope.launch {
             try {
                 if (enabled) {
-                    if (!permitted()) throw IllegalStateException("请先授予悬浮窗权限")
+                     if (!permitted()) throw IllegalStateException("Vui lòng cấp quyền cửa sổ nổi trước")
                     connect()
                     ensureActive()
-                    if (!permitted()) throw IllegalStateException("悬浮窗权限已关闭，请重新开启")
+                     if (!permitted()) throw IllegalStateException("Quyền cửa sổ nổi đã bị tắt, vui lòng bật lại")
                 }
                 if (request == revision) saveEnabled(enabled)
             } catch (cancelled: CancellationException) { throw cancelled }
@@ -32,7 +32,7 @@ internal class DesktopLyricsActivation(private val scope: CoroutineScope,
                 if (request == revision) {
                     saveEnabled(false)
                     mutable.value = DesktopActivationState(error = if (failure is IllegalStateException)
-                        failure.message else "无法开启桌面歌词，请重试")
+                         failure.message else "Không thể bật lời bài hát trên màn hình nền, vui lòng thử lại")
                 }
             } finally { if (request == revision) mutable.value = mutable.value.copy(connecting = false) }
         }

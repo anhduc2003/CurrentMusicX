@@ -28,13 +28,13 @@ class IslandErrorNoticeCenter(private val scope: CoroutineScope) {
         if (text.isBlank()) return 0
         // Repeated feedback extends its lifetime without restarting the island's entrance.
         val id = mutable.value?.takeIf { onUndo == null && it.action == null && it.kind == kind && it.message == text }?.id ?: ++sequence
-        val action = onUndo?.let { callback -> IslandNoticeAction("撤销") {
+        val action = onUndo?.let { callback -> IslandNoticeAction("Hoàn tác") {
             val accepted = synchronized(this) {
                 if (mutable.value?.id != id) false else { clear(id); true }
             }
             if (accepted) callback()
         } }
-        mutable.value = SoundEffectNotice(id, "操作提示", SoundEffectNoticeTier.STANDARD,
+         mutable.value = SoundEffectNotice(id, "Thông báo thao tác", SoundEffectNoticeTier.STANDARD,
             if (kind == IslandNoticeKind.ERROR) SoundEffectNoticePhase.FAILED else SoundEffectNoticePhase.READY,
             text, kind = kind, action = action)
         expiry?.cancel()

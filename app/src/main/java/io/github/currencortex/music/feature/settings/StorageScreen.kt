@@ -39,15 +39,15 @@ private fun formatSize(bytes: Long): String = when {
     // One hue stepped down: the bar reads as a single system instead of borrowing another app's palette.
     val ramp = listOf(colors.primary, colors.primary.copy(alpha = .5f), colors.primary.copy(alpha = .28f),
         colors.onSurface.copy(alpha = .14f))
-    SettingsPage("存储空间","storage_screen") {
+    SettingsPage("Dung lượng lưu trữ","storage_screen") {
         item { Card { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("CurrentMusic 占用", fontSize = 13.sp, color = hint)
+            Text("CurrentMusic chiếm dụng", fontSize = 13.sp, color = hint)
             Text(formatSize(usage.total), fontSize = 32.sp, fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.testTag("storage_total"))
             StorageBar(listOf(usage.audio, usage.data, usage.downloads, usage.essential), ramp)
             Row(Modifier.fillMaxWidth()) {
-                listOf("音乐缓存" to usage.audio, "数据缓存" to usage.data,
-                    "下载" to usage.downloads, "必要文件" to usage.essential).forEachIndexed { index, (label, _) ->
+                listOf("Bộ nhớ đệm nhạc" to usage.audio, "Bộ nhớ đệm dữ liệu" to usage.data,
+                    "Tệp đã tải xuống" to usage.downloads, "Tệp cần thiết" to usage.essential).forEachIndexed { index, (label, _) ->
                     Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         Box(Modifier.size(7.dp).clip(RoundedCornerShape(4.dp)).background(ramp[index]))
@@ -60,47 +60,47 @@ private fun formatSize(bytes: Long): String = when {
         item { Card { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("音乐缓存")
-                    Text(if (usage.audioTracks > 0) "${formatSize(usage.audio)} · ${usage.audioTracks} 首"
+                    Text("Bộ nhớ đệm nhạc")
+                    Text(if (usage.audioTracks > 0) "${formatSize(usage.audio)} · ${usage.audioTracks} bản nhạc"
                         else formatSize(usage.audio), fontSize = 20.sp, fontWeight = FontWeight.Medium,
                         modifier = Modifier.testTag("storage_audio_size"))
                 }
-                MusicTextAction(if (state.busy) "正在清理…" else "清理", { vm.clearAudio() },
+                MusicTextAction(if (state.busy) "Đang dọn dẹp…" else "Dọn dẹp", { vm.clearAudio() },
                     Modifier.testTag("clear_audio_storage"), enabled = !state.busy && usage.audio > 0, destructive = true)
             }
-            Text("完整缓存的音频可离线重播；被回收或清理后需要重新加载。", fontSize = 12.sp, color = hint)
-            Text("默认上限 1 GiB，按最近使用情况自动回收。这里只清理播放缓存，不影响下载文件。",
+            Text("Âm thanh được lưu đầy đủ trong bộ nhớ đệm có thể phát lại ngoại tuyến; sau khi bị thu hồi hoặc dọn dẹp, cần tải lại.", fontSize = 12.sp, color = hint)
+            Text("Giới hạn mặc định là 1 GiB, tự động thu hồi theo mức độ sử dụng gần đây. Chỉ dọn dẹp bộ nhớ đệm phát nhạc, không ảnh hưởng đến tệp đã tải xuống.",
                 fontSize = 12.sp, color = hint)
         } } }
 
         item { Card { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("数据缓存")
+                    Text("Bộ nhớ đệm dữ liệu")
                     Text(formatSize(usage.data), fontSize = 20.sp, fontWeight = FontWeight.Medium,
                         modifier = Modifier.testTag("storage_data_size"))
                 }
-                MusicTextAction(if (state.busy) "正在清理…" else "清理", { vm.clearData() },
+                MusicTextAction(if (state.busy) "Đang dọn dẹp…" else "Dọn dẹp", { vm.clearData() },
                     Modifier.testTag("clear_data_storage"), enabled = !state.busy && usage.data > 0, destructive = true)
             }
-            Text("封面、歌词与页面加载产生的临时数据；清理后不影响账号与已下载的音乐。",
+            Text("Dữ liệu tạm được tạo khi tải bìa album, lời bài hát và trang; dọn dẹp không ảnh hưởng đến tài khoản và nhạc đã tải xuống.",
                 fontSize = 12.sp, color = hint)
         } } }
 
         item { Card { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text("下载的资源")
-            Text(if (usage.downloadCount > 0) "${formatSize(usage.downloads)} · ${usage.downloadCount} 个"
+            Text("Tài nguyên đã tải xuống")
+            Text(if (usage.downloadCount > 0) "${formatSize(usage.downloads)} · ${usage.downloadCount} mục"
                 else formatSize(usage.downloads), fontSize = 20.sp, fontWeight = FontWeight.Medium,
                 modifier = Modifier.testTag("storage_download_size"))
-            Text("统计系统「下载/CurrentMusic」目录；可在歌曲操作的下载窗口或文件管理器中删除。",
+            Text("Thống kê thư mục hệ thống «Tải xuống/CurrentMusic»; có thể xóa trong cửa sổ tải xuống ở thao tác bài hát hoặc bằng trình quản lý tệp.",
                 fontSize = 12.sp, color = hint)
         } } }
 
         item { Card { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text("必要文件")
+            Text("Tệp cần thiết")
             Text(formatSize(usage.essential), fontSize = 20.sp, fontWeight = FontWeight.Medium,
                 modifier = Modifier.testTag("storage_essential_size"))
-            Text("应用本体、运行库与本地数据（含登录凭据）。清理会退出登录并需要重新下载应用。",
+            Text("Ứng dụng, thư viện chạy và dữ liệu cục bộ (bao gồm thông tin đăng nhập). Dọn dẹp sẽ đăng xuất và cần tải lại ứng dụng.",
                 fontSize = 12.sp, color = hint)
         } } }
 

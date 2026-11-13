@@ -64,7 +64,7 @@ class EmbyViewModel(val container: AppContainer) : ViewModel() {
     }
     fun search(query: String) {
         val value = query.trim(); if (value.isBlank()) return
-        show(EmbyRoute("search", title = "搜索歌曲", query = value), back = state.value.route.kind == "search")
+        show(EmbyRoute("search", title = "Tìm kiếm bài hát", query = value), back = state.value.route.kind == "search")
     }
     fun position(route: EmbyRoute, index: Int, offset: Int) {
         if (state.value.route == route) state.value = state.value.copy(index = index, offset = offset)
@@ -94,7 +94,7 @@ class EmbyViewModel(val container: AppContainer) : ViewModel() {
     }
     fun enqueue(song: Song, next: Boolean) {
         if (container.playerController.state.value.mode != io.github.currencortex.music.core.media.PlayerMode.LOCAL) {
-            error.value = "请先退出一起听，再播放 Emby 曲库"; return
+            error.value = "Vui lòng thoát khỏi tính năng Nghe cùng trước khi phát thư viện Emby"; return
         }
         container.playerController.add(song, next)
     }

@@ -31,8 +31,8 @@ class AudioOutputRouter(private val diagnostics: AudioDiagnostics) {
         failure = reason.take(500)
         diagnostics.update { it.copy(backend = null, output = AudioPcmFormat(), bitPerfect = BitPerfectEvidence.FALLBACK,
             softwareBufferFrames = null, deviceBufferFrames = null, capacityFrames = null, underruns = null,
-            latencyMs = null, latencyEvidence = "系统未提供", usbCapabilities = null,
-            fallbackReason = failure, formatEvidence = "原输出不可用，等待 AudioTrack 实际格式") }
+            latencyMs = null, latencyEvidence = "Hệ thống không cung cấp", usbCapabilities = null,
+            fallbackReason = failure, formatEvidence = "Đầu ra ban đầu không khả dụng, đang chờ định dạng thực tế của AudioTrack") }
         return true
     }
     @Synchronized fun retry() {

@@ -89,7 +89,7 @@ internal object SongSharePoster {
         canvas.drawLine(90f, 1100f, 990f, 1100f, paint)
         val url = content.publicUrl
         val footerWidth = if (url == null) 900 else 590
-        drawParagraph(canvas, paragraph(if (url == null) "由 CurrentMusicX 分享" else "在 CurrentMusic 收听",
+        drawParagraph(canvas, paragraph(if (url == null) "Được chia sẻ từ CurrentMusicX" else "Nghe trên CurrentMusic",
             26f, footerWidth, 1, 0xafffffff.toInt()), 90f, 1150f)
         if (url != null) {
             val qr = qr(url)
@@ -100,13 +100,13 @@ internal object SongSharePoster {
             qr.recycle()
             drawParagraph(canvas, paragraph(url.removePrefix("https://"), 24f, footerWidth, 2,
                 0xddffffff.toInt(), monospace = true), 90f, 1198f)
-            label("扫码或访问链接", 90f, 1290f, 22f, 0x99ffffff.toInt())
-            drawParagraph(canvas, paragraph("也可打开 CurrentMusicX 搜索歌名收听", 21f, footerWidth, 2,
+            label("Quét mã hoặc truy cập liên kết", 90f, 1290f, 22f, 0x99ffffff.toInt())
+            drawParagraph(canvas, paragraph("Bạn cũng có thể mở CurrentMusicX, tìm tên bài hát để nghe", 21f, footerWidth, 2,
                 0x88ffffff.toInt()), 90f, 1320f)
         } else {
             drawParagraph(canvas, paragraph("${content.title} · ${content.artists}", 26f,
                 footerWidth, 2, 0xccffffff.toInt()), 90f, 1204f)
-            label("打开音乐应用，搜索歌曲名收听", 90f, 1332f, 23f, 0x99ffffff.toInt())
+            label("Mở ứng dụng nghe nhạc, tìm tên bài hát để nghe", 90f, 1332f, 23f, 0x99ffffff.toInt())
         }
         return output
     }

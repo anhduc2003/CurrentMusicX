@@ -15,19 +15,19 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 /** Automatic discovery asks first; only View opens the full update page. */
 @Composable internal fun UpdateAvailablePrompt(prompt: UpdatePromptState,
     onIgnore: () -> Unit, onView: () -> Unit, onDismiss: () -> Unit) {
-    UpdateOptionsDialog("发现新版本", onDismiss = { if (!prompt.saving) onDismiss() }, actions = {
+    UpdateOptionsDialog("Phát hiện phiên bản mới", onDismiss = { if (!prompt.saving) onDismiss() }, actions = {
         val colors = MiuixTheme.colorScheme
-        MusicDialogButton(if (prompt.saving) "正在忽略…" else "忽略更新", onIgnore,
+        MusicDialogButton(if (prompt.saving) "Đang bỏ qua…" else "Bỏ qua cập nhật", onIgnore,
             Modifier.weight(1f).testTag("update_prompt_ignore"), enabled = !prompt.saving, minHeight = 48.dp,
             colors = ButtonDefaults.textButtonColors(color = colors.onBackground.copy(alpha = .07f),
                 textColor = colors.onSurfaceVariantSummary))
-        MusicDialogButton("查看", onView, Modifier.weight(1f).testTag("update_prompt_view"),
+        MusicDialogButton("Xem", onView, Modifier.weight(1f).testTag("update_prompt_view"),
             enabled = !prompt.saving, minHeight = 48.dp,
             colors = ButtonDefaults.textButtonColors(color = colors.primary, textColor = colors.onPrimary))
     }) {
         Column(Modifier.fillMaxWidth().testTag("update_available_prompt"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("CurrentMusic ${prompt.release.version} 已发布", fontSize = 17.sp)
-            Text("查看更新内容并选择是否下载。", fontSize = 14.sp,
+            Text("CurrentMusic ${prompt.release.version} đã phát hành", fontSize = 17.sp)
+            Text("Xem nội dung cập nhật và chọn có tải xuống hay không.", fontSize = 14.sp,
                 color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
             prompt.error?.let { Text(it, fontSize = 13.sp, color = MiuixTheme.colorScheme.error) }
         }

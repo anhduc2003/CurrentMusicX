@@ -30,7 +30,7 @@ class LxRuntime(context: Context, private val http: LxHttpClient = LxHttpClient(
     fun supported() = JavaScriptSandbox.isSupported()
     suspend fun inspect(info: LxSourceInfo, script: String): List<LxCapability> = lock.withLock {
         try { ensure(info, script); lxCapabilities(requireNotNull(initialized)) }
-        catch (_: TimeoutCancellationException) { close(); currentCoroutineContext().ensureActive(); throw LxSourceException("落雪音源初始化超时，请重试或更换音源") }
+        catch (_: TimeoutCancellationException) { close(); currentCoroutineContext().ensureActive(); throw LxSourceException("Khởi tạo nguồn nhạc Lạc Tuyết quá thời gian, vui lòng thử lại hoặc đổi nguồn nhạc") }
         catch (cancelled: CancellationException) { close(); throw cancelled }
         catch (failure: Exception) { close(); throw readable(failure) }
     }
@@ -42,28 +42,28 @@ class LxRuntime(context: Context, private val http: LxHttpClient = LxHttpClient(
             if (answer["ok"]?.jsonPrimitive?.booleanOrNull != true) {
                 // Test-only diagnostics, never include arbitrary script errors in UI or logs.
                 runCatching { failureObserver?.invoke(answer["message"]?.jsonPrimitive?.contentOrNull.orEmpty().take(256)) }
-                throw LxSourceException("音源未能解析这首歌曲，请重试或切换音源", qualityUnavailable = true)
+                throw LxSourceException("Nguồn nhạc không thể phân tích bài hát này, vui lòng thử lại hoặc chuyển nguồn nhạc", qualityUnavailable = true)
             }
             val value = answer["value"] as? JsonPrimitive
-            if (value?.isString != true || value.content.length > 8192) throw LxSourceException("音源没有返回有效的播放链接")
+            if (value?.isString != true || value.content.length > 8192) throw LxSourceException("Nguồn nhạc không trả về liên kết phát hợp lệ")
             http.url(value.content).toString()
-        } catch (_: TimeoutCancellationException) { close(); currentCoroutineContext().ensureActive(); throw LxSourceException("落雪音源解析超时，请重试或更换音源") }
+        } catch (_: TimeoutCancellationException) { close(); currentCoroutineContext().ensureActive(); throw LxSourceException("Phân tích nguồn nhạc Lạc Tuyết quá thời gian, vui lòng thử lại hoặc đổi nguồn nhạc") }
         catch (cancelled: CancellationException) { close(); throw cancelled }
         catch (failure: Exception) { close(); throw readable(failure) }
     }
     private suspend fun ensure(info: LxSourceInfo, script: String) {
         if (activeId == info.id && isolate != null && initialized != null) return
         close()
-        if (!supported()) throw LxSourceException("当前系统不支持落雪音源运行环境，请更新 Android System WebView 后重试")
+        if (!supported()) throw LxSourceException("Môi trường chạy nguồn nhạc Lạc Tuyết không được hệ thống hiện tại hỗ trợ, vui lòng cập nhật Android System WebView rồi thử lại")
         val engine = withTimeout(10000) { JavaScriptSandbox.createConnectedInstanceAsync(app).await() }
         sandbox = engine
         if (!engine.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE) ||
             !engine.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_ISOLATE_TERMINATION) ||
             !engine.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN)) {
-            throw LxSourceException("当前 WebView 缺少脚本隔离能力，请更新 Android System WebView")
+            throw LxSourceException("WebView hiện tại thiếu khả năng cách ly tập lệnh, vui lòng cập nhật Android System WebView")
         }
         if (!engine.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_EVALUATE_WITHOUT_TRANSACTION_LIMIT) && script.length > 100000)
-            throw LxSourceException("当前 WebView 不支持较大的音源脚本，请更新后重试")
+            throw LxSourceException("WebView hiện tại không hỗ trợ tập lệnh nguồn nhạc dung lượng lớn, vui lòng cập nhật rồi thử lại")
         val parameters = IsolateStartupParameters().apply { setMaxHeapSizeBytes(64L * 1024 * 1024) }
         isolate = engine.createIsolate(parameters)
         evaluate(crypto)
@@ -93,7 +93,7 @@ class LxRuntime(context: Context, private val http: LxHttpClient = LxHttpClient(
                     val state = Json.parseToJsonElement(evaluate("Promise.resolve().then(()=>__cm_lx.take(${SystemClock.elapsedRealtime()}))")).jsonObject
                     if (state["failure"] !is JsonNull && state["failure"] != null) {
                         failureObserver?.invoke(state["failure"]!!.jsonPrimitive.content.take(256))
-                        throw LxSourceException(if (forInitialization) "音源脚本初始化失败，可能不兼容或已失效" else "音源脚本执行失败，请重试或切换音源")
+                        throw LxSourceException(if (forInitialization) "Khởi tạo tập lệnh nguồn nhạc thất bại, có thể không tương thích hoặc đã hết hiệu lực" else "Thực thi tập lệnh nguồn nhạc thất bại, vui lòng thử lại hoặc chuyển nguồn nhạc")
                     }
                     val done = state[if (forInitialization) "initialized" else "answer"] as? JsonObject
                     // A final musicUrl result can stop speculative requests, but `inited`
@@ -105,7 +105,7 @@ class LxRuntime(context: Context, private val http: LxHttpClient = LxHttpClient(
                     }
                     (state["cancelled"] as? JsonArray).orEmpty().forEach { pending.remove(it.jsonPrimitive.int)?.cancel() }
                     for (item in (state["requests"] as? JsonArray).orEmpty()) {
-                        if (++count > 64 || pending.size >= 8) throw LxSourceException("音源发起的请求过多")
+                        if (++count > 64 || pending.size >= 8) throw LxSourceException("Nguồn nhạc đã gửi quá nhiều yêu cầu")
                         val request = item.jsonObject
                         val id = request["id"]!!.jsonPrimitive.int
                         require(id > 0 && id !in pending)
@@ -115,7 +115,7 @@ class LxRuntime(context: Context, private val http: LxHttpClient = LxHttpClient(
                                 val response: JsonElement = when (op) {
                                     "http" -> http.execute(request)
                                     "inflate", "deflate" -> JsonPrimitive(compress(op, request["data"]!!.jsonPrimitive.content))
-                                    else -> throw LxSourceException("脚本调用了不支持的接口")
+                                    else -> throw LxSourceException("Tập lệnh đã gọi một giao diện không được hỗ trợ")
                                 }
                                 buildJsonObject { put("id", id); put("op", op); put("value", response) }
                             } catch (cancelled: CancellationException) { throw cancelled }
@@ -130,7 +130,7 @@ class LxRuntime(context: Context, private val http: LxHttpClient = LxHttpClient(
                         return@coroutineScope done
                     } else delay(15)
                 }
-                @Suppress("UNREACHABLE_CODE") throw LxSourceException("音源没有完成请求")
+                @Suppress("UNREACHABLE_CODE") throw LxSourceException("Nguồn nhạc chưa hoàn tất yêu cầu")
             } finally { pending.values.forEach { it.cancel() } }
         }
     }
@@ -144,7 +144,7 @@ class LxRuntime(context: Context, private val http: LxHttpClient = LxHttpClient(
         return Base64.getEncoder().encodeToString(output)
     }
     private fun readable(failure: Exception): LxSourceException = if (failure is LxSourceException) failure
-        else LxSourceException("落雪音源执行失败或超出运行限制，请重试或更换音源")
+        else LxSourceException("Thực thi nguồn nhạc Lạc Tuyết thất bại hoặc vượt quá giới hạn chạy, vui lòng thử lại hoặc đổi nguồn nhạc")
     override fun close() {
         val engine = sandbox; val instance = isolate
         sandbox = null; isolate = null

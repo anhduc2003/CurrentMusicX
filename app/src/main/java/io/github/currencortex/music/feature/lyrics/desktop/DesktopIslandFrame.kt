@@ -74,7 +74,7 @@ internal val DesktopIslandReveal = SemanticsPropertyKey<Float>("DesktopIslandRev
                     Modifier.onGloballyPositioned { onCoverBounds(it.boundsInRoot()) }.then(
                         if (onCoverTap != null) Modifier.clickable(
                             interactionSource = remember { MutableInteractionSource() }, indication = null,
-                            role = Role.Button, onClickLabel = if (coverPlaying) "暂停歌曲" else "播放歌曲",
+                             role = Role.Button, onClickLabel = if (coverPlaying) "Tạm dừng bài hát" else "Phát bài hát",
                             onClick = onCoverTap) else Modifier), listenTogether = listenTogether)
                 Column(Modifier.testTag("desktop_island_metadata").then(if (reveal >= .55f) Modifier.clearAndSetSemantics {} else Modifier).clipToBounds().graphicsLayer { alpha = (1f - reveal / .55f).coerceIn(0f, 1f) },
                     verticalArrangement = Arrangement.spacedBy(1.dp)) {
@@ -83,7 +83,7 @@ internal val DesktopIslandReveal = SemanticsPropertyKey<Float>("DesktopIslandRev
                         Modifier.testTag("desktop_island_title"),
                         style = desktopIslandTitleStyle.copy(color = Color.White, fontFamily = io.github.currencortex.music.ui.theme.LocalCustomFont.current),
                         maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis)
-                    BasicText(islandSingleLine(song?.artists?.takeIf(String::isNotBlank) ?: if (song == null) "等待播放" else "未知歌手"),
+                     BasicText(islandSingleLine(song?.artists?.takeIf(String::isNotBlank) ?: if (song == null) "Đang chờ phát" else "Ca sĩ không xác định"),
                         Modifier.testTag("desktop_island_artist"),
                         style = desktopIslandArtistStyle.copy(color = Color.White.copy(.65f), fontFamily = io.github.currencortex.music.ui.theme.LocalCustomFont.current),
                         maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis)

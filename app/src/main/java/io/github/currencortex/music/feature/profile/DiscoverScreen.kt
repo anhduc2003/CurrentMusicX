@@ -29,11 +29,11 @@ import top.yukonga.miuix.kmp.basic.*
     val chat: ChatViewModel = viewModel(factory = viewModelFactory { ChatViewModel(vm.container) })
     LaunchedEffect(pager.settledPage) { if (pager.settledPage == 2) posts.ensureLoaded() }
     SettingsScrollLayout(Modifier.fillMaxSize().testTag("discover_screen"),
-        topBar = { SettingsRootTopBar("发现", Modifier.testTag("discover_root_toolbar")) }) { topInset ->
+        topBar = { SettingsRootTopBar("Khám phá", Modifier.testTag("discover_root_toolbar")) }) { topInset ->
         // Tabs own a fixed row. In particular, Chat's reversed message list must not
         // spend scroll distance collapsing a parent header or resizing its viewport.
         Column(Modifier.fillMaxSize().padding(top = topInset)) {
-            SettingsSegmentedControl(listOf("音乐", "用户", "帖子", "Chat"), pager.targetPage,
+            SettingsSegmentedControl(listOf("Âm nhạc", "Người dùng", "Bài đăng", "Chat"), pager.targetPage,
                 { index -> scope.launch { pager.animateScrollToPage(index) } },
                 Modifier.elasticRootComponent().padding(horizontal = 16.dp).padding(bottom = 12.dp), tag = "discover_tabs", role = Role.Tab)
             HorizontalPager(pager, Modifier.weight(1f).fillMaxWidth().clipToBounds()
@@ -57,9 +57,9 @@ import top.yukonga.miuix.kmp.basic.*
         verticalArrangement = Arrangement.spacedBy(0.dp)) {
         rootMotionItems(skipKeys = setOf("styles")) {
         item { SettingsGroup {
-            ProfileDestination("每日推荐", "今天的专属歌单", MusicIcons.Play, "discover_daily") { navigate("lib/daily") }
+            ProfileDestination("Gợi ý hằng ngày", "Danh sách phát dành riêng cho hôm nay", MusicIcons.Play, "discover_daily") { navigate("lib/daily") }
             SettingsDivider(52.dp)
-            ProfileDestination("猜你喜欢", "沿着喜欢的旋律继续探索", MusicIcons.Heart, "discover_foryou") { navigate("lib/foryou") }
+            ProfileDestination("Có thể bạn thích", "Tiếp tục khám phá theo những giai điệu bạn yêu thích", MusicIcons.Heart, "discover_foryou") { navigate("lib/foryou") }
         } }
         item(key = "styles") { io.github.currencortex.music.feature.style.MusicStyleCategories(styles, vm::loadStyles, navigate, vm::loadStyleCover, listHeader = true) }
     }

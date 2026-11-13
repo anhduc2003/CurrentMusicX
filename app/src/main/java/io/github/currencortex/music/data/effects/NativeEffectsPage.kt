@@ -13,8 +13,8 @@ data class NativeEffectTile(val id: Long, val name: String, val description: Str
 }
 
 fun parseNativeEffectsPage(raw: JsonObject): List<NativeEffectTile> {
-    require((raw["code"] as? JsonPrimitive)?.intOrNull == 200) { "音效目录暂时不可用" }
-    val rows = raw["data"] as? JsonArray ?: error("音效目录格式无效")
+    require((raw["code"] as? JsonPrimitive)?.intOrNull == 200) { "Danh mục hiệu ứng âm thanh hiện tạm thời không khả dụng" }
+    val rows = raw["data"] as? JsonArray ?: error("Định dạng danh mục hiệu ứng âm thanh không hợp lệ")
     return rows.mapNotNull { item ->
         val row = item as? JsonObject ?: return@mapNotNull null
         fun text(key: String) = (row[key] as? JsonPrimitive)?.contentOrNull?.trim().orEmpty().takeUnless { it == "null" }.orEmpty()

@@ -329,7 +329,7 @@ class AppContainer(context: Context, storageNamespace: String = "", externalPlay
                         io.github.currencortex.music.data.settings.LyricsSource.LOCAL ->
                             io.github.currencortex.music.feature.lyrics.data.LyricsProvider {
                                 io.github.currencortex.music.feature.lyrics.data.LyricsProviderResult.Failure(
-                                    io.github.currencortex.music.feature.lyrics.model.LyricsErrorCode.NO_LYRICS, "没有本地内嵌歌词，可在歌词管理中导入歌词文件")
+io.github.currencortex.music.feature.lyrics.model.LyricsErrorCode.NO_LYRICS, "Không có lời bài hát nhúng trong tệp cục bộ. Bạn có thể nhập tệp lời bài hát trong mục Quản lý lời bài hát"）
                             }
                         io.github.currencortex.music.data.settings.LyricsSource.CURRENT_MUSIC -> projectLyricsProvider
                         else -> nativeLyricsProvider
@@ -468,7 +468,7 @@ class AppContainer(context: Context, storageNamespace: String = "", externalPlay
             var previous = neteaseSessions.state.value.revision
             neteaseSessions.state.map { it.revision }.distinctUntilChanged().collect { revision ->
                 if (revision != previous) {
-                    listenTogether.disconnect(if (listenTogether.state.value.active) "网易云账号已变更，请重新进入一起听" else null)
+listenTogether.disconnect(if (listenTogether.state.value.active) "Tài khoản Nhạc Vân NetEase đã thay đổi, vui lòng vào lại mục Cùng nghe" else null)
                     previous = revision
                 }
             }
@@ -565,7 +565,7 @@ class AppContainer(context: Context, storageNamespace: String = "", externalPlay
                 } else authRepository.restore(initial.server)
             } catch (_: Exception) {
                 ready.complete(Unit)
-                accountRepository.state.value = AccountState(error = "CurrentMusic 本地会话恢复失败，请重新登录")
+accountRepository.state.value = AccountState(error = "Không thể khôi phục phiên cục bộ của CurrentMusic, vui lòng đăng nhập lại")
             } finally {
                 sessionRestored.complete(Unit)
             }

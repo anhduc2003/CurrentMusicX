@@ -47,19 +47,19 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     activeRoom: Boolean = false,
 ) {
     val colors = MiuixTheme.colorScheme
-    MusicSubpage("缘分报告", "listen_fate_screen", onBack, backTag = "listen_fate_back") { topInset ->
+    MusicSubpage("Báo cáo duyên phận", "listen_fate_screen", onBack, backTag = "listen_fate_back") { topInset ->
         LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp).testTag("listen_fate_list"),
             contentPadding = musicScrollPadding(PaddingValues(top = topInset + 8.dp, bottom = 24.dp)),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
             if (loading) item {
-                if (report == null) ListenTogetherSkeleton("正在读取缘分报告…", "listen_fate_loading")
-                else ListenLoadingLabel("正在更新缘分报告…", Modifier.testTag("listen_fate_loading"))
+                 if (report == null) ListenTogetherSkeleton("Đang tải báo cáo duyên phận…", "listen_fate_loading")
+                 else ListenLoadingLabel("Đang cập nhật báo cáo duyên phận…", Modifier.testTag("listen_fate_loading"))
             }
             if (permissionRequired) item {
-                FateStatus("需要网易云会员权限", "listen_fate_permission", "请使用具备报告访问权限的账号后重试。", onRetry)
+                 FateStatus("Cần quyền truy cập thành viên Nhạc Vân NetEase", "listen_fate_permission", "Vui lòng thử lại bằng tài khoản có quyền truy cập báo cáo.", onRetry)
             } else if (error) item {
                 // The detailed failure is delivered by the application's top notice channel.
-                FateStatus("暂时无法读取报告", "listen_fate_error", "请稍后重试。", onRetry)
+                 FateStatus("Hiện không thể tải báo cáo", "listen_fate_error", "Vui lòng thử lại sau.", onRetry)
             }
             if (report != null && !permissionRequired) {
                 item { SettingsGroup(Modifier.fillMaxWidth().animateItem().testTag("listen_fate_summary")) {
@@ -70,52 +70,52 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                                 io.github.currencortex.music.core.media.ListenTogetherParticipant(it.userId, it.nickname, it.avatarUrl)
                             }), Modifier.size(88.dp, 55.dp))
                             Column(Modifier.weight(1f).padding(start = 16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                                Text(people.joinToString(" · ") { it.nickname.ifBlank { "网易云用户" } }.ifBlank { "一起听的你们" },
+                                 Text(people.joinToString(" · ") { it.nickname.ifBlank { "Người dùng Nhạc Vân NetEase" } }.ifBlank { "Hai bạn đã cùng nghe" },
                                     fontSize = 17.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                                FateMuted("属于你们的音乐时光")
+                                 FateMuted("Khoảng thời gian âm nhạc của hai bạn")
                             }
                         }
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            FateMuted("累计陪伴彼此")
+                             FateMuted("Thời gian đồng hành bên nhau")
                             Text(fateDuration(report.totalDurationMs), Modifier.testTag("listen_fate_total_duration"),
                                 fontSize = 30.sp, fontWeight = FontWeight.SemiBold, color = colors.primary)
                         }
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                            FateMetric("一起听过", report.totalSongCount?.let { "$it 首歌曲" } ?: "—",
+                             FateMetric("Đã cùng nghe", report.totalSongCount?.let { "$it bài hát" } ?: "—",
                                 Modifier.weight(1f).testTag("listen_fate_total_songs"))
-                            FateMetric("共同红心", report.commonRedSongCount?.let { "$it 首歌曲" } ?: "—",
+                             FateMetric("Cùng thả tim", report.commonRedSongCount?.let { "$it bài hát" } ?: "—",
                                 Modifier.weight(1f).testTag("listen_fate_common_red"))
                         }
-                        onInvite?.let { invite -> MusicTextAction(if (activeRoom) "正在一起听中" else "再次邀请", { invite(report) },
+                         onInvite?.let { invite -> MusicTextAction(if (activeRoom) "Đang cùng nghe" else "Mời lại", { invite(report) },
                             Modifier.testTag("listen_fate_invite"), enabled = report.canInvite && !report.peer.masked && !activeRoom && !busy) }
                         report.failMessage.takeIf(String::isNotBlank)?.let { FateMuted(it) }
                         if (listOf(report.totalDurationMs, report.totalSongCount, report.commonRedSongCount).any { it == null }) {
-                            FateMuted("— 表示网易云未提供这项数据。")
+                             FateMuted("— nghĩa là Nhạc Vân NetEase không cung cấp dữ liệu này.")
                         }
                     }
                 } }
                 item { SettingsGroup(Modifier.fillMaxWidth().animateItem().testTag("listen_fate_first")) {
                     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                        Text("从第一次一起听开始", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                         Text("Từ lần đầu tiên cùng nghe", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                            FateMetric("首次一起听", fateDate(report.firstListenTimeMs, "yyyy.MM.dd HH:mm"), Modifier.weight(1f))
-                            FateMetric("相识天数", report.daysSinceFirstListen?.let { "$it 天" } ?: "—", Modifier.weight(1f))
+                             FateMetric("Lần đầu cùng nghe", fateDate(report.firstListenTimeMs, "yyyy.MM.dd HH:mm"), Modifier.weight(1f))
+                             FateMetric("Số ngày quen nhau", report.daysSinceFirstListen?.let { "$it ngày" } ?: "—", Modifier.weight(1f))
                         }
                     }
                 } }
                 if (report.latestLateNightTimeMs != null || report.mostPlayedSongName.isNotBlank()) item {
                     SettingsGroup(Modifier.fillMaxWidth().animateItem().testTag("listen_fate_memories")) {
                         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            Text("难忘的音乐时刻", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                             Text("Khoảnh khắc âm nhạc đáng nhớ", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                             if (report.latestLateNightTimeMs != null) {
                                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    FateMuted("一起听到最晚的那天")
+                                     FateMuted("Ngày hai bạn nghe cùng nhau muộn nhất")
                                     Text(fateDate(report.latestLateNightTimeMs, "yyyy.MM.dd  HH:mm"), fontSize = 18.sp, fontWeight = FontWeight.Medium)
                                 }
                             }
                             if (report.mostPlayedSongName.isNotBlank()) {
                                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    FateMuted("一起听得最多的歌")
+                                     FateMuted("Bài hát hai bạn nghe cùng nhau nhiều nhất")
                                     Text(report.mostPlayedSongName, fontSize = 18.sp, fontWeight = FontWeight.Medium, maxLines = 3, overflow = TextOverflow.Ellipsis)
                                 }
                             }
@@ -124,26 +124,26 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 }
                 item { SettingsGroup(Modifier.fillMaxWidth().animateItem().testTag("listen_fate_longest")) {
                     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("一次最长的陪伴", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                         Text("Lần đồng hành lâu nhất", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                         Text(fateDuration(report.longestDurationMs), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = colors.primary)
                     }
                 } }
                 item { SettingsGroup(Modifier.fillMaxWidth().animateItem().testTag("listen_fate_actions")) {
                     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        GlassActionButton(if (sharing) "正在生成报告…" else "分享缘分报告", { onShare(report) },
+                         GlassActionButton(if (sharing) "Đang tạo báo cáo…" else "Chia sẻ báo cáo duyên phận", { onShare(report) },
                             Modifier.fillMaxWidth().testTag("listen_fate_share"), primary = true, enabled = !busy && !sharing && !loading)
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            MusicTextAction("一起听记录", { onHistory(report.partnerUid) }, Modifier.weight(1f).testTag("listen_fate_history"),
+                             MusicTextAction("Lịch sử nghe cùng", { onHistory(report.partnerUid) }, Modifier.weight(1f).testTag("listen_fate_history"),
                                 enabled = report.partnerUid > 0 && !busy)
-                            MusicTextAction("网易云报告", { onOfficial(report) }, Modifier.weight(1f).testTag("listen_fate_official"), enabled = !busy)
+                             MusicTextAction("Báo cáo Nhạc Vân NetEase", { onOfficial(report) }, Modifier.weight(1f).testTag("listen_fate_official"), enabled = !busy)
                         }
-                        MusicTextAction("删除缘分报告", onDeleteRequest, Modifier.testTag("listen_fate_delete"),
+                         MusicTextAction("Xóa báo cáo duyên phận", onDeleteRequest, Modifier.testTag("listen_fate_delete"),
                             enabled = !busy && !sharing && !loading && report.partnerUid > 0, destructive = true)
-                        if (report.openActivity) FateMuted("删除报告会回收关联的一起听徽章与进度。")
+                         if (report.openActivity) FateMuted("Xóa báo cáo sẽ thu hồi huy hiệu và tiến độ liên quan đến tính năng nghe cùng.")
                     }
                 } }
             } else if (!loading && !permissionRequired && !error) item {
-                FateStatus("暂无缘分报告", "listen_fate_empty", "网易云暂未提供你们的缘分数据。")
+                FateStatus("Chưa có báo cáo duyên phận", "listen_fate_empty", "Nhạc Vân NetEase hiện chưa cung cấp dữ liệu duyên phận của hai bạn.")
             }
         }
     }
@@ -165,7 +165,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(title, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
             message?.let { FateMuted(it) }
-            retry?.let { MusicTextAction("重试", it, Modifier.testTag("listen_fate_retry")) }
+            retry?.let { MusicTextAction("Thử lại", it, Modifier.testTag("listen_fate_retry")) }
         }
     }
 }
@@ -173,7 +173,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 private fun fateDuration(ms: Long?): String {
     if (ms == null) return "—"
     val minutes = ms / 60_000
-    return when { ms > 0 && minutes == 0L -> "小于 1 分钟"; minutes < 60 -> "$minutes 分钟"; else -> "${minutes / 60} 小时 ${minutes % 60} 分钟" }
+    return when { ms > 0 && minutes == 0L -> "Dưới 1 phút"; minutes < 60 -> "$minutes phút"; else -> "${minutes / 60} giờ ${minutes % 60} phút" }
 }
 private fun fateDate(ms: Long?, pattern: String): String = ms?.takeIf { it > 0 }
     ?.let { SimpleDateFormat(pattern, Locale.CHINA).format(Date(it)) } ?: "—"

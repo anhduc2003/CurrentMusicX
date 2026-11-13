@@ -37,10 +37,10 @@ private fun postTime(seconds: Long): String {
     if (seconds <= 0) return ""
     val age = (System.currentTimeMillis() / 1000 - seconds).coerceAtLeast(0)
     return when {
-        age < 60 -> "刚刚"
-        age < 3600 -> "${age / 60} 分钟前"
-        age < 86400 -> "${age / 3600} 小时前"
-        age < 86400 * 30 -> "${age / 86400} 天前"
+        age < 60 -> "Vừa xong"
+        age < 3600 -> "${age / 60} phút trước"
+        age < 86400 -> "${age / 3600} giờ trước"
+        age < 86400 * 30 -> "${age / 86400} ngày trước"
         else -> SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(seconds * 1000))
     }
 }
@@ -57,10 +57,10 @@ private fun postTime(seconds: Long): String {
     var menuOpen by remember { mutableStateOf(false) }
     val menuBackdrop = rememberGlassBackdrop()
     val menuItems = options?.let { post -> buildList {
-        add(GlassMenuItem("post_menu_copy", "复制正文", MusicIcons.Copy, onClick = {
+        add(GlassMenuItem("post_menu_copy", "Sao chép nội dung", MusicIcons.Copy, onClick = {
             clipboard.setText(AnnotatedString(post.content)); menuOpen = false
         }))
-        if (post.canDelete) add(GlassMenuItem("post_delete_${post.id}", "删除帖子", MusicIcons.Trash, danger = true,
+        if (post.canDelete) add(GlassMenuItem("post_delete_${post.id}", "Xóa bài đăng", MusicIcons.Trash, danger = true,
             enabled = !state.busy, onClick = { menuOpen = false; deleting = post }))
     } }.orEmpty()
     var deletingComment by remember { mutableStateOf<PostComment?>(null) }
@@ -77,27 +77,27 @@ private fun postTime(seconds: Long): String {
         rootMotionItems {
         item {
             SettingsGroup {
-                SettingsPreference(if (account.account == null) "登录后分享" else "分享此刻",
-                    "聊聊音乐，记录你的日常", Modifier.testTag("post_create"), onClick = {
+                    SettingsPreference(if (account.account == null) "Đăng nhập để chia sẻ" else "Chia sẻ khoảnh khắc",
+                        "Trò chuyện về âm nhạc, ghi lại cuộc sống thường ngày", Modifier.testTag("post_create"), onClick = {
                         if (account.account == null) navigate("user/login") else vm.editor(true)
                     }, leading = { Icon(MusicIcons.Add, null, Modifier.size(24.dp), tint = MiuixTheme.colorScheme.primary) },
                     trailing = { Icon(MusicIcons.Forward, null, Modifier.size(16.dp), tint = MiuixTheme.colorScheme.onSurfaceVariantSummary) })
             }
         }
         item { Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("社区动态", Modifier.weight(1f), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
-            Text(if (state.loaded) "${state.total} 条" else "", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
+            Text("Hoạt động cộng đồng", Modifier.weight(1f), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+            Text(if (state.loaded) "${state.total} bài" else "", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
         } }
         state.message?.let { item { Text(it, fontSize = 13.sp, color = MiuixTheme.colorScheme.primary) } }
-        state.error?.let { item { Text(it); MusicTextAction("重试", { vm.reload() }, Modifier.testTag("post_retry")) } }
+        state.error?.let { item { Text(it); MusicTextAction("Thử lại", { vm.reload() }, Modifier.testTag("post_retry")) } }
         if (state.loading && state.posts.isEmpty()) item { LoadingPostList() }
         if (state.loaded && !state.loading && state.posts.isEmpty() && state.error == null) item {
             SettingsGroup {
                 Column(Modifier.fillMaxWidth().padding(24.dp).testTag("posts_empty"),
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Icon(MusicIcons.Comment, null, Modifier.size(32.dp), tint = MiuixTheme.colorScheme.onSurfaceVariantSummary)
-                    Text("还没有动态", fontSize = 17.sp, fontWeight = FontWeight.Medium)
-                    Text("分享一首歌，开启一段交流", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
+                    Text("Chưa có hoạt động nào", fontSize = 17.sp, fontWeight = FontWeight.Medium)
+                    Text("Chia sẻ một bài hát để bắt đầu trò chuyện", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
                 }
             }
         }
@@ -119,7 +119,7 @@ private fun postTime(seconds: Long): String {
                         }
                     }
                     var bounds by remember(post.id) { mutableStateOf<Rect?>(null) }
-                    GlassIconButton({ options = post; menuAnchor = bounds; menuOpen = true }, "帖子操作",
+                    GlassIconButton({ options = post; menuAnchor = bounds; menuOpen = true }, "Thao tác bài đăng",
                         Modifier.testTag("post_more_${post.id}"), onBoundsChanged = { bounds = it }, opensMenu = true, surface = false) {
                         Icon(MusicIcons.More, null, Modifier.size(20.dp))
                     }
@@ -128,7 +128,7 @@ private fun postTime(seconds: Long): String {
                 SelectionContainer {
                     MarkdownText(if (!expanded && post.content.length > 600) post.content.take(600) + "…" else post.content, compact = true)
                 }
-                if (post.content.length > 600) MusicTextAction(if (expanded) "收起" else "展开全文", { expanded = !expanded })
+                if (post.content.length > 600) MusicTextAction(if (expanded) "Thu gọn" else "Xem toàn bộ", { expanded = !expanded })
                 post.attachments.forEach { attachment ->
                     PostAttachmentTile(attachment, Modifier.testTag("post_attachment_${post.id}_${attachment.type}_${attachment.id}"),
                         enabled = attachment.id > 0, onClick = {
@@ -142,19 +142,19 @@ private fun postTime(seconds: Long): String {
                         })
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                        PostAction(MusicIcons.Heart, "${if (post.likedByMe) "取消点赞" else "点赞"} ${post.likeCount}", {
+                         PostAction(MusicIcons.Heart, "${if (post.likedByMe) "Bỏ thích" else "Thích"} ${post.likeCount}", {
                             if (account.account == null) navigate("user/login") else vm.like(post)
                         }, Modifier.testTag("post_like_${post.id}"), count = post.likeCount, selected = post.likedByMe, enabled = !state.busy)
-                        PostAction(MusicIcons.Comment, "评论 ${post.commentCount}", { vm.comments(post.id) },
+                         PostAction(MusicIcons.Comment, "Bình luận ${post.commentCount}", { vm.comments(post.id) },
                             Modifier.testTag("post_comments_${post.id}"), count = post.commentCount)
                         Spacer(Modifier.weight(1f))
-                        PostAction(MusicIcons.Copy, "复制正文", { clipboard.setText(AnnotatedString(post.content)) },
+                         PostAction(MusicIcons.Copy, "Sao chép nội dung", { clipboard.setText(AnnotatedString(post.content)) },
                             Modifier.testTag("post_copy_${post.id}"))
                     }
                 }
             }
         }
-        if (state.posts.isNotEmpty() && !state.done) item { MusicTextAction(if (state.loading) "加载中…" else "加载更多", { vm.reload(true) },
+         if (state.posts.isNotEmpty() && !state.done) item { MusicTextAction(if (state.loading) "Đang tải…" else "Tải thêm", { vm.reload(true) },
             Modifier.testTag("posts_more"), enabled = !state.loading) }
     }
     }
@@ -165,12 +165,12 @@ private fun postTime(seconds: Long): String {
     if (state.editor) PostEditorScreen(vm, state)
     if (state.commentsFor != null && deletingComment == null) {
         val reply = rememberSaveable(state.commentsFor, account.account?.id, saver = TextFieldState.Saver) { TextFieldState() }
-        LaunchedEffect(state.message) { if (state.message == "评论已发布") reply.clearText() }
-        MusicDialog("评论", { vm.comments(null) }) {
+         LaunchedEffect(state.message) { if (state.message == "Đã đăng bình luận") reply.clearText() }
+         MusicDialog("Bình luận", { vm.comments(null) }) {
             LazyColumn(Modifier.fillMaxWidth().heightIn(max = 340.dp).testTag("post_comment_list"), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                if (state.commentsLoading) item { Text("正在加载评论…") }
-                state.commentsError?.let { item { Text(it); MusicTextAction("重试", { vm.comments(state.commentsFor) }) } }
-                if (!state.commentsLoading && state.commentsError == null && state.comments.isEmpty()) item { Text("还没有评论") }
+                 if (state.commentsLoading) item { Text("Đang tải bình luận…") }
+                 state.commentsError?.let { item { Text(it); MusicTextAction("Thử lại", { vm.comments(state.commentsFor) }) } }
+                 if (!state.commentsLoading && state.commentsError == null && state.comments.isEmpty()) item { Text("Chưa có bình luận nào") }
                 items(state.comments, key = { it.id }) { comment ->
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(comment.author.nickname, Modifier.clickable { vm.comments(null); navigate("user/profile/${comment.author.id}") },
@@ -180,7 +180,7 @@ private fun postTime(seconds: Long): String {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(postTime(comment.createdAt), Modifier.weight(1f), fontSize = 11.sp,
                                 color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
-                            if (comment.canDelete) MusicTextAction("删除", { deletingComment = comment },
+                             if (comment.canDelete) MusicTextAction("Xóa", { deletingComment = comment },
                                 Modifier.testTag("post_comment_delete_${comment.id}"), enabled = !state.busy)
                         }
                     }
@@ -190,19 +190,19 @@ private fun postTime(seconds: Long): String {
             if (account.account != null) {
                 TextField(state = reply, modifier = Modifier.fillMaxWidth().testTag("post_reply"), readOnly = state.busy)
                 MusicDialogActions(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    MusicDialogButton("关闭", { vm.comments(null) }, modifier = Modifier.weight(1f))
-                    MusicDialogButton("发送", { vm.sendComment(reply.text.toString()) }, enabled = !state.busy && reply.text.isNotBlank(),
+                     MusicDialogButton("Đóng", { vm.comments(null) }, modifier = Modifier.weight(1f))
+                     MusicDialogButton("Gửi", { vm.sendComment(reply.text.toString()) }, enabled = !state.busy && reply.text.isNotBlank(),
                         modifier = Modifier.weight(1f).testTag("post_reply_send"))
                 }
-            } else MusicTextAction("登录后评论", { vm.comments(null); navigate("user/login") })
+             } else MusicTextAction("Đăng nhập để bình luận", { vm.comments(null); navigate("user/login") })
         }
     }
-    deleting?.let { post -> MusicDialog("删除帖子？", { deleting = null }) {
-        Text("删除后无法恢复。")
-        MusicDialogButton("确认删除", { deleting = null; vm.delete(post) }, modifier = Modifier.testTag("post_confirm_delete"))
+     deleting?.let { post -> MusicDialog("Xóa bài đăng?", { deleting = null }) {
+         Text("Sau khi xóa, không thể khôi phục.")
+         MusicDialogButton("Xác nhận xóa", { deleting = null; vm.delete(post) }, modifier = Modifier.testTag("post_confirm_delete"))
     } }
-    deletingComment?.let { comment -> MusicDialog("删除评论？", { deletingComment = null }) {
-        Text("删除后无法恢复。")
-        MusicDialogButton("确认删除", { deletingComment = null; vm.delete(comment) }, modifier = Modifier.testTag("post_comment_confirm_delete"))
+     deletingComment?.let { comment -> MusicDialog("Xóa bình luận?", { deletingComment = null }) {
+         Text("Sau khi xóa, không thể khôi phục.")
+         MusicDialogButton("Xác nhận xóa", { deletingComment = null; vm.delete(comment) }, modifier = Modifier.testTag("post_comment_confirm_delete"))
     } }
 }

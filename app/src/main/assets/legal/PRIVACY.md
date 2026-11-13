@@ -1,73 +1,73 @@
-# CurrentMusic Native 隐私说明
+# Tuyên bố quyền riêng tư của CurrentMusic Native
 
-## 服务器连接
+## Kết nối máy chủ
 
-网易云搜索、音乐风格、艺人、专辑、MV、网易云登录、歌单、收藏、推荐和最近播放由手机直接请求网易云的 HTTPS 服务，不经 CurrentMusic 转发。网易云账户数据由网易云保存；创建、修改、删除歌单及增删曲目由用户操作触发。
+Tìm kiếm, thể loại nhạc, nghệ sĩ, album, MV, đăng nhập Nhạc Vân NetEase, danh sách phát, mục yêu thích, đề xuất và nội dung phát gần đây trên Nhạc Vân NetEase được điện thoại yêu cầu trực tiếp từ dịch vụ HTTPS của Nhạc Vân NetEase, không qua CurrentMusic. Dữ liệu tài khoản Nhạc Vân NetEase do Nhạc Vân NetEase lưu trữ; việc tạo, sửa, xóa danh sách phát và thêm hoặc xóa bài hát được thực hiện theo thao tác của người dùng.
 
-应用也连接可修改的 CurrentMusic Server，处理歌曲音源、网易云歌词（含逐字时间、翻译与罗马音）、CurrentMusic 登录、个人资料、装饰、旧音乐库及一起听。默认地址为 https://music.20110208.xyz/cm。自定义 HTTP 连接不加密。CurrentMusic 账户数据由所选服务器保存。
+Ứng dụng cũng kết nối với CurrentMusic Server có thể thay đổi để xử lý nguồn bài hát, lời bài hát Nhạc Vân NetEase (bao gồm thời gian từng chữ, bản dịch và phiên âm La-tinh), đăng nhập CurrentMusic, hồ sơ cá nhân, đồ trang trí, thư viện nhạc cũ và tính năng nghe cùng nhau. Địa chỉ mặc định là https://music.20110208.xyz/cm. Kết nối HTTP tùy chỉnh không được mã hóa. Dữ liệu tài khoản CurrentMusic do máy chủ được chọn lưu trữ.
 
-## Chat 与音乐问答
+## Chat và hỏi đáp về âm nhạc
 
-公共 Chat 的文字、图片和引用卡片由用户点击发送后上传到所选 CurrentMusic 服务器，并在聊天室公开展示。提及 CurrentMusicAI 时，服务器会将问题、引用音乐信息及本轮附带图片交给其配置的 AI 服务处理；具体提供商和服务端留存规则由所选服务器决定。
+Nội dung văn bản, hình ảnh và thẻ trích dẫn trong Chat công khai sẽ được tải lên máy chủ CurrentMusic được chọn sau khi người dùng nhấn gửi, rồi hiển thị công khai trong phòng chat. Khi nhắc đến CurrentMusicAI, máy chủ sẽ gửi câu hỏi, thông tin nhạc được trích dẫn và hình ảnh đính kèm trong lượt này đến dịch vụ AI được cấu hình để xử lý; nhà cung cấp cụ thể và quy tắc lưu giữ dữ liệu phía máy chủ tùy thuộc vào máy chủ được chọn.
 
-播放页“问AI”通过所选 CurrentMusic 服务器处理问题和歌曲信息，不发布到公共 Chat。服务器可保存独立的播放页问答上下文；关闭弹窗会清空本机临时对话并取消接收，但不会删除服务器已收到的信息。本机不保存 AI 服务密钥，不采集麦克风或上传播放音频。
+Tính năng “Hỏi AI” trên trang phát sẽ xử lý câu hỏi và thông tin bài hát thông qua máy chủ CurrentMusic được chọn, không đăng lên Chat công khai. Máy chủ có thể lưu ngữ cảnh hỏi đáp riêng của trang phát; đóng cửa sổ bật lên sẽ xóa cuộc trò chuyện tạm thời trên thiết bị và ngừng nhận phản hồi, nhưng không xóa thông tin máy chủ đã nhận. Khóa dịch vụ AI không được lưu trên thiết bị; ứng dụng không thu thập âm thanh từ micrô hoặc tải âm thanh đang phát lên.
 
-## 本地数据
+## Dữ liệu cục bộ
 
-网易云任务功能默认关闭，可在网易云账号页开启。任务进度、签到和已完成奖励的领取直连网易云；自动签到需要另行开启，仅在 App 前台运行。开关、按网易云账号隔离的签到日期及最近 20 条执行记录保存在本机，不上传 CurrentMusic。关闭任务总开关后停止自动签到；任务模块不添加播放循环或模拟收听记录。
+Tính năng nhiệm vụ Nhạc Vân NetEase mặc định bị tắt và có thể bật trên trang tài khoản Nhạc Vân NetEase. Tiến độ nhiệm vụ, điểm danh và nhận thưởng đã hoàn thành được kết nối trực tiếp với Nhạc Vân NetEase; cần bật riêng tính năng điểm danh tự động, chỉ chạy khi ứng dụng ở tiền cảnh. Công tắc, ngày điểm danh được phân tách theo tài khoản Nhạc Vân NetEase và 20 bản ghi thực thi gần nhất được lưu trên thiết bị, không tải lên CurrentMusic. Tắt công tắc nhiệm vụ chính sẽ dừng điểm danh tự động; mô-đun nhiệm vụ không thêm vòng lặp phát hoặc giả lập lịch sử nghe.
 
-Token 由 Android Keystore AES-GCM 加密并存于不备份的私有目录；多个账号按服务器与账户 ID 分别保存加密凭据，旧会话自动迁入。DataStore 仅保存服务器、外观与账户显示信息；Room 保存搜索历史、歌曲元数据、歌词及队列。密码和验证码不持久化，播放直链不持久化。退出登录清除当前账号凭据，其他保存的账号保留；移除保存的账号仅清理本机凭据。临时离线不会删除 Token。
+Token được mã hóa bằng Android Keystore AES-GCM và lưu trong thư mục riêng tư không được sao lưu; thông tin xác thực được mã hóa của nhiều tài khoản được lưu riêng theo máy chủ và ID tài khoản, các phiên cũ được tự động chuyển sang. DataStore chỉ lưu máy chủ, giao diện và thông tin hiển thị tài khoản; Room lưu lịch sử tìm kiếm, siêu dữ liệu bài hát, lời bài hát và hàng đợi. Mật khẩu và mã xác minh không được lưu lâu dài; liên kết phát trực tiếp không được lưu lâu dài. Đăng xuất sẽ xóa thông tin xác thực của tài khoản hiện tại, các tài khoản đã lưu khác được giữ nguyên; xóa tài khoản đã lưu chỉ dọn thông tin xác thực trên thiết bị. Tạm thời ngoại tuyến không xóa Token.
 
-## 用户资料与网易云绑定
+## Hồ sơ người dùng và liên kết Nhạc Vân NetEase
 
-资料、听歌统计、用户广场和挂件目录由所选服务器提供。资料修改、挂件设置和头像上传由用户触发。头像通过系统照片选择器选取，由用户调整裁剪区域后在内存中生成缩小图片上传，不请求读取整个相册的权限。公开主页和用户广场请求不携带登录 Token。
+Hồ sơ, thống kê nghe nhạc, quảng trường người dùng và danh mục phụ kiện do máy chủ được chọn cung cấp. Việc sửa hồ sơ, cài đặt phụ kiện và tải ảnh đại diện lên do người dùng thực hiện. Ảnh đại diện được chọn qua bộ chọn ảnh của hệ thống; sau khi người dùng điều chỉnh vùng cắt, ảnh thu nhỏ được tạo trong bộ nhớ rồi tải lên. Ứng dụng không yêu cầu quyền đọc toàn bộ thư viện ảnh. Yêu cầu đến trang cá nhân công khai và quảng trường người dùng không kèm Token đăng nhập.
 
-“听歌时长”中的 CurrentMusicX 足迹在本机保存实际音乐播放时长、日期与小时分布、歌曲名称及公开封面信息，不上传该统计数据库。它独立于登录账号，卸载或清除应用数据会删除这些记录。切换到网易云足迹时，使用已绑定账号读取网易云的收听报告，两种统计分别展示。
+Dấu chân CurrentMusicX trong mục “Thời lượng nghe nhạc” lưu trên thiết bị thời lượng phát nhạc thực tế, ngày và phân bố theo giờ, tên bài hát cùng thông tin ảnh bìa công khai; cơ sở dữ liệu thống kê này không được tải lên. Dữ liệu này độc lập với tài khoản đăng nhập; gỡ cài đặt hoặc xóa dữ liệu ứng dụng sẽ xóa các bản ghi đó. Khi chuyển sang dấu chân Nhạc Vân NetEase, báo cáo nghe nhạc của Nhạc Vân NetEase được đọc bằng tài khoản đã liên kết; hai loại thống kê được hiển thị riêng.
 
-网易云登录成功后，如果当前 CurrentMusic 账号尚未设置头像，应用会自动下载网易云头像，在内存中缩小后上传到所选 CurrentMusic 服务器并设为账号头像。已有自定义头像不会替换；头像同步与下述网易云绑定同步分别处理。
+Sau khi đăng nhập Nhạc Vân NetEase thành công, nếu tài khoản CurrentMusic hiện tại chưa cài đặt ảnh đại diện, ứng dụng sẽ tự động tải ảnh đại diện Nhạc Vân NetEase xuống, thu nhỏ trong bộ nhớ rồi tải lên máy chủ CurrentMusic được chọn để đặt làm ảnh đại diện tài khoản. Ảnh đại diện tùy chỉnh đã có sẽ không bị thay thế; đồng bộ ảnh đại diện và đồng bộ liên kết Nhạc Vân NetEase nêu dưới đây được xử lý riêng.
 
-注册验证码、网易云手机验证码由用户点击后发送；CurrentMusic 注册信息经所选服务器处理，网易云手机号、区号和验证码直接发送给网易云。扫码绑定使用网易云授权链接生成本机二维码，仅在绑定页面前台轮询授权状态，离开页面后停止，返回页面继续查询原二维码。
+Mã xác minh đăng ký và mã xác minh điện thoại Nhạc Vân NetEase chỉ được gửi sau khi người dùng nhấn. Thông tin đăng ký CurrentMusic được xử lý qua máy chủ được chọn; số điện thoại Nhạc Vân NetEase, mã vùng và mã xác minh được gửi trực tiếp đến Nhạc Vân NetEase. Liên kết bằng cách quét mã sử dụng liên kết ủy quyền Nhạc Vân NetEase để tạo mã QR trên thiết bị; trạng thái ủy quyền chỉ được kiểm tra định kỳ khi trang liên kết ở tiền cảnh. Việc kiểm tra dừng khi rời trang và tiếp tục truy vấn mã QR ban đầu khi quay lại.
 
-网易云 Cookie 和账户显示资料使用 Android Keystore / AES-GCM 加密存于不备份的私有目录；用户在绑定页扫码或手机登录成功后，应用会通过 HTTPS 将必要的网易云登录 Cookie 与网易云 UID 同步至当时登录的 CurrentMusic 账号所选服务器，由服务器向网易云验证后保存，供同一 CurrentMusic 账号的网页端和 App 使用；密码与短信验证码不上传至 CurrentMusic。已有本机有效登录在升级、启动或登录 CurrentMusic 后也会自动同步，无需再次扫码或手动确认；切换 CurrentMusic 账号或服务器后按当前账号和服务器重新同步。失败后按间隔有限重试，绑定页仍提供「同步绑定」入口。绑定页展示同步状态，失败时保留本机登录并允许重试；切换账号、服务器或网易云登录态时停止旧同步。服务器不向客户端下发保存的 Cookie。设备标识随机生成并保存在同一加密文件中，以保持扫码登录会话稳定；密码和验证码不持久化。退出网易云账户仅清理本机网易云凭据，已有 CurrentMusic 导入歌单保留。已有本机登录会随升级保留；服务器上的旧凭据不会迁移到手机，缺少本机登录或登录失效时仍需登录网易云。
+Cookie Nhạc Vân NetEase và thông tin hồ sơ hiển thị tài khoản được mã hóa bằng Android Keystore / AES-GCM và lưu trong thư mục riêng tư không được sao lưu. Sau khi người dùng quét mã QR hoặc đăng nhập bằng điện thoại thành công trên trang liên kết, ứng dụng sẽ gửi qua HTTPS Cookie đăng nhập Nhạc Vân NetEase cần thiết cùng UID Nhạc Vân NetEase đến máy chủ được chọn của tài khoản CurrentMusic đang đăng nhập tại thời điểm đó. Máy chủ xác minh với Nhạc Vân NetEase rồi lưu lại để dùng trên trang web và ứng dụng của cùng tài khoản CurrentMusic; mật khẩu và mã xác minh SMS không được tải lên CurrentMusic. Đăng nhập hợp lệ đã có trên thiết bị cũng sẽ tự động đồng bộ sau khi nâng cấp, khởi động hoặc đăng nhập CurrentMusic, không cần quét mã hay xác nhận thủ công lần nữa; sau khi chuyển tài khoản CurrentMusic hoặc máy chủ, ứng dụng sẽ đồng bộ lại theo tài khoản và máy chủ hiện tại. Nếu thất bại, ứng dụng sẽ thử lại với số lần giới hạn theo khoảng thời gian định sẵn; trang liên kết vẫn có mục “Đồng bộ liên kết”. Trang liên kết hiển thị trạng thái đồng bộ; khi thất bại, thông tin đăng nhập trên thiết bị được giữ lại và có thể thử lại. Việc đồng bộ cũ sẽ dừng khi chuyển tài khoản, máy chủ hoặc trạng thái đăng nhập Nhạc Vân NetEase. Máy chủ không gửi Cookie đã lưu xuống máy khách. Mã nhận dạng thiết bị được tạo ngẫu nhiên và lưu trong cùng tệp được mã hóa để duy trì ổn định phiên đăng nhập bằng cách quét mã; mật khẩu và mã xác minh không được lưu lâu dài. Đăng xuất tài khoản Nhạc Vân NetEase chỉ xóa thông tin xác thực Nhạc Vân NetEase trên thiết bị; danh sách phát đã nhập vào CurrentMusic vẫn được giữ lại. Đăng nhập đã có trên thiết bị sẽ được giữ lại sau khi nâng cấp; thông tin xác thực cũ trên máy chủ không được chuyển sang điện thoại. Nếu thiết bị không có thông tin đăng nhập hoặc thông tin đăng nhập không còn hiệu lực, người dùng vẫn cần đăng nhập Nhạc Vân NetEase.
 
-## 播放与网络
+## Phát nhạc và mạng
 
-音效目录由手机直连网易云获取。智能调音默认关闭；开启后，会向网易云发送当前网易云歌曲的 ID，获取歌曲情绪、节奏和声音特征，在本机计算均衡器参数。分析结果仅在内存中短暂缓存，不上传麦克风或音频数据，不发送到 CurrentMusic 服务器。关闭智能调音后恢复手动均衡器设置。原版音效默认关闭。适配的 arm64 音效引擎、MNN 依赖和智能音效预置资源已内置，无需安装网易云或额外导入。作为兼容备用入口，用户可选择本机网易云音乐或安装包，导入经过兼容性校验的原生库与预置音效文件；导入不读取网易云应用的账号私有数据。选择原版音效后，会从网易云 CDN 下载预设并校验文件，在本机处理播放音频。会员音效与原版智能音效会通过当前已登录网易云账号核验权益；原版智能音效会发送当前歌曲 ID 获取匹配分类。音效选择及账号绑定标识保存在本机，重启与账号变更后重新核验，关闭后恢复手动设置。AI 情绪调音师会核验当前账号的真实 SVIP 状态，获取歌曲声音特征，并从网易云下载经过校验的原版模型，在本机执行模型推理与音效处理。模型文件保存在应用私有目录；不采集麦克风，也不上传播放音频。未支持的专属音效可由用户在网易云客户端打开。
+Danh mục hiệu ứng âm thanh được điện thoại lấy trực tiếp từ Nhạc Vân NetEase. Điều chỉnh âm thanh thông minh mặc định bị tắt; khi bật, ứng dụng sẽ gửi ID bài hát Nhạc Vân NetEase hiện tại đến Nhạc Vân NetEase để lấy cảm xúc, nhịp điệu và đặc trưng âm thanh của bài hát, rồi tính toán thông số bộ cân bằng âm thanh trên thiết bị. Kết quả phân tích chỉ được lưu tạm thời trong bộ nhớ, không thu thập âm thanh từ micrô hoặc tải dữ liệu âm thanh lên, và không gửi đến máy chủ CurrentMusic. Tắt điều chỉnh âm thanh thông minh sẽ khôi phục cài đặt bộ cân bằng âm thanh thủ công. Hiệu ứng âm thanh gốc mặc định bị tắt. Công cụ hiệu ứng âm thanh arm64 tương thích, phần phụ thuộc MNN và tài nguyên thiết lập sẵn cho hiệu ứng âm thanh thông minh đã được tích hợp sẵn, không cần cài đặt Nhạc Vân NetEase hoặc nhập thêm. Là phương án tương thích dự phòng, người dùng có thể chọn ứng dụng Nhạc Vân NetEase cục bộ hoặc gói cài đặt để nhập thư viện gốc và tệp hiệu ứng âm thanh thiết lập sẵn đã qua kiểm tra tương thích; thao tác nhập không đọc dữ liệu riêng tư tài khoản của ứng dụng Nhạc Vân NetEase. Khi chọn hiệu ứng âm thanh gốc, ứng dụng sẽ tải thiết lập sẵn từ CDN của Nhạc Vân NetEase, kiểm tra tệp và xử lý âm thanh phát trên thiết bị. Quyền sử dụng hiệu ứng âm thanh dành cho hội viên và hiệu ứng âm thanh thông minh gốc sẽ được xác minh bằng tài khoản Nhạc Vân NetEase đang đăng nhập; hiệu ứng âm thanh thông minh gốc sẽ gửi ID bài hát hiện tại để lấy phân loại phù hợp. Lựa chọn hiệu ứng âm thanh và mã nhận dạng liên kết tài khoản được lưu trên thiết bị; sau khi khởi động lại hoặc thay đổi tài khoản, ứng dụng sẽ xác minh lại. Khi tắt, cài đặt thủ công được khôi phục. Công cụ điều chỉnh cảm xúc bằng AI sẽ xác minh trạng thái SVIP thực của tài khoản hiện tại, lấy đặc trưng âm thanh của bài hát và tải mô hình gốc đã được kiểm tra từ Nhạc Vân NetEase để chạy suy luận mô hình và xử lý hiệu ứng âm thanh trên thiết bị. Tệp mô hình được lưu trong thư mục riêng tư của ứng dụng; ứng dụng không thu thập âm thanh từ micrô hoặc tải âm thanh đang phát lên. Người dùng có thể mở ứng dụng Nhạc Vân NetEase để dùng các hiệu ứng âm thanh độc quyền chưa được hỗ trợ.
 
-音频、MV 视频和图片从对应服务返回的 CDN 地址加载。Media3 前台服务用于后台、通知栏、锁屏和蓝牙控制，不使用麦克风。网易云登录状态下，歌曲开始实际播放时向网易云记录歌曲；累计实际收听达到一分钟时每次播放上报一次收听记录，暂停和缓冲时间不计入，拖动进度不会当作收听时长。MV 不计入歌曲播放记录。观看 MV 时暂停音乐，退出后恢复原音乐队列，等待用户继续播放。
+Âm thanh, video MV và hình ảnh được tải từ địa chỉ CDN do dịch vụ tương ứng trả về. Dịch vụ tiền cảnh Media3 được dùng cho điều khiển trong nền, trên thanh thông báo, màn hình khóa và qua Bluetooth; không sử dụng micrô. Khi đã đăng nhập Nhạc Vân NetEase, bài hát sẽ được ghi nhận trên Nhạc Vân NetEase khi bắt đầu phát thực tế; cứ mỗi lần nghe thực tế tích lũy đủ một phút, ứng dụng sẽ gửi một bản ghi nghe. Thời gian tạm dừng và tải đệm không được tính; tua tiến độ không được tính là thời lượng nghe. MV không được tính vào bản ghi phát bài hát. Khi xem MV, nhạc sẽ tạm dừng; sau khi thoát, hàng đợi nhạc ban đầu được khôi phục và chờ người dùng tiếp tục phát.
 
-## 歌曲分享
+## Chia sẻ bài hát
 
-打开歌曲分享时，可选方块或沉浸封面。所有音源的海报排版、文字绘制与二维码生成均在本机完成，不请求在线分享图接口，也不上传歌曲信息用于生成海报。封面按歌曲原有地址加载，远程封面仍可能产生网络请求；封面不可用时使用占位图。图片保存在本机缓存，仅点击分享后通过系统分享面板交给所选应用；保存图片使用用户选择的文件位置。
+Khi mở tính năng chia sẻ bài hát, người dùng có thể chọn ảnh bìa dạng khối hoặc dạng đắm chìm. Bố cục áp phích, vẽ chữ và tạo mã QR cho mọi nguồn nhạc đều được thực hiện trên thiết bị; ứng dụng không gọi API tạo ảnh chia sẻ trực tuyến hoặc tải thông tin bài hát lên để tạo áp phích. Ảnh bìa được tải từ địa chỉ gốc của bài hát; ảnh bìa từ xa vẫn có thể phát sinh yêu cầu mạng. Nếu ảnh bìa không khả dụng, ứng dụng sẽ dùng ảnh thay thế. Hình ảnh được lưu trong bộ nhớ đệm trên thiết bị; chỉ sau khi người dùng nhấn chia sẻ, hình ảnh mới được chuyển cho ứng dụng được chọn qua bảng chia sẻ của hệ thống. Khi lưu ảnh, người dùng chọn vị trí lưu tệp.
 
-## 歌曲下载
+## Tải bài hát
 
-下载由用户从歌曲操作触发。歌曲、音质、保存目录 URI 和账号/音源标识由 WorkManager 在本机保存，用于进度显示、取消及任务恢复，不保存 Token、API Key 或音频直链。音频和封面直接从返回的 CDN 获取，不附带账户授权头；已下载的音频、歌曲信息、内嵌封面/歌词及额外歌词/封面文件保存到用户选择的文件夹，Android 10 及以上默认使用 Download/CurrentMusic。目录授权来自系统文件夹选择器，不请求读取整个存储空间；取消或写入失败只清理本次任务创建的文件。切换账号/音源后未开始的旧任务要求重新发起。公开保存的已下载文件不会随退出登录自动删除。
+Việc tải xuống được khởi chạy theo thao tác của người dùng từ mục thao tác bài hát. Bài hát, chất lượng âm thanh, URI thư mục lưu và mã nhận dạng tài khoản/nguồn nhạc được WorkManager lưu trên thiết bị để hiển thị tiến độ, hủy và khôi phục tác vụ; Token, API Key và liên kết âm thanh trực tiếp không được lưu. Âm thanh và ảnh bìa được tải trực tiếp từ CDN trả về, không kèm tiêu đề ủy quyền tài khoản. Âm thanh đã tải xuống, thông tin bài hát, ảnh bìa/lời bài hát nhúng cùng các tệp lời bài hát/ảnh bìa bổ sung được lưu vào thư mục do người dùng chọn; trên Android 10 trở lên, mặc định là Download/CurrentMusic. Quyền truy cập thư mục được cấp qua bộ chọn thư mục của hệ thống; ứng dụng không yêu cầu quyền đọc toàn bộ bộ nhớ. Khi hủy hoặc ghi thất bại, chỉ các tệp được tạo bởi tác vụ hiện tại mới bị xóa. Sau khi chuyển tài khoản/nguồn nhạc, các tác vụ cũ chưa bắt đầu cần được khởi chạy lại. Các tệp đã tải xuống và lưu công khai sẽ không tự động bị xóa khi đăng xuất.
 
-## 日志与诊断
+## Nhật ký và chẩn đoán
 
-容量受限的运行与崩溃日志对凭据统一脱敏，不参与备份。登录提交设备型号和 app 平台标识。主动导出的诊断包含应用版本、Android 版本和设备型号。
+Nhật ký hoạt động và nhật ký sự cố có dung lượng giới hạn đều ẩn thông tin xác thực theo cùng một cách và không tham gia sao lưu. Khi đăng nhập, ứng dụng gửi mẫu thiết bị và mã nhận diện nền tảng app. Thông tin chẩn đoán do người dùng chủ động xuất bao gồm phiên bản ứng dụng, phiên bản Android và mẫu thiết bị.
 
-## 更新
+## Cập nhật
 
-检查更新连接 GitHub Releases；仅选择 CurrentMusic 原生安装包。下载及安装由用户操作。
+Kiểm tra cập nhật kết nối với GitHub Releases; chỉ chọn gói cài đặt gốc của CurrentMusic. Người dùng tự thao tác tải xuống và cài đặt.
 
-## 关于页开发组
+## Nhóm phát triển trong trang Giới thiệu
 
-开发组头像按成员公开的 QQ 号从腾讯头像 CDN 加载，仅作展示并缓存在内存中，不携带 CurrentMusic 登录凭据。成员的 GitHub 主页由用户点击后使用外部应用打开。
+Ảnh đại diện của nhóm phát triển được tải từ CDN ảnh đại diện của Tencent dựa trên số QQ được từng thành viên công khai, chỉ dùng để hiển thị và được lưu trong bộ nhớ; không kèm thông tin xác thực đăng nhập CurrentMusic. Trang GitHub của thành viên sẽ được mở bằng ứng dụng bên ngoài sau khi người dùng nhấn vào.
 
-## 一起听
+## Nghe cùng nhau
 
-网易云双人一起听由手机直接连接网易云，发送所选歌曲、播放进度、共享队列和房间操作，并以当前网易云账号读取结束报告、一起听历史、累计排行及缘分报告（含共同红心歌曲数量、首次陪伴时间等统计）。账号切换会取消旧账号请求和同步；会员或匿名限制按网易云返回处理。历史和报告统计不从本地队列推算，不发送到 CurrentMusic 服务器。再次邀请先由用户确认创建会话，再手动分享链接，不自动向好友发送消息。报告海报在本机生成，包含所选报告的头像、昵称、服务端统计及官方报告链接；仅用户点击分享后，通过系统分享面板交给所选应用，临时文件保存在本机缓存目录。官方报告链接仍需要登录及访问权限，不是公开的分享图片链接。删除缘分报告须由用户确认，默认保留一起听历史；另行开启删除历史选项才一并删除记录，关联徽章及进度的影响会在确认前说明。
+Tính năng nghe cùng nhau dành cho hai người của Nhạc Vân NetEase kết nối trực tiếp với Nhạc Vân NetEase qua điện thoại, gửi bài hát được chọn, tiến độ phát, hàng đợi dùng chung và thao tác phòng; đồng thời dùng tài khoản Nhạc Vân NetEase hiện tại để đọc báo cáo kết thúc, lịch sử nghe cùng nhau, xếp hạng tích lũy và báo cáo duyên phận (bao gồm thống kê như số bài hát cùng thả tim, thời điểm đồng hành lần đầu). Khi chuyển tài khoản, các yêu cầu và hoạt động đồng bộ của tài khoản cũ sẽ bị hủy; các giới hạn dành cho thành viên hoặc người dùng ẩn danh được xử lý theo phản hồi của Nhạc Vân NetEase. Lịch sử và số liệu trong báo cáo không được suy ra từ hàng đợi cục bộ và không được gửi đến máy chủ CurrentMusic. Khi mời lại, người dùng xác nhận tạo phiên trước, sau đó tự chia sẻ liên kết; ứng dụng không tự động gửi tin nhắn cho bạn bè. Poster báo cáo được tạo trên thiết bị, bao gồm ảnh đại diện, biệt danh, số liệu từ máy chủ và liên kết báo cáo chính thức đã chọn; chỉ sau khi người dùng nhấn chia sẻ, poster mới được chuyển cho ứng dụng được chọn thông qua bảng chia sẻ hệ thống. Tệp tạm thời được lưu trong thư mục bộ nhớ đệm trên thiết bị. Liên kết báo cáo chính thức vẫn yêu cầu đăng nhập và quyền truy cập, không phải liên kết ảnh chia sẻ công khai. Người dùng phải xác nhận xóa báo cáo duyên phận; mặc định, lịch sử nghe cùng nhau được giữ lại. Chỉ khi bật riêng tùy chọn xóa lịch sử thì các bản ghi mới bị xóa cùng; ảnh hưởng đến huy hiệu và tiến độ liên quan sẽ được thông báo trước khi xác nhận.
 
-一起听向所选服务器发送房间名称、密码、房间号、点歌信息及管理操作，并通过带授权头的 SSE 接收房间事件。房间密码、播放直链与事件序号仅在当前会话内存中保存，不写入日志或数据库。退出房间或切换账号会取消订阅与心跳，恢复本地队列并保持暂停。
+Tính năng nghe cùng nhau gửi tên phòng, mật khẩu, mã phòng, thông tin yêu cầu phát bài hát và thao tác quản lý đến máy chủ được chọn, đồng thời nhận sự kiện phòng qua SSE có kèm tiêu đề ủy quyền. Mật khẩu phòng, liên kết phát trực tiếp và số thứ tự sự kiện chỉ được lưu trong bộ nhớ của phiên hiện tại, không ghi vào nhật ký hoặc cơ sở dữ liệu. Khi rời phòng hoặc chuyển tài khoản, ứng dụng hủy đăng ký và nhịp tim, khôi phục hàng đợi cục bộ và giữ trạng thái tạm dừng.
 
-## 导入的落雪音源
+## Nguồn nhạc Luoxue đã nhập
 
-用户主动导入的 JavaScript 自定义音源在独立的脚本沙箱中执行，可向脚本指定的服务器发送歌曲平台、ID、歌名、歌手、目标音质以及脚本自身配置的信息，用于获取播放链接。脚本不会取得 CurrentMusic 登录令牌、网易云登录 Cookie、账号存储或本机文件访问能力。第三方音源服务各自负责其数据处理；请仅导入可信来源。
+Nguồn nhạc tùy chỉnh JavaScript do người dùng chủ động nhập sẽ chạy trong một sandbox tập lệnh riêng biệt. Tập lệnh có thể gửi đến máy chủ do chính tập lệnh chỉ định các thông tin gồm nền tảng bài hát, ID, tên bài hát, ca sĩ, chất lượng âm thanh mục tiêu và cấu hình riêng của tập lệnh để lấy liên kết phát. Tập lệnh không có quyền truy cập mã thông báo đăng nhập CurrentMusic, cookie đăng nhập Nhạc Vân NetEase, dữ liệu tài khoản hoặc tệp trên thiết bị. Các dịch vụ nguồn nhạc bên thứ ba tự chịu trách nhiệm xử lý dữ liệu của mình; vui lòng chỉ nhập nguồn đáng tin cậy.
 
-导入脚本（可能包含音源自己的密钥）加密保存在本机不参与备份的目录，可在音源设置中移除。通过链接导入时，只在用户触发导入时下载并验证脚本，不自动远程更新或启用其他音源。音频仍从脚本返回的 HTTP/HTTPS 链接获取，不附带 CurrentMusic 或网易云账号凭据。
+Tập lệnh đã nhập (có thể chứa khóa riêng của nguồn nhạc) được mã hóa và lưu trong thư mục trên thiết bị không tham gia sao lưu; có thể xóa trong phần cài đặt nguồn nhạc. Khi nhập qua liên kết, tập lệnh chỉ được tải xuống và xác minh khi người dùng chủ động bắt đầu nhập; ứng dụng không tự động cập nhật từ xa hoặc bật các nguồn nhạc khác. Âm thanh vẫn được lấy từ liên kết HTTP/HTTPS do tập lệnh trả về, không đính kèm thông tin xác thực tài khoản CurrentMusic hoặc Nhạc Vân NetEase.
 
-## Emby 自建曲库
+## Thư viện nhạc Emby tự lưu trữ
 
-连接 Emby 时，用户名和密码仅发送到用户填写的服务器用于认证；本机使用 Android Keystore 加密保存服务器、账号标识和访问令牌，不保存密码。曲库浏览、搜索、喜欢与取消喜欢直接请求该服务器。音频和图片从该服务器及其返回的媒体地址读取；媒体跳转不转发 Emby 账号鉴权头。缓存与队列仅保存不含令牌的媒体引用，并按服务器和用户隔离。退出 Emby 清除本机凭据并尝试撤销服务器会话，不影响其他音乐账号。当前不主动上报 Emby 播放记录；歌词匹配按应用歌词设置请求相应服务。
+Khi kết nối Emby, tên người dùng và mật khẩu chỉ được gửi đến máy chủ do người dùng cung cấp để xác thực; trên thiết bị, thông tin máy chủ, mã nhận diện tài khoản và mã thông báo truy cập được mã hóa bằng Android Keystore, không lưu mật khẩu. Việc duyệt thư viện, tìm kiếm, thích và bỏ thích đều gửi yêu cầu trực tiếp đến máy chủ đó. Âm thanh và hình ảnh được tải từ máy chủ đó cùng các địa chỉ nội dung đa phương tiện mà máy chủ trả về; khi chuyển hướng nội dung đa phương tiện, ứng dụng không chuyển tiếp tiêu đề xác thực tài khoản Emby. Bộ nhớ đệm và hàng đợi chỉ lưu thông tin tham chiếu nội dung đa phương tiện không chứa mã thông báo, đồng thời được phân tách theo máy chủ và người dùng. Khi thoát Emby, thông tin xác thực trên thiết bị sẽ bị xóa và ứng dụng sẽ cố gắng thu hồi phiên trên máy chủ; việc này không ảnh hưởng đến các tài khoản nhạc khác. Hiện tại, ứng dụng không chủ động báo cáo lịch sử phát Emby; việc khớp lời bài hát sẽ gửi yêu cầu đến dịch vụ tương ứng theo cài đặt lời bài hát của ứng dụng.

@@ -138,17 +138,17 @@ internal data class NeteaseListenTogetherActions(
                                 try {
                                     container.listenTogetherFate.checkSession(expected)
                                     if (fateController.state.value.report === report) {
-                                        context.startActivity(Intent.createChooser(ListenTogetherFateSharing.intent(context, report, file), "分享缘分报告"))
+                                        context.startActivity(Intent.createChooser(ListenTogetherFateSharing.intent(context, report, file), "Chia sẻ báo cáo duyên phận"))
                                     } else file.delete()
                                 } catch (failure: Exception) { file.delete(); throw failure }
                             } catch (cancelled: kotlinx.coroutines.CancellationException) { throw cancelled }
-                            catch (_: Exception) { context.showMusicError("暂时无法分享缘分报告，请重试") }
+                            catch (_: Exception) { context.showMusicError("Tạm thời không thể chia sẻ báo cáo duyên phận, vui lòng thử lại") }
                             finally { fateSharing = false }
                         }
                     } },
                     onDeleteRequest = { deleteFate = fate.report },
                     onOfficial = { report -> try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(report.officialUrl()))) }
-                        catch (_: Exception) { context.showMusicError("无法打开网易云缘分报告") } },
+                        catch (_: Exception) { context.showMusicError("Không thể mở báo cáo duyên phận Nhạc Vân NetEase") } },
                     onInvite = { report -> if (report.canInvite && !report.peer.masked && !state.active) {
                         fateController.close(); invitePeer = report.peer
                     } }, activeRoom = state.active,
@@ -178,27 +178,27 @@ internal data class NeteaseListenTogetherActions(
                                 try {
                                     kotlinx.coroutines.currentCoroutineContext().ensureActive()
                                     if (archiveController.state.value.report === report && fateController.state.value.partnerUid == null)
-                                        context.startActivity(Intent.createChooser(ListenTogetherReportSharing.intent(context, report, file), "分享一起听报告"))
+                                        context.startActivity(Intent.createChooser(ListenTogetherReportSharing.intent(context, report, file), "Chia sẻ báo cáo nghe cùng nhau"))
                                     else file.delete()
                                 } catch (failure: Exception) { file.delete(); throw failure }
                             } catch (cancelled: kotlinx.coroutines.CancellationException) { throw cancelled }
-                            catch (_: Exception) { context.showMusicError("暂时无法分享报告，请重试") }
+                            catch (_: Exception) { context.showMusicError("Tạm thời không thể chia sẻ báo cáo, vui lòng thử lại") }
                             finally { reportSharing = false }
                         }
                     } },
                     onCollect = archiveController::collectSongs,
                     onOfficial = { report -> try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(report.officialUrl()))) }
-                        catch (_: Exception) { context.showMusicError("无法打开官方报告") } },
+                        catch (_: Exception) { context.showMusicError("Không thể mở báo cáo chính thức") } },
                     activeRoom = state.active, sharing = reportSharing, onFate = { peer, scene -> fateController.open(peer.userId, scene) })
                 NeteaseSongsCollectionDialog(archive.collectionSongs.orEmpty(), collectionShown,
                     archiveController::dismissCollection,
                     loadPlaylists = { container.neteaseLibrary.playlists(fresh = true).filter { it.nativeOwned } },
                     collect = { id, songs -> container.neteaseLibrary.addAll(id, songs); Unit })
-                invitePeer?.takeIf { visible }?.let { peer -> MusicDialog("再次一起听", onDismiss = { invitePeer = null }) {
-                    Text("创建新的双人会话后，可复制邀请链接发给${peer.nickname.ifBlank { "好友" }}。")
+                invitePeer?.takeIf { visible }?.let { peer -> MusicDialog("Nghe cùng nhau lần nữa", onDismiss = { invitePeer = null }) {
+                    Text("Sau khi tạo phiên nghe đôi mới, bạn có thể sao chép liên kết mời và gửi cho ${peer.nickname.ifBlank { "bạn bè" }}.")
                     MusicDialogActions {
-                        MusicDialogButton("取消", { invitePeer = null }, Modifier.weight(1f))
-                        MusicDialogButton("创建一起听", { invitePeer = null; archiveController.close(); controller.create() },
+                        MusicDialogButton("Hủy", { invitePeer = null }, Modifier.weight(1f))
+                        MusicDialogButton("Tạo phiên nghe cùng nhau", { invitePeer = null; archiveController.close(); controller.create() },
                             Modifier.weight(1f), enabled = !state.active && !state.busy)
                     }
                 } }
@@ -206,7 +206,7 @@ internal data class NeteaseListenTogetherActions(
                 NeteaseListenTogetherContent(state, account, playback,
                     actions = NeteaseListenTogetherActions(controller::create, controller::join, controller::resume,
                         controller::refresh, controller::leave, controller::dismissError,
-                        copyInvitation = { url -> clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("网易云一起听邀请", url))) },
+                        copyInvitation = { url -> clipboard.setClipEntry(ClipData.newPlainText("Lời mời nghe cùng nhau Nhạc Vân NetEase", url))) },
                         pasteInvitation = { clipboard.getClipEntry()?.clipData?.let { clip ->
                             if (clip.itemCount > 0) clip.getItemAt(0).coerceToText(context)?.toString() else null
                         } }),
@@ -227,7 +227,7 @@ internal data class NeteaseListenTogetherActions(
     val ready = account.loggedIn && !account.stale && (account.profile?.uid ?: 0) > 0
     val canStart = ready && !state.busy && !currentMusicRoomActive
     val showAccountCard = !ready
-    val accountSummary = when { account.stale -> "本机网易云登录已过期"; ready -> "已登录 · ${account.profile?.nickname?.ifBlank { "网易云用户" }}"; else -> "尚未登录本机网易云账号" }
+    val accountSummary = when { account.stale -> "Đăng nhập Nhạc Vân NetEase trên thiết bị này đã hết hạn"; ready -> "Đã đăng nhập · ${account.profile?.nickname?.ifBlank { "người dùng Nhạc Vân NetEase" }}"; else -> "Chưa đăng nhập tài khoản Nhạc Vân NetEase trên thiết bị này" }
     var invite by rememberSaveable(account.revision, initialInvitation) { mutableStateOf(initialInvitation.orEmpty()) }
     val requestedRoomId = remember(initialInvitation) { initialInvitation?.let(ListenTogetherInvitation::parse)?.roomId }
     var inputError by remember(account.revision) { mutableStateOf<String?>(null) }
@@ -253,16 +253,16 @@ internal data class NeteaseListenTogetherActions(
             value.operation in setOf(ListenTogetherOperation.REFRESH, ListenTogetherOperation.RESTORE) -> "checking"
         else -> "idle"
     }
-    MusicSubpage("双人一起听", "netease_listen_screen", onBack, backTag = "netease_listen_back",
+    MusicSubpage("Nghe cùng nhau", "netease_listen_screen", onBack, backTag = "netease_listen_back",
         actions = {
-            if (ready && onHistory != null) GlassIconButton(onHistory, "一起听记录", Modifier.testTag("netease_listen_history")) {
+            if (ready && onHistory != null) GlassIconButton(onHistory, "Lịch sử nghe cùng nhau", Modifier.testTag("netease_listen_history")) {
                 Icon(MusicIcons.Update, null)
             }
         }) { topInset ->
         ListenTogetherPageTransition(state, ::phase, { if (it.active) 1 else 0 }, Modifier.fillMaxSize().imePadding().padding(horizontal = 16.dp)) { state ->
         if (phase(state) == "checking") {
             LazyColumn(Modifier.fillMaxSize(), contentPadding = musicScrollPadding(PaddingValues(top = topInset + 8.dp, bottom = 24.dp))) {
-                item { ListenTogetherSkeleton(if (state.operation == ListenTogetherOperation.RESTORE) "正在恢复一起听…" else "正在检查已有会话…",
+                item { ListenTogetherSkeleton(if (state.operation == ListenTogetherOperation.RESTORE) "Đang khôi phục phiên nghe cùng nhau…" else "Đang kiểm tra phiên hiện có…",
                     "netease_listen_loading", rows = 2) }
             }
         } else LazyColumn(Modifier.fillMaxSize().testTag("netease_listen_content"),
@@ -270,37 +270,37 @@ internal data class NeteaseListenTogetherActions(
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
             if (!showAccountCard) item {
                 SettingsGroup {
-                    SettingsPreference("网易云音乐", accountSummary, Modifier.testTag("netease_listen_account"),
+                    SettingsPreference("Nhạc Vân NetEase", accountSummary, Modifier.testTag("netease_listen_account"),
                         leading = { Icon(MusicIcons.Headphones, null, tint = colors.primary) })
                 }
             }
             if (showAccountCard) item { SettingsGroup(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("网易云账号", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                Text("Tài khoản Nhạc Vân NetEase", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Text(accountSummary, Modifier.testTag("netease_listen_account"), fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
                 if (!ready) {
-                    Text("登录后，与网易云音乐好友同步听同一首歌。", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
-                    if (onBinding != null) MusicTextAction(if (account.stale) "重新登录网易云" else "登录网易云", onBinding,
+                    Text("Sau khi đăng nhập, bạn có thể đồng bộ nghe cùng một bài hát với bạn bè trên Nhạc Vân NetEase.", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+                    if (onBinding != null) MusicTextAction(if (account.stale) "Đăng nhập lại Nhạc Vân NetEase" else "Đăng nhập Nhạc Vân NetEase", onBinding,
                         Modifier.testTag("netease_listen_login"))
                 }
             } } }
             if (currentMusicRoomActive) item { SettingsGroup(Modifier.fillMaxWidth()) { Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("正在使用 CurrentMusic 房间", fontWeight = FontWeight.SemiBold)
-                Text("请先退出当前房间，再开启网易云双人一起听。", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
-                MusicTextAction("返回房间", onBack)
+                Text("Đang sử dụng phòng CurrentMusic", fontWeight = FontWeight.SemiBold)
+                Text("Vui lòng rời khỏi phòng hiện tại trước khi bật tính năng nghe đôi Nhạc Vân NetEase.", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+                MusicTextAction("Quay lại phòng", onBack)
             } } }
             state.error?.let { error -> item { SettingsGroup(Modifier.fillMaxWidth().testTag("netease_listen_error")) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(error, fontSize = 14.sp, color = colors.error)
-                    Row { MusicTextAction("重试同步", actions.refresh, Modifier.testTag("netease_listen_retry"), enabled = ready && !state.busy)
-                        MusicTextAction("知道了", actions.dismissError) }
+                    Row { MusicTextAction("Thử đồng bộ lại", actions.refresh, Modifier.testTag("netease_listen_retry"), enabled = ready && !state.busy)
+                        MusicTextAction("Đã hiểu", actions.dismissError) }
                 }
             } } }
             if (state.active) {
                 if (requestedRoomId != null && requestedRoomId != state.room?.roomId && invite.isNotBlank()) item {
                     SettingsGroup(Modifier.fillMaxWidth().testTag("netease_listen_pending_invitation")) {
                         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            Text("收到一起听邀请", fontWeight = FontWeight.SemiBold)
-                            Text("请先退出当前会话，再确认加入邀请中的会话。邀请链接已保留。",
+                             Text("Đã nhận được lời mời nghe cùng nhau", fontWeight = FontWeight.SemiBold)
+                             Text("Vui lòng thoát phiên hiện tại trước, rồi xác nhận tham gia phiên được mời. Liên kết mời đã được giữ lại.",
                                 fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
                         }
                     }
@@ -311,14 +311,14 @@ internal data class NeteaseListenTogetherActions(
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         ListeningPairArtwork(pair, Modifier.size(84.dp, 52.dp))
                         Column(Modifier.weight(1f).padding(start = 16.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                            Text(if (participants.size >= 2) "正在一起听" else "等待好友加入", fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
-                            Text(participants.joinToString(" · ") { it.nickname.ifBlank { "网易云用户" } }.ifBlank { account.profile?.nickname.orEmpty() },
+                             Text(if (participants.size >= 2) "Đang nghe cùng nhau" else "Đang chờ bạn bè tham gia", fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                             Text(participants.joinToString(" · ") { it.nickname.ifBlank { "Người dùng NetEase Cloud" } }.ifBlank { account.profile?.nickname.orEmpty() },
                                 fontSize = 13.sp, color = colors.onSurfaceVariantSummary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             AnimatedContent(when {
-                                state.operation == ListenTogetherOperation.LEAVE -> "正在退出一起听…"
-                                state.busy -> "正在同步…"
-                                state.connected -> "已连接 · 播放同步中"
-                                else -> "正在恢复同步…"
+                                 state.operation == ListenTogetherOperation.LEAVE -> "Đang thoát khỏi phiên nghe cùng nhau…"
+                                 state.busy -> "Đang đồng bộ…"
+                                 state.connected -> "Đã kết nối · Đang đồng bộ phát nhạc"
+                                 else -> "Đang khôi phục đồng bộ…"
                             }, transitionSpec = { fadeIn(tween(180)) togetherWith fadeOut(tween(120)) }, label = "listen-connection") { message ->
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                                     if (state.busy || !state.connected) ListenProgress(size = 12.dp)
@@ -331,24 +331,24 @@ internal data class NeteaseListenTogetherActions(
                     Spacer(Modifier.height(20.dp))
                     val invitation = state.invitationUrl
                     GlassActionButton(
-                        if (copying) "正在复制…" else if (clipboardMessage == "邀请链接已复制") "已复制邀请链接" else "复制邀请链接",
+                         if (copying) "Đang sao chép…" else if (clipboardMessage == "Đã sao chép liên kết mời") "Đã sao chép liên kết mời" else "Sao chép liên kết mời",
                         onClick = { if (invitation != null && !copying) scope.launch {
                         copying = true
-                        clipboardMessage = try { actions.copyInvitation(invitation); "邀请链接已复制" }
+                         clipboardMessage = try { actions.copyInvitation(invitation); "Đã sao chép liên kết mời" }
                         catch (cancelled: kotlinx.coroutines.CancellationException) { throw cancelled }
-                        catch (_: Exception) { "暂时无法复制，请重试" }
+                         catch (_: Exception) { "Hiện chưa thể sao chép, vui lòng thử lại" }
                         finally { copying = false }
                     } },
                         enabled = !invitation.isNullOrBlank() && !copying && !state.busy, primary = true,
                         modifier = Modifier.fillMaxWidth().testTag("netease_listen_copy"))
-                    Text(clipboardMessage ?: "好友可在网易云音乐打开链接加入。", Modifier.fillMaxWidth().padding(top = 8.dp),
+                     Text(clipboardMessage ?: "Bạn bè có thể mở liên kết bằng Nhạc Vân NetEase để tham gia.", Modifier.fillMaxWidth().padding(top = 8.dp),
                         fontSize = 11.sp, color = if (clipboardMessage == null) colors.onSurfaceVariantSummary else colors.primary,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center)
                     Spacer(Modifier.height(16.dp))
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        GlassActionButton(if (state.operation == ListenTogetherOperation.REFRESH) "正在同步…" else "刷新同步",
+                         GlassActionButton(if (state.operation == ListenTogetherOperation.REFRESH) "Đang đồng bộ…" else "Làm mới đồng bộ",
                             actions.refresh, Modifier.weight(1f).testTag("netease_listen_refresh"), enabled = ready && !state.busy)
-                        GlassActionButton("退出一起听", { leaveConfirmation = true }, Modifier.weight(1f).testTag("netease_listen_leave"), enabled = !state.busy, destructive = true)
+                         GlassActionButton("Thoát phiên nghe cùng nhau", { leaveConfirmation = true }, Modifier.weight(1f).testTag("netease_listen_leave"), enabled = !state.busy, destructive = true)
                     }
                 } } }
                 item { SettingsGroup(Modifier.fillMaxWidth().testTag("netease_listen_now_playing")) { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -359,74 +359,74 @@ internal data class NeteaseListenTogetherActions(
                         MusicCover(song?.cover.orEmpty(), Modifier.size(56.dp), cornerRadius = 12.dp)
                         Column(Modifier.weight(1f).padding(start = 12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                                Text("正在播放", Modifier.weight(1f), fontSize = 11.sp, color = colors.onSurfaceVariantSummary)
-                                Text("${state.queueCount} 首", fontSize = 11.sp, color = colors.onSurfaceVariantSummary)
+                                 Text("Đang phát", Modifier.weight(1f), fontSize = 11.sp, color = colors.onSurfaceVariantSummary)
+                                 Text("${state.queueCount} bài", fontSize = 11.sp, color = colors.onSurfaceVariantSummary)
                             }
-                            Text(song?.name ?: "等待选择歌曲", maxLines = 2, overflow = TextOverflow.Ellipsis, fontSize = 17.sp, fontWeight = FontWeight.Medium)
+                             Text(song?.name ?: "Đang chờ chọn bài hát", maxLines = 2, overflow = TextOverflow.Ellipsis, fontSize = 17.sp, fontWeight = FontWeight.Medium)
                             song?.artists?.takeIf(String::isNotBlank)?.let { Text(it, fontSize = 12.sp, color = colors.onSurfaceVariantSummary,
                                 maxLines = 1, overflow = TextOverflow.Ellipsis) }
                         } }
                         }
                     }
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        GlassActionButton("选择歌曲", onSearch, Modifier.weight(1f).testTag("netease_listen_search"), enabled = !state.busy)
-                        GlassActionButton("打开播放器", onPlayer, Modifier.weight(1f).testTag("netease_listen_player"), enabled = playback.song != null)
+                         GlassActionButton("Chọn bài hát", onSearch, Modifier.weight(1f).testTag("netease_listen_search"), enabled = !state.busy)
+                         GlassActionButton("Mở trình phát", onPlayer, Modifier.weight(1f).testTag("netease_listen_player"), enabled = playback.song != null)
                     }
                 } } }
             } else {
                 if (state.availableRoom != null) item { SettingsGroup(Modifier.fillMaxWidth()) { Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("发现已有一起听会话", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                    Text("恢复后在本机继续同步播放。", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
-                    GlassActionButton(if (state.operation == ListenTogetherOperation.RESTORE) "正在恢复…" else "恢复一起听",
+                     Text("Phát hiện phiên nghe cùng nhau hiện có", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                     Text("Sau khi khôi phục, tiếp tục đồng bộ phát nhạc trên thiết bị này.", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+                     GlassActionButton(if (state.operation == ListenTogetherOperation.RESTORE) "Đang khôi phục…" else "Khôi phục phiên nghe cùng nhau",
                         actions.resume, Modifier.fillMaxWidth().testTag("netease_listen_resume"), enabled = canStart)
                 } } }
                 item { SettingsGroup(Modifier.fillMaxWidth()) { Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("和好友听同一首歌", fontSize = 21.sp, fontWeight = FontWeight.SemiBold)
-                    Text("创建双人会话，复制邀请链接，与好友同步播放、暂停和切歌。", fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
-                    GlassActionButton(if (state.operation == ListenTogetherOperation.CREATE) "正在创建…" else "创建一起听",
+                     Text("Nghe cùng bạn bè một bài hát", fontSize = 21.sp, fontWeight = FontWeight.SemiBold)
+                     Text("Tạo phiên hai người, sao chép liên kết mời để đồng bộ phát, tạm dừng và chuyển bài cùng bạn bè.", fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
+                    GlassActionButton(if (state.operation == ListenTogetherOperation.CREATE) "Đang tạo…" else "Tạo cùng nghe",
                         actions.create, Modifier.fillMaxWidth().testTag("netease_listen_create"), primary = true, enabled = canStart)
                 } } }
                 item { SettingsGroup(Modifier.fillMaxWidth()) { Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("加入好友", fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
-                    TextField(invite, { invite = it; inputError = null; clipboardMessage = null }, label = "网易云一起听邀请链接",
+                    Text("Tham gia cùng bạn bè", fontSize = 19.sp, fontWeight = FontWeight.SemiBold)
+                    TextField(invite, { invite = it; inputError = null; clipboardMessage = null }, label = "Liên kết mời cùng nghe Nhạc Vân NetEase",
                         enabled = !state.busy, modifier = Modifier.fillMaxWidth().testTag("netease_listen_invite"))
                     inputError?.let { Text(it, Modifier.testTag("netease_listen_invite_error"), fontSize = 12.sp, color = colors.error) }
                     clipboardMessage?.let { Text(it, fontSize = 12.sp, color = colors.onSurfaceVariantSummary) }
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        MusicTextAction(if (pasting) "正在粘贴…" else "粘贴邀请", {
+                        MusicTextAction(if (pasting) "Đang dán…" else "Dán lời mời", {
                             scope.launch {
                                 pasting = true
                                 try {
                                     val value = actions.pasteInvitation()
-                                    if (value.isNullOrBlank()) clipboardMessage = "剪贴板中没有邀请链接"
+                                    if (value.isNullOrBlank()) clipboardMessage = "Không có liên kết mời trong bộ nhớ tạm"
                                     else { invite = value; inputError = null; clipboardMessage = null }
                                 } catch (cancelled: kotlinx.coroutines.CancellationException) { throw cancelled }
-                                catch (_: Exception) { clipboardMessage = "暂时无法读取剪贴板，请手动粘贴" }
+                                catch (_: Exception) { clipboardMessage = "Hiện không thể đọc bộ nhớ tạm, vui lòng dán thủ công" }
                                 finally { pasting = false }
                             }
                         }, Modifier.testTag("netease_listen_paste"), enabled = !state.busy && !pasting)
-                        MusicTextAction(if (state.operation == ListenTogetherOperation.JOIN) "正在加入…" else "加入一起听", {
-                            if (!ListenTogetherInvitation.isSupported(invite)) inputError = "请粘贴有效的网易云一起听邀请链接"
+                        MusicTextAction(if (state.operation == ListenTogetherOperation.JOIN) "Đang tham gia…" else "Tham gia cùng nghe", {
+                            if (!ListenTogetherInvitation.isSupported(invite)) inputError = "Vui lòng dán liên kết mời cùng nghe Nhạc Vân NetEase hợp lệ"
                             else { focus.clearFocus(); actions.join(invite.trim()) }
                         }, Modifier.testTag("netease_listen_join"), enabled = canStart && invite.isNotBlank())
                     }
-                    if (state.operation == ListenTogetherOperation.JOIN) ListenLoadingLabel("正在连接好友的会话…", Modifier.testTag("netease_listen_join_loading"))
-                    Text("请使用网易云音乐的邀请链接；CurrentMusic 六位房间号请返回房间页加入。", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+                    if (state.operation == ListenTogetherOperation.JOIN) ListenLoadingLabel("Đang kết nối với phiên của bạn bè…", Modifier.testTag("netease_listen_join_loading"))
+                    Text("Vui lòng dùng liên kết mời của Nhạc Vân NetEase; mã phòng CurrentMusic gồm sáu chữ số thì quay lại trang phòng để tham gia.", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
                 } } }
                 if (ready && onHistory != null) item {
-                    SettingsGroup { MusicDestinationRow("一起听记录", onHistory, summary = "历史、排行与缘分报告") }
+                    SettingsGroup { MusicDestinationRow("Lịch sử cùng nghe", onHistory, summary = "Lịch sử, xếp hạng và báo cáo nhân duyên") }
                 }
-                item { MusicTextAction(if (state.busy) "正在检查…" else "检查已有会话", actions.refresh,
+                item { MusicTextAction(if (state.busy) "Đang kiểm tra…" else "Kiểm tra phiên hiện có", actions.refresh,
                     Modifier.testTag("netease_listen_check"), enabled = ready && !state.busy) }
             }
         }
         }
     }
-    if (leaveConfirmation && LocalMusicPageActive.current) MusicDialog("退出双人一起听", onDismiss = { leaveConfirmation = false }) {
-        Text("退出将结束当前双人会话，并恢复本机播放队列。")
+    if (leaveConfirmation && LocalMusicPageActive.current) MusicDialog("Thoát phiên cùng nghe", onDismiss = { leaveConfirmation = false }) {
+        Text("Thoát sẽ kết thúc phiên cùng nghe hiện tại và khôi phục hàng đợi phát trên thiết bị này.")
         MusicDialogActions {
-            MusicDialogButton("取消", { leaveConfirmation = false }, Modifier.weight(1f).testTag("netease_listen_cancel_leave"))
-            MusicDialogButton("确认退出", { leaveConfirmation = false; actions.leave() },
+            MusicDialogButton("Hủy", { leaveConfirmation = false }, Modifier.weight(1f).testTag("netease_listen_cancel_leave"))
+            MusicDialogButton("Xác nhận thoát", { leaveConfirmation = false; actions.leave() },
                 Modifier.weight(1f).testTag("netease_listen_confirm_leave"), destructive = true, enabled = !state.busy)
         }
     }

@@ -21,22 +21,22 @@ class UpdateIslandNotice(downloads: Flow<UpdateDownloadState>, enabled: Flow<Boo
                     if (!active) { sequence--; active = true }
                     val percent = if (download.total > 0) (download.received.toDouble() / download.total * 100)
                         .toInt().coerceIn(0, 100) else null
-                    mutable.value = SoundEffectNotice(sequence, "更新下载", SoundEffectNoticeTier.STANDARD,
-                        message = percent?.let { "更新下载 $it%" } ?: "正在连接下载源",
+                    mutable.value = SoundEffectNotice(sequence, "Đang tải bản cập nhật", SoundEffectNoticeTier.STANDARD,
+                        message = percent?.let { "Đang tải bản cập nhật $it%" } ?: "Đang kết nối đến nguồn tải xuống",
                         kind = IslandNoticeKind.UPDATE_DOWNLOAD, progress = percent)
                     return@collectLatest
                 }
                 if (download is UpdateDownloadState.Ready) {
                     if (!active) { sequence--; active = true }
-                    mutable.value = SoundEffectNotice(sequence, "下载完成", SoundEffectNoticeTier.STANDARD,
-                        SoundEffectNoticePhase.READY, "CurrentMusic 更新已校验，点击查看",
+                    mutable.value = SoundEffectNotice(sequence, "Tải xuống hoàn tất", SoundEffectNoticeTier.STANDARD,
+                        SoundEffectNoticePhase.READY, "Bản cập nhật CurrentMusic đã được xác minh, nhấn để xem",
                         IslandNoticeKind.UPDATE_DOWNLOAD, 100)
                     return@collectLatest
                 }
                 if (!active) { mutable.value = null; return@collectLatest }
                 val (name, phase, message) = when (download) {
-                    is UpdateDownloadState.Failed -> Triple("下载失败", SoundEffectNoticePhase.FAILED, download.message)
-                    else -> Triple("已取消下载", SoundEffectNoticePhase.WAITING, "更新下载已取消")
+                    is UpdateDownloadState.Failed -> Triple("Tải xuống thất bại", SoundEffectNoticePhase.FAILED, download.message)
+                    else -> Triple("Đã hủy tải xuống", SoundEffectNoticePhase.WAITING, "Đã hủy tải bản cập nhật")
                 }
                 mutable.value = SoundEffectNotice(sequence, name, SoundEffectNoticeTier.STANDARD, phase, message,
                     IslandNoticeKind.UPDATE_DOWNLOAD)

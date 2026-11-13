@@ -165,8 +165,8 @@ class AuthRepository(private val api: ApiClient, val accounts: AccountRepository
                 api.request("POST", "auth/passkeys/login/options", body = buildJsonObject { put("platform", "app") },
                     expectedSession = expected, retryConnection = false, passkeyOrigin = origin).jsonObject
             } catch (e: ApiException) {
-                if (e.status == 403 && e.userMessage?.contains("HTTPS 网页入口") == true)
-                    throw ApiException(ErrorKind.Forbidden, 403, "当前服务器尚未支持 Android 通行密钥登录，请使用密码或邮箱验证码")
+                if (e.status == 403 && e.userMessage?.contains("Lối vào trang web HTTPS") == true)
+                    throw ApiException(ErrorKind.Forbidden, 403, "Máy chủ hiện tại chưa hỗ trợ đăng nhập bằng khóa truy cập Android, vui lòng sử dụng mật khẩu hoặc mã xác minh qua email")
                 throw e
             }
             checkLoginOwner(owner, revision)
@@ -181,7 +181,7 @@ class AuthRepository(private val api: ApiClient, val accounts: AccountRepository
             val deadline = clock() + seconds.coerceAtMost(300) * 1000
             val assertion = credential(options.toString())
             checkLoginOwner(owner, revision)
-            if (clock() >= deadline) throw ApiException(ErrorKind.Unauthorized, userMessage = "通行密钥验证已过期，请重新登录")
+            if (clock() >= deadline) throw ApiException(ErrorKind.Unauthorized, userMessage = "Xác minh khóa truy cập đã hết hạn, vui lòng đăng nhập lại")
             require(assertion.length <= 131072)
             val result = api.request("POST", "auth/passkeys/login/verify", body = buildJsonObject {
                 put("challengeToken", token); put("credential", ApiJson.parseToJsonElement(assertion).jsonObject)
@@ -192,7 +192,7 @@ class AuthRepository(private val api: ApiClient, val accounts: AccountRepository
         } }
     suspend fun verifyLogin(challenge: LoginChallenge, code: String): AppResult<LoginOutcome.SignedIn> = sessionMutex.withLock { appResult {
         if (loginChallenge !== challenge || challenge.remainingSeconds <= 0)
-            throw ApiException(ErrorKind.Unauthorized, userMessage = "登录验证已失效，请重新登录")
+            throw ApiException(ErrorKind.Unauthorized, userMessage = "Xác minh đăng nhập đã hết hiệu lực, vui lòng đăng nhập lại")
         checkLoginOwner(challenge.owner, challenge.revision)
         require(code.isNotBlank() && code.length <= 128)
         val question = challenge.securityQuestion != null
@@ -200,7 +200,7 @@ class AuthRepository(private val api: ApiClient, val accounts: AccountRepository
             put("challengeToken", challenge.token); put(if (question) "answer" else "code", code.trim())
         }, expectedSession = RequestSession(challenge.owner.server, null), retryConnection = false).jsonObject
         if (loginChallenge !== challenge || challenge.remainingSeconds <= 0)
-            throw ApiException(ErrorKind.Unauthorized, userMessage = "登录验证已失效，请重新登录")
+            throw ApiException(ErrorKind.Unauthorized, userMessage = "Xác minh đăng nhập đã hết hiệu lực, vui lòng đăng nhập lại")
         val account = acceptLogin(response, challenge.owner, challenge.revision)
         loginChallenge = null
         LoginOutcome.SignedIn(account)
@@ -210,7 +210,7 @@ class AuthRepository(private val api: ApiClient, val accounts: AccountRepository
     }
     private fun checkLoginOwner(owner: RequestSession, revision: Long) {
         if (owner != RequestSession(accounts.server, accounts.token) || revision != accounts.sessionRevision.value)
-            throw ApiException(ErrorKind.Unauthorized, userMessage = "账号或服务器已改变，请重新登录")
+            throw ApiException(ErrorKind.Unauthorized, userMessage = "Tài khoản hoặc máy chủ đã thay đổi, vui lòng đăng nhập lại")
     }
     private suspend fun acceptLogin(response: JsonObject, owner: RequestSession, revision: Long): Account {
         checkLoginOwner(owner, revision)

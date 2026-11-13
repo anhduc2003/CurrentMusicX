@@ -39,12 +39,12 @@ class UpdateDownloader(client: OkHttpClient, private val directory: File,
 
     @OptIn(InternalCoroutinesApi::class)
     override suspend fun download(release: AppRelease, source: UpdateSource, onProgress: (Long, Long) -> Unit): File = withContext(Dispatchers.IO) {
-        require(release.size in 1..MAX_APK_BYTES && Regex("[a-f0-9]{64}").matches(release.sha256)) { "安装包校验信息无效" }
+        require(release.size in 1..MAX_APK_BYTES && Regex("[a-f0-9]{64}").matches(release.sha256)) { "Thông tin xác minh gói cài đặt không hợp lệ" }
         // The digest, rather than the server filename, is the safe cache identity.
         val target = File(directory, "update-${release.sha256}.apk")
         val lease = cache?.lease(target)
         try {
-            check(directory.isDirectory || directory.mkdirs()) { "无法创建更新目录" }
+            check(directory.isDirectory || directory.mkdirs()) { "Không thể tạo thư mục cập nhật" }
             lease?.ensureSafe()
             if (target.isFile && matches(target, release)) {
                 onProgress(release.size, release.size)
@@ -57,7 +57,7 @@ class UpdateDownloader(client: OkHttpClient, private val directory: File,
             var url = urlFor(release, source).toHttpUrl()
             try {
                 for (redirect in 0..MAX_REDIRECTS) {
-                    remoteCheck(url.scheme == "https" && url.username.isBlank() && url.password.isBlank(), "下载源必须使用 HTTPS")
+                     remoteCheck(url.scheme == "https" && url.username.isBlank() && url.password.isBlank(), "Nguồn tải xuống phải sử dụng HTTPS")
                     val request = Request.Builder().url(url)
                         .header("Accept", "application/vnd.android.package-archive, application/octet-stream")
                         .header("User-Agent", "CurrentMusic updater")
@@ -66,16 +66,16 @@ class UpdateDownloader(client: OkHttpClient, private val directory: File,
                     try {
                         call.execute().use { response ->
                             if (response.code in listOf(301, 302, 303, 307, 308)) {
-                                remoteCheck(redirect < MAX_REDIRECTS, "下载重定向次数过多")
-                                url = response.header("Location")?.let(url::resolve) ?: throw IOException("下载重定向地址无效")
+                                 remoteCheck(redirect < MAX_REDIRECTS, "Số lần chuyển hướng tải xuống quá nhiều")
+                                 url = response.header("Location")?.let(url::resolve) ?: throw IOException("Địa chỉ chuyển hướng tải xuống không hợp lệ")
                             } else {
-                                remoteCheck(response.isSuccessful, "下载失败（HTTP ${response.code}）")
-                                val body = response.body ?: throw IOException("下载内容为空")
+                                 remoteCheck(response.isSuccessful, "Tải xuống thất bại (HTTP ${response.code})")
+                                 val body = response.body ?: throw IOException("Nội dung tải xuống trống")
                                 remoteCheck(body.contentType()?.let { "${it.type}/${it.subtype}" } !in
-                                    setOf("text/html", "application/xhtml+xml", "application/json"), "下载源返回了网页或错误信息")
-                                remoteCheck(body.contentLength() <= 0 || body.contentLength() == release.size, "安装包大小与发布信息不符")
+                                     setOf("text/html", "application/xhtml+xml", "application/json"), "Nguồn tải xuống trả về trang web hoặc thông tin lỗi")
+                                 remoteCheck(body.contentLength() <= 0 || body.contentLength() == release.size, "Kích thước gói cài đặt không khớp với thông tin bản phát hành")
                                 remoteCheck(body.source().peek().readByteArray(4).contentEquals(byteArrayOf(0x50, 0x4b, 0x03, 0x04)),
-                                    "下载源未返回 APK 文件")
+                                     "Nguồn tải xuống không trả về tệp APK")
                                 var received = 0L
                                 var checkpoint = nanoTime()
                                 var checkpointBytes = 0L
@@ -86,7 +86,7 @@ class UpdateDownloader(client: OkHttpClient, private val directory: File,
                                         val count = input.read(buffer)
                                         if (count < 0) break
                                         received += count
-                                        remoteCheck(received <= release.size, "安装包超过预期大小")
+                                         remoteCheck(received <= release.size, "Gói cài đặt vượt quá kích thước dự kiến")
                                         output.write(buffer, 0, count)
                                         onProgress(received, release.size)
                                         // The dedicated service is verified independently and can be slow on
@@ -96,22 +96,22 @@ class UpdateDownloader(client: OkHttpClient, private val directory: File,
                                             val elapsed = now - checkpoint
                                             if (elapsed >= TimeUnit.SECONDS.toNanos(16)) {
                                                 remoteCheck((received - checkpointBytes).toDouble() * 1_000_000_000 / elapsed >= 32 * 1024,
-                                                    "镜像下载速度过慢，请使用其他下载源")
+                                                     "Tốc độ tải xuống từ máy chủ phản chiếu quá chậm, vui lòng dùng nguồn tải xuống khác")
                                                 checkpoint = now
                                                 checkpointBytes = received
                                             }
                                         }
                                     }
                                 } }
-                                remoteCheck(matches(temporary, release), "安装包不完整或 SHA-256 校验失败")
-                                check(temporary.renameTo(target)) { "无法保存更新文件" }
+                                 remoteCheck(matches(temporary, release), "Gói cài đặt không đầy đủ hoặc xác minh SHA-256 thất bại")
+                                 check(temporary.renameTo(target)) { "Không thể lưu tệp cập nhật" }
                                 lease?.completed()
                                 return@withContext target
                             }
                         }
                     } finally { cancel.dispose() }
                 }
-                throw IOException("下载重定向次数过多")
+                 throw IOException("Số lần chuyển hướng tải xuống quá nhiều")
             } catch (failure: Exception) {
                 temporary.delete()
                 currentCoroutineContext().ensureActive()

@@ -77,7 +77,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             MusicSearchBar(state.query, ::search, Modifier.fillMaxWidth(),
                 onInput = { if (it.isEmpty()) vm.clearQuery() else vm.query(it) },
-                placeholder = "搜索昵称或简介", inputTag = "discover_query", submitTag = "discover_submit",
+                placeholder = "Tìm kiếm biệt danh hoặc giới thiệu", inputTag = "discover_query", submitTag = "discover_submit",
                 clearTag = "discover_clear", onCancel = vm::clearQuery)
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 UserFilterChip(state.listening) { focus.clearFocus(); keyboard?.hide(); vm.filter(!state.listening) }
@@ -88,7 +88,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(userSortOptions.first { it.first == state.sort }.second, fontSize = 12.sp,
                         color = MiuixTheme.colorScheme.onSurface.copy(alpha = .65f))
-                    Icon(MusicIcons.Sort, "排序方式", Modifier.size(17.dp), tint = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
+                    Icon(MusicIcons.Sort, "Cách sắp xếp", Modifier.size(17.dp), tint = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
                 }
             }
         }
@@ -99,10 +99,10 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         rootMotionItems {
                 item(key = "summary") {
                     Text(when {
-                        !state.loaded && state.loading -> "正在查找用户…"
-                        state.submitted.isNotEmpty() -> "“${state.submitted}” · ${state.total} 位用户"
-                        state.listening -> "${state.total} 位正在听歌的用户"
-                        else -> "${state.stats.users} 位用户 · ${state.stats.listening} 人正在听歌"
+                        !state.loaded && state.loading -> "Đang tìm người dùng…"
+                        state.submitted.isNotEmpty() -> "“${state.submitted}” · ${state.total} người dùng"
+                        state.listening -> "${state.total} người dùng đang nghe nhạc"
+                        else -> "${state.stats.users} người dùng · ${state.stats.listening} người đang nghe nhạc"
                     }, Modifier.padding(start = 2.dp, bottom = 4.dp), fontSize = 11.sp,
                         maxLines = 1, overflow = TextOverflow.Ellipsis, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .45f))
                 }
@@ -111,26 +111,26 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     Column(Modifier.fillMaxWidth().padding(vertical = 40.dp), horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Icon(Icons.Default.Person, null, Modifier.size(32.dp), tint = MiuixTheme.colorScheme.onSurface.copy(alpha = .28f))
-                        Text(if (state.listening) "当前没有正在听歌的用户" else "没有匹配的用户", fontSize = 14.sp)
-                        Text(if (state.submitted.isNotEmpty()) "换个关键词，或清除搜索试试" else "稍后刷新，看看谁来了", fontSize = 12.sp,
+                        Text(if (state.listening) "Hiện không có người dùng nào đang nghe nhạc" else "Không tìm thấy người dùng phù hợp", fontSize = 14.sp)
+                        Text(if (state.submitted.isNotEmpty()) "Thử từ khóa khác hoặc xóa tìm kiếm" else "Hãy làm mới sau để xem có ai mới không", fontSize = 12.sp,
                             color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
-                        if (state.submitted.isNotEmpty()) MusicTextAction("清除搜索", vm::clearQuery)
-                        else if (state.listening) MusicTextAction("查看全部用户", { vm.filter(false) })
+                        if (state.submitted.isNotEmpty()) MusicTextAction("Xóa tìm kiếm", vm::clearQuery)
+                        else if (state.listening) MusicTextAction("Xem tất cả người dùng", { vm.filter(false) })
                     }
                 }
                 items(state.users, key = { "user-${it.id}" }) { user -> UserDirectoryRow(user, vm) { navigate("user/profile/${user.id}") } }
                 state.error?.let { error -> item(key = "error") {
                     Column(Modifier.fillMaxWidth().padding(vertical = 14.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(error, fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .6f))
-                        MusicTextAction(if (state.failedMore) "重试加载更多" else "重新加载", vm::retry, Modifier.testTag("discover_retry"))
+                        MusicTextAction(if (state.failedMore) "Thử tải thêm lần nữa" else "Tải lại", vm::retry, Modifier.testTag("discover_retry"))
                     }
                 } }
                 if (state.users.isNotEmpty() && state.error == null) item(key = "pagination") {
                     Box(Modifier.fillMaxWidth().padding(vertical = 8.dp), contentAlignment = Alignment.Center) {
                         when {
                             state.loadingMore -> CircularProgressIndicator(Modifier.size(18.dp))
-                            state.hasMore -> MusicTextAction("加载更多", { vm.submit(more = true) }, Modifier.testTag("discover_more"), enabled = !state.loading)
-                            else -> Text("已显示全部 ${state.users.size} 位用户", fontSize = 11.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .35f))
+                            state.hasMore -> MusicTextAction("Tải thêm", { vm.submit(more = true) }, Modifier.testTag("discover_more"), enabled = !state.loading)
+                            else -> Text("Đã hiển thị tất cả ${state.users.size} người dùng", fontSize = 11.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .35f))
                         }
                     }
                 }
@@ -138,7 +138,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     }
         }
     }
-    if (sorting) MusicChoiceDialog("用户排序", { sorting = false }) {
+    if (sorting) MusicChoiceDialog("Sắp xếp người dùng", { sorting = false }) {
         Column(Modifier.selectableGroup()) {
             userSortOptions.forEach { (key, label) ->
                 MusicDialogChoiceRow(label, state.sort == key, { sorting = false; vm.sort(key) },
@@ -155,7 +155,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         .toggleable(selected, role = Role.Checkbox, onValueChange = { click() }).padding(horizontal = 10.dp).testTag("discover_listening"),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         Icon(MusicIcons.Headphones, null, Modifier.size(16.dp), tint = if (selected) colors.primary else colors.onSurface.copy(alpha = .5f))
-        Text("正在听歌", Modifier.semantics { contentDescription = "仅显示正在听歌" }, fontSize = 12.sp,
+        Text("Đang nghe nhạc", Modifier.semantics { contentDescription = "Chỉ hiển thị người đang nghe nhạc" }, fontSize = 12.sp,
             color = if (selected) colors.primary else colors.onSurface.copy(alpha = .65f))
         if (selected) Icon(Icons.Default.Check, null, Modifier.size(14.dp), tint = colors.primary)
     }
@@ -179,12 +179,12 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             UserIdentityDetails(user.title, user.ipRegion)
             if (user.bio.isNotBlank()) Text(user.bio, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
                 color = MiuixTheme.colorScheme.onSurface.copy(alpha = .55f))
-            Text("听歌 ${user.days} 天 · ${listeningDuration(user.listenMs)}", fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
+            Text("Nghe nhạc ${user.days} ngày · ${listeningDuration(user.listenMs)}", fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
                 color = MiuixTheme.colorScheme.onSurface.copy(alpha = .4f))
             user.current?.let { current ->
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     Icon(Icons.Default.PlayArrow, null, Modifier.size(13.dp), tint = MiuixTheme.colorScheme.primary)
-                    Text("正在听：${current.name}", fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, color = MiuixTheme.colorScheme.primary)
+                    Text("Đang nghe: ${current.name}", fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, color = MiuixTheme.colorScheme.primary)
                 }
             }
         }

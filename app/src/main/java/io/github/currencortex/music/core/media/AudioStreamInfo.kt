@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
     val format: String = "", val bitrate: Long = 0, val sampleRate: Int = 0, val channels: Int = 0) {
     val summary get() = listOfNotNull(label, format.uppercase().takeIf { it.isNotBlank() },
         bitrate.takeIf { it > 0 }?.let { "${it / 1000} kbps" },
-        sampleRate.takeIf { it > 0 }?.let { "$it Hz" }, channels.takeIf { it > 0 }?.let { "$it 声道" }).joinToString(" · ")
+        sampleRate.takeIf { it > 0 }?.let { "$it Hz" }, channels.takeIf { it > 0 }?.let { "$it kênh" }).joinToString(" · ")
     companion object {
         fun from(source: AudioSource) = AudioStreamInfo(source.qualityLabel, source.matched,
             source.format, source.bitrate, source.sampleRate, source.channelCount)

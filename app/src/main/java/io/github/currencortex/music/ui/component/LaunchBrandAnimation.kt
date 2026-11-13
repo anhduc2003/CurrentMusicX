@@ -136,7 +136,7 @@ private fun curve(start: Offset, control: Offset, end: Offset, progress: Float):
     val layout = measurer.measure(BRAND, brandStyle.copy(fontFamily = io.github.currencortex.music.ui.theme.LocalCustomFont.current ?: FontFamily.SansSerif))
     val displayDensity = LocalDensity.current
     BoxWithConstraints(Modifier.fillMaxSize().testTag("launch_animation")
-        .clearAndSetSemantics { contentDescription = "Current Music 正在打开" }
+        .clearAndSetSemantics { contentDescription = "Current Music đang mở" }
         .onGloballyPositioned { origin = it.boundsInRoot().topLeft }
         .skipLaunchOnDoubleTap(finish)) {
         BgEffectBackground(dynamicBackground = effectBackground && !reducedMotion,

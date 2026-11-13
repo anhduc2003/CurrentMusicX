@@ -22,11 +22,11 @@ class PlayerBackgroundStore(context: Context, private val settings: SettingsRepo
     fun file(name: String): File? = name.takeIf { it.matches(FILE_NAME) }
         ?.let { File(directory, it) }?.takeIf(File::isFile)
 
-    suspend fun import(uri: Uri) = replace { resolver.openInputStream(uri) ?: error("无法读取图片，请重新选择") }
+    suspend fun import(uri: Uri) = replace { resolver.openInputStream(uri) ?: error("Không thể đọc ảnh, vui lòng chọn lại") }
 
     internal suspend fun replace(open: () -> InputStream) = mutex.withLock {
         withContext(Dispatchers.IO) {
-            check(directory.isDirectory || directory.mkdirs()) { "无法保存背景图片" }
+            check(directory.isDirectory || directory.mkdirs()) { "Không thể lưu ảnh nền" }
             val name = "${UUID.randomUUID()}.image"
             val pending = File(directory, "$name.part")
             val destination = File(directory, name)
@@ -40,15 +40,15 @@ class PlayerBackgroundStore(context: Context, private val settings: SettingsRepo
                         val size = input.read(buffer)
                         if (size < 0) break
                         total += size
-                        require(total <= MAX_BYTES) { "图片过大，请选择 20 MB 以内的图片" }
+                        require(total <= MAX_BYTES) { "Ảnh quá lớn, vui lòng chọn ảnh có dung lượng dưới 20 MB" }
                         output.write(buffer, 0, size)
                     }
                 } }
                 val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
                 BitmapFactory.decodeFile(pending.absolutePath, bounds)
                 require(bounds.outWidth in 1..32768 && bounds.outHeight in 1..32768 &&
-                    bounds.outWidth.toLong() * bounds.outHeight <= 200_000_000) { "无法识别这张图片，请重新选择" }
-                check(pending.renameTo(destination)) { "无法保存背景图片" }
+                    bounds.outWidth.toLong() * bounds.outHeight <= 200_000_000) { "Không thể nhận dạng ảnh này, vui lòng chọn lại" }
+                check(pending.renameTo(destination)) { "Không thể lưu ảnh nền" }
                 currentCoroutineContext().ensureActive()
                 // Once the setting is committed, cancellation must not remove its backing file.
                 withContext(NonCancellable) {

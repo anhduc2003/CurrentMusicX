@@ -34,7 +34,7 @@ class RecognitionDesktopService : Service() {
         override fun onStop() {
             if (projection == null) return
             controller?.cancel()
-            RecognitionDesktopSession.publish(RecognitionState(RecognitionPhase.ERROR, message = "系统音频授权已结束，请重新授权", source = RecognitionAudioSource.SYSTEM))
+            RecognitionDesktopSession.publish(RecognitionState(RecognitionPhase.ERROR, message = "Quyền truy cập âm thanh hệ thống đã kết thúc, vui lòng cấp quyền lại", source = RecognitionAudioSource.SYSTEM))
             stopSelf()
         }
     }
@@ -67,24 +67,24 @@ class RecognitionDesktopService : Service() {
             val systemMix = system && request.getBooleanExtra(SYSTEM_MIX, false)
             val desktop = request.getBooleanExtra(DESKTOP, true)
             desktopMode = desktop
-            if (desktop) check(Settings.canDrawOverlays(this)) { "请先开启悬浮窗权限" }
-            check(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) { "请先开启录音权限" }
+            if (desktop) check(Settings.canDrawOverlays(this)) { "Vui lòng bật quyền hiển thị cửa sổ nổi trước" }
+            check(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) { "Vui lòng bật quyền ghi âm trước" }
             val source = if (system) RecognitionAudioSource.SYSTEM else RecognitionAudioSource.MICROPHONE
             val notifications = getSystemService(NotificationManager::class.java)
-            notifications.createNotificationChannel(NotificationChannel(CHANNEL, "桌面听歌识曲", NotificationManager.IMPORTANCE_LOW).apply { setShowBadge(false) })
+            notifications.createNotificationChannel(NotificationChannel(CHANNEL, "Nhận diện bài hát trên màn hình", NotificationManager.IMPORTANCE_LOW).apply { setShowBadge(false) })
             val type = if (system && !systemMix && Build.VERSION.SDK_INT >= 29) ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
                 else if (Build.VERSION.SDK_INT >= 30) ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE else 0
             ServiceCompat.startForeground(this, NOTICE, notification(RecognitionState(RecognitionPhase.RECORDING, source = source)), type)
             val recorder = if (systemMix) SystemMixRecorder() else if (system && Build.VERSION.SDK_INT >= 29) {
                 val consent = if (Build.VERSION.SDK_INT >= 33) request.getParcelableExtra(CONSENT, Intent::class.java)
                     else @Suppress("DEPRECATION") (request.getParcelableExtra(CONSENT) as? Intent)
-                requireNotNull(consent) { "请重新授予系统音频权限" }
-                val granted = requireNotNull(getSystemService(MediaProjectionManager::class.java).getMediaProjection(Activity.RESULT_OK, consent)) { "系统音频授权已失效" }
+                requireNotNull(consent) { "Vui lòng cấp lại quyền truy cập âm thanh hệ thống" }
+                val granted = requireNotNull(getSystemService(MediaProjectionManager::class.java).getMediaProjection(Activity.RESULT_OK, consent)) { "Quyền truy cập âm thanh hệ thống đã hết hiệu lực" }
                 projection = granted
                 granted.registerCallback(projectionCallback, Handler(Looper.getMainLooper()))
                 PlaybackAudioRecorder(granted)
             } else {
-                check(!system) { "系统音频识曲需要 Android 10 或更高版本" }
+                check(!system) { "Nhận diện bài hát qua âm thanh hệ thống yêu cầu Android 10 trở lên" }
                 MicrophoneRecorder()
             }
             val encoder = NeteaseFingerprint(this)
@@ -130,7 +130,7 @@ class RecognitionDesktopService : Service() {
             // Includes local encoding and HTTP timeouts; no abandoned foreground service.
             deadline = scope.launch { delay(45_000); stopSelf() }
         } catch (failure: Exception) {
-            RecognitionDesktopSession.publish(RecognitionState(RecognitionPhase.ERROR, message = "无法开启识曲，请检查录音、系统音频或悬浮窗授权"))
+             RecognitionDesktopSession.publish(RecognitionState(RecognitionPhase.ERROR, message = "Không thể bắt đầu nhận diện bài hát, vui lòng kiểm tra quyền ghi âm, âm thanh hệ thống hoặc cửa sổ nổi"))
             stopSelf()
         }
     }
@@ -142,7 +142,7 @@ class RecognitionDesktopService : Service() {
             .setContentTitle(recognitionIslandTitle(state)).setContentText(recognitionIslandSubtitle(state))
             .setContentIntent(open).setOngoing(true).setOnlyAlertOnce(true).setSilent(true)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
-            .addAction(0, "停止识曲", stop).build()
+             .addAction(0, "Dừng nhận diện", stop).build()
     }
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)

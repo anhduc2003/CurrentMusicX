@@ -96,14 +96,14 @@ import java.util.Locale
     LaunchedEffect(state.messages.lastOrNull()?.id) { if (nearBottom) list.animateScrollToItem(0) }
     LaunchedEffect(state.scrollRequest) { if (state.scrollRequest > 0) list.animateScrollToItem(0) }
     val menuItems = selected?.let { message -> buildList {
-        if (message.content.isNotEmpty()) add(GlassMenuItem("chat_copy", "复制文字", MusicIcons.Copy,
+        if (message.content.isNotEmpty()) add(GlassMenuItem("chat_copy", "Sao chép văn bản", MusicIcons.Copy,
             onClick = { clipboard.setText(AnnotatedString(message.content)) }))
-        if (message.userId == account.account?.id) add(GlassMenuItem("chat_delete", "删除消息", MusicIcons.Trash,
+        if (message.userId == account.account?.id) add(GlassMenuItem("chat_delete", "Xóa tin nhắn", MusicIcons.Trash,
             danger = true, onClick = { confirming = message }))
     } } ?: listOf(
-        GlassMenuItem("chat_pick_image", "选择图片", MusicIcons.Image, enabled = !state.uploading && !state.sending,
+        GlassMenuItem("chat_pick_image", "Chọn ảnh", MusicIcons.Image, enabled = !state.uploading && !state.sending,
             onClick = { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }),
-        GlassMenuItem("chat_attach_current", "引用音乐", MusicIcons.Headphones, enabled = !state.sending,
+        GlassMenuItem("chat_attach_current", "Trích dẫn nhạc", MusicIcons.Headphones, enabled = !state.sending,
             onClick = { referenceOpen = true }))
     SettingsUiScope {
     CompositionLocalProvider(LocalContentColor provides MiuixTheme.colorScheme.onSurface) {
@@ -131,7 +131,7 @@ import java.util.Locale
                 if (state.loading && state.messages.isEmpty()) item(key = "loading") { ChatLoadingMessages() }
                 if (state.hasOlder) item(key = "older") {
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        MusicTextAction(if (state.loadingOlder) "正在加载…" else "加载更早的消息", vm::loadOlder,
+                         MusicTextAction(if (state.loadingOlder) "Đang tải…" else "Tải tin nhắn cũ hơn", vm::loadOlder,
                             Modifier.testTag("chat_older"), enabled = !state.loadingOlder)
                     }
                 }
@@ -140,7 +140,7 @@ import java.util.Locale
         }
         CompositionLocalProvider(LocalGlassBackdrop provides controlsBackdrop) {
         if (!state.loading && state.loaded && state.messages.isEmpty()) ChatEmptyState(Modifier.align(Alignment.Center))
-        if (!nearBottom && state.messages.isNotEmpty()) GlassActionButton("回到最新消息",
+         if (!nearBottom && state.messages.isNotEmpty()) GlassActionButton("Về tin nhắn mới nhất",
             { scope.launch { list.animateScrollToItem(0) } },
             Modifier.align(Alignment.BottomEnd).padding(end = 16.dp, bottom = composerHeight + 8.dp).testTag("chat_latest"),
             fillWidth = false, minHeight = 36.dp)
@@ -154,21 +154,21 @@ import java.util.Locale
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).testTag("chat_header"),
                 verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                    Text("公共聊天室", fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                     Text("Phòng chat chung", fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                         Box(Modifier.size(5.dp).background(if (state.connected) MiuixTheme.colorScheme.primary
                             else MiuixTheme.colorScheme.onSurfaceVariantSummary, CircleShape))
-                        Text(if (state.connected) "实时消息" else if (state.loaded) "正在连接…" else "与大家聊聊音乐",
+                         Text(if (state.connected) "Tin nhắn trực tiếp" else if (state.loaded) "Đang kết nối…" else "Trò chuyện âm nhạc cùng mọi người",
                             fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
                     }
                 }
-                GlassActionButton("成员 ${state.members.size}", { membersOpen = true },
+                 GlassActionButton("${state.members.size} thành viên", { membersOpen = true },
                     Modifier.testTag("chat_members"), fillWidth = false)
 
             }
             if (state.error != null) Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(state.error.orEmpty(), Modifier.weight(1f), fontSize = 12.sp)
-                MusicTextAction("重试", vm::retry, Modifier.testTag("chat_retry"))
+                 MusicTextAction("Thử lại", vm::retry, Modifier.testTag("chat_retry"))
             }
         }
         Column(Modifier.align(Alignment.BottomCenter).elasticRootComponent().fillMaxWidth().pointerInput(Unit) { detectTapGestures {} }.onSizeChanged {
@@ -178,9 +178,9 @@ import java.util.Locale
                 color = MiuixTheme.colorScheme.error) }
             state.attachments.forEach { card ->
                 SettingsGroup(Modifier.padding(horizontal = 16.dp, vertical = 4.dp).testTag("chat_attachment_${card.type}_${card.id}")) {
-                    SettingsPreference(card.name, "引用 · ${card.sub.ifBlank { "音乐内容" }}",
+                     SettingsPreference(card.name, "Trích dẫn · ${card.sub.ifBlank { "Nội dung âm nhạc" }}",
                         leading = { MusicCover(card.pic, Modifier.size(32.dp), cornerRadius = 8.dp) }, trailing = {
-                            GlassIconButton({ vm.removeAttachment(card) }, "移除引用", enabled = !state.sending,
+                             GlassIconButton({ vm.removeAttachment(card) }, "Gỡ trích dẫn", enabled = !state.sending,
                                 modifier = Modifier.testTag("chat_remove_attachment_${card.type}_${card.id}"), surface = false) {
                                 Icon(MusicIcons.Close, null, Modifier.size(18.dp))
                             }
@@ -188,18 +188,18 @@ import java.util.Locale
                 }
             }
             if (state.image.isNotEmpty()) SettingsGroup(Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
-                SettingsPreference("待发送图片", leading = {
-                    AsyncImage(vm.repository.imageUrl(vm.container.projectSession().server, state.image), "待发送图片",
+                 SettingsPreference("Ảnh đang chờ gửi", leading = {
+                     AsyncImage(vm.repository.imageUrl(vm.container.projectSession().server, state.image), "Ảnh đang chờ gửi",
                         Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)), contentScale = ContentScale.Crop)
                 }, trailing = {
-                    GlassIconButton(vm::removeImage, "移除图片", enabled = !state.sending, surface = false) {
+                     GlassIconButton(vm::removeImage, "Xóa ảnh", enabled = !state.sending, surface = false) {
                         Icon(MusicIcons.Close, null, Modifier.size(18.dp))
                     }
                 })
             }
             if (account.account == null) Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("登录 CurrentMusic 后即可聊天", Modifier.weight(1f), fontSize = 13.sp)
-                MusicTextAction("去登录", { navigate("user/login") }, Modifier.testTag("chat_login"))
+                 Text("Đăng nhập CurrentMusic để trò chuyện", Modifier.weight(1f), fontSize = 13.sp)
+                 MusicTextAction("Đăng nhập", { navigate("user/login") }, Modifier.testTag("chat_login"))
             } else {
                 val fragment = state.draft.substringAfterLast('@', "").takeIf {
                     state.draft.contains('@') && it.length <= 12 && it.none(Char::isWhitespace)
@@ -209,14 +209,14 @@ import java.util.Locale
                         MusicTextAction("@${member.nickname}", { vm.mention(member) }, Modifier.weight(1f))
                     }
                 }
-                if (state.draft.contains("@CurrentMusicAI")) GlassActionButton("猜你想问", {
-                    vm.draft("@CurrentMusicAI " + if (state.image.isNotEmpty()) "这张图里有什么？" else "介绍一下这首歌的创作背景")
+                 if (state.draft.contains("@CurrentMusicAI")) GlassActionButton("Gợi ý câu hỏi", {
+                     vm.draft("@CurrentMusicAI " + if (state.image.isNotEmpty()) "Trong ảnh này có gì?" else "Giới thiệu bối cảnh sáng tác của bài hát này")
                 }, Modifier.padding(start = 16.dp), fillWidth = false, minHeight = 36.dp)
                 GlassTextComposer(state.draft, vm::draft,
                     Modifier.padding(horizontal = 16.dp, vertical = 8.dp).testTag("chat_composer"),
-                    fieldModifier = Modifier.testTag("chat_input").semantics { contentDescription = "聊天消息" },
-                    placeholder = "聊聊正在听的音乐…", leading = {
-                        GlassIconButton({ selected = null; menuAnchor = attachmentAnchor; menuOpen = !menuOpen }, "添加内容",
+                     fieldModifier = Modifier.testTag("chat_input").semantics { contentDescription = "Tin nhắn trò chuyện" },
+                     placeholder = "Trò chuyện về nhạc đang nghe…", leading = {
+                         GlassIconButton({ selected = null; menuAnchor = attachmentAnchor; menuOpen = !menuOpen }, "Thêm nội dung",
                             Modifier.testTag("chat_add_content"), enabled = !state.sending && !state.uploading,
                             opensMenu = true, onBoundsChanged = { attachmentAnchor = it }, surface = false) {
                             if (state.uploading) CircularProgressIndicator(Modifier.size(18.dp))
@@ -234,48 +234,48 @@ import java.util.Locale
     if (referenceOpen) {
         var query by remember { mutableStateOf("") }
         var type by remember { mutableStateOf("song") }
-        MusicChoiceDialog("引用内容", { referenceOpen = false }) {
-            MusicTextAction("引用当前歌曲", { vm.attachCurrent(); referenceOpen = false })
-            SettingsSegmentedControl(listOf("歌曲", "专辑", "歌手", "歌单"),
+         MusicChoiceDialog("Nội dung trích dẫn", { referenceOpen = false }) {
+             MusicTextAction("Trích dẫn bài hát hiện tại", { vm.attachCurrent(); referenceOpen = false })
+            SettingsSegmentedControl(listOf("Bài hát", "Album", "Ca sĩ", "Danh sách phát"),
                 listOf("song", "album", "artist", "playlist").indexOf(type), { index ->
                     type = listOf("song", "album", "artist", "playlist")[index]; vm.searchReferences(query, type)
                 }, tag = "chat_reference_category")
-            TextField(query, { query = it; vm.searchReferences(query, type) }, label = "搜索引用内容", modifier = Modifier.fillMaxWidth())
+            TextField(query, { query = it; vm.searchReferences(query, type) }, label = "Tìm nội dung trích dẫn", modifier = Modifier.fillMaxWidth())
             LazyColumn(Modifier.fillMaxWidth().heightIn(max = 260.dp)) {
                 if (state.referenceBusy) item { LoadingTextList(2, leading = true) }
-                else if (query.isNotBlank() && state.references.isEmpty()) item { Text("没有找到相关内容", fontSize = 13.sp) }
+                else if (query.isNotBlank() && state.references.isEmpty()) item { Text("Không tìm thấy nội dung liên quan", fontSize = 13.sp) }
                 items(state.references) { card -> MusicAttachmentCard(card) { vm.attach(card); referenceOpen = false } }
             }
-            MusicDialogButton("关闭", { referenceOpen = false })
+            MusicDialogButton("Đóng", { referenceOpen = false })
         }
     }
-    if (membersOpen) MusicDialog("聊天室成员", { membersOpen = false }) {
+     if (membersOpen) MusicDialog("Thành viên phòng chat", { membersOpen = false }) {
         LazyColumn(Modifier.fillMaxWidth().heightIn(max = 340.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(state.members, key = { it.id }) { member ->
                 SettingsGroup {
                     SettingsPreference(member.nickname.ifBlank { member.username },
-                        listOf(member.title, member.ipRegion.takeIf { it.isNotBlank() }?.let { "IP属地：$it" }.orEmpty())
+                         listOf(member.title, member.ipRegion.takeIf { it.isNotBlank() }?.let { "Khu vực IP: $it" }.orEmpty())
                             .filter(String::isNotBlank).joinToString(" · "),
                         onClick = { membersOpen = false; navigate("user/profile/${member.id}") },
                         leading = { UserAvatar(member, vm.container, 36.dp, reserveOverlay = false) }, trailing = {
                             if (account.account != null) GlassIconButton({ vm.mention(member); membersOpen = false },
-                                "提及 ${member.nickname}", Modifier.testTag("chat_mention_${member.id}"), surface = false) {
+                                 "Nhắc đến ${member.nickname}", Modifier.testTag("chat_mention_${member.id}"), surface = false) {
                                 Text("@", fontSize = 19.sp, color = MiuixTheme.colorScheme.primary)
                             }
                         })
                 }
             }
         }
-        MusicDialogButton("关闭", { membersOpen = false })
+         MusicDialogButton("Đóng", { membersOpen = false })
     }
-    confirming?.let { message -> MusicDialog("删除这条消息？", { confirming = null }) {
-        Text("删除后其他成员也将无法查看。", fontSize = 13.sp)
-        MusicDialogButton("确认删除", { vm.delete(message); confirming = null }, Modifier.testTag("chat_confirm_delete"), destructive = true)
-        MusicDialogButton("取消", { confirming = null })
+     confirming?.let { message -> MusicDialog("Xóa tin nhắn này?", { confirming = null }) {
+         Text("Sau khi xóa, các thành viên khác cũng sẽ không thể xem.", fontSize = 13.sp)
+         MusicDialogButton("Xác nhận xóa", { vm.delete(message); confirming = null }, Modifier.testTag("chat_confirm_delete"), destructive = true)
+         MusicDialogButton("Hủy", { confirming = null })
     } }
-    preview?.let { image -> MusicDialog("聊天图片", { preview = null }) {
-        AsyncImage(image, "聊天图片", Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 420.dp), contentScale = ContentScale.Fit)
-        MusicDialogButton("关闭", { preview = null })
+     preview?.let { image -> MusicDialog("Ảnh trong cuộc trò chuyện", { preview = null }) {
+         AsyncImage(image, "Ảnh trong cuộc trò chuyện", Modifier.fillMaxWidth().heightIn(min = 180.dp, max = 420.dp), contentScale = ContentScale.Fit)
+         MusicDialogButton("Đóng", { preview = null })
     } }
     }
     }
@@ -284,7 +284,7 @@ import java.util.Locale
 @Composable private fun ChatMessageRow(message: ChatMessage, mine: Boolean, vm: ChatViewModel,
     onProfile: (Long) -> Unit, onImage: (String) -> Unit, onMenu: (Rect) -> Unit,
     onCard: (io.github.currencortex.music.data.profile.PostAttachment) -> Unit) {
-    val user = message.user ?: ProfileUser(id = message.userId, nickname = "已注销用户")
+     val user = message.user ?: ProfileUser(id = message.userId, nickname = "Người dùng đã bị xóa")
     val color = MiuixTheme.colorScheme
     var actionBounds by remember(message.id) { mutableStateOf<Rect?>(null) }
     BoxWithConstraints(Modifier.fillMaxWidth()) {
@@ -303,7 +303,7 @@ import java.util.Locale
                         fontSize = 12.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     UserRoleBadge(user.role)
                     if (user.isBot) Text("AI", fontSize = 10.sp, color = color.primary)
-                    GlassIconButton({ actionBounds?.let(onMenu) }, "消息操作", Modifier.testTag("chat_menu_${message.id}"),
+                     GlassIconButton({ actionBounds?.let(onMenu) }, "Thao tác tin nhắn", Modifier.testTag("chat_menu_${message.id}"),
                         size = 32.dp, opensMenu = true, surface = false, onBoundsChanged = { actionBounds = it }) {
                         Icon(MusicIcons.More, null, Modifier.size(17.dp).rotate(90f), tint = color.onSurfaceVariantSummary)
                     }
@@ -315,11 +315,11 @@ import java.util.Locale
                     if (message.content.isNotEmpty()) SelectionContainer {
                         MarkdownText(message.content, Modifier.testTag("chat_body_${message.id}"), compact = true, allowImages = false)
                     }
-                    if (message.streaming) Text(if (message.content.isEmpty()) "正在思考…" else "正在回答…",
+                     if (message.streaming) Text(if (message.content.isEmpty()) "Đang suy nghĩ…" else "Đang trả lời…",
                         fontSize = 11.sp, color = color.onSurfaceVariantSummary)
                     validMusicAttachments(message.atts).forEach { card -> MusicAttachmentCard(card) { onCard(card) } }
                     vm.repository.imageUrl(vm.container.projectSession().server, message.image)?.let { url ->
-                        AsyncImage(url, "聊天图片", Modifier.widthIn(max = 230.dp).fillMaxWidth().heightIn(min = 120.dp, max = 240.dp)
+                         AsyncImage(url, "Ảnh trong cuộc trò chuyện", Modifier.widthIn(max = 230.dp).fillMaxWidth().heightIn(min = 120.dp, max = 240.dp)
                             .clip(RoundedCornerShape(10.dp)).clickable { onImage(url) }, contentScale = ContentScale.Fit)
                     }
                 }

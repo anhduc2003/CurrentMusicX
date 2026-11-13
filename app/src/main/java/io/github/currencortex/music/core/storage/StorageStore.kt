@@ -52,7 +52,7 @@ class StorageStore(private val context: Context, private val audioCache: AudioCa
     suspend fun clearDataCache(): Long = withContext(Dispatchers.IO) {
         clearImages()
         cacheEntries().filter { it.name != "image_cache" }.forEach { file ->
-            check(file.deleteRecursively() || !file.exists()) { "部分缓存无法清理，请稍后重试" }
+            check(file.deleteRecursively() || !file.exists()) { "Không thể xóa một phần bộ nhớ đệm, vui lòng thử lại sau" }
         }
         dataCacheBytes()
     }

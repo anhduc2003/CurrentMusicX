@@ -4,8 +4,8 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 
 internal enum class PostMarkdownTool(val label: String, val glyph: String) {
-    HEADING("标题", "H"), BOLD("加粗", "B"), ITALIC("斜体", "I"), CODE("代码", "</>"),
-    QUOTE("引用", "❞"), BULLET("无序列表", "• ≡"), NUMBERED("有序列表", "1."), LINK("链接", "↗"), RULE("分隔线", "—")
+    HEADING("Tiêu đề", "H"), BOLD("In đậm", "B"), ITALIC("In nghiêng", "I"), CODE("Mã", "</>"),
+    QUOTE("Trích dẫn", "❞"), BULLET("Danh sách không thứ tự", "• ≡"), NUMBERED("Danh sách có thứ tự", "1."), LINK("Liên kết", "↗"), RULE("Đường phân cách", "—")
 }
 
 /** Operate on the selection, not the end of the draft; a toolbar edit ends IME composition. */
@@ -19,11 +19,11 @@ internal fun applyPostMarkdown(value: TextFieldValue, tool: PostMarkdownTool): T
             TextRange(start + prefix.length, start + prefix.length + body.length))
     }
     return when (tool) {
-        PostMarkdownTool.BOLD -> wrap("**", "**", "加粗文字")
-        PostMarkdownTool.ITALIC -> wrap("*", "*", "斜体文字")
-        PostMarkdownTool.CODE -> if ('\n' in text.substring(start, end)) wrap("```\n", "\n```", "代码") else wrap("`", "`", "代码")
+        PostMarkdownTool.BOLD -> wrap("**", "**", "Văn bản in đậm")
+        PostMarkdownTool.ITALIC -> wrap("*", "*", "Văn bản in nghiêng")
+        PostMarkdownTool.CODE -> if ('\n' in text.substring(start, end)) wrap("```\n", "\n```", "Mã") else wrap("`", "`", "Mã")
         PostMarkdownTool.LINK -> {
-            val label = text.substring(start, end).ifEmpty { "链接文字" }
+            val label = text.substring(start, end).ifEmpty { "Văn bản liên kết" }
             val urlStart = start + label.length + 3
             TextFieldValue(text.replaceRange(start, end, "[$label](https://)"), TextRange(urlStart, urlStart + 8))
         }

@@ -17,8 +17,8 @@ internal enum class SupportCode(
     val title: String, val summary: String, val scanner: String,
     val fileName: String, @param:RawRes val image: Int,
 ) {
-    WECHAT("微信赞赏码", "扫码支持开发者", "微信", "wechat-appreciation.png", R.raw.support_wechat_appreciation),
-    ALIPAY("支付宝收款码", "使用支付宝直接转账", "支付宝", "alipay-payment.png", R.raw.support_alipay_payment),
+    WECHAT("Mã ủng hộ WeChat", "Quét mã để ủng hộ nhà phát triển", "WeChat", "wechat-appreciation.png", R.raw.support_wechat_appreciation),
+    ALIPAY("Mã nhận tiền Alipay", "Chuyển tiền trực tiếp bằng Alipay", "Alipay", "alipay-payment.png", R.raw.support_alipay_payment),
 }
 
 internal enum class SupportLinkResult { OPENED, INVALID, NO_APP }

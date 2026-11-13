@@ -1,20 +1,20 @@
 package io.github.currencortex.music.data.settings
 
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
-enum class PlayerCoverStyle(val label: String) { CIRCLE("圆形封面"), IMMERSIVE("沉浸式封面") }
-enum class ThemeColorStyle(val label: String) { VIVID("鲜明"), TINTED("染色"), SOFT("柔和"), MONOCHROME("单色") }
+enum class PlayerCoverStyle(val label: String) { CIRCLE("Ảnh bìa hình tròn"), IMMERSIVE("Ảnh bìa đắm chìm") }
+enum class ThemeColorStyle(val label: String) { VIVID("Sống động"), TINTED("Nhuốm màu"), SOFT("Dịu nhẹ"), MONOCHROME("Đơn sắc") }
 val DefaultThemeColors = listOf(0xFF007AFF, 0xFFCB30E0, 0xFFFF2D55, 0xFFFF383C, 0xFFFF8D28, 0xFFFFCC00, 0xFF34C759, 0xFF8E8E93)
 enum class RecordShelfPreviewMode { ONCE, LOOP, NEXT, RANDOM }
 enum class LaunchStyle(val label: String, val description: String) {
-    CLASSIC("经典", "原有文字与头像开屏动画"),
-    HALO("光环", "光环展开、星芒与蓝色粒子，展示当前用户名"),
-    SIGNATURE("签名", "当前用户名连笔写出，柔光定格后进入应用"),
-    NONE("无开屏动画", "启动后直接进入应用"),
+    CLASSIC("Cổ điển", "Hoạt ảnh khởi động với văn bản và ảnh đại diện ban đầu"),
+    HALO("Hào quang", "Hào quang mở rộng, tia sáng và hạt màu xanh lam, hiển thị tên người dùng hiện tại"),
+    SIGNATURE("Chữ ký", "Tên người dùng hiện tại được viết liền nét, ánh sáng dịu dừng lại rồi vào ứng dụng"),
+    NONE("Không có hoạt ảnh khởi động", "Vào ứng dụng trực tiếp sau khi khởi động"),
 }
 /** Device-reported rates are not limited to a fixed list of 60/90/120 Hz. */
 data class RefreshRatePreference(val hz: Int) {
     init { require(hz in 0..1000) }
-    val label: String get() = if (hz == 0) "跟随系统" else "$hz Hz"
+    val label: String get() = if (hz == 0) "Theo hệ thống" else "$hz Hz"
     // Preserve the existing preference payload, including SYSTEM/HZ60/HZ90/HZ120.
     val name: String get() = if (hz == 0) "SYSTEM" else "HZ$hz"
     companion object {

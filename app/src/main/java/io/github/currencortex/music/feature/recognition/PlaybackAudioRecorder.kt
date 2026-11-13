@@ -40,7 +40,7 @@ class PlaybackAudioRecorder(private val projection: MediaProjection) : Recogniti
             if (next.state == AudioRecord.STATE_INITIALIZED) { audio = next; rate = candidate; break }
             next.release()
         }
-        val recorder = audio ?: error("无法采集系统音频，请重新授权后重试")
+        val recorder = audio ?: error("Không thể thu âm thanh hệ thống, hãy cấp quyền lại rồi thử lại")
         val output = ShortArray(RecognitionWindows.MAX_SAMPLES)
         val windows = RecognitionWindows()
         val buffer = ShortArray(rate / 10)
@@ -49,11 +49,11 @@ class PlaybackAudioRecorder(private val projection: MediaProjection) : Recogniti
         val factor = rate / 8000
         try {
             recorder.startRecording()
-            check(recorder.recordingState == AudioRecord.RECORDSTATE_RECORDING) { "系统音频采集未开始，请重新授权" }
+            check(recorder.recordingState == AudioRecord.RECORDSTATE_RECORDING) { "Chưa bắt đầu thu âm thanh hệ thống, hãy cấp quyền lại" }
             while (count < output.size && !stop.get()) {
                 currentCoroutineContext().ensureActive()
                 val read = recorder.read(buffer, 0, buffer.size, AudioRecord.READ_NON_BLOCKING)
-                check(read >= 0) { "系统音频采集中断，请重新授权" }
+                check(read >= 0) { "Đã ngắt thu âm thanh hệ thống, hãy cấp quyền lại" }
                 if (read == 0) { delay(10); continue }
                 var peak = 0
                 for (index in 0 until read) {
@@ -67,7 +67,7 @@ class PlaybackAudioRecorder(private val projection: MediaProjection) : Recogniti
                 progress(count / 8000, (peak / 12000f).coerceIn(0f, 1f))
                 windows.emitAvailable(count, { output.copyOf(it) }, onWindow)
             }
-            check((0 until count).any { output[it] != 0.toShort() }) { "未采集到系统声音，请播放音乐；部分应用不允许采集，可切换麦克风" }
+            check((0 until count).any { output[it] != 0.toShort() }) { "Không thu được âm thanh hệ thống, hãy phát nhạc; một số ứng dụng không cho phép thu âm, bạn có thể chuyển sang micrô" }
             output.copyOf(count)
         } finally {
             runCatching { recorder.stop() }; recorder.release()

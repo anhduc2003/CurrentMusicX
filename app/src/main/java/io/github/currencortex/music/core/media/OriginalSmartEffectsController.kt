@@ -18,7 +18,7 @@ internal data class OriginalSmartAccount(val userId: Long, val revision: Long, v
 data class OriginalSmartState(
     val enabled: Boolean = false,
     val loading: Boolean = false,
-    val message: String = "网易云原版智能音效已关闭",
+    val message: String = "Tính năng âm thanh thông minh bản gốc Nhạc Vân NetEase đã tắt",
     val processing: Boolean = false,
     val available: Boolean = false,
     val requestedEnabled: Boolean = false,
@@ -78,7 +78,7 @@ class OriginalSmartEffectsController internal constructor(
                 val old = context
                 context = next
                 if (requested.enabled && requested.ownerId > 0 && requested.ownerId != next.account.userId) {
-                    revoke("账号已切换，请为当前网易云账号重新开启智能音效")
+                    revoke("Tài khoản đã chuyển đổi, hãy bật lại tính năng âm thanh thông minh cho tài khoản Nhạc Vân NetEase hiện tại")
                 } else if (old != next) evaluate()
             }
     }
@@ -117,24 +117,24 @@ class OriginalSmartEffectsController internal constructor(
         mutableState.value = OriginalSmartState(available = current?.engine ?: false,
             requestedEnabled = requested.enabled, songId = current?.target?.id,
             loading = requested.enabled && current != null,
-            message = if (requested.enabled) "正在验证网易云黑胶权益" else "网易云原版智能音效已关闭")
+            message = if (requested.enabled) "Đang xác minh quyền lợi hội viên vinyl Nhạc Vân NetEase" else "Tính năng âm thanh thông minh bản gốc Nhạc Vân NetEase đã tắt")
         if (!requested.enabled || closed || current == null) return
         val account = current.account
         if (!account.loggedIn || account.stale || account.userId <= 0) {
-            revoke("请先登录有效的网易云黑胶账号")
+            revoke("Vui lòng đăng nhập tài khoản hội viên vinyl Nhạc Vân NetEase hợp lệ trước")
             return
         }
         if (requested.ownerId != 0L && requested.ownerId != account.userId) {
-            revoke("保存的智能音效不属于当前网易云账号")
+            revoke("Tính năng âm thanh thông minh đã lưu không thuộc tài khoản Nhạc Vân NetEase hiện tại")
             return
         }
         pending = scope.launch request@ {
             try {
                 val right = entitlement()
                 if (!isCurrent(token, current)) return@request
-                if (right.userId != account.userId) { revoke("网易云权益账号校验未通过，请重新登录后再试"); return@request }
+                if (right.userId != account.userId) { revoke("Xác minh tài khoản quyền lợi Nhạc Vân NetEase không thành công, vui lòng đăng nhập lại rồi thử lại"); return@request }
                 if (!right.smartAllowed || right.expiresAt <= now()) {
-                    revoke("网易云原版智能音效需要有效黑胶会员")
+                    revoke("Tính năng âm thanh thông minh bản gốc Nhạc Vân NetEase yêu cầu hội viên vinyl hợp lệ")
                     return@request
                 }
                 requested = OriginalSmartPreferences(true, account.userId)
@@ -151,14 +151,14 @@ class OriginalSmartEffectsController internal constructor(
                 }
                 if (!current.engine) {
                     mutableState.value = state.value.copy(loading = false,
-                        message = "已记住开启意图；导入兼容原版引擎后将重新验证权益")
+                        message = "Đã ghi nhớ yêu cầu bật; sẽ xác minh lại quyền lợi sau khi nhập công cụ tương thích với bộ máy bản gốc")
                     return@request
                 }
                 val raw = withContext(workDispatcher) { definition()?.copyOf() }
                 if (!isCurrent(token, current)) return@request
                 if (raw == null) {
                     mutableState.value = state.value.copy(loading = false,
-                        message = "原版智能音效资源尚未导入，当前继续使用手动音效")
+                        message = "Chưa nhập tài nguyên âm thanh thông minh bản gốc, hiện tiếp tục dùng hiệu ứng âm thanh thủ công")
                     return@request
                 }
                 val target = current.target
@@ -168,9 +168,9 @@ class OriginalSmartEffectsController internal constructor(
                     if (!isCurrent(token, current)) return@request
                     beforeEnable()
                     if (!isCurrent(token, current)) return@request
-                    if (right.expiresAt <= now()) { revoke("网易云黑胶权益已过期，已恢复手动音效"); return@request }
+                    if (right.expiresAt <= now()) { revoke("Quyền lợi hội viên vinyl Nhạc Vân NetEase đã hết hạn, đã khôi phục hiệu ứng âm thanh thủ công"); return@request }
                     mutableState.value = state.value.copy(enabled = true, loading = false,
-                        message = "已开启，播放网易云歌曲时自动匹配原版音效")
+                        message = "Đã bật, tự động khớp hiệu ứng âm thanh bản gốc khi phát bài hát trên Nhạc Vân NetEase")
                     return@request
                 }
                 val key = smartKey(target.id)
@@ -180,14 +180,14 @@ class OriginalSmartEffectsController internal constructor(
                 beforeEnable()
                 if (!isCurrent(token, current)) return@request
                 // A slow request must never activate after the membership expires in flight.
-                if (right.expiresAt <= now()) { revoke("网易云黑胶权益已过期，已恢复手动音效"); return@request }
+                if (right.expiresAt <= now()) { revoke("Quyền lợi hội viên vinyl Nhạc Vân NetEase đã hết hạn, đã khôi phục hiệu ứng âm thanh thủ công"); return@request }
                 mutableSelection.value = prepared.first
                 mutableState.value = state.value.copy(enabled = true, loading = false, processing = false,
-                    soundKey = prepared.second, message = "网易云原版智能音效已匹配，等待音频处理")
+                    soundKey = prepared.second, message = "Đã khớp hiệu ứng âm thanh thông minh bản gốc của Nhạc Vân NetEase, đang chờ xử lý âm thanh")
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) {
                 if (isCurrent(token, current)) mutableState.value = state.value.copy(enabled = false, loading = false,
-                    processing = false, message = "原版智能音效暂不可用，请检查网络或资源后重试；当前使用手动音效")
+                    processing = false, message = "Hiệu ứng âm thanh thông minh bản gốc hiện không khả dụng, hãy kiểm tra mạng hoặc tài nguyên rồi thử lại; hiện đang dùng hiệu ứng âm thanh thủ công")
             }
         }
     }
@@ -209,7 +209,7 @@ class OriginalSmartEffectsController internal constructor(
             catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) {
                 if (!closed && token == generation) mutableState.value = state.value.copy(
-                    message = "原版智能音效已关闭，但设置保存失败，请稍后重试")
+                    message = "Đã tắt hiệu ứng âm thanh thông minh bản gốc, nhưng không lưu được cài đặt; vui lòng thử lại sau")
             }
         }
     }
@@ -225,7 +225,7 @@ class OriginalSmartEffectsController internal constructor(
     fun reportProcessing(presetId: Long) {
         if (closed || presetId != SMART_PRESET_ID || selection.value?.id != presetId || !state.value.enabled) return
         if (permissionExpiresAt <= now()) evaluate()
-        else mutableState.value = state.value.copy(processing = true, message = "网易云原版智能音效正在处理音频")
+        else mutableState.value = state.value.copy(processing = true, message = "Hiệu ứng âm thanh thông minh bản gốc của Nhạc Vân NetEase đang xử lý âm thanh")
     }
 
     /** A native failure withdraws output but keeps the user's account-bound retry intention. */
@@ -234,7 +234,7 @@ class OriginalSmartEffectsController internal constructor(
         invalidate()
         mutableState.value = state.value.copy(enabled = false, loading = false, processing = false,
             requestedEnabled = requested.enabled, soundKey = null,
-            message = message.take(200).ifBlank { "原版智能音效处理失败，当前使用手动音效；可重试" })
+            message = message.take(200).ifBlank { "Xử lý hiệu ứng âm thanh thông minh bản gốc không thành công, hiện đang dùng hiệu ứng âm thanh thủ công; có thể thử lại" })
     }
 
     override fun close() {
@@ -247,14 +247,14 @@ class OriginalSmartEffectsController internal constructor(
     companion object {
         const val SMART_PRESET_ID = -110L
         private fun prepare(bytes: ByteArray, key: String): Pair<NeteaseOriginalPreset, String> {
-            require(bytes.size <= 256 * 1024) { "智能音效资源过大" }
-            require(key.matches(Regex("[0-9]{1,8}"))) { "智能音效分类无效" }
+            require(bytes.size <= 256 * 1024) { "Tài nguyên hiệu ứng âm thanh thông minh quá lớn" }
+            require(key.matches(Regex("[0-9]{1,8}"))) { "Danh mục hiệu ứng âm thanh thông minh không hợp lệ" }
             val root = JSONObject(bytes.toString(Charsets.UTF_8))
             val selectedKey = if (root.opt(key) is JSONObject) key else "0"
-            val selected = root.opt(selectedKey) as? JSONObject ?: throw IllegalArgumentException("缺少原版默认智能音效")
+            val selected = root.opt(selectedKey) as? JSONObject ?: throw IllegalArgumentException("Thiếu hiệu ứng âm thanh thông minh mặc định bản gốc")
             val json = selected.toString()
             NeteasePresetParameters.fromJson(json)
-            return NeteaseOriginalPreset(SMART_PRESET_ID, "网易云智能音效", 1, json.toByteArray(Charsets.UTF_8)) to selectedKey
+            return NeteaseOriginalPreset(SMART_PRESET_ID, "Hiệu ứng âm thanh thông minh Nhạc Vân NetEase", 1, json.toByteArray(Charsets.UTF_8)) to selectedKey
         }
     }
 }

@@ -1,28 +1,28 @@
-# CurrentMusicX PR 审查规范
+# Quy chuẩn đánh giá PR của CurrentMusicX
 
-## 目标
+## Mục tiêu
 
-优先复用仓库已有的 Codex 代码审查能力，不新增付费 AI API。Codex 审查意见应跟随 PR 提交者描述正文的主要自然语言：简体中文 PR 使用简体中文、繁体中文 PR 使用繁体中文、英文 PR 使用英文；描述缺失或语言不明确时参考标题，仍不明确则默认简体中文。保留技术术语、文件路径、代码标识符和 P0–P3 等标记。具体代理指引见仓库根目录 `AGENTS.md`。此规则属于对 Codex 的指引，能否被 GitHub 上的 Codex Review 自动遵循取决于该集成是否读取仓库指引。
+Ưu tiên tái sử dụng khả năng đánh giá mã hiện có của Codex trong kho lưu trữ, không bổ sung API AI trả phí. Nhận xét đánh giá của Codex nên theo ngôn ngữ tự nhiên chính trong phần nội dung mô tả của người gửi PR: PR bằng tiếng Trung giản thể dùng tiếng Trung giản thể, PR bằng tiếng Trung phồn thể dùng tiếng Trung phồn thể, PR bằng tiếng Anh dùng tiếng Anh; nếu thiếu mô tả hoặc không xác định rõ ngôn ngữ, hãy tham khảo tiêu đề; nếu vẫn không rõ thì mặc định dùng tiếng Trung giản thể. Giữ nguyên thuật ngữ kỹ thuật, đường dẫn tệp, định danh mã và các nhãn như P0–P3. Xem hướng dẫn cụ thể dành cho tác nhân trong `AGENTS.md` ở thư mục gốc của kho lưu trữ. Quy tắc này là hướng dẫn cho Codex; việc Codex Review trên GitHub có tự động tuân theo hay không phụ thuộc vào việc tích hợp đó có đọc hướng dẫn trong kho lưu trữ hay không.
 
-## 自动化边界
+## Phạm vi tự động hóa
 
-- `pr-risk.yml` 根据变更文件路径分级，不能代替完整代码审查。
-- `pr-review-summary.yml` 只读取 GitHub 上已有的行级审查讨论并输出 Actions Summary，不调用 AI，不声称 Codex 已审查当前提交。
-- 审查摘要不是合并门槛；现有分支保护、CI 和维护者决定仍然有效。
-- 未解决讨论、敏感文件、权限、签名、音频路径变更建议人工复核。
-- 不自动解决审查讨论、不自动批准、不自动合并、不将密钥提供给来自 fork 的 PR。
-- AI 审查是否自动触发及其额度取决于 Codex/GitHub 连接设置，应在 GitHub 中单独确认。
+- `pr-risk.yml` phân loại mức độ rủi ro dựa trên đường dẫn tệp được thay đổi, không thể thay thế việc đánh giá mã đầy đủ.
+- `pr-review-summary.yml` chỉ đọc các cuộc thảo luận đánh giá theo dòng đã có trên GitHub và xuất Actions Summary, không gọi AI, không tuyên bố rằng Codex đã đánh giá nội dung gửi lên hiện tại.
+- Tóm tắt đánh giá không phải là điều kiện để hợp nhất; các quy tắc bảo vệ nhánh, CI hiện có và quyết định của người bảo trì vẫn có hiệu lực.
+- Nên kiểm tra thủ công các cuộc thảo luận chưa được giải quyết, tệp nhạy cảm, quyền, chữ ký và thay đổi đường dẫn âm thanh.
+- Không tự động giải quyết các cuộc thảo luận đánh giá, không tự động phê duyệt, không tự động hợp nhất, không cung cấp khóa bí mật cho PR từ fork.
+- Việc đánh giá AI có tự động được kích hoạt hay không và hạn mức sử dụng phụ thuộc vào cài đặt kết nối Codex/GitHub; cần xác nhận riêng trong GitHub.
 
-## PR 合并检查
+## Kiểm tra hợp nhất PR
 
-面向 `main` 的 PR 可以同时验证。`build` 执行仓库的 Python 源码语法检查，`test` 执行协作脚本语法检查和 actionlint。两个检查通过后，由维护者按分支保护规则合并。
+Các PR hướng đến `main` có thể được xác minh đồng thời. `build` thực hiện kiểm tra cú pháp mã nguồn Python của kho lưu trữ, `test` thực hiện kiểm tra cú pháp tập lệnh cộng tác và chạy actionlint. Sau khi cả hai bước kiểm tra đều đạt, người bảo trì sẽ hợp nhất theo quy tắc bảo vệ nhánh.
 
-`Update PR branches` 会同步落后的非草稿分支，跳过冲突或带 `bot: skip` 标签的 PR。必要时可从 Actions 手动运行。机器人更新分支后，GitHub 可能要求维护者批准新检查。
+`Update PR branches` sẽ đồng bộ các nhánh không phải bản nháp bị tụt hậu, bỏ qua các PR có xung đột hoặc có nhãn `bot: skip`. Khi cần, có thể chạy thủ công từ Actions. Sau khi bot cập nhật nhánh, GitHub có thể yêu cầu người bảo trì phê duyệt các bước kiểm tra mới.
 
-## 人工复核清单
+## Danh sách kiểm tra thủ công
 
-1. 音频：采样率、缓冲、播放生命周期、Bit-perfect 和后台播放。
-2. Android：协程取消、Compose 重组、生命周期、权限。
-3. 安全：Token、下载校验、网络请求、数据迁移。
-4. 发布：签名环境、构建来源、APK 摘要、版本号。
-5. 验证：CI 结果、复现步骤、真机覆盖范围及未验证内容。
+1. Âm thanh: tần số lấy mẫu, bộ đệm, vòng đời phát lại, Bit-perfect và phát trong nền.
+2. Android: hủy coroutine, tái cấu trúc Compose, vòng đời, quyền.
+3. Bảo mật: Token, xác minh tải xuống, yêu cầu mạng, di chuyển dữ liệu.
+4. Phát hành: môi trường ký, nguồn bản dựng, mã băm APK, số phiên bản.
+5. Xác minh: kết quả CI, các bước tái hiện, phạm vi kiểm thử trên thiết bị thật và nội dung chưa được xác minh.

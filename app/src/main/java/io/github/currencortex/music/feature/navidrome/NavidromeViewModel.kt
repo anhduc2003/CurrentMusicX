@@ -39,16 +39,11 @@ class NavidromeViewModel(val container: AppContainer) : ViewModel() {
     } }
     fun connect(server: String, username: String, password: String, done: () -> Unit) {
         val error = when {
-            runCatching { io.github.currencortex.music.core.navidrome.normalizeNavidromeServer(server) }.isFailure -> "请输入完整的 http 或 https 服务器地址"
-            username.isBlank() -> "请输入用户名"
-            password.isEmpty() -> "请输入密码"
-            else -> null
+runCatching { io.github.currencortex.music.core.navidrome.normalizeNavidromeServer(server) }.isFailure -> "Vui lòng nhập đầy đủ địa chỉ máy chủ http hoặc https"username.isBlank() -> "Vui lòng nhập tên người dùng"password.isEmpty() -> "Vui lòng nhập mật khẩu"            else -> null
         }
         if (error != null) { actionError.value = error; return }
-        action("已连接 Navidrome", { repository.connect(server, username, password) }) { if (it) done() }
-    }
-    fun disconnect(done: (Boolean) -> Unit = {}) = action("已断开 Navidrome", { repository.disconnect() }, done)
-    fun home(value: Boolean) = action(null, { repository.home(value) })
+action("Đã kết nối Navidrome", { repository.connect(server, username, password) }) { if (it) done() }    }
+fun disconnect(done: (Boolean) -> Unit = {}) = action("Đã ngắt kết nối Navidrome", { repository.disconnect() }, done)    fun home(value: Boolean) = action(null, { repository.home(value) })
     private fun show(page: NavidromePage, root: Boolean = false, replace: Boolean = false) {
         load?.cancel(); libraryRefreshPending = false; browser.show(page, root, replace)
         query.value = if (page.kind == "search") page.id else ""
@@ -69,8 +64,7 @@ class NavidromeViewModel(val container: AppContainer) : ViewModel() {
     fun search(input: String) {
         val value = input.trim(); if (value.isEmpty()) return
         if (state.value.page.kind == "search" && state.value.page.id == value) return
-        show(NavidromePage("search", value, "搜索结果"), replace = state.value.page.kind == "search")
-    }
+show(NavidromePage("search", value, "Kết quả tìm kiếm"), replace = state.value.page.kind == "search")    }
     fun refresh(more: Boolean = false) {
         val old = state.value
         if (old.loading || more && !old.more || !account.value.configured) return
@@ -123,21 +117,15 @@ class NavidromeViewModel(val container: AppContainer) : ViewModel() {
     }
     fun enqueue(song: Song, next: Boolean = false) {
         if (container.playerController.state.value.mode != io.github.currencortex.music.core.media.PlayerMode.LOCAL) {
-            actionError.value = "请先退出一起听，再播放私有曲库"; return
-        }
-        container.playerController.add(song, next); message.value = if (next) "已设为下一首" else "已加入播放队列"
-    }
-    fun create(name: String, done: (Boolean) -> Unit = {}) = action("歌单已创建", { repository.create(name) }, done)
-    fun rename(page: NavidromePage, name: String, done: (Boolean) -> Unit = {}) = action("歌单已重命名", {
-        repository.rename(page.id, name); browser.rename(page, name.trim())
+actionError.value = "Vui lòng thoát khỏi chế độ nghe cùng nhau trước, rồi phát nhạc trong thư viện riêng tư"; return        }
+container.playerController.add(song, next); message.value = if (next) "Đã đặt làm bài tiếp theo" else "Đã thêm vào hàng đợi phát"    }
+fun create(name: String, done: (Boolean) -> Unit = {}) = action("Danh sách phát đã được tạo", { repository.create(name) }, done)fun rename(page: NavidromePage, name: String, done: (Boolean) -> Unit = {}) = action("Danh sách phát đã được đổi tên", {        repository.rename(page.id, name); browser.rename(page, name.trim())
     }, done)
-    fun delete(page: NavidromePage, done: (Boolean) -> Unit = {}) = action("歌单已删除", {
-        repository.delete(page.id); browser.discard(page); refresh()
+fun delete(page: NavidromePage, done: (Boolean) -> Unit = {}) = action("Danh sách phát đã được xóa", {        repository.delete(page.id); browser.discard(page); refresh()
     }, done)
     fun removal(song: Song, index: Int): NavidromeRemoval = NavidromeRemoval(state.value.page, song,
         state.value.songs.take(index).count { it.navidrome?.id == song.navidrome?.id })
-    fun remove(target: NavidromeRemoval, done: (Boolean) -> Unit = {}) = action("歌曲已移出歌单", {
-        val expected = repository.session()
+fun remove(target: NavidromeRemoval, done: (Boolean) -> Unit = {}) = action("Bài hát đã được xóa khỏi danh sách phát", {        val expected = repository.session()
         val fresh = repository.playlist(target.playlist.id)
         val index = fresh.indices.filter { fresh[it].navidrome?.id == target.song.navidrome?.id }.getOrNull(target.occurrence)
             ?: throw ApiException(ErrorKind.NotFound)

@@ -30,7 +30,7 @@ data class NativeEffectsPageState(val loading: Boolean = true, val banner: List<
     val featured: List<NativeEffectTile> = emptyList(), val error: String? = null)
 enum class SoundEffectKind { AI_MASTER, SPEAKER, MOOD, SMART, ORIGINAL, LOCAL_SMART, MANUAL }
 data class SoundEffectSelection(val kind: SoundEffectKind = SoundEffectKind.MOOD,
-    val name: String = "AI 情绪调音师", val id: Long? = null)
+    val name: String = "Chuyên gia phối âm cảm xúc AI", val id: Long? = null)
 
 class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
     internal val originalPageApi by lazy { OriginalEffectsPageApi(container, this) }
@@ -97,19 +97,19 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
             combine(originalMood, originalSmart, original, preferences, manual) { mood, smart, single, local, eq ->
                 when {
                     mood.requestedEnabled -> SoundEffectSelection()
-                    smart.requestedEnabled -> SoundEffectSelection(SoundEffectKind.SMART, "网易云智能音效")
+                    smart.requestedEnabled -> SoundEffectSelection(SoundEffectKind.SMART, "Hiệu ứng âm thanh thông minh NetEase")
                     single.requestedId != null || single.selectedId != null -> SoundEffectSelection(SoundEffectKind.ORIGINAL,
                         single.requestedName ?: single.selectedName.orEmpty(), single.requestedId ?: single.selectedId)
-                    local.smartEnabled -> SoundEffectSelection(SoundEffectKind.LOCAL_SMART, "本机智能调音")
-                    eq.enabled -> SoundEffectSelection(SoundEffectKind.MANUAL, "均衡器 · ${eq.preset.label}")
+                    local.smartEnabled -> SoundEffectSelection(SoundEffectKind.LOCAL_SMART, "Phối âm thông minh trên thiết bị")
+                    eq.enabled -> SoundEffectSelection(SoundEffectKind.MANUAL, "Bộ chỉnh âm · ${eq.preset.label}")
                     else -> null
                 }
             }.collect { if (!userSelected && it != null) lastSelection.value = it }
         }
         viewModelScope.launch {
             combine(originalAiMaster, originalSpeaker) { master, speaker -> when {
-                speaker.requestedEnabled -> SoundEffectSelection(SoundEffectKind.SPEAKER, "外放音效")
-                master.requestedEnabled -> SoundEffectSelection(SoundEffectKind.AI_MASTER, "AI 调音大师")
+                speaker.requestedEnabled -> SoundEffectSelection(SoundEffectKind.SPEAKER, "Hiệu ứng âm thanh loa ngoài")
+                master.requestedEnabled -> SoundEffectSelection(SoundEffectKind.AI_MASTER, "Bậc thầy phối âm AI")
                 else -> null
             } }.collect { if (!userSelected && it != null) lastSelection.value = it }
         }
@@ -135,7 +135,7 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
         feedbackToken = token
         feedbackRequest = viewModelScope.launch {
             val result = withTimeoutOrNull(35_000) { results.filterNotNull().first() }
-                ?: SoundEffectNoticeResult(SoundEffectNoticePhase.WAITING, "仍在准备，可在音效卡片查看状态")
+                ?: SoundEffectNoticeResult(SoundEffectNoticePhase.WAITING, "Vẫn đang chuẩn bị, bạn có thể xem trạng thái trên thẻ hiệu ứng âm thanh")
             container.soundEffectNotices.complete(token, result)
         }
     }
@@ -150,9 +150,9 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
     }
     private fun localNotice(ready: Boolean, active: Boolean, error: String?, supported: Boolean): SoundEffectNoticeResult? = when {
         error != null -> SoundEffectNoticeResult(SoundEffectNoticePhase.FAILED, error)
-        !supported -> SoundEffectNoticeResult(SoundEffectNoticePhase.FAILED, "此设备暂不支持本机均衡器")
+        !supported -> SoundEffectNoticeResult(SoundEffectNoticePhase.FAILED, "Thiết bị này hiện chưa hỗ trợ bộ chỉnh âm trên thiết bị")
         !ready -> null
-        else -> SoundEffectNoticeResult(SoundEffectNoticePhase.READY, if (active) "音效已生效" else "已开启，播放后生效")
+        else -> SoundEffectNoticeResult(SoundEffectNoticePhase.READY, if (active) "Hiệu ứng âm thanh đã được áp dụng" else "Đã bật, sẽ có hiệu lực sau khi phát nhạc")
     }
     fun refreshMore() {
         moreVisited = true
@@ -164,7 +164,7 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
                     buildJsonObject { put("exposeType", 3) }))
                 more.value = NativeEffectsPageState(loading = false, featured = items)
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (_: Exception) { more.value = more.value.copy(loading = false, error = "暂时无法获取官方精选音效") }
+            catch (_: Exception) { more.value = more.value.copy(loading = false, error = "Hiện không thể tải các hiệu ứng âm thanh nổi bật chính thức") }
         }
     }
     fun refreshPage() {
@@ -182,7 +182,7 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
                 } }
                 val b = banner.await(); val f = featured.await()
                 page.value = NativeEffectsPageState(false, b.getOrDefault(page.value.banner), f.getOrDefault(page.value.featured),
-                    if (b.isFailure || f.isFailure) "部分音效暂时无法加载" else null)
+                    if (b.isFailure || f.isFailure) "Một số hiệu ứng âm thanh hiện không thể tải" else null)
             }
         }
     }
@@ -210,7 +210,7 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
             try {
                 // Catalog/presentation metadata can be stale. Explicit use always reads the
                 // current Android material and authorization fields, without stopping old DSP.
-                val effect = container.neteaseSoundEffects.resolve(id) ?: error("此音效尚无兼容的原版素材")
+                val effect = container.neteaseSoundEffects.resolve(id) ?: error("Hiệu ứng âm thanh này chưa có tài nguyên gốc tương thích")
                 currentCoroutineContext().ensureActive()
                 if (generation != tileGeneration) return@launch
                 originalEffectUnavailableReason(effect, original.value.copy(unsupported = original.value.unsupported - id))?.let { error(it) }
@@ -221,7 +221,7 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (failure: Exception) {
                 if (generation == tileGeneration) {
-                    val message = failure.message?.take(180) ?: "音效启用失败"
+                    val message = failure.message?.take(180) ?: "Không thể bật hiệu ứng âm thanh"
                     actionError.value = message; failureNotice(name, membership, message)
                 }
             }
@@ -234,13 +234,13 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
             catalog.value = catalog.value.copy(loading = true, error = null)
             try { catalog.value = SoundCatalogState(loading = false, items = container.neteaseSoundEffects.catalog()) }
             catch (e: CancellationException) { throw e }
-            catch (_: Exception) { catalog.value = catalog.value.copy(loading = false, error = "暂时无法获取网易云音效，请稍后重试") }
+            catch (_: Exception) { catalog.value = catalog.value.copy(loading = false, error = "Hiện không thể tải hiệu ứng âm thanh NetEase, vui lòng thử lại sau") }
         }
     }
     fun smartEnabled(enabled: Boolean) {
         cancelTile()
         userSelected = true
-        if (enabled) lastSelection.value = SoundEffectSelection(SoundEffectKind.LOCAL_SMART, "本机智能调音")
+        if (enabled) lastSelection.value = SoundEffectSelection(SoundEffectKind.LOCAL_SMART, "Phối âm thông minh trên thiết bị")
         localRequest?.cancel()
         if (enabled) {
             container.originalSoundEffects.clear()
@@ -248,7 +248,7 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
             container.originalMoodEffects.disable(); disableAdditional()
         }
         localRequest = viewModelScope.launch { container.soundEffectsSettings.setSmartEnabled(enabled) }
-        if (enabled) notice("本机智能调音", 0, combine(preferences, runtime) { local, engine ->
+        if (enabled) notice("Phối âm thông minh trên thiết bị", 0, combine(preferences, runtime) { local, engine ->
             localNotice(local.smartEnabled, engine.active, engine.error, engine.supported)
         }) else clearFeedback()
     }
@@ -263,7 +263,7 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
             value.error != null -> SoundEffectNoticeResult(SoundEffectNoticePhase.FAILED, value.error)
             value.loading || value.permissionPending -> null
             value.selectedId == effect.id -> SoundEffectNoticeResult(SoundEffectNoticePhase.READY,
-                if (value.processing) "音效已生效" else "已开启，播放后生效")
+                if (value.processing) "Hiệu ứng âm thanh đã được áp dụng" else "Đã bật, sẽ có hiệu lực sau khi phát nhạc")
             value.requestedId == effect.id && value.unavailableReason != null ->
                 SoundEffectNoticeResult(SoundEffectNoticePhase.FAILED, value.unavailableReason)
             else -> null
@@ -280,14 +280,14 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
     fun originalSmartEnabled(enabled: Boolean) {
         cancelTile()
         userSelected = true
-        if (enabled) lastSelection.value = SoundEffectSelection(SoundEffectKind.SMART, "网易云智能音效")
+        if (enabled) lastSelection.value = SoundEffectSelection(SoundEffectKind.SMART, "Hiệu ứng âm thanh thông minh NetEase")
         localRequest?.cancel()
         if (enabled) {
             container.originalSoundEffects.clear()
             container.originalMoodEffects.disable(); disableAdditional()
         }
         container.originalSmartEffects.setEnabled(enabled)
-        if (enabled) notice("网易云智能音效", 3, originalSmart.map {
+        if (enabled) notice("Hiệu ứng âm thanh thông minh NetEase", 3, originalSmart.map {
             originalEffectNoticeResult(it.loading, it.enabled, it.requestedEnabled, it.processing, it.message)
         }) else clearFeedback()
     }
@@ -310,7 +310,7 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
             container.originalSmartEffects.disable()
         }
         container.originalMoodEffects.setEnabled(enabled)
-        if (enabled) notice("AI 情绪调音师", 4, originalMood.map {
+        if (enabled) notice("Chuyên gia phối âm cảm xúc AI", 4, originalMood.map {
             originalEffectNoticeResult(it.loading, it.enabled, it.requestedEnabled, it.processing, it.message)
         }) else clearFeedback()
     }
@@ -334,7 +334,7 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
             masterDetailLoading.value = true
             try { masterDetail.value = container.originalAiMasterRepository.prepare(song.id); masterDetailSongId.value = song.id }
             catch (cancelled: CancellationException) { throw cancelled }
-            catch (failure: Exception) { masterDetailError.value = failure.message?.take(160) ?: "暂时无法获取此歌曲的原版调音分析" }
+            catch (failure: Exception) { masterDetailError.value = failure.message?.take(160) ?: "Hiện không thể tải phân tích phối âm gốc của bài hát này" }
             finally { masterDetailLoading.value = false }
         }
     }
@@ -354,28 +354,28 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
     fun originalAiMasterEnabled(enabled: Boolean) {
         cancelTile(); localRequest?.cancel(); userSelected = true
         if (enabled) {
-            lastSelection.value = SoundEffectSelection(SoundEffectKind.AI_MASTER, "AI 调音大师")
+            lastSelection.value = SoundEffectSelection(SoundEffectKind.AI_MASTER, "Bậc thầy phối âm AI")
             container.originalSpeakerEffects.disable()
             container.originalMoodEffects.disable()
             container.originalSmartEffects.disable()
             container.originalSoundEffects.clear()
         }
         container.originalAiMasterEffects.setEnabled(enabled)
-        if (enabled) notice("AI 调音大师", 4, originalAiMaster.map {
+        if (enabled) notice("Bậc thầy phối âm AI", 4, originalAiMaster.map {
             originalEffectNoticeResult(it.loading, it.enabled, it.requestedEnabled, it.processing, it.message)
         }) else clearFeedback()
     }
     fun originalSpeakerEnabled(enabled: Boolean) {
         cancelTile(); localRequest?.cancel(); userSelected = true
         if (enabled) {
-            lastSelection.value = SoundEffectSelection(SoundEffectKind.SPEAKER, "外放音效")
+            lastSelection.value = SoundEffectSelection(SoundEffectKind.SPEAKER, "Hiệu ứng âm thanh loa ngoài")
             container.originalAiMasterEffects.disable()
             container.originalMoodEffects.disable()
             container.originalSmartEffects.disable()
             container.originalSoundEffects.clear()
         }
         container.originalSpeakerEffects.setEnabled(enabled)
-        if (enabled) notice("外放音效", 4, originalSpeaker.map {
+        if (enabled) notice("Hiệu ứng âm thanh loa ngoài", 4, originalSpeaker.map {
             originalEffectNoticeResult(it.loading, it.enabled, it.requestedEnabled, it.processing, it.message)
         }) else clearFeedback()
     }
@@ -389,22 +389,22 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
     private fun importEngine(action: suspend () -> Unit) {
         if (importRequest?.isActive == true) return
         importRequest = viewModelScope.launch {
-            originalImport.value = OriginalEngineImportState(loading = true, message = "正在校验并导入音效引擎…")
+            originalImport.value = OriginalEngineImportState(loading = true, message = "Đang kiểm tra và nhập công cụ hiệu ứng âm thanh…")
             try {
                 action()
                 container.refreshOriginalEngine()
-                originalImport.value = OriginalEngineImportState(message = "音效引擎已导入，可以选择原版音效")
+                originalImport.value = OriginalEngineImportState(message = "Đã nhập công cụ hiệu ứng âm thanh, bạn có thể chọn hiệu ứng âm thanh bản gốc")
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (failure: Exception) {
                 originalImport.value = OriginalEngineImportState(message = failure.message?.take(180)
-                    ?: "音效引擎导入失败，请选择兼容的网易云音乐安装包", failed = true)
+                    ?: "Nhập công cụ hiệu ứng âm thanh thất bại, vui lòng chọn gói cài đặt Nhạc Vân NetEase tương thích", failed = true)
             }
         }
     }
     fun useLocal(preset: EqualizerPreset) {
         cancelTile()
         userSelected = true
-        lastSelection.value = SoundEffectSelection(SoundEffectKind.MANUAL, "均衡器 · ${preset.label}")
+        lastSelection.value = SoundEffectSelection(SoundEffectKind.MANUAL, "Bộ cân bằng âm thanh · ${preset.label}")
         localRequest?.cancel()
         container.originalMoodEffects.disable(); disableAdditional()
         container.originalSmartEffects.disable()
@@ -417,7 +417,7 @@ class SoundEffectsViewModel(private val container: AppContainer) : ViewModel() {
             container.equalizerSettings.select(preset)
             container.equalizerSettings.setEnabled(true)
         }
-        notice("均衡器 · ${preset.label}", 0, combine(manual, runtime) { eq, engine ->
+        notice("Bộ cân bằng âm thanh · ${preset.label}", 0, combine(manual, runtime) { eq, engine ->
             localNotice(eq.enabled && eq.preset == preset, engine.active, engine.error, engine.supported)
         })
     }

@@ -82,12 +82,12 @@ internal fun importedAppearanceFonts(context: Context, selected: String = ""): L
     val directory = File(context.filesDir, "custom-fonts")
     if (importedFontName.matches(selected) && File(directory, selected).isFile) {
         val marker = File(directory, "$selected.name")
-        if (!marker.exists()) marker.writeText("导入字体") // Preserve the previously selected legacy import.
+         if (!marker.exists()) marker.writeText("Nhập phông chữ") // Preserve the previously selected legacy import.
     }
     return directory.listFiles().orEmpty().mapNotNull { marker ->
         val key = marker.name.removeSuffix(".name")
         if (!marker.name.endsWith(".name") || !importedFontName.matches(key) || !File(directory, key).isFile) null
-        else AppearanceFont(key, runCatching { marker.readText().take(128) }.getOrDefault("导入字体"))
+         else AppearanceFont(key, runCatching { marker.readText().take(128) }.getOrDefault("Nhập phông chữ"))
     }.sortedWith(compareBy({ it.label.lowercase(Locale.ROOT) }, { it.key }))
 }
 
@@ -98,7 +98,7 @@ internal fun importAppearanceFont(context: Context, uri: Uri): AppearanceFont {
         }
     }.getOrNull() ?: uri.lastPathSegment.orEmpty()
     val label = displayName.substringBeforeLast('.', displayName).filterNot(Char::isISOControl)
-        .take(128).ifBlank { "导入字体" }
+         .take(128).ifBlank { "Nhập phông chữ" }
     val key = importCustomFont(context, uri)
     try {
         File(context.filesDir, "custom-fonts/$key.name").writeText(label)
@@ -107,7 +107,7 @@ internal fun importAppearanceFont(context: Context, uri: Uri): AppearanceFont {
 }
 
 internal fun appearanceFontLabel(context: Context, key: String): String = when {
-    key.isBlank() -> "默认"
+     key.isBlank() -> "Mặc định"
     key.startsWith(SYSTEM_FONT_PREFIX) -> key.removePrefix(SYSTEM_FONT_PREFIX)
-    else -> importedAppearanceFonts(context, key).firstOrNull { it.key == key }?.label ?: "导入字体"
+     else -> importedAppearanceFonts(context, key).firstOrNull { it.key == key }?.label ?: "Nhập phông chữ"
 }

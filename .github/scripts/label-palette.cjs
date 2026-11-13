@@ -1,12 +1,12 @@
 'use strict';
 
-// CurrentMusicX · Aurora / 曜光配色
+// CurrentMusicX · Aurora / Phối màu ánh sáng rực rỡ
 // Hex without #, as required by GitHub's label API.
 const STATUS_LABELS = Object.freeze({
-  'status: investigating': {color: '9987C5', description: '正在复现问题或排查原因'},
-  'status: in progress': {color: '5998CD', description: '已开始处理，正在实现修复或改进'},
-  'status: blocked': {color: 'D79B63', description: '等待依赖或前置条件，暂时无法继续处理'},
-  'status: needs verification': {color: '65AD9B', description: '修复已就绪，等待复测确认结果'},
+  'status: investigating': {color: '9987C5', description: 'Đang tái hiện sự cố hoặc tìm nguyên nhân'},
+  'status: in progress': {color: '5998CD', description: 'Đã bắt đầu xử lý, đang triển khai bản sửa lỗi hoặc cải tiến'},
+  'status: blocked': {color: 'D79B63', description: 'Đang chờ phụ thuộc hoặc điều kiện tiên quyết, tạm thời chưa thể tiếp tục xử lý'},
+  'status: needs verification': {color: '65AD9B', description: 'Bản sửa lỗi đã sẵn sàng, đang chờ kiểm tra lại để xác nhận kết quả'},
 });
 const COLORS = Object.freeze({
   'risk: low': '3AAE95',

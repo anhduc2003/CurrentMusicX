@@ -16,7 +16,7 @@ import kotlinx.coroutines.sync.withLock
 data class OriginalAiMasterState(
     val enabled: Boolean = false,
     val loading: Boolean = false,
-    val message: String = "网易云原版 AI 调音大师已关闭",
+    val message: String = "AI Master điều chỉnh âm thanh bản gốc Nhạc Vân NetEase đã tắt",
     val processing: Boolean = false,
     val available: Boolean = false,
     val requestedEnabled: Boolean = false,
@@ -94,7 +94,7 @@ class OriginalAiMasterEffectsController internal constructor(
                 val old = context
                 context = next
                 if (requested.enabled && requested.ownerId > 0 && requested.ownerId != next.account.userId) {
-                    revoke("账号已切换，请为当前网易云账号重新开启AI 调音大师音效")
+                    revoke("Tài khoản đã được chuyển đổi, vui lòng bật lại hiệu ứng AI Master điều chỉnh âm thanh cho tài khoản Nhạc Vân NetEase hiện tại")
                 }
                 if (diyOwner != next.account.userId) {
                     invalidate()
@@ -153,7 +153,7 @@ class OriginalAiMasterEffectsController internal constructor(
                 if (!closed && token == diyGeneration && context?.account?.userId == uid) {
                     diySaving = false
                     mutableState.value = state.value.copy(diySaving = false,
-                        message = "DIY 偏好已应用，但保存失败，请重试")
+                        message = "Đã áp dụng tùy chỉnh DIY nhưng không lưu được, vui lòng thử lại")
                 }
             }
         }
@@ -178,24 +178,24 @@ class OriginalAiMasterEffectsController internal constructor(
             requestedEnabled = requested.enabled, songId = current?.target?.id,
             selectedDiy = selectedDiy, diySaving = diySaving,
             loading = requested.enabled && current != null,
-            message = if (requested.enabled) "正在验证网易云 SVIP 权益" else "网易云原版 AI 调音大师已关闭")
+            message = if (requested.enabled) "Đang xác minh quyền lợi SVIP của Nhạc Vân NetEase" else "AI Master điều chỉnh âm thanh bản gốc Nhạc Vân NetEase đã tắt")
         if (!requested.enabled || closed || current == null) return
         val account = current.account
         if (!account.loggedIn || account.stale || account.userId <= 0) {
-            revoke("请先登录有效的网易云 AI 调音大师SVIP 账号")
+            revoke("Vui lòng đăng nhập tài khoản SVIP AI Master điều chỉnh âm thanh Nhạc Vân NetEase hợp lệ trước")
             return
         }
         if (requested.ownerId != 0L && requested.ownerId != account.userId) {
-            revoke("保存的AI 调音大师音效不属于当前网易云账号")
+            revoke("Hiệu ứng AI Master điều chỉnh âm thanh đã lưu không thuộc tài khoản Nhạc Vân NetEase hiện tại")
             return
         }
         pending = scope.launch request@ {
             try {
                 val right = entitlement()
                 if (!isCurrent(token, current)) return@request
-                if (right.userId != account.userId) { revoke("网易云权益账号校验未通过，请重新登录后再试"); return@request }
+                if (right.userId != account.userId) { revoke("Xác minh tài khoản quyền lợi Nhạc Vân NetEase không thành công, vui lòng đăng nhập lại rồi thử lại"); return@request }
                 if (!right.canUse || right.expiresAt <= now()) {
-                    revoke("网易云原版 AI 调音大师需要有效SVIP 权益")
+                    revoke("AI Master điều chỉnh âm thanh bản gốc Nhạc Vân NetEase cần quyền lợi SVIP hợp lệ")
                     return@request
                 }
                 requested = OriginalSmartPreferences(true, account.userId)
@@ -212,14 +212,14 @@ class OriginalAiMasterEffectsController internal constructor(
                 }
                 if (!current.engine) {
                     mutableState.value = state.value.copy(loading = false,
-                        message = "已记住开启意图；导入兼容原版引擎后将重新验证权益")
+                        message = "Đã ghi nhớ ý định bật; quyền lợi sẽ được xác minh lại sau khi nhập công cụ tương thích với engine bản gốc")
                     return@request
                 }
                 val raw = withContext(workDispatcher) { definition()?.copyOf() }
                 if (!isCurrent(token, current)) return@request
                 if (raw == null) {
                     mutableState.value = state.value.copy(loading = false,
-                        message = "原版 AI 调音大师资源尚未导入，当前继续使用手动音效")
+                        message = "Chưa nhập tài nguyên AI Master điều chỉnh âm thanh bản gốc, hiện tiếp tục dùng hiệu ứng âm thanh thủ công")
                     return@request
                 }
                 val target = current.target
@@ -229,9 +229,9 @@ class OriginalAiMasterEffectsController internal constructor(
                     if (!isCurrent(token, current)) return@request
                     beforeEnable()
                     if (!isCurrent(token, current)) return@request
-                    if (right.expiresAt <= now()) { revoke("网易云 SVIP 权益已过期，已恢复手动音效"); return@request }
+                    if (right.expiresAt <= now()) { revoke("Quyền lợi SVIP Nhạc Vân NetEase đã hết hạn, đã khôi phục hiệu ứng âm thanh thủ công"); return@request }
                     mutableState.value = state.value.copy(enabled = true, loading = false,
-                        message = "已开启，播放网易云歌曲时自动匹配原版音效")
+                        message = "Đã bật, tự động khớp hiệu ứng âm thanh bản gốc khi phát bài hát Nhạc Vân NetEase")
                     return@request
                 }
                 val material = lastMaterial?.takeIf { it.first == current }?.second ?: prepare(target.id)
@@ -244,19 +244,19 @@ class OriginalAiMasterEffectsController internal constructor(
                 if (!isCurrent(token, current)) return@request
                 beforeEnable()
                 if (!isCurrent(token, current)) return@request
-                if (right.expiresAt <= now()) { revoke("网易云 AI 调音大师权益已过期，已恢复手动音效"); return@request }
+                if (right.expiresAt <= now()) { revoke("Quyền lợi AI Master điều chỉnh âm thanh Nhạc Vân NetEase đã hết hạn, đã khôi phục hiệu ứng âm thanh thủ công"); return@request }
                 mutableSelection.value = prepared.preset()
                 mutableState.value = state.value.copy(enabled = true, loading = false, processing = false,
                     description = material.description, baseName = material.baseName, longText = material.longText,
                     selectedDiy = selectedDiy, usedDiy = prepared.usedDiy.toSet(), diySaving = diySaving,
-                    message = if (prepared.songSpecific) "原版 AI 调音大师已匹配，等待音频处理" else "已匹配原版调音基础模板，等待音频处理")
+                    message = if (prepared.songSpecific) "Đã khớp AI Master điều chỉnh âm thanh bản gốc, đang chờ xử lý âm thanh" else "Đã khớp mẫu cơ bản điều chỉnh âm thanh bản gốc, đang chờ xử lý âm thanh")
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: LinkageError) {
-                if (isCurrent(token, current)) reportFailure("原版 AI 调音大师引擎加载失败，请重新导入兼容安装包后重试")
+                if (isCurrent(token, current)) reportFailure("Không tải được engine AI Master điều chỉnh âm thanh bản gốc, vui lòng nhập lại gói cài đặt tương thích rồi thử lại")
             }
             catch (_: Exception) {
                 if (isCurrent(token, current)) mutableState.value = state.value.copy(enabled = false, loading = false,
-                    processing = false, message = "原版 AI 调音大师暂不可用，请检查网络或资源后重试；当前使用手动音效")
+                    processing = false, message = "AI Master điều chỉnh âm thanh bản gốc hiện không khả dụng, vui lòng kiểm tra mạng hoặc tài nguyên rồi thử lại; hiện đang dùng hiệu ứng âm thanh thủ công")
             }
         }
     }
@@ -278,7 +278,7 @@ class OriginalAiMasterEffectsController internal constructor(
             catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) {
                 if (!closed && token == generation) mutableState.value = state.value.copy(
-                    message = "原版 AI 调音大师已关闭，但设置保存失败，请稍后重试")
+                    message = "AI Master điều chỉnh âm thanh bản gốc đã tắt nhưng không lưu được cài đặt, vui lòng thử lại sau")
             }
         }
     }
@@ -294,7 +294,7 @@ class OriginalAiMasterEffectsController internal constructor(
     fun reportProcessing(presetId: Long) {
         if (closed || presetId != ORIGINAL_AI_MASTER_PRESET_ID || selection.value?.id != presetId || !state.value.enabled) return
         if (permissionExpiresAt <= now()) evaluate()
-        else mutableState.value = state.value.copy(processing = true, message = "网易云原版 AI 调音大师正在处理音频")
+        else mutableState.value = state.value.copy(processing = true, message = "AI Master điều chỉnh âm thanh bản gốc Nhạc Vân NetEase đang xử lý âm thanh")
     }
 
     /** A native failure withdraws output but keeps the user's account-bound retry intention. */
@@ -304,7 +304,7 @@ class OriginalAiMasterEffectsController internal constructor(
         mutableState.value = state.value.copy(enabled = false, loading = false, processing = false,
             requestedEnabled = requested.enabled, description = null, baseName = null, longText = null,
             usedDiy = emptySet(),
-            message = message.take(200).ifBlank { "原版 AI 调音大师处理失败，当前使用手动音效；可重试" })
+            message = message.take(200).ifBlank { "Xử lý bằng AI Master điều chỉnh âm thanh bản gốc thất bại, hiện đang dùng hiệu ứng âm thanh thủ công; có thể thử lại" })
     }
 
     override fun close() {

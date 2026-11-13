@@ -41,15 +41,13 @@ import io.github.currencortex.music.R
     val scale = LocalFootprintScale.current
     if (!monthly.complete) {
         Box(Modifier.fillMaxWidth().padding(vertical = (32 * scale).dp).testTag("listening_month_pending"), contentAlignment = Alignment.Center) {
-            FootprintText("每月1日更新", size = 14f, color = FootprintMuted)
+            FootprintText("Cập nhật vào ngày 1 hằng tháng", size = 14f, color = FootprintMuted)
         }
         return
     }
     val title = monthName(range.start.monthValue)
     val covers = report.coverUrls.filter(String::isNotBlank).ifEmpty { report.tracks.map { it.cover }.filter(String::isNotBlank) }
-    val ages = report.facts.filter { it.title.startsWith("听歌年代 · ") }
-    val languages = report.facts.filter { it.title.startsWith("听歌语言 · ") }
-    key(range.start) {
+val ages = report.facts.filter { it.title.startsWith("Thời kỳ nghe nhạc · ") }val languages = report.facts.filter { it.title.startsWith("Ngôn ngữ nghe nhạc · ") }    key(range.start) {
     Column(Modifier.fillMaxWidth().testTag("listening_month_details"), verticalArrangement = Arrangement.spacedBy((24 * scale).dp)) {
         monthly.sendVipDays?.takeIf { it > 0 }?.let { MonthlyVipInvite(it, onAction) }
         if (!monthly.wallpaperBottom) FootprintRecordWall(covers, title, report.songCount, onRank)
@@ -93,11 +91,11 @@ import io.github.currencortex.music.R
     val reveal = rememberListeningTopReveal(item, title, artist)
     FootprintCard(Modifier.testTag(if (artist) "listening_month_artist" else "listening_month_song")) {
         Box(Modifier.fillMaxWidth().height((207 * scale).dp)) {
-            MonthlyBlockHeading(title, if (artist) "音乐人" else "单曲", Modifier.padding((20 * scale).dp))
+            MonthlyBlockHeading(title, if (artist) "Nghệ sĩ" else "Bài hát đơn", Modifier.padding((20 * scale).dp))
             FootprintCover(item.cover, item.name, Modifier.align(Alignment.TopEnd).padding(top = (20 * scale).dp, end = (20 * scale).dp)
                 .size((130 * scale).dp).clip(if (artist) CircleShape else RoundedCornerShape((12 * scale).dp)).monthlyAction(item.action, onAction))
             MonthlyTop(Modifier.offset((20 * scale).dp, (126 * scale).dp).testTag(if(artist) "listening_artist_top" else "listening_song_top"), revealProgress=reveal.progress)
-            item.playCount?.let { count -> MonthlyNumberText("${count}次收听", 51f, 30f,
+            item.playCount?.let { count -> MonthlyNumberText("${count} lượt nghe", 51f, 30f,
                 modifier = Modifier.offset((20 * scale).dp, (156 * scale).dp).monthlyAction(item.action, onAction)) }
         }
         if (item.name.isNotBlank()) Row(
@@ -134,7 +132,7 @@ import io.github.currencortex.music.R
     val scale = LocalFootprintScale.current
     val pages = (if (items.size < 3) items else items.take(items.size / 3 * 3)).chunked(3)
     FootprintCard(Modifier.testTag("listening_month_friends_songs")) {
-        MonthlyCardTitle("${title}好友挚爱")
+         MonthlyCardTitle("${title}được bạn bè yêu thích")
         key(items) {
             val pager = rememberPagerState { pages.size }
             HorizontalPager(pager, modifier = Modifier.fillMaxWidth().testTag("listening_friend_pager"), verticalAlignment = Alignment.Top) { index ->
@@ -150,7 +148,7 @@ import io.github.currencortex.music.R
                                     FootprintCover(song.friend.avatar, song.friend.name, Modifier.size((16.667f * scale).dp).clip(CircleShape))
                                     FootprintText(song.friend.name, size = 12f, maxLines = 1)
                                 }
-                                song.playCount?.let { MonthlyNumberText("${it}次收听", 30f, 16f,
+                                song.playCount?.let { MonthlyNumberText("${it} lượt nghe", 30f, 16f,
                                     modifier = Modifier.padding(top = (2.333f * scale).dp).monthlyAction(song.action, onAction)) }
                                 FootprintText(song.name, Modifier.padding(top = (4 * scale).dp).monthlyAction(song.action, onAction),
                                     size = 16f, weight = FontWeight.SemiBold, maxLines = 1)
@@ -169,7 +167,7 @@ import io.github.currencortex.music.R
     val scale = LocalFootprintScale.current
     val visible = items.take(if (items.size >= 4) 4 else 2)
     FootprintCard(Modifier.testTag("listening_month_friends_keywords")) {
-        MonthlyCardTitle("好友音乐关键词")
+         MonthlyCardTitle("Từ khóa âm nhạc của bạn bè")
         Column(Modifier.padding(horizontal = (17.333f * scale).dp, vertical = (13.333f * scale).dp)
             .padding(top = (14 * scale).dp), verticalArrangement = Arrangement.spacedBy((10.667f * scale).dp)) {
             visible.chunked(2).forEach { pair ->
@@ -191,7 +189,7 @@ import io.github.currencortex.music.R
                                 }
                             }
                             keyword.friends.firstOrNull()?.let { friend ->
-                                FootprintText(friend.name + if (keyword.friends.size > 1) " 等好友" else "",
+                                FootprintText(friend.name + if (keyword.friends.size > 1) " và những người bạn khác" else "",
                                     Modifier.monthlyAction(friend.action, onAction), size = 12f, maxLines = 1)
                             }
                         }
@@ -210,7 +208,7 @@ import io.github.currencortex.music.R
         AsyncImage(VipBackground, null, Modifier.matchParentSize(), contentScale = ContentScale.FillBounds)
         Column(Modifier.fillMaxWidth()) {
             Box(Modifier.fillMaxWidth().height((176.667f * scale).dp)) {
-                FootprintText("${title}最爱", Modifier.offset((16.667f * scale).dp, (20 * scale).dp), size = 30f, color = gold, weight = FontWeight.Bold)
+                FootprintText("${title} yêu thích nhất", Modifier.offset((16.667f * scale).dp, (20 * scale).dp), size = 30f, color = gold, weight = FontWeight.Bold)
                 AsyncImage(OfficialMedia + if (superVip) "svip_privilege_month.887ba078.png" else "vip_privilege_month.4039c614.png", null,
                     Modifier.offset((16.667f * scale).dp, (53.333f * scale).dp).size((148 * scale).dp, ((if (superVip) 42.667f else 34.667f) * scale).dp),
                     contentScale = ContentScale.FillBounds)
@@ -230,8 +228,8 @@ import io.github.currencortex.music.R
                             verticalArrangement = Arrangement.Center) {
                             if (section.text.isNotBlank()) MonthlyNumberText(section.text, 36f, 24f, gold)
                             val label = when (section.type) {
-                                "vipSongCount" -> "会员歌曲收听数"
-                                "vipSongDuration" -> "会员歌曲收听时长"
+                                "vipSongCount" -> "Số lượt nghe bài hát hội viên"
+                                "vipSongDuration" -> "Thời lượng nghe bài hát hội viên"
                                 else -> section.field
                             }
                             if (label.isNotBlank()) FootprintText(label, Modifier.padding(top = (11 * scale).dp), size = 12f, color = gold.copy(alpha = .8f), maxLines = 2)
@@ -259,8 +257,8 @@ import io.github.currencortex.music.R
     val scale = LocalFootprintScale.current
     val reveal = rememberListeningTopReveal(item, title)
     val audiobook = item.type.equals("audiobook", ignoreCase = true)
-    val name = if (audiobook) "有声书" else "播客"
-    val unit = if (audiobook) "集" else "期"
+    val name = if (audiobook) "Sách nói" else "Podcast"
+    val unit = if (audiobook) "tập" else "số"
     FootprintCard(Modifier.testTag("listening_month_audio_${item.type}")) {
         Box(Modifier.fillMaxWidth().height((150 * scale).dp)) {
             MonthlyBlockHeading(title, name, Modifier.padding((20 * scale).dp))
@@ -272,12 +270,12 @@ import io.github.currencortex.music.R
             Modifier.padding(start = (20 * scale).dp, end = (20 * scale).dp, top = (10 * scale).dp).then(reveal.trigger).monthlyAction(item.action, onAction),
             size = 36f, weight = FontWeight.Bold, maxLines = 3)
         val topInfo = listOfNotNull(item.topDurationMs?.let(::monthlyDuration), item.topEpisodes?.let { "$it$unit" }).joinToString(" · ")
-        if (topInfo.isNotBlank()) FootprintText("本月收听 $topInfo", Modifier.padding(start = (20 * scale).dp, top = (9.333f * scale).dp), size = 14f)
+        if (topInfo.isNotBlank()) FootprintText("Tháng này đã nghe $topInfo", Modifier.padding(start = (20 * scale).dp, top = (9.333f * scale).dp), size = 14f)
         if (item.durationMs != null || item.episodes != null) {
             MonthlyDivider(Modifier.padding(top = (24 * scale).dp))
             Row(Modifier.fillMaxWidth().padding(top = (28.333f * scale).dp, bottom = (16 * scale).dp)) {
-                item.durationMs?.let { MonthlyAudioStat(monthlyDuration(it), "${name}收听时长", Modifier.weight(1f)) }
-                item.episodes?.let { MonthlyAudioStat("$it$unit", "${name}收听${if (audiobook) "集数" else "期数"}", Modifier.weight(1f)) }
+                item.durationMs?.let { MonthlyAudioStat(monthlyDuration(it), "Thời lượng nghe ${name}", Modifier.weight(1f)) }
+                item.episodes?.let { MonthlyAudioStat("$it$unit", "Số ${if (audiobook) "tập" else "số"} ${name} đã nghe", Modifier.weight(1f)) }
             }
         } else Spacer(Modifier.height((24 * scale).dp))
     }
@@ -295,7 +293,7 @@ import io.github.currencortex.music.R
     val scale = LocalFootprintScale.current
     val reveal = rememberListeningTopReveal(item, title)
     FootprintCard(Modifier.testTag("listening_month_style")) {
-        MonthlyCardTitle("${title}曲风")
+         MonthlyCardTitle("${title}thể loại nhạc")
         MonthlyTop(Modifier.padding(start = (20 * scale).dp, top = (31.667f * scale).dp).testTag("listening_style_top"), revealProgress = reveal.progress, slide=false)
         FootprintText(item.main.name, Modifier.padding(start = (20 * scale).dp, top = (8.333f * scale).dp, end = (20 * scale).dp)
             .then(if (item.recommendation == null) reveal.trigger else Modifier)
@@ -306,7 +304,7 @@ import io.github.currencortex.music.R
             Row(Modifier.padding(start = (20 * scale).dp, end = (20 * scale).dp, top = (14 * scale).dp)
                 .then(reveal.trigger)
                 .monthlyAction(recommendation.action, onAction).testTag("listening_month_recommendation"), verticalAlignment = Alignment.CenterVertically) {
-                FootprintText("「推荐歌单」 ${recommendation.text}", Modifier.weight(1f), size = 14f, color = FootprintInk.copy(alpha = .6f), maxLines = 2)
+                FootprintText("「Danh sách phát đề xuất」 ${recommendation.text}", Modifier.weight(1f), size = 14f, color = FootprintInk.copy(alpha = .6f), maxLines = 2)
                 if (recommendation.action != null) FootprintText("›", size = 20f, color = FootprintMuted)
             }
         }
@@ -348,14 +346,14 @@ import io.github.currencortex.music.R
             horizontalArrangement = Arrangement.SpaceBetween) {
             Column {
                 Row(verticalAlignment = Alignment.Bottom) {
-                    FootprintText("可送", size = 21.333f, color = Color(0xFFF1CFC5), weight = FontWeight.SemiBold)
+                    FootprintText("Có thể tặng", size = 21.333f, color = Color(0xFFF1CFC5), weight = FontWeight.SemiBold)
                     FootprintText(days.toString(), Modifier.padding(horizontal = (1.333f * scale).dp), size = 28.667f, color = Color(0xFFF1CFC5), weight = FontWeight.Bold, numeric = true)
-                    FootprintText("天", size = 21.333f, color = Color(0xFFF1CFC5), weight = FontWeight.SemiBold)
+                    FootprintText("ngày", size = 21.333f, color = Color(0xFFF1CFC5), weight = FontWeight.SemiBold)
                 }
-                FootprintText("尊享免费会员赠送额度", size = 10f, color = Color(0xFFF1CFC5).copy(alpha = .7f))
+                FootprintText("Hạn mức tặng tư cách hội viên cao cấp miễn phí", size = 10f, color = Color(0xFFF1CFC5).copy(alpha = .7f))
             }
             Box(Modifier.size((99.667f * scale).dp, (38.333f * scale).dp).clip(CircleShape).background(FootprintRed), contentAlignment = Alignment.Center) {
-                FootprintText("送好友", size = 16f, color = Color.White, weight = FontWeight.SemiBold)
+                FootprintText("Tặng bạn bè", size = 16f, color = Color.White, weight = FontWeight.SemiBold)
             }
         }
     }
@@ -423,7 +421,7 @@ private fun Modifier.monthlyAction(action: ListeningMonthlyAction?, onAction: (L
 
 private fun monthlyDuration(milliseconds: Long): String {
     val minutes = milliseconds.coerceAtLeast(0) / 60_000
-    return if (minutes >= 60) "${minutes / 60}小时${minutes % 60}分" else "${minutes}分"
+    return if (minutes >= 60) "${minutes / 60} giờ ${minutes % 60} phút" else "${minutes} phút"
 }
 
 private const val OfficialMedia = "https://sg.music.163.com/st/listen-home/static/media/"

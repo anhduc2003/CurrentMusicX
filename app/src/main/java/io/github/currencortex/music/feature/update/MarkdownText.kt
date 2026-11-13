@@ -63,7 +63,7 @@ private fun imageBlock(match: MatchResult): MarkdownBlock {
         .replace("&amp;", "&").replace("&quot;", "\"").replace("&#39;", "'")
     val safe = url.toHttpUrlOrNull()?.let { it.scheme == "https" && it.username.isEmpty() && it.password.isEmpty() } == true
     return if (safe) MarkdownBlock(MarkdownKind.IMAGE, alt, imageUrl = url)
-    else MarkdownBlock(MarkdownKind.TEXT, alt.ifBlank { "图片地址不可用" })
+    else MarkdownBlock(MarkdownKind.TEXT, alt.ifBlank { "Địa chỉ hình ảnh không khả dụng" })
 }
 
 internal fun markdownBlocks(markdown: String): List<MarkdownBlock> {
@@ -121,7 +121,7 @@ internal fun markdownBlocks(markdown: String): List<MarkdownBlock> {
             appendText(line.substring(cursor, image.range.first).trim())
             val block = imageBlock(image)
             blocks += if (block.kind == MarkdownKind.IMAGE && blocks.count { it.kind == MarkdownKind.IMAGE } >= 8)
-                MarkdownBlock(MarkdownKind.TEXT, block.text.ifBlank { "更多图片请查看发布页面" }) else block
+                MarkdownBlock(MarkdownKind.TEXT, block.text.ifBlank { "Xem thêm hình ảnh trên trang phát hành" }) else block
             cursor = image.range.last + 1
         }
         appendText(line.substring(cursor).trim())
@@ -196,15 +196,15 @@ private fun ReleaseNoteImage(url: String, alt: String, compact: Boolean = false)
         AsyncImage(model = remember(context, url, attempt) {
             ImageRequest.Builder(context).data(url).size(1200, 1200)
                 .memoryCacheKey("release-note:$url:$attempt").diskCacheKey("release-note:$url:$attempt").build()
-        }, contentDescription = alt.ifBlank { "版本更新图片" }, contentScale = if (compact) ContentScale.Crop else ContentScale.Fit,
+        }, contentDescription = alt.ifBlank { "Hình ảnh cập nhật phiên bản" }, contentScale = if (compact) ContentScale.Crop else ContentScale.Fit,
             modifier = Modifier.matchParentSize(), onSuccess = {
                 loaded = true
                 if (it.result.image.height > 0) ratio = (it.result.image.width.toFloat() / it.result.image.height).coerceIn(.35f, 3f)
             }, onError = { failed = true })
         if (failed) Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("图片暂时无法加载", fontSize = 13.sp, modifier = Modifier.testTag("update_note_image_error"))
-            TextButton("重新加载图片", onClick = { attempt++ })
-        } else if (!loaded) Text("图片加载中…", fontSize = 13.sp,
+            Text("Tạm thời không thể tải hình ảnh", fontSize = 13.sp, modifier = Modifier.testTag("update_note_image_error"))
+            TextButton("Tải lại hình ảnh", onClick = { attempt++ })
+        } else if (!loaded) Text("Đang tải hình ảnh…", fontSize = 13.sp,
             color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
     }
 }
@@ -221,7 +221,7 @@ private fun webLinkLabel(url: String): String {
         return if (repo == "${io.github.currencortex.music.core.config.AppMetadata.RELEASES_OWNER}/${io.github.currencortex.music.core.config.AppMetadata.RELEASES_REPO}")
             "#${parts[3]}" else "$repo#${parts[3]}"
     }
-    if (parts.size == 4 && parts[2] == "compare") return "完整改动"
+    if (parts.size == 4 && parts[2] == "compare") return "Toàn bộ thay đổi"
     return url
 }
 

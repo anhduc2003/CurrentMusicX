@@ -51,7 +51,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             catch (cancelled: CancellationException) { throw cancelled }
             catch (failure: Exception) { container.errorNotices.show(
                 if (failure is IllegalArgumentException || failure is IllegalStateException)
-                    failure.message ?: "背景图片保存失败，请重试" else "无法读取背景图片，请重新选择") }
+                     failure.message ?: "Lưu ảnh nền thất bại, vui lòng thử lại" else "Không thể đọc ảnh nền, vui lòng chọn lại") }
             finally { busy = false }
         }
     }
@@ -62,20 +62,20 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         val value = blur
         scope.launch { container.settings.edit { it.copy(playerBackgroundBlur = value) } }
     }
-    MusicDialog("播放背景", { if (!busy) onDismiss() }) {
+     MusicDialog("Nền phát nhạc", { if (!busy) onDismiss() }) {
         Column(Modifier.fillMaxWidth().heightIn(max = 480.dp).verticalScroll(rememberScrollState())
             .testTag("player_background_settings"), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             PlayerBackdrop(queue.current?.cover.orEmpty(), Modifier.fillMaxWidth().height(140.dp)
                 .clip(RoundedCornerShape(18.dp)).testTag("player_background_preview"), file, blur,
                 dynamicBackground = config.playerDynamicBackground,
                 motionSpeed = { backgroundSpeed.value })
-            Text(if (busy) "正在保存图片…" else if (file != null) "自定义背景 · 图片仅保存在本机"
-                else if (config.playerBackground.isNotBlank()) "图片不可用，请重新选择"
-                else if (config.playerDynamicBackground) "流动背景 · 随播放中的实时节奏变化"
-                else "封面毛玻璃 · 播放与歌词共用柔和背景", fontSize = 13.sp,
+             Text(if (busy) "Đang lưu ảnh…" else if (file != null) "Nền tùy chỉnh · Ảnh chỉ được lưu trên thiết bị này"
+                 else if (config.playerBackground.isNotBlank()) "Ảnh không khả dụng, vui lòng chọn lại"
+                 else if (config.playerDynamicBackground) "Nền chuyển động · Thay đổi theo nhịp điệu trực tiếp khi phát nhạc"
+                 else "Ảnh bìa làm mờ · Nhạc và lời bài hát dùng chung nền dịu nhẹ", fontSize = 13.sp,
                 color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
             MusicDialogActions(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                listOf(false to "封面毛玻璃", true to "流动背景").forEach { (dynamic, label) ->
+                 listOf(false to "Ảnh bìa làm mờ", true to "Nền chuyển động").forEach { (dynamic, label) ->
                     val chosen = file == null && config.playerDynamicBackground == dynamic
                     MusicDialogButton(if (chosen) "✓ $label" else label, enabled = !busy && file == null,
                         colors = if (chosen) ButtonDefaults.textButtonColors(color = MiuixTheme.colorScheme.primary,
@@ -85,18 +85,18 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                         onClick = { scope.launch { container.settings.edit { it.copy(playerDynamicBackground = dynamic) } } })
                 }
             }
-            if (file != null) Text("恢复默认背景后可选择封面效果", fontSize = 13.sp,
+             if (file != null) Text("Sau khi khôi phục nền mặc định, bạn có thể chọn hiệu ứng ảnh bìa", fontSize = 13.sp,
                 color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
             MusicDialogActions(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                MusicDialogButton(if (file == null) "选择图片" else "更换图片",
+                 MusicDialogButton(if (file == null) "Chọn ảnh" else "Đổi ảnh",
                     colors = ButtonDefaults.textButtonColors(color = MiuixTheme.colorScheme.primary, textColor = MiuixTheme.colorScheme.onPrimary),
                     enabled = !busy, modifier = Modifier.weight(1f).testTag("player_background_choose"),
                     onClick = { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) })
-                MusicDialogButton("恢复默认", enabled = config.playerBackground.isNotBlank() && !busy,
+                 MusicDialogButton("Khôi phục mặc định", enabled = config.playerBackground.isNotBlank() && !busy,
                     modifier = Modifier.weight(1f).testTag("player_background_reset"),
                     onClick = { operation { container.playerBackgrounds.clear() } })
             }
-            Text("模糊度 ${blur.roundToInt()}%", fontSize = 15.sp)
+             Text("Độ mờ ${blur.roundToInt()}%", fontSize = 15.sp)
             Slider(value = blur, onValueChange = { blur = it }, onValueChangeFinished = ::saveBlur,
                 valueRange = 0f..100f, enabled = canAdjustBlur,
                 modifier = Modifier.fillMaxWidth().testTag("player_background_blur").semantics {
@@ -107,7 +107,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                         }
                     }
                 })
-            MusicDialogButton("完成", enabled = !busy, modifier = Modifier.fillMaxWidth(), onClick = {
+             MusicDialogButton("Xong", enabled = !busy, modifier = Modifier.fillMaxWidth(), onClick = {
                 val value = blur
                 operation { container.settings.edit { it.copy(playerBackgroundBlur = value) }; onDismiss() }
             })

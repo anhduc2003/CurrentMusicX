@@ -35,7 +35,7 @@ fun AboutScreen(onBack: () -> Unit, onOpenDocument: (LegalDocument) -> Unit, ena
                 val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                 clipboard.setPrimaryClip(android.content.ClipData.newPlainText("version",
                     "${AppMetadata.APP_NAME} ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n${BuildConfig.APPLICATION_ID}"))
-                context.showMusicMessage("版本信息已复制")
+                context.showMusicMessage("Đã sao chép thông tin phiên bản")
             }
             link.startsWith("currentmusic:") -> onOpenDocument(LegalDocument.valueOf(link.substringAfter(':')))
             else -> openExternalLink(context, link)
@@ -48,19 +48,19 @@ data class AboutLink(val fullText: String, val url: String)
 
 @Immutable
 class AboutUiState {
-    val title: String = "关于"
+    val title: String = "Giới thiệu"
     val appName: String = AppMetadata.APP_NAME
     val versionName: String = "v${BuildConfig.VERSION_NAME}"
     val links = listOf(
         AboutLink("GitHub", "https://github.com/bileizhen/CurrentMusicX"),
-        AboutLink("QQ 群", "https://qm.qq.com/q/LZx3ulz3oG"),
-        AboutLink("开源许可", "currentmusic:LICENSE"),
-        AboutLink("第三方声明", "currentmusic:NOTICES"),
-        AboutLink("隐私", "currentmusic:PRIVACY"),
+        AboutLink("Nhóm QQ", "https://qm.qq.com/q/LZx3ulz3oG"),
+        AboutLink("Giấy phép mã nguồn mở", "currentmusic:LICENSE"),
+        AboutLink("Tuyên bố của bên thứ ba", "currentmusic:NOTICES"),
+        AboutLink("Quyền riêng tư", "currentmusic:PRIVACY"),
     ) +
         listOfNotNull(
-            AppMetadata.WEBSITE_URL.takeIf { it.isNotBlank() }?.let { AboutLink("网站", it) },
-            AppMetadata.PRIVACY_URL.takeIf { it.isNotBlank() }?.let { AboutLink("在线隐私政策", it) },
+            AppMetadata.WEBSITE_URL.takeIf { it.isNotBlank() }?.let { AboutLink("Trang web", it) },
+            AppMetadata.PRIVACY_URL.takeIf { it.isNotBlank() }?.let { AboutLink("Chính sách quyền riêng tư trực tuyến", it) },
         )
 }
 
@@ -75,24 +75,24 @@ fun AboutScreenMiuix(state: AboutUiState, actions: AboutScreenActions, enableBlu
         item("brand") {
             Column(Modifier.fillMaxWidth().padding(vertical = 28.dp), horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Image(painterResource(R.drawable.ic_launcher_foreground), "应用图标",
+                Image(painterResource(R.drawable.ic_launcher_foreground), "Biểu tượng ứng dụng",
                     Modifier.size(88.dp).testTag("about_logo"), colorFilter = ColorFilter.tint(colors.onBackground))
                 Text(state.appName, fontSize = 30.sp, fontWeight = FontWeight.Bold)
                 Text(state.versionName, Modifier.testTag("about_version").clickable { actions.onOpenLink("currentmusic:version") }
                     .padding(horizontal = 16.dp, vertical = 8.dp), fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
             }
         }
-        item("project") { SettingsSection("项目", MusicIcons.Info) {
-            PageNavigationPreference("支持开发者", "自愿赞助项目开发与维护",
+        item("project") { SettingsSection("Dự án", MusicIcons.Info) {
+            PageNavigationPreference("Ủng hộ nhà phát triển", "Tự nguyện tài trợ cho việc phát triển và bảo trì dự án",
                 Modifier.testTag("about_open_support"), MusicIcons.Heart, onSupport)
             SettingsDivider()
-            state.links.filterNot { it.fullText == "在线隐私政策" }.distinctBy { it.url }.forEachIndexed { index, link ->
+            state.links.filterNot { it.fullText == "Chính sách quyền riêng tư trực tuyến" }.distinctBy { it.url }.forEachIndexed { index, link ->
                 if (index > 0) SettingsDivider()
                 PageNavigationPreference(link.fullText, onClick = { actions.onOpenLink(link.url) })
             }
         } }
         AboutCredits.sections.forEach { section ->
-            item("credits_${section.title}") { SettingsSection(section.title, if (section.title == "CDN 组") MusicIcons.Storage else MusicIcons.Heart) {
+            item("credits_${section.title}") { SettingsSection(section.title, if (section.title == "Nhóm CDN") MusicIcons.Storage else MusicIcons.Heart) {
                 section.members.forEachIndexed { index, member ->
                     if (index > 0) SettingsDivider(68.dp)
                     SettingsPreference(member.name, member.role, onClick = { onOpenMember(member, section.title) },

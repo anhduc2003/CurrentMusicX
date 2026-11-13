@@ -43,12 +43,12 @@ class QishuiLyricsMatchSource(
     private var currentToken: ClientToken? = null
     private class Rejected(val code: String) : IOException()
 
-    init { require(deviceId.matches(Regex("[0-9]{19}"))) { "汽水读取设备标识无效" } }
+    init { require(deviceId.matches(Regex("[0-9]{19}"))) { "Mã định danh thiết bị đọc từ Nhạc Vân không hợp lệ" } }
 
     suspend fun search(query: String): List<LyricsCandidate> = bounded {
         val text = query.trim()
         if (text.isBlank()) return@bounded emptyList()
-        require(text.length <= OnlineLyricsMatcher.MAX_QUERY_LENGTH) { "搜索关键词过长" }
+        require(text.length <= OnlineLyricsMatcher.MAX_QUERY_LENGTH) { "Từ khóa tìm kiếm quá dài" }
         val keyword = text.split(Regex("\\s+-\\s+")).take(2).joinToString(" ").trim()
         val searchId = UUID.randomUUID().toString()
         val data = platform("search/", buildJsonObject {
@@ -56,10 +56,10 @@ class QishuiLyricsMatchSource(
             put("search_method", "input"); put("search_type", "track"); put("search_scene", "normal")
             put("scene_name", "search"); put("ab_param", ""); put("last_viewed_media", buildJsonObject {})
         })
-        val groups = data["result_groups"] as? JsonArray ?: throw LyricsMatchException("汽水搜索响应缺少候选分组")
+        val groups = data["result_groups"] as? JsonArray ?: throw LyricsMatchException("Phản hồi tìm kiếm của Nhạc Vân thiếu nhóm ứng viên")
         val group = groups.mapNotNull { it as? JsonObject }.firstOrNull { it.string("id") == "tracks" }
             ?: return@bounded emptyList()
-        val values = group["data"] as? JsonArray ?: throw LyricsMatchException("汽水搜索响应缺少候选列表")
+        val values = group["data"] as? JsonArray ?: throw LyricsMatchException("Phản hồi tìm kiếm của Nhạc Vân thiếu danh sách ứng viên")
         values.asSequence().mapNotNull { value ->
             val track = ((value as? JsonObject)?.get("entity") as? JsonObject)?.get("track") as? JsonObject
                 ?: return@mapNotNull null
@@ -93,22 +93,22 @@ class QishuiLyricsMatchSource(
     }
 
     suspend fun load(candidate: LyricsCandidate): LyricsDocument = bounded {
-        require(candidate.source == LyricsMatchSource.QISHUI && candidate.id.matches(MEDIA_ID)) { "汽水歌词候选编号无效" }
+        require(candidate.source == LyricsMatchSource.QISHUI && candidate.id.matches(MEDIA_ID)) { "Mã ứng viên lời bài hát của Nhạc Vân không hợp lệ" }
         val data = platform("media/mget/", buildJsonObject {
             put("media_list", buildJsonArray { add(buildJsonObject { put("id", candidate.id); put("type", "track") }) })
             put("card_context", buildJsonObject {})
         })
-        val media = data["media_list"] as? JsonArray ?: throw LyricsMatchException("汽水歌词响应缺少歌曲列表")
+        val media = data["media_list"] as? JsonArray ?: throw LyricsMatchException("Phản hồi lời bài hát của Nhạc Vân thiếu danh sách bài hát")
         val item = media.mapNotNull { it as? JsonObject }.firstOrNull { value ->
             val track = value["track_entity"] as? JsonObject
             value.string("media_id").ifEmpty { (track?.get("base_info") as? JsonObject)?.string("id").orEmpty() } == candidate.id
-        } ?: throw LyricsMatchException("汽水没有返回所选歌曲的歌词")
-        val track = item["track_entity"] as? JsonObject ?: throw LyricsMatchException("汽水歌词响应缺少歌曲信息")
+        } ?: throw LyricsMatchException("Nhạc Vân không trả lời bài hát đã chọn")
+        val track = item["track_entity"] as? JsonObject ?: throw LyricsMatchException("Phản hồi lời bài hát của Nhạc Vân thiếu thông tin bài hát")
         val returnedId = (track["base_info"] as? JsonObject)?.string("id").orEmpty()
-        if (returnedId.isNotBlank() && returnedId != candidate.id) throw LyricsMatchException("汽水返回了其他歌曲的歌词")
+        if (returnedId.isNotBlank() && returnedId != candidate.id) throw LyricsMatchException("Nhạc Vân đã trả lời lời bài hát của bài khác")
         val lyricInfo = (track["display_info"] as? JsonObject)?.get("lyric_info") as? JsonObject
-            ?: throw LyricsMatchException("汽水尚未提供这首歌的歌词")
-        val entity = lyricInfo["lyric_entity"] as? JsonObject ?: throw LyricsMatchException("汽水返回了空歌词")
+            ?: throw LyricsMatchException("Nhạc Vân chưa cung cấp lời bài hát này")
+        val entity = lyricInfo["lyric_entity"] as? JsonObject ?: throw LyricsMatchException("Nhạc Vân trả về lời bài hát trống")
         val document = decodeEntity(entity)
         val translations = lyricInfo["lang_translations"] as? JsonObject
         val translated = (translations?.entries?.firstOrNull {
@@ -122,9 +122,9 @@ class QishuiLyricsMatchSource(
 
     private fun decodeEntity(entity: JsonObject): LyricsDocument {
         val text = entity.string("content").replace("\u0000", "")
-        if (text.isBlank()) throw LyricsMatchException("汽水尚未提供这首歌的歌词")
+        if (text.isBlank()) throw LyricsMatchException("Nhạc Vân chưa cung cấp lời bài hát này")
         val type = entity.string("type").lowercase(Locale.ROOT)
-        if (type !in setOf("", "lrc", "krc")) throw LyricsMatchException("暂不支持汽水返回的歌词格式")
+        if (type !in setOf("", "lrc", "krc")) throw LyricsMatchException("Hiện chưa hỗ trợ định dạng lời bài hát do Nhạc Vân trả về")
         return LyricsFileCodec.decode(text.toByteArray(Charsets.UTF_8), if (type == "krc") "lyrics.krc" else "lyrics.lrc").document
     }
 
@@ -135,13 +135,13 @@ class QishuiLyricsMatchSource(
         repeat(2) { attempt ->
             try {
                 val root = request(url(platformBase, path), body, token.value)
-                return root["data"] as? JsonObject ?: throw LyricsMatchException("汽水返回了无效的数据对象")
+                return root["data"] as? JsonObject ?: throw LyricsMatchException("Nhạc Vân trả về đối tượng dữ liệu không hợp lệ")
             } catch (rejected: Rejected) {
                 if (attempt != 0 || rejected.code != EXPIRED_TOKEN) throw rejection(rejected.code)
                 token = token(token)
             }
         }
-        throw LyricsMatchException("汽水歌词请求失败")
+        throw LyricsMatchException("Yêu cầu lời bài hát Nhạc Vân thất bại")
     }
 
     private suspend fun token(expired: ClientToken? = null): ClientToken = tokenLock.withLock {
@@ -152,7 +152,7 @@ class QishuiLyricsMatchSource(
             val root = try { request(url(tokenBase, "client/token/get/", tokenRequest = true)) }
             catch (rejected: Rejected) { throw rejection(rejected.code) }
             val value = root.string("client_token").takeIf { it.isNotBlank() && it.length <= 4096 }
-                ?: throw LyricsMatchException("汽水未返回公共读取令牌")
+                ?: throw LyricsMatchException("Nhạc Vân không trả về mã thông báo đọc công khai")
             ClientToken(value).also { currentToken = it }
         } catch (cancelled: CancellationException) { throw cancelled }
         catch (failure: Exception) {
@@ -181,22 +181,22 @@ class QishuiLyricsMatchSource(
             continuation.invokeOnCancellation { call.cancel() }
             call.enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    if (continuation.isActive) continuation.resumeWithException(LyricsMatchException("汽水网络请求失败", e))
+                    if (continuation.isActive) continuation.resumeWithException(LyricsMatchException("Yêu cầu mạng Nhạc Vân thất bại", e))
                 }
                 override fun onResponse(call: Call, response: Response) {
                     try {
                         val root = response.use {
-                            if (!it.isSuccessful) throw LyricsMatchException("汽水请求失败（HTTP ${it.code}）")
-                            val responseBody = it.body ?: throw LyricsMatchException("汽水返回了空响应")
-                            if (responseBody.contentLength() > OnlineLyricsMatcher.MAX_RESPONSE_BYTES) throw LyricsMatchException("汽水响应过大")
+                            if (!it.isSuccessful) throw LyricsMatchException("Yêu cầu Nhạc Vân thất bại（HTTP ${it.code}）")
+                            val responseBody = it.body ?: throw LyricsMatchException("Nhạc Vân trả về phản hồi trống")
+                            if (responseBody.contentLength() > OnlineLyricsMatcher.MAX_RESPONSE_BYTES) throw LyricsMatchException("Phản hồi Nhạc Vân quá lớn")
                             val source = responseBody.source()
                             source.request(OnlineLyricsMatcher.MAX_RESPONSE_BYTES.toLong() + 1)
-                            if (source.buffer.size > OnlineLyricsMatcher.MAX_RESPONSE_BYTES) throw LyricsMatchException("汽水响应过大")
+                            if (source.buffer.size > OnlineLyricsMatcher.MAX_RESPONSE_BYTES) throw LyricsMatchException("Phản hồi Nhạc Vân quá lớn")
                             val parsed = Json.parseToJsonElement(source.readUtf8()) as? JsonObject
-                                ?: throw LyricsMatchException("汽水响应格式无效")
+                                ?: throw LyricsMatchException("Định dạng phản hồi Nhạc Vân không hợp lệ")
                             val nested = parsed["data"] as? JsonObject
                             listOfNotNull(parsed["err_no"], nested?.get("error_code")).forEach { raw ->
-                                val code = (raw as? JsonPrimitive)?.longOrNull ?: throw LyricsMatchException("汽水响应错误码无效")
+                                val code = (raw as? JsonPrimitive)?.longOrNull ?: throw LyricsMatchException("Mã lỗi phản hồi Nhạc Vân không hợp lệ")
                                 if (code != 0L) throw Rejected(code.toString())
                             }
                             parsed
@@ -205,7 +205,7 @@ class QishuiLyricsMatchSource(
                     } catch (failure: Exception) {
                         if (continuation.isActive) continuation.resumeWithException(when (failure) {
                             is LyricsMatchException, is Rejected -> failure
-                            else -> LyricsMatchException("汽水响应读取失败", failure)
+                            else -> LyricsMatchException("Đọc phản hồi Nhạc Vân thất bại", failure)
                         })
                     }
                 }
@@ -216,7 +216,7 @@ class QishuiLyricsMatchSource(
         withTimeout(10_000) { block() }
     } catch (timeout: TimeoutCancellationException) {
         currentCoroutineContext().ensureActive()
-        throw LyricsMatchException("汽水歌词请求超时", timeout)
+        throw LyricsMatchException("Yêu cầu lời bài hát của Soda đã hết thời gian chờ", timeout)
     }
 
     companion object {
@@ -230,7 +230,7 @@ class QishuiLyricsMatchSource(
             "device_platform" to "android", "resolution" to "1920x1080", "os_version" to "13", "ac" to "wifi")
         private fun createDeviceId() = BigInteger(64, random).mod(BigInteger("8000000000000000000"))
             .add(BigInteger("1000000000000000000")).toString()
-        private fun rejection(code: String) = LyricsMatchException("汽水拒绝了歌词读取请求（$code）")
+         private fun rejection(code: String) = LyricsMatchException("Soda từ chối yêu cầu đọc lời bài hát（$code）")
         private fun JsonObject.string(key: String) = (get(key) as? JsonPrimitive)?.contentOrNull.orEmpty()
     }
 }

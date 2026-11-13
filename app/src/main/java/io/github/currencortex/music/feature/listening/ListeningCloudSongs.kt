@@ -75,7 +75,7 @@ private val WallListBackground: Color @Composable get() = if (FootprintDark) Foo
             if(today) repository.todaySongs(session) to null else {
                 val response=repository.rank(session,
                     if(period==ListeningPeriod.MONTH) NeteaseListeningPeriod.MONTH else NeteaseListeningPeriod.WEEK,
-                    date,requireNotNull(endTimeMs) { "报告尚未生成" })
+                    date,requireNotNull(endTimeMs) { "Báo cáo chưa được tạo" })
                 response?.songs to response
             }
         }) {
@@ -112,7 +112,7 @@ private val WallListBackground: Color @Composable get() = if (FootprintDark) Foo
     val platformOverscroll=rememberPlatformOverscrollFactory()
     val overscroll=remember(platformOverscroll) { platformOverscroll.createOverscrollEffect() }
     val scrollEvents=remember(overscroll) { overscroll.withoutVisualEffect() }
-    val title=if(period==ListeningPeriod.MONTH) monthName(date.monthValue) else "本周"
+    val title=if(period==ListeningPeriod.MONTH) monthName(date.monthValue) else "Tuần này"
     val covers=rank?.coverUrls.orEmpty().filter(String::isNotBlank).ifEmpty {
         rank?.songs.orEmpty().map { it.coverUrl }.filter(String::isNotBlank)
     }
@@ -153,11 +153,11 @@ private val WallListBackground: Color @Composable get() = if (FootprintDark) Foo
             .then(if(listBackdrop!=null) Modifier.layerBackdrop(listBackdrop) else Modifier)) {
             item(key="hero") {
                 Column(Modifier.fillMaxWidth().padding(top=(366.667f*s).dp),horizontalAlignment=Alignment.CenterHorizontally) {
-                    FootprintText("${title}收听",size=16f,lineHeight=16f,maxLines=1,color=Color.White,weight=FontWeight.SemiBold)
+                    FootprintText("${title} đã nghe",size=16f,lineHeight=16f,maxLines=1,color=Color.White,weight=FontWeight.SemiBold)
                     Row(Modifier.padding(top=(13.333f*s).dp),verticalAlignment=Alignment.Bottom) {
                         FootprintText(rank?.songCount?.toString() ?: "—",Modifier.testTag("listening_wall_total"),
                             size=50f,lineHeight=40f,maxLines=1,numeric=true,weight=FontWeight.Bold,color=Color.White)
-                        FootprintText("首",Modifier.padding(start=(2.667f*s).dp),size=33.333f,lineHeight=33.333f,
+                        FootprintText("bài",Modifier.padding(start=(2.667f*s).dp),size=33.333f,lineHeight=33.333f,
                             maxLines=1,color=Color.White,weight=FontWeight.SemiBold)
                     }
                     ListeningWallExportButtons(covers,title,rank?.songCount?.coerceAtMost(Int.MAX_VALUE.toLong())?.toInt(),
@@ -170,7 +170,7 @@ private val WallListBackground: Color @Composable get() = if (FootprintDark) Foo
                     .padding(top=(20*s).dp,bottom=(14.667f*s).dp)) {
                     Row(Modifier.fillMaxWidth().padding(horizontal=(14*s).dp),verticalAlignment=Alignment.CenterVertically,
                         horizontalArrangement=Arrangement.SpaceBetween) {
-                        FootprintText(if(rank==null) "收听排行" else "我的${title}Top${songs.size}",size=16f,weight=FontWeight.SemiBold)
+                        FootprintText(if(rank==null) "Xếp hạng lượt nghe" else "Top${songs.size} ${title} của tôi",size=16f,weight=FontWeight.SemiBold)
                         FootprintText(timeline,size=16f,numeric=true)
                     }
                     ListeningSongLoadState(loading,error,songs.isEmpty(),retry)
@@ -186,7 +186,7 @@ private val WallListBackground: Color @Composable get() = if (FootprintDark) Foo
         }
         }
         CompositionLocalProvider(LocalGlassBackdrop provides topBackdrop) {
-            ListeningSongsTopBar("唱片墙列表",dismiss,headerSolid)
+            ListeningSongsTopBar("Danh sách tường đĩa",dismiss,headerSolid)
         }
         }
     }
@@ -212,7 +212,7 @@ private val WallListBackground: Color @Composable get() = if (FootprintDark) Foo
                 val triangle=Path().apply { moveTo(size.width*.2f,size.height*.1f); lineTo(size.width*.9f,size.height*.5f); lineTo(size.width*.2f,size.height*.9f); close() }
                 drawPath(triangle,muted,style=Stroke(width=1.dp.toPx()))
             }
-            FootprintText("${count}次",Modifier.padding(start=(3*s).dp),size=12f,color=FootprintMuted)
+            FootprintText("${count} lượt",Modifier.padding(start=(3*s).dp),size=12f,color=FootprintMuted)
         }
     }
 }
@@ -224,8 +224,8 @@ private val WallListBackground: Color @Composable get() = if (FootprintDark) Foo
     var info by remember { mutableStateOf(false) }
     ListeningSongSystemBars(!FootprintDark)
     Column(Modifier.fillMaxSize().background(WallListBackground).statusBarsPadding().testTag("listening_today_songs")) {
-        ListeningSongsTopBar("今日收听",dismiss,true,insets=false,
-            subtitle=LocalDate.now(neteaseListeningZone).format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")))
+        ListeningSongsTopBar("Nghe hôm nay",dismiss,true,insets=false,
+            subtitle=LocalDate.now(neteaseListeningZone).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
         ListeningSongLoadState(loading,error,songs.isEmpty(),retry)
         LazyColumn(Modifier.weight(1f),contentPadding=PaddingValues(horizontal=(18*s).dp,vertical=(17.333f*s).dp)) {
             itemsIndexed(songs,key={i,song -> "${song.id}:$i"}) { _,song ->
@@ -244,26 +244,26 @@ private val WallListBackground: Color @Composable get() = if (FootprintDark) Foo
                         }
                     }
                     song.lastPlayTimeMs?.let { FootprintText(Instant.ofEpochMilli(it).atZone(neteaseListeningZone)
-                        .format(DateTimeFormatter.ofPattern("HH:mm"))+" 听过",size=10f,color=FootprintMuted.copy(alpha=.6f)) }
+                        .format(DateTimeFormatter.ofPattern("HH:mm"))+" đã nghe",size=10f,color=FootprintMuted.copy(alpha=.6f)) }
                 }
             }
             if(!loading && error==null) item {
                 Row(Modifier.fillMaxWidth().padding(top=(13.333f*s).dp,bottom=(48.333f*s).dp).navigationBarsPadding(),
                     horizontalArrangement=Arrangement.Center,verticalAlignment=Alignment.CenterVertically) {
-                    FootprintText("仅展示每日最近收听的100首歌曲",size=12f,color=FootprintMuted)
+                    FootprintText("Chỉ hiển thị 100 bài hát được nghe gần nhất mỗi ngày",size=12f,color=FootprintMuted)
                     FootprintText("ⓘ",Modifier.padding(start=(4*s).dp).clickable { info=true },size=12f,color=FootprintMuted)
                 }
             }
         }
     }
-    if(info) FootprintDialog("今日收听",{info=false}) {
-        FootprintText("展示今天最近收听的歌曲，最多100首。同一首歌曲重复收听时，展示最近一次收听时间。",size=14f)
+    if(info) FootprintDialog("Nghe hôm nay",{info=false}) {
+        FootprintText("Hiển thị những bài hát được nghe gần đây nhất hôm nay, tối đa 100 bài. Nếu nghe một bài hát nhiều lần, thời gian nghe gần nhất sẽ được hiển thị.",size=14f)
     }
 }
 
 @Composable private fun ListeningPlayingIcon(playing:Boolean,modifier:Modifier) {
     val phase=rememberListeningBarLight(playing)
-    Canvas(modifier.semantics { contentDescription=if(playing) "正在播放" else "已暂停" }) {
+    Canvas(modifier.semantics { contentDescription=if(playing) "Đang phát" else "Đã tạm dừng" }) {
         repeat(3) { index ->
             val fraction=.3f+.7f*((kotlin.math.sin(((phase?.value ?: 0f)*6.283185f+index*2f)*2f)+1f)/2f)
             drawRoundRect(FootprintRed,Offset(size.width*index/3,size.height*(1-fraction)),
@@ -276,8 +276,8 @@ private val WallListBackground: Color @Composable get() = if (FootprintDark) Foo
 @Composable private fun ListeningSongLoadState(loading:Boolean,error:String?,empty:Boolean,retry:()->Unit) {
     val s=LocalFootprintScale.current
     if(loading || error!=null || empty) Column(Modifier.fillMaxWidth().padding((24*s).dp)) {
-        FootprintText(if(loading) "正在读取收听歌曲…" else error ?: "暂无收听歌曲",color=FootprintMuted)
-        if(error!=null) FootprintText("重试",Modifier.padding(top=(16*s).dp).clickable(onClick=retry),color=FootprintRed)
+        FootprintText(if(loading) "Đang tải bài hát đã nghe…" else error ?: "Chưa có bài hát đã nghe",color=FootprintMuted)
+        if(error!=null) FootprintText("Thử lại",Modifier.padding(top=(16*s).dp).clickable(onClick=retry),color=FootprintRed)
     }
 }
 
@@ -291,7 +291,7 @@ private val WallListBackground: Color @Composable get() = if (FootprintDark) Foo
                 FootprintText(title,size=if(subtitle==null)16f else 17f,weight=FontWeight.SemiBold,color=ink)
                 subtitle?.let { FootprintText(it,Modifier.padding(top=(5*s).dp),size=11f,color=FootprintMuted) }
             }
-            GlassIconButton(dismiss,"返回",Modifier.align(Alignment.CenterStart).padding(start=12.dp)
+            GlassIconButton(dismiss,"Quay lại",Modifier.align(Alignment.CenterStart).padding(start=12.dp)
                 .testTag("listening_songs_back")) {
                 Icon(MusicIcons.Back,null,tint=MiuixTheme.colorScheme.onBackground)
             }

@@ -77,7 +77,7 @@ class PlayerController(private val context: Context, override val queue: Playbac
     }
     private fun localOnly(): Boolean {
         if (state.value.mode == PlayerMode.LOCAL) return true
-        state.value = state.value.copy(error = "请先退出一起听")
+        state.value = state.value.copy(error = "Vui lòng thoát khỏi Nghe cùng nhau trước")
         return false
     }
     fun playVideo(song: Song) {
@@ -156,7 +156,7 @@ class PlayerController(private val context: Context, override val queue: Playbac
                 putBoolean("play", play); putLong("position", position); putBoolean("refreshSource", refreshSource)
             }).await()
         } catch (e: CancellationException) { throw e } catch (_: Exception) {
-            if (action == transportGeneration) state.value = state.value.copy(playRequested = false, loading = false, resolving = false, error = "无法连接播放器")
+            if (action == transportGeneration) state.value = state.value.copy(playRequested = false, loading = false, resolving = false, error = "Không thể kết nối với trình phát")
         } finally { if (action == transportGeneration) commandIntent = null }
     }
     fun playList(songs: List<Song>, index: Int) { if (!localOnly()) return; beforeVideo = null; queue.replace(songs, index); load() }
@@ -185,12 +185,12 @@ class PlayerController(private val context: Context, override val queue: Playbac
             else player.play()
         } catch (e: CancellationException) { throw e }
         catch (_: Exception) { if (action == transportGeneration) state.value = state.value.copy(playing = false,
-            playRequested = false, loading = false, resolving = false, error = "无法连接播放器") }
+            playRequested = false, loading = false, resolving = false, error = "Không thể kết nối với trình phát") }
         finally { if (action == transportGeneration) commandIntent = null }
     }
     private fun transportAllowed(): Boolean {
         if (state.value.canControlPlayback) return true
-        state.value = state.value.copy(error = "播放由房主或管理员控制")
+        state.value = state.value.copy(error = "Việc phát nhạc do chủ phòng hoặc quản trị viên kiểm soát")
         return false
     }
     fun pause() {

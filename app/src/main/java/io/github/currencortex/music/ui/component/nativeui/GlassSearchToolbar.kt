@@ -43,7 +43,7 @@ internal val BarSearchPanesKey = SemanticsPropertyKey<BarSearchPanes>("BarSearch
 @Composable internal fun GlassSearchToolbar(title: String, titleOpacity: Float, onBack: () -> Unit,
     active: Boolean, onActiveChange: (Boolean) -> Unit, value: String, onValueChange: (String) -> Unit,
     action: GlassToolbarAction, trailing: GlassToolbarAction, modifier: Modifier = Modifier,
-    inputTag: String = "bar_query", searchTag: String = "bar_search_toggle", placeholder: String = "搜索",
+    inputTag: String = "bar_query", searchTag: String = "bar_search_toggle", placeholder: String = "Tìm kiếm",
     onSubmit: (() -> Unit)? = null) {
     val colors = MiuixTheme.colorScheme
     val density = LocalDensity.current
@@ -125,7 +125,7 @@ internal val BarSearchPanesKey = SemanticsPropertyKey<BarSearchPanes>("BarSearch
                 }
             } else Modifier), verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            GlassIconButton(onBack, "返回", Modifier.testTag("navigate_back")
+            GlassIconButton(onBack, "Quay lại", Modifier.testTag("navigate_back")
                 .onGloballyPositioned { measuredBack = it.boundsInWindow().translate(-rootOrigin) }
                 .graphicsLayer { alpha = frame.leading }, enabled = !active) { Icon(MusicIcons.Back, null) }
             Text(title, Modifier.weight(1f).barSearchFade(frame.title * titleOpacity),
@@ -140,7 +140,7 @@ internal val BarSearchPanesKey = SemanticsPropertyKey<BarSearchPanes>("BarSearch
                 }, state = groupPress, enabled = !active) {
                 Row(Modifier.fillMaxSize().glassSurface(LocalGlassBackdrop.current, CircleShape, glow = { groupPress.amount }),
                     verticalAlignment = Alignment.CenterVertically) {
-                BareBarButton(MusicIcons.Search, "搜索", ::open, Modifier.width(44.dp * (1 - frame.collapse).coerceAtLeast(0f))
+                BareBarButton(MusicIcons.Search, "Tìm kiếm", ::open, Modifier.width(44.dp * (1 - frame.collapse).coerceAtLeast(0f))
                     .fillMaxHeight().barSearchFade(frame.glyph).testTag(searchTag), !active)
                 BareBarButton(action.icon, action.label, action.onClick, Modifier.size(44.dp).testTag(action.tag), !active)
                 }
@@ -184,7 +184,7 @@ internal val BarSearchPanesKey = SemanticsPropertyKey<BarSearchPanes>("BarSearch
                 .then(if (!active) Modifier.clearAndSetSemantics {} else Modifier)) {
                 ElasticPress(Modifier.fillMaxSize().testTag("${inputTag}_cancel")
                     .clickable(enabled = active, role = Role.Button, interactionSource = remember { MutableInteractionSource() }, indication = null) { cancel() }
-                    .semantics { contentDescription = "取消搜索" }, enabled = active, state = cancelPress) {
+                    .semantics { contentDescription = "Hủy tìm kiếm" }, enabled = active, state = cancelPress) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Icon(MusicIcons.Close, null) }
                 }
             }

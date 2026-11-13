@@ -69,23 +69,23 @@ import java.util.Locale
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
                 val avatar = binding.profile?.avatar.orEmpty()
-                if (avatar.isNotBlank()) AsyncImage(avatar, "网易云头像", Modifier.size(48.dp).clip(CircleShape), contentScale = ContentScale.Crop)
+                 if (avatar.isNotBlank()) AsyncImage(avatar, "Ảnh đại diện NetEase Cloud", Modifier.size(48.dp).clip(CircleShape), contentScale = ContentScale.Crop)
                 else Box(Modifier.size(48.dp).clip(CircleShape).background(MiuixTheme.colorScheme.primary.copy(alpha = .08f)), contentAlignment = Alignment.Center) {
                     Icon(Icons.Default.Person, null, Modifier.size(26.dp), tint = MiuixTheme.colorScheme.primary)
                 }
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(binding.profile?.nickname?.takeIf { it.isNotBlank() } ?: "网易云音乐", fontSize = 21.sp,
+                     Text(binding.profile?.nickname?.takeIf { it.isNotBlank() } ?: "Nhạc Vân NetEase", fontSize = 21.sp,
                         fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text("网易云音乐账号", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
+                     Text("Tài khoản Nhạc Vân NetEase", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
                 }
-                Text(if (binding.stale) "需登录" else "已绑定", Modifier.clip(CircleShape)
+                 Text(if (binding.stale) "Cần đăng nhập" else "Đã liên kết", Modifier.clip(CircleShape)
                     .background(MiuixTheme.colorScheme.primary.copy(alpha = .08f)).padding(horizontal = 10.dp, vertical = 6.dp),
                     fontSize = 11.sp, color = MiuixTheme.colorScheme.primary)
             }
             if (!binding.stale && membership.ownerId == binding.profile?.uid) {
                 val member = membership.value
                 when {
-                    membership.loading -> Text("正在读取会员信息…", fontSize = 12.sp,
+                     membership.loading -> Text("Đang tải thông tin hội viên…", fontSize = 12.sp,
                         color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
                     member != null -> {
                         val tint = when (member.tier) {
@@ -100,34 +100,34 @@ import java.util.Locale
                     membership.error != null -> Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(membership.error, Modifier.weight(1f), fontSize = 12.sp,
                             color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
-                        BindingAction("重试", onMembershipRetry, Modifier.testTag("binding_membership_retry"))
+                         BindingAction("Thử lại", onMembershipRetry, Modifier.testTag("binding_membership_retry"))
                     }
                 }
             }
-            if (binding.stale) BindingNotice("网易云登录已失效，请重新登录网易云后继续使用音乐库。")
-            else if (mainLibrary) Text("已直接连接网易云我喜欢与歌单", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
+             if (binding.stale) BindingNotice("Phiên đăng nhập NetEase Cloud đã hết hạn, vui lòng đăng nhập lại NetEase Cloud để tiếp tục sử dụng thư viện nhạc.")
+             else if (mainLibrary) Text("Đã kết nối trực tiếp với mục Nhạc tôi thích và danh sách phát trên NetEase Cloud", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
             else if (binding.lastSync > 0) {
-                val date = remember(binding.lastSync) { SimpleDateFormat("MM月dd日 HH:mm", Locale.getDefault()).format(Date(binding.lastSync * 1000)) }
-                Text("已同步 ${binding.lastSyncCount} 个歌单 · $date", fontSize = 12.sp,
+                 val date = remember(binding.lastSync) { SimpleDateFormat("MM' tháng 'dd' ngày' HH:mm", Locale.getDefault()).format(Date(binding.lastSync * 1000)) }
+                 Text("Đã đồng bộ ${binding.lastSyncCount} danh sách phát · $date", fontSize = 12.sp,
                     color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
-            } else Text("连接已完成，可以同步你的网易云歌单。", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
-            GlassActionButton(if (mainLibrary) "刷新网易云音乐库" else "同步网易云歌单", onSync,
+             } else Text("Đã kết nối, bạn có thể đồng bộ danh sách phát NetEase Cloud.", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
+             GlassActionButton(if (mainLibrary) "Làm mới thư viện Nhạc Vân NetEase" else "Đồng bộ danh sách phát NetEase Cloud", onSync,
                 Modifier.fillMaxWidth().testTag("sync_binding"), primary = true, enabled = !busy)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                BindingAction("检查登录态", onLive, Modifier.weight(1f), !busy, Icons.Default.Check, fillWidth = true)
-                BindingAction("刷新登录态", onRefresh, Modifier.weight(1f), !busy, Icons.Default.Refresh, fillWidth = true)
+                 BindingAction("Kiểm tra trạng thái đăng nhập", onLive, Modifier.weight(1f), !busy, Icons.Default.Check, fillWidth = true)
+                 BindingAction("Làm mới trạng thái đăng nhập", onRefresh, Modifier.weight(1f), !busy, Icons.Default.Refresh, fillWidth = true)
             }
             Box(Modifier.fillMaxWidth().height(1.dp).background(MiuixTheme.colorScheme.onSurface.copy(alpha = .05f)))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                BindingAction("重新登录", onRelogin, Modifier.weight(1f).testTag("relogin_binding"), !busy, fillWidth = true)
-                BindingAction("解绑", onUnbind, Modifier.weight(1f).testTag("unbind_binding"), !busy, destructive = true, fillWidth = true)
+                 BindingAction("Đăng nhập lại", onRelogin, Modifier.weight(1f).testTag("relogin_binding"), !busy, fillWidth = true)
+                 BindingAction("Hủy liên kết", onUnbind, Modifier.weight(1f).testTag("unbind_binding"), !busy, destructive = true, fillWidth = true)
             }
         }
     }
 }
 
 @Composable internal fun BindingMethods(qr: Boolean, enabled: Boolean, onSelect: (Boolean) -> Unit) {
-    SettingsSegmentedControl(listOf("扫码登录", "手机验证码"), if (qr) 0 else 1,
+     SettingsSegmentedControl(listOf("Đăng nhập bằng mã QR", "Mã xác minh điện thoại"), if (qr) 0 else 1,
         { onSelect(it == 0) }, enabled = enabled, role = Role.Tab,
         tag = "binding_method", itemTag = { if (it == 0) "qr_binding" else "phone_binding_tab" })
 
@@ -135,23 +135,23 @@ import java.util.Locale
 
 @Composable internal fun BindingQrContent(bitmap: Bitmap?, state: BindingUiState, busy: Boolean, onRefresh: () -> Unit) {
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text("用网易云音乐扫一扫", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-        Text("扫描二维码 · 确认授权 · 连接音乐库", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
+         Text("Dùng Nhạc Vân NetEase để quét", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+         Text("Quét mã QR · Xác nhận cấp quyền · Kết nối thư viện nhạc", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
         Box(Modifier.size(216.dp).clip(RoundedCornerShape(22.dp)).background(Color.White)
             .border(1.dp, Color.Black.copy(alpha = .05f), RoundedCornerShape(22.dp)).padding(8.dp), contentAlignment = Alignment.Center) {
-            if (bitmap != null) Image(bitmap.asImageBitmap(), "网易云登录二维码", Modifier.fillMaxSize().testTag("binding_qr"))
-            else if (state.qrUrl != null || state.qrMessage.isBlank() || state.qrMessage.contains("正在生成")) CircularProgressIndicator(Modifier.size(28.dp))
+             if (bitmap != null) Image(bitmap.asImageBitmap(), "Mã QR đăng nhập NetEase Cloud", Modifier.fillMaxSize().testTag("binding_qr"))
+             else if (state.qrUrl != null || state.qrMessage.isBlank() || state.qrMessage.contains("Đang tạo")) CircularProgressIndicator(Modifier.size(28.dp))
             else Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Icon(if (state.qrMessage.contains("已过期")) Icons.Default.Refresh else Icons.Default.Info, null,
+                 Icon(if (state.qrMessage.contains("Đã hết hạn")) Icons.Default.Refresh else Icons.Default.Info, null,
                     Modifier.size(36.dp), tint = Color(0xFF747C89))
-                Text(if (state.qrMessage.contains("已过期")) "二维码已过期" else if (state.qrMessage == "绑定成功") "已完成授权" else "二维码暂不可用",
+                 Text(if (state.qrMessage.contains("Đã hết hạn")) "Mã QR đã hết hạn" else if (state.qrMessage == "Liên kết thành công") "Đã cấp quyền" else "Mã QR hiện không khả dụng",
                     color = Color(0xFF535D6B), fontSize = 13.sp)
             }
         }
-        Text(state.qrMessage.ifBlank { "正在准备二维码…" }, Modifier.testTag("binding_qr_status").semantics { liveRegion = LiveRegionMode.Polite },
+         Text(state.qrMessage.ifBlank { "Đang chuẩn bị mã QR…" }, Modifier.testTag("binding_qr_status").semantics { liveRegion = LiveRegionMode.Polite },
             fontSize = 13.sp, lineHeight = 20.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .65f))
-        BindingAction("刷新二维码", onRefresh, Modifier.testTag("refresh_binding_qr"), !busy, Icons.Default.Refresh)
-        Text("授权后返回此页即可，切换应用不会刷新当前二维码。", fontSize = 12.sp, lineHeight = 19.sp,
+        BindingAction("Làm mới mã QR", onRefresh, Modifier.testTag("refresh_binding_qr"), !busy, Icons.Default.Refresh)
+        Text("Sau khi cấp quyền, chỉ cần quay lại trang này; việc chuyển ứng dụng sẽ không làm mới mã QR hiện tại.", fontSize = 12.sp, lineHeight = 19.sp,
             color = MiuixTheme.colorScheme.onSurface.copy(alpha = .45f))
     }
 }

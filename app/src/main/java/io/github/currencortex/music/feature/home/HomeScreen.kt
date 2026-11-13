@@ -22,12 +22,12 @@ fun HomeScreen() {
         Column(Modifier.fillMaxWidth().then(io.github.currencortex.music.ui.component.LocalRootTabSwipe.current),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text("CurrentMusic", fontSize = 30.sp)
-            Text("音乐，从这里开始")
+            Text("Âm nhạc, bắt đầu từ đây")
         }
         Card {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("欢迎使用 CurrentMusic", fontSize = 20.sp)
-                Text("使用搜索寻找歌曲，登录你的 CurrentMusic 账户。")
+                Text("Chào mừng bạn đến với CurrentMusic", fontSize = 20.sp)
+                Text("Tìm bài hát bằng tính năng tìm kiếm và đăng nhập vào tài khoản CurrentMusic của bạn.")
             }
         }
     }

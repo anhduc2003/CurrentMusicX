@@ -64,10 +64,10 @@ class PlaylistLikeImporter(private val scope: CoroutineScope, private val sessio
                     }
                 }
             } catch (cancelled: CancellationException) {
-                mutable.update { it.copy(error = "已停止，已导入的歌曲会保留") }
+                mutable.update { it.copy(error = "Đã dừng, các bài hát đã nhập sẽ được giữ lại") }
                 throw cancelled
             } catch (failure: Exception) {
-                mutable.update { it.copy(error = (failure as? ApiException)?.kind?.message ?: "导入失败，请稍后重试") }
+                mutable.update { it.copy(error = (failure as? ApiException)?.kind?.message ?: "Nhập thất bại, vui lòng thử lại sau") }
             } finally {
                 mutable.update { it.copy(running = false) }
             }

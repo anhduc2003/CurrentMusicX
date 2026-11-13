@@ -50,16 +50,16 @@ import java.time.format.DateTimeFormatter
     val connected = account.loggedIn && !account.stale
     val list = remember(state.group) { LazyListState() }
     var expandedLogs by rememberSaveable(account.profile?.uid) { mutableStateOf(false) }
-    MusicSubpage("网易云任务", "netease_tasks", onBack, backTag = "tasks_back", actions = {
-        MusicTextAction(if (state.loading) "更新中" else "刷新", vm::refresh, Modifier.testTag("tasks_refresh"),
+    MusicSubpage("Nhiệm vụ Nhạc Vân NetEase", "netease_tasks", onBack, backTag = "tasks_back", actions = {
+        MusicTextAction(if (state.loading) "Đang cập nhật" else "Làm mới", vm::refresh, Modifier.testTag("tasks_refresh",
             enabled = connected && !state.loading && !busy)
     }) { topInset ->
         LazyColumn(Modifier.fillMaxSize().testTag("tasks_list"), state = list,
             contentPadding = musicScrollPadding(PaddingValues(16.dp, topInset + 8.dp, 16.dp, 32.dp)),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item("account") { SettingsGroup {
-            SettingsPreference(account.profile?.nickname ?: "尚未登录网易云",
-                if (connected) "本机直连" else "需要本机登录", leading = {
+            SettingsPreference(account.profile?.nickname ?: "Chưa đăng nhập Nhạc Vân NetEase",
+                if (connected) "Kết nối trực tiếp trên thiết bị này" else "Cần đăng nhập trên thiết bị này", leading = {
                     Box(Modifier.size(8.dp).background(if (connected) colors.primary else colors.onSurfaceVariantSummary, CircleShape))
                 })
         } }
@@ -71,9 +71,9 @@ import java.time.format.DateTimeFormatter
             if (!connected) item {
                 SettingsGroup(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Text(if (account.stale) "网易云登录已过期" else "连接网易云账号", fontSize = 18.sp, fontWeight = FontWeight.Medium)
-                        Text("登录后查看任务、签到和已完成的奖励。", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
-                        TaskAction(if (account.stale) "重新登录网易云" else "登录网易云", onLogin, Modifier.testTag("tasks_login"), primary = true)
+                        Text(if (account.stale) "Đăng nhập Nhạc Vân NetEase đã hết hạn" else "Kết nối tài khoản Nhạc Vân NetEase", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                        Text("Đăng nhập để xem nhiệm vụ, điểm danh và phần thưởng đã hoàn thành.", fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+                        TaskAction(if (account.stale) "Đăng nhập lại Nhạc Vân NetEase" else "Đăng nhập Nhạc Vân NetEase", onLogin, Modifier.testTag("tasks_login"), primary = true)
                     }
                 }
             } else {
@@ -88,24 +88,24 @@ import java.time.format.DateTimeFormatter
                         Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                 Text(when (state.group) {
-                                    NeteaseTaskGroup.DAILY -> "每日签到"; NeteaseTaskGroup.YUNBEI -> "云贝中心"
-                                    NeteaseTaskGroup.VIP -> "会员成长"; NeteaseTaskGroup.MUSICIAN -> "音乐人任务"
+                                    NeteaseTaskGroup.DAILY -> "Điểm danh hằng ngày"; NeteaseTaskGroup.YUNBEI -> "Trung tâm Vân Bối"
+                                    NeteaseTaskGroup.VIP -> "Phát triển hội viên"; NeteaseTaskGroup.MUSICIAN -> "Nhiệm vụ nhạc sĩ"
                                 }, Modifier.weight(1f), fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                                if (done) Text("今日已签到", fontSize = 11.sp, color = colors.primary)
+                                if (done) Text("Hôm nay đã điểm danh", fontSize = 11.sp, color = colors.primary)
                             }
                             state.page?.summary?.let { Text(it, fontSize = 13.sp, color = colors.onSurfaceVariantSummary) }
                             if (state.page == null) Text(when (kind) {
-                                NeteaseCheckIn.DAILY -> "每天签到，继续积累听歌经验"
-                                NeteaseCheckIn.YUNBEI -> "查看云贝余额与任务进度"
-                                NeteaseCheckIn.VIP -> "黑胶乐签与会员成长值"
-                                NeteaseCheckIn.MUSICIAN -> "需要已认证的网易云音乐人账号"
+                                NeteaseCheckIn.DAILY -> "Điểm danh mỗi ngày để tích lũy kinh nghiệm nghe nhạc"
+                                NeteaseCheckIn.YUNBEI -> "Xem số dư Vân Bối và tiến độ nhiệm vụ"
+                                NeteaseCheckIn.VIP -> "Thẻ nhạc than và điểm phát triển hội viên"
+                                NeteaseCheckIn.MUSICIAN -> "Cần tài khoản nhạc sĩ Nhạc Vân NetEase đã được xác minh"
                             }, fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
                             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
-                                TaskAction(if (action == NeteaseTaskAction.SIGN) "签到中…" else if (done) "已签到" else "签到",
+                                TaskAction(if (action == NeteaseTaskAction.SIGN) "Đang điểm danh…" else if (done) "Đã điểm danh" else "Điểm danh",
                                     { vm.sign(kind) }, Modifier.testTag("tasks_sign"), primary = !done,
                                     enabled = !busy && action == null && !done && (kind != NeteaseCheckIn.MUSICIAN || state.page != null))
                                 if (state.group != NeteaseTaskGroup.DAILY && state.page != null) TaskAction(
-                                    if (action == NeteaseTaskAction.CLAIM) "领取中…" else "领取奖励", vm::claim,
+                                    if (action == NeteaseTaskAction.CLAIM) "Đang nhận…" else "Nhận thưởng", vm::claim,
                                     Modifier.testTag("tasks_claim"), enabled = !busy && action == null)
                             }
                         }
@@ -113,8 +113,8 @@ import java.time.format.DateTimeFormatter
                 }
                 item {
                     SettingsGroup(Modifier.fillMaxWidth()) {
-                        SettingsSwitch("使用时自动签到", options.automatic, vm::automatic,
-                            Modifier.testTag("tasks_automatic"), summary = "日常与云贝 · 每天一次", enabled = !busy && action == null)
+                        SettingsSwitch("Tự động điểm danh khi sử dụng", options.automatic, vm::automatic,
+                            Modifier.testTag("tasks_automatic"), summary = "Nhiệm vụ hằng ngày và Vân Bối · mỗi ngày một lần", enabled = !busy && action == null)
                     }
                 }
                 if (state.loading && state.page == null) items(2, key = { "task-loading-$it" }) {
@@ -128,20 +128,20 @@ import java.time.format.DateTimeFormatter
                 state.error?.let { error -> item {
                     SettingsGroup(Modifier.fillMaxWidth()) {
                         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("暂时无法读取${state.group.title}任务", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                            Text("Tạm thời không thể đọc nhiệm vụ ${state.group.title}", fontSize = 14.sp, fontWeight = FontWeight.Medium)
                             Text(error, fontSize = 12.sp, lineHeight = 18.sp, color = colors.onSurfaceVariantSummary)
-                            TaskAction("重新加载", vm::refresh, Modifier.testTag("tasks_retry"), enabled = !busy && !state.loading)
+                            TaskAction("Tải lại", vm::refresh, Modifier.testTag("tasks_retry"), enabled = !busy && !state.loading)
                         }
                     }
                 } }
                 state.page?.let { page ->
                     if (state.group != NeteaseTaskGroup.DAILY) {
                         item { Row(Modifier.fillMaxWidth().padding(start = 2.dp, end = 2.dp, top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text("任务进度", Modifier.weight(1f), fontSize = 15.sp, fontWeight = FontWeight.Medium)
-                            Text("${page.items.size} 项", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+                             Text("Tiến độ nhiệm vụ", Modifier.weight(1f), fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                             Text("${page.items.size} mục", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
                         } }
                         if (page.items.isEmpty()) item {
-                            Text("暂无可展示的任务，可能未开通对应权益。", Modifier.padding(4.dp).testTag("tasks_empty"),
+                             Text("Hiện không có nhiệm vụ nào để hiển thị, có thể bạn chưa mở quyền lợi tương ứng.", Modifier.padding(4.dp).testTag("tasks_empty"),
                                 fontSize = 13.sp, lineHeight = 20.sp, color = colors.onSurfaceVariantSummary)
                         }
                     }
@@ -151,8 +151,8 @@ import java.time.format.DateTimeFormatter
                                 Text(item.title, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                                 if (item.detail.isNotBlank()) Text(item.detail, fontSize = 12.sp, lineHeight = 18.sp,
                                     maxLines = 3, overflow = TextOverflow.Ellipsis, color = colors.onSurfaceVariantSummary)
-                                if (item.progress != "以网易云任务状态为准") Text(item.progress, fontSize = 11.sp, color = colors.primary)
-                                if (item.destination.isNotBlank()) MusicTextAction("去听日推", { onNavigate(item.destination) })
+                                 if (item.progress != "Dựa theo trạng thái nhiệm vụ Nhạc Vân NetEase") Text(item.progress, fontSize = 11.sp, color = colors.primary)
+if (item.destination.isNotBlank()) MusicTextAction("Nghe nhạc đề xuất hôm nay", { onNavigate(item.destination) })
                             }
                         }
                     }
@@ -162,10 +162,10 @@ import java.time.format.DateTimeFormatter
                         Column(Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
                             Row(Modifier.fillMaxWidth().heightIn(min = 44.dp).clip(RoundedCornerShape(10.dp))
                                 .clickable(role = Role.Button) { expandedLogs = !expandedLogs }
-                                .semantics { stateDescription = if (expandedLogs) "已展开" else "已收起" }.testTag("tasks_journal_toggle"),
+.semantics { stateDescription = if (expandedLogs) "Đã mở rộng" else "Đã thu gọn" }.testTag("tasks_journal_toggle"),
                                 verticalAlignment = Alignment.CenterVertically) {
-                                Text("最近记录", Modifier.weight(1f), fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                                Text(if (expandedLogs) "收起" else "查看 ${options.logs.size} 条", fontSize = 12.sp, color = colors.primary)
+Text("Ghi nhận gần đây", Modifier.weight(1f), fontSize = 14.sp, fontWeight = FontWeight.Medium)
+Text(if (expandedLogs) "Thu gọn" else "Xem ${options.logs.size} mục", fontSize = 12.sp, color = colors.primary)
                             }
                             AnimatedVisibility(expandedLogs, enter = expandVertically() + fadeIn(), exit = shrinkVertically() + fadeOut()) {
                                 Column(Modifier.padding(bottom = 10.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -181,7 +181,7 @@ import java.time.format.DateTimeFormatter
                         }
                     }
                 }
-                item { Text("进度与奖励由网易云确认；听歌任务按实际播放统计。", Modifier.padding(horizontal = 2.dp, vertical = 4.dp),
+item { Text("Tiến độ và phần thưởng do Nhạc Vân NetEase xác nhận; nhiệm vụ nghe nhạc được thống kê theo thời lượng phát thực tế.", Modifier.padding(horizontal = 2.dp, vertical = 4.dp),
                     fontSize = 11.sp, lineHeight = 17.sp, color = colors.onSurfaceVariantSummary) }
             }
         }

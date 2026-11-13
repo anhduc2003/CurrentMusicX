@@ -18,10 +18,10 @@ import kotlin.coroutines.resumeWithException
 
 /** Declaration order is also the presentation order; latency never reorders these choices. */
 enum class CurrentMusicServer(val label: String, val url: String? = null) {
-    AUTO("自动"), MAIN("music.20110208.xyz · 主站", ServerDefaults.URL),
+    AUTO("Tự động"), MAIN("music.20110208.xyz · Trang chủ", ServerDefaults.URL),
     CDN("cm.bileizhen.top · CDN", ServerDefaults.CDN),
     CDN_GEEKERTAO("currentmusic.geekertao.com · CDN", ServerDefaults.CDN_GEEKERTAO),
-    CDN_CTCEHS("music.ctcehs.com · CDN", ServerDefaults.CDN_CTCEHS), CUSTOM("自定义");
+    CDN_CTCEHS("music.ctcehs.com · CDN", ServerDefaults.CDN_CTCEHS), CUSTOM("Tùy chỉnh");
 
     companion object {
         val presets = listOf(MAIN, CDN, CDN_GEEKERTAO, CDN_CTCEHS)

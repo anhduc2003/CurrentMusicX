@@ -37,7 +37,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 }
 
 @Composable internal fun StyleArtwork(cover: String, modifier: Modifier, tint: MutableState<Color?>, pixels: Int = 360,
-    pending: Boolean = false, contentDescription: String = "第一首歌曲封面",
+    pending: Boolean = false, contentDescription: String = "Ảnh bìa bài hát đầu tiên",
     onArtworkReady: ((Boolean) -> Unit)? = null) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()

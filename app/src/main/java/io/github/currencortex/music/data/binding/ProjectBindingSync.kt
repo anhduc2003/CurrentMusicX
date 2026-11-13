@@ -58,7 +58,7 @@ class ProjectBindingSync(
             throw cancelled
         } catch (_: Exception) {
             if (current()) state.value = ProjectBindingSyncState(error =
-                "本机登录已保留，绑定尚未同步。请确认 CurrentMusic 服务器使用 HTTPS 后重试。")
+Đăng nhập trên thiết bị này đã được giữ lại, nhưng liên kết chưa được đồng bộ. Vui lòng xác nhận máy chủ CurrentMusic đang sử dụng HTTPS rồi thử lại.
         }
     }
 }

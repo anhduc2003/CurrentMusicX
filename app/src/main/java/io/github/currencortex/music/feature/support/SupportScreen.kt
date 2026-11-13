@@ -58,33 +58,33 @@ fun SupportScreen(onBack: () -> Unit, afdianUrl: String = SupportConfig.afdianUr
             busy = true
             try {
                 SupportFiles.save(context, code, uri)
-                context.showMusicMessage("图片已保存")
+                context.showMusicMessage("Đã lưu ảnh")
             } catch (cancelled: CancellationException) { throw cancelled }
-              catch (_: Exception) { context.showMusicError("无法保存图片，请重试") }
+              catch (_: Exception) { context.showMusicError("Không thể lưu ảnh, vui lòng thử lại") }
             finally { busy = false }
         }
     }
-    SettingsPage("支持开发者", "support_screen", onBack) {
+    SettingsPage("Hỗ trợ nhà phát triển", "support_screen", onBack) {
         item("brand") {
             SettingsGroup {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Image(appIcon, "CurrentMusic 图标", Modifier.size(64.dp))
+                    Image(appIcon, "Biểu tượng CurrentMusic", Modifier.size(64.dp))
                     Text("CurrentMusic", fontSize = 26.sp, fontWeight = FontWeight.SemiBold)
-                    Text("CurrentMusic 由独立开发者持续维护。如果你喜欢这款音乐播放器，欢迎通过自愿赞助支持项目的开发与维护。",
+                    Text("CurrentMusic được duy trì và phát triển liên tục bởi một nhà phát triển độc lập. Nếu bạn thích ứng dụng nghe nhạc này, bạn có thể tự nguyện ủng hộ dự án để hỗ trợ việc phát triển và bảo trì.",
                         fontSize = 15.sp, lineHeight = 23.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
-                    Text("开发者 · bileizhen", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
+                    Text("Nhà phát triển · bileizhen", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
                 }
             }
         }
         item("afdian") {
-            SettingsSection("爱发电", MusicIcons.Heart) {
+            SettingsSection("Afdian", MusicIcons.Heart) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text("通过爱发电支持 CurrentMusic 的持续开发。", fontSize = 15.sp, lineHeight = 22.sp)
+                    Text("Ủng hộ việc phát triển liên tục của CurrentMusic thông qua Afdian.", fontSize = 15.sp, lineHeight = 22.sp)
                     val available = supportHttpsUrl(afdianUrl) != null
-                    GlassActionButton(if (available) "前往爱发电" else "暂未开放", {
+                    GlassActionButton(if (available) "Đến Afdian" else "Chưa mở", {
                         if (gate.acquire()) when (openSupportLink(context, afdianUrl)) {
-                            SupportLinkResult.INVALID -> context.showMusicError("链接无效")
-                            SupportLinkResult.NO_APP -> context.showMusicError("未找到可以打开链接的应用")
+                            SupportLinkResult.INVALID -> context.showMusicError("Liên kết không hợp lệ")
+                            SupportLinkResult.NO_APP -> context.showMusicError("Không tìm thấy ứng dụng nào có thể mở liên kết")
                             SupportLinkResult.OPENED -> Unit
                         }
                     }, Modifier.testTag("support_afdian"), primary = true, enabled = available)
@@ -92,7 +92,7 @@ fun SupportScreen(onBack: () -> Unit, afdianUrl: String = SupportConfig.afdianUr
             }
         }
         item("codes") {
-            SettingsSection("快捷赞赏", MusicIcons.Image) {
+            SettingsSection("Ủng hộ nhanh", MusicIcons.Image) {
                 SupportCode.entries.forEachIndexed { index, code ->
                     if (index > 0) SettingsDivider()
                     SettingsPreference(code.title, code.summary, Modifier.testTag("support_${code.name}"),
@@ -102,8 +102,8 @@ fun SupportScreen(onBack: () -> Unit, afdianUrl: String = SupportConfig.afdianUr
             }
         }
         item("privacy") {
-            SettingsHint("所有赞助均为自愿行为，不影响 CurrentMusic 的正常使用。赞助不会解锁额外的软件功能或会员权益。")
-            SettingsHint("无需登录。支付由对应平台处理，CurrentMusic 不收集支付凭据、不读取支付记录，也不会判断支付是否完成。")
+            SettingsHint("Mọi khoản ủng hộ đều hoàn toàn tự nguyện và không ảnh hưởng đến việc sử dụng CurrentMusic. Ủng hộ không mở khóa thêm tính năng phần mềm hay quyền lợi thành viên.")
+            SettingsHint("Không cần đăng nhập. Thanh toán do nền tảng tương ứng xử lý. CurrentMusic không thu thập thông tin xác thực thanh toán, không đọc lịch sử thanh toán và cũng không xác định giao dịch đã hoàn tất hay chưa.")
         }
     }
     val code = preview
@@ -116,28 +116,28 @@ fun SupportScreen(onBack: () -> Unit, afdianUrl: String = SupportConfig.afdianUr
             .verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             SupportQrImage(code)
-            Text("请使用${code.scanner}扫描", fontSize = 15.sp)
-            Text("同一部手机可先保存图片，再从${code.scanner}扫一扫的相册中选择。",
+            Text("Vui lòng dùng ${code.scanner} để quét", fontSize = 15.sp)
+            Text("Bạn có thể lưu ảnh trước trên cùng một điện thoại, sau đó chọn ảnh trong album của tính năng quét mã của ${code.scanner}.",
                 fontSize = 13.sp, lineHeight = 19.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
-            MusicDialogButton("保存图片", {
+            MusicDialogButton("Lưu ảnh", {
                 if (!busy && pendingSave == null) {
                     pendingSave = code
                     try { save.launch(code.fileName) }
-                    catch (_: Exception) { pendingSave = null; context.showMusicError("未找到可以保存图片的应用") }
+                    catch (_: Exception) { pendingSave = null; context.showMusicError("Không tìm thấy ứng dụng nào có thể lưu ảnh") }
                 }
             }, Modifier.fillMaxWidth().testTag("support_save"), enabled = !busy && pendingSave == null)
-            MusicDialogButton("分享图片", {
+            MusicDialogButton("Chia sẻ ảnh", {
                 if (!busy) {
                     busy = true
                     scope.launch {
                         try { context.startActivity(Intent.createChooser(SupportFiles.shareIntent(context, code), code.title)) }
                         catch (cancelled: CancellationException) { throw cancelled }
-                        catch (_: Exception) { context.showMusicError("无法分享图片，请重试") }
+                        catch (_: Exception) { context.showMusicError("Không thể chia sẻ ảnh, vui lòng thử lại") }
                         finally { busy = false }
                     }
                 }
             }, Modifier.fillMaxWidth().testTag("support_share"), enabled = !busy)
-            MusicDialogButton("关闭", { previewOpen = false }, Modifier.fillMaxWidth().testTag("support_close"))
+            MusicDialogButton("Đóng", { previewOpen = false }, Modifier.fillMaxWidth().testTag("support_close"))
         }
     }
 }

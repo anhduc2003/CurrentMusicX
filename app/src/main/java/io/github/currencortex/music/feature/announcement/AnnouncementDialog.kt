@@ -60,15 +60,15 @@ fun AnnouncementDialog(items: List<Announcement>, suppressByDefault: Boolean = f
     val openDetails: (String) -> Unit = onOpenLink ?: { url ->
         try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
         catch (_: ActivityNotFoundException) {
-            context.showMusicError("未找到可以打开链接的应用")
+            context.showMusicError("Không tìm thấy ứng dụng nào có thể mở liên kết")
         }
     }
-    MusicDialog(if (items.size == 1) "公告" else "公告（${items.size}）", dismiss, alignContent = false,
+    MusicDialog(if (items.size == 1) "Thông báo" else "Thông báo（${items.size}）", dismiss, alignContent = false,
         footer = {
             if (items.size > 1) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically) {
                 if (items.size <= 7) items.indices.forEach { index ->
-                    Box(Modifier.size(24.dp).semantics { contentDescription = "第${index + 1}条公告" }
+                    Box(Modifier.size(24.dp).semantics { contentDescription = "Thông báo thứ ${index + 1}" }
                         .clickable { scope.launch { pager.animateScrollToPage(index) } }, contentAlignment = Alignment.Center) {
                         Box(Modifier.size(6.dp).background(MiuixTheme.colorScheme.primary.copy(
                             alpha = if (pager.currentPage == index) 1f else .2f), RoundedCornerShape(3.dp)))
@@ -81,11 +81,11 @@ fun AnnouncementDialog(items: List<Announcement>, suppressByDefault: Boolean = f
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 val style = TextStyle(fontSize = 15.sp)
                 val margin = PaddingValues(horizontal = 8.dp, vertical = 12.dp)
-                if (showSuppressionAction) TextButton("不再显示", onClick = { onDismiss(true) }, textStyle = style, insideMargin = margin,
+                if (showSuppressionAction) TextButton("Không hiển thị nữa", onClick = { onDismiss(true) }, textStyle = style, insideMargin = margin,
                     minHeight = 48.dp, modifier = Modifier.weight(1f).testTag("announcement_suppress"))
-                TextButton("知道了", onClick = dismiss, textStyle = style, insideMargin = margin,
+                TextButton("Đã hiểu", onClick = dismiss, textStyle = style, insideMargin = margin,
                     minHeight = 48.dp, modifier = Modifier.weight(1f).testTag("announcement_dismiss"))
-                if (detailUrl != null) TextButton("查看详情", onClick = { openDetails(detailUrl) },
+                if (detailUrl != null) TextButton("Xem chi tiết", onClick = { openDetails(detailUrl) },
                     textStyle = style, insideMargin = margin, minHeight = 48.dp,
                     modifier = Modifier.weight(1f).testTag("announcement_details"))
             }
@@ -98,7 +98,7 @@ fun AnnouncementDialog(items: List<Announcement>, suppressByDefault: Boolean = f
                 if (heights[index] != it.height) heights[index] = it.height
             },
                 verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                if (item.pinned) Text("置顶", fontSize = 12.sp, color = MiuixTheme.colorScheme.primary,
+                if (item.pinned) Text("Ghim", fontSize = 12.sp, color = MiuixTheme.colorScheme.primary,
                     modifier = Modifier.background(MiuixTheme.colorScheme.primary.copy(alpha = .1f),
                         RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 3.dp))
                 Text(item.title, fontSize = 19.sp, fontWeight = FontWeight.SemiBold)

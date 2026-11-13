@@ -4,8 +4,8 @@ import io.github.currencortex.music.core.netease.*
 import io.github.currencortex.music.core.network.*
 import kotlinx.serialization.json.*
 
-enum class NeteaseTaskGroup(val title: String) { DAILY("日常"), YUNBEI("云贝"), VIP("会员"), MUSICIAN("音乐人") }
-enum class NeteaseCheckIn(val title: String) { DAILY("日常"), YUNBEI("云贝"), VIP("黑胶乐签"), MUSICIAN("音乐人") }
+enum class NeteaseTaskGroup(val title: String) { DAILY("Hằng ngày"), YUNBEI("Vân Bối"), VIP("Hội viên"), MUSICIAN("Nhạc sĩ") }
+enum class NeteaseCheckIn(val title: String) { DAILY("Hằng ngày"), YUNBEI("Vân Bối"), VIP("Thẻ ký tên vinyl"), MUSICIAN("Nhạc sĩ") }
 data class NeteaseTaskItem(val id: String, val title: String, val detail: String, val progress: String, val destination: String = "")
 data class NeteaseTaskPage(val items: List<NeteaseTaskItem> = emptyList(), val summary: String = "",
     val rewardIds: List<String> = emptyList(), val signedToday: Boolean? = null)
@@ -29,7 +29,7 @@ class NeteaseTaskRepository(private val transport: NeteaseTransport) {
             301, 401 -> ErrorKind.NeteaseBindingRequired; 403 -> ErrorKind.Forbidden
             429, 406 -> ErrorKind.RateLimited; else -> ErrorKind.Server
         }, code, if (code in setOf(301, 401))
-            "网易云登录已过期：${raw.text("message", "msg").takeIf { it.isNotBlank() }?.take(180) ?: "请重新登录"}"
+            "Đăng nhập Nhạc Vân NetEase đã hết hạn：${raw.text("message", "msg").takeIf { it.isNotBlank() }?.take(180) ?: "Vui lòng đăng nhập lại"}"
         else raw.text("message", "msg").takeIf { it.isNotBlank() }?.take(180))
     }
     suspend fun load(group: NeteaseTaskGroup): NeteaseTaskPage {
@@ -50,9 +50,9 @@ class NeteaseTaskRepository(private val transport: NeteaseTransport) {
         transport.sessions.check(owner)
         val raw = (balance as? AppResult.Success)?.value
         val summary = when (group) {
-            NeteaseTaskGroup.YUNBEI -> (raw?.get("userPoint") as? JsonObject)?.number("balance")?.let { "可用云贝 $it · ${page.items.size} 项任务" }
+            NeteaseTaskGroup.YUNBEI -> (raw?.get("userPoint") as? JsonObject)?.number("balance")?.let { "Vân Bối khả dụng $it · ${page.items.size} nhiệm vụ" }
             NeteaseTaskGroup.VIP -> ((raw?.get("data") as? JsonObject)?.get("userLevel") as? JsonObject)?.let { level ->
-                level.number("growthPoint")?.let { "${level.text("levelName")} · 成长值 $it" }
+                level.number("growthPoint")?.let { "${level.text("levelName")} · Điểm tăng trưởng $it" }
             }
             else -> null
         }
@@ -69,22 +69,22 @@ class NeteaseTaskRepository(private val transport: NeteaseTransport) {
         // type=1 check-in is confirmed by pcSign in the official user info response.
         val raw = request(path, owner, buildJsonObject { if (kind == NeteaseCheckIn.DAILY) put("type", 1) }, duplicateOkay = true)
         val message = raw.text("message", "msg")
-        if (message.contains("不支持") || message.contains("失败")) throw ApiException(ErrorKind.Server, userMessage = message.take(180))
+        if (message.contains("Không hỗ trợ") || message.contains("Thất bại")) throw ApiException(ErrorKind.Server, userMessage = message.take(180))
         if (kind == NeteaseCheckIn.VIP && raw["data"] == JsonPrimitive(false))
-            throw ApiException(ErrorKind.Forbidden, userMessage = "网易云未确认乐签成功，请检查会员权益")
+            throw ApiException(ErrorKind.Forbidden, userMessage = "Nhạc Vân NetEase chưa xác nhận ký tên thành công, vui lòng kiểm tra quyền lợi hội viên")
         val duplicate = raw.number("code") == -2L || (raw["data"] as? JsonObject)?.get("sign") == JsonPrimitive(false)
-        return if (duplicate) "今日已签到" else "签到成功"
+        return if (duplicate) "Hôm nay đã điểm danh" else "Điểm danh thành công"
     }
     suspend fun claimVipRewards(): String {
         val owner = owner()
         // Re-read the server's claimable IDs immediately before claiming; never manufacture task completion.
         val available = parsePage(NeteaseTaskGroup.VIP, request("/api/vipnewcenter/app/level/task/list", owner)).rewardIds
-        if (available.isEmpty()) return "暂无可领取的成长值"
+        if (available.isEmpty()) return "Không có điểm tăng trưởng nào để nhận"
         val receipt = request("/api/vipnewcenter/app/level/task/reward/get", owner,
             buildJsonObject { put("taskIds", available.joinToString(",")) })
         if (receipt["data"] == JsonPrimitive(false))
-            throw ApiException(ErrorKind.Server, userMessage = "网易云未确认成长值领取成功，请刷新后重试")
-        return "已领取可用成长值"
+            throw ApiException(ErrorKind.Server, userMessage = "Nhạc Vân NetEase chưa xác nhận nhận điểm tăng trưởng thành công, vui lòng làm mới rồi thử lại")
+        return "Đã nhận điểm tăng trưởng khả dụng"
     }
     suspend fun claimRewards(group: NeteaseTaskGroup): String {
         if (group == NeteaseTaskGroup.VIP) return claimVipRewards()
@@ -109,11 +109,11 @@ class NeteaseTaskRepository(private val transport: NeteaseTransport) {
                     put(if (cloud) "userTaskId" else "userMissionId", id.toString()); put("period", period.toString())
                     if (cloud) put("depositCode", deposit.toString())
                 }).also {
-                    if (it["data"] == JsonPrimitive(false)) throw ApiException(ErrorKind.Server, userMessage = "网易云未确认奖励领取成功，请刷新后重试")
+                    if (it["data"] == JsonPrimitive(false)) throw ApiException(ErrorKind.Server, userMessage = "Nhạc Vân NetEase chưa xác nhận nhận thưởng thành công, vui lòng làm mới rồi thử lại")
                 }
             claimed++
         }
-        return if (claimed == 0) "暂无可领取的奖励" else "已领取 $claimed 项任务奖励"
+        return if (claimed == 0) "Không có phần thưởng nào để nhận" else "Đã nhận phần thưởng của $claimed nhiệm vụ"
     }
     companion object {
         private fun JsonObject.text(vararg keys: String) = keys.firstNotNullOfOrNull {
@@ -144,10 +144,10 @@ class NeteaseTaskRepository(private val transport: NeteaseTransport) {
                             val target = element.number("targetCount", "targetProgress", "totalCount", "needCount", "targetWorth")
                             val progress = element.text("statusDesc", "statusText", "progressDesc", "taskProgressText").ifBlank {
                                 when {
-                                    element["completed"] == JsonPrimitive(true) -> "已完成"
+                                    element["completed"] == JsonPrimitive(true) -> "Đã hoàn thành"
                                     current != null && target != null && current >= 0 && target > 0 -> "$current / $target"
                                     element.number("progressRate")?.let { it in 0..100 } == true -> "${element.number("progressRate")}%"
-                                    else -> "以网易云任务状态为准"
+                                    else -> "Trạng thái nhiệm vụ của Nhạc Vân NetEase là chuẩn xác"
                                 }
                             }
                             val id = element.number("userTaskId", "userMissionId")?.takeIf { it > 0 }?.toString()
@@ -165,9 +165,9 @@ class NeteaseTaskRepository(private val transport: NeteaseTransport) {
             val objectRoot = root as? JsonObject ?: raw
             val summary = when (group) {
                 NeteaseTaskGroup.DAILY -> when ((objectRoot["pcSign"] as? JsonPrimitive)?.booleanOrNull) {
-                    true -> "今日签到已完成"; false -> "今日尚未签到"; null -> "每日签到"
+                    true -> "Hôm nay đã điểm danh"; false -> "Hôm nay chưa điểm danh"; null -> "Điểm danh hằng ngày"
                 }
-                else -> "${items.size} 项任务 · 官方进度"
+                else -> "${items.size} nhiệm vụ · Tiến độ chính thức"
             }
             return NeteaseTaskPage(items.distinctBy { it.id }, summary, rewards.distinct(),
                 if (group == NeteaseTaskGroup.DAILY) (objectRoot["pcSign"] as? JsonPrimitive)?.booleanOrNull else null)

@@ -48,11 +48,11 @@ import kotlin.math.roundToInt
     }
     val image = remember(bitmap) { bitmap?.asImageBitmap() }
     val previewSize = minOf(280, (LocalConfiguration.current.screenHeightDp * .36f).roundToInt()).coerceAtLeast(120).dp
-    MusicDialog("裁剪头像", onDismiss) {
+    MusicDialog("Cắt ảnh đại diện", onDismiss) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             Box(Modifier.size(previewSize).clip(RoundedCornerShape(16.dp)), contentAlignment = Alignment.Center) {
                 if (image != null) Canvas(Modifier.fillMaxSize().testTag("avatar_crop_preview")
-                    .semantics { contentDescription = "头像裁剪区域，可拖动和双指缩放" }
+                    .semantics { contentDescription = "Vùng cắt ảnh đại diện, có thể kéo và thu phóng bằng hai ngón tay" }
                     .pointerInput(image, busy) {
                         if (!busy) detectTransformGestures { focus, pan, zoom, _ ->
                             crop = crop.transform(image.width, image.height, size.width.toFloat(),
@@ -75,20 +75,20 @@ import kotlin.math.roundToInt
                     drawCircle(Color.White.copy(alpha = .9f), radius = size.width / 2f - 1.dp.toPx(),
                         style = Stroke(1.5.dp.toPx()))
                 }
-                else if (failed) Text("无法读取图片，请重新选择", modifier = Modifier.padding(16.dp), fontSize = 14.sp)
+                else if (failed) Text("Không thể đọc ảnh, vui lòng chọn lại", modifier = Modifier.padding(16.dp), fontSize = 14.sp)
                 else CircularProgressIndicator()
             }
         }
-        Text("拖动调整位置，双指或滑动下方滑杆缩放", fontSize = 13.sp)
+        Text("Kéo để điều chỉnh vị trí, dùng hai ngón tay hoặc thanh trượt bên dưới để thu phóng", fontSize = 13.sp)
         Slider(value = crop.zoom, onValueChange = { zoom ->
             bitmap?.let { crop = crop.copy(zoom = zoom).constrained(it.width, it.height) }
         }, valueRange = 1f..5f, enabled = image != null && !busy, modifier = Modifier.fillMaxWidth().testTag("avatar_crop_zoom"))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            MusicDialogButton("重置", { crop = AvatarCrop() }, enabled = image != null && !busy,
+            MusicDialogButton("Đặt lại", { crop = AvatarCrop() }, enabled = image != null && !busy,
                 modifier = Modifier.weight(1f).testTag("avatar_crop_reset"))
-            MusicDialogButton(if (busy) "正在上传…" else "裁剪并上传", { onUpload(crop) }, enabled = image != null && !busy,
+            MusicDialogButton(if (busy) "Đang tải lên…" else "Cắt và tải lên", { onUpload(crop) }, enabled = image != null && !busy,
                 modifier = Modifier.weight(1f).testTag("confirm_avatar_upload"))
         }
-        MusicDialogButton("取消", onDismiss, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("avatar_crop_cancel"))
+        MusicDialogButton("Hủy", onDismiss, enabled = !busy, modifier = Modifier.fillMaxWidth().testTag("avatar_crop_cancel"))
     }
 }

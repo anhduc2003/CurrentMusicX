@@ -40,7 +40,7 @@ private fun limitSearchInput(text: String): String {
 
 @Composable internal fun GlassSearchField(value: String, onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier, requester: FocusRequester, inputTag: String,
-    placeholder: String = "搜索", onInputFocus: (Boolean) -> Unit = {},
+    placeholder: String = "Tìm kiếm", onInputFocus: (Boolean) -> Unit = {},
     onSubmit: (() -> Unit)? = null, submitTag: String? = null,
     clearTag: String = "${inputTag}_clear", onActivate: (() -> Unit)? = null, enabled: Boolean = true) {
     val colors = MiuixTheme.colorScheme
@@ -53,7 +53,7 @@ private fun limitSearchInput(text: String): String {
             if (onSubmit != null) onSubmit()
             else if (onActivate != null) onActivate()
             else { requester.requestFocus(); keyboard?.show() }
-        }.then(if (submitTag != null) Modifier.testTag(submitTag).semantics { contentDescription = "搜索" } else Modifier),
+        }.then(if (submitTag != null) Modifier.testTag(submitTag).semantics { contentDescription = "Tìm kiếm" } else Modifier),
             contentAlignment = Alignment.CenterStart) {
             Icon(MusicIcons.Search, null, Modifier.padding(start = 12.dp).size(20.dp), tint = colors.onSurface)
         }
@@ -76,7 +76,7 @@ private fun limitSearchInput(text: String): String {
         if (onActivate == null && value.isNotEmpty()) Box(Modifier.width(49.dp).fillMaxHeight()
             .testTag(clearTag).clickable(enabled = enabled, role = Role.Button,
                 interactionSource = remember { MutableInteractionSource() }, indication = null) { onValueChange("") }
-            .semantics { contentDescription = "清除搜索" }, contentAlignment = Alignment.Center) {
+            .semantics { contentDescription = "Xóa nội dung tìm kiếm" }, contentAlignment = Alignment.Center) {
             Canvas(Modifier.size(24.dp).graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }) {
                 drawCircle(colors.onSurface)
                 val reach = size.minDimension * .145f

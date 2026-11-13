@@ -98,14 +98,14 @@ internal fun lyricMatchWindow(text: String, query: String, limit: Int = 24): Str
             coverBounds = Rect(coordinates.localToWindow(Offset(0f, top)), Size(side, side))
         }.combinedClickable(enabled = !pending, role = Role.Button,
             interactionSource = remember { MutableInteractionSource() }, indication = null,
-            onClick = primary, onLongClickLabel = "预览歌曲与操作",
+             onClick = primary, onLongClickLabel = "Xem trước bài hát và thao tác",
             onLongClick = { if (!coverBounds.isEmpty) openMenu() }), enabled = !pending) {
     Row(Modifier.fillMaxWidth().heightIn(min = 72.dp)
         .padding(vertical = 10.dp), verticalAlignment = if (compactActions) Alignment.Top else Alignment.CenterVertically) {
         MusicCover(song.cover, Modifier.size(52.dp).testTag("search_result_cover_${song.id}"), cornerRadius = 10.dp)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f).padding(end = if (compactActions) 0.dp else 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            val subtitle = if (pending) "正在提交点歌…" else listOf(song.artists, song.album).filter(String::isNotBlank).joinToString(" · ")
+             val subtitle = if (pending) "Đang gửi yêu cầu bài hát…" else listOf(song.artists, song.album).filter(String::isNotBlank).joinToString(" · ")
             val subtitleBlock = @Composable {
                 if (subtitle.isNotBlank()) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                     if (song.mv > 0) Text("MV", fontSize = 9.sp, color = colors.primary,
@@ -127,15 +127,15 @@ internal fun lyricMatchWindow(text: String, query: String, limit: Int = 24): Str
                         maxLines = 1, overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.testTag("search_lyric_after_${song.id}"))
                     val status = when (match.status) {
-                        "pending" -> "歌词前后文仍在补全"
-                        "error" -> "歌词前后文加载失败"
-                        "missing" -> "纯音乐或未收录歌词"
-                        "unmatched" -> "未能定位命中片段的前后文"
-                        "single_line" -> "完整歌词仅有一句"
+                         "pending" -> "Đang bổ sung ngữ cảnh lời bài hát"
+                         "error" -> "Tải ngữ cảnh lời bài hát thất bại"
+                         "missing" -> "Nhạc không lời hoặc chưa có lời bài hát"
+                         "unmatched" -> "Không tìm thấy ngữ cảnh xung quanh đoạn lời khớp"
+                         "single_line" -> "Toàn bộ lời bài hát chỉ có một câu"
                         else -> null
                     }
                     status?.let { Text(it, fontSize = 12.sp, color = colors.onSurface.copy(alpha = .58f)) }
-                    if (match.retryable) Text("重试前后文", fontSize = 12.sp, color = colors.primary,
+                     if (match.retryable) Text("Thử tải lại ngữ cảnh", fontSize = 12.sp, color = colors.primary,
                         modifier = Modifier.clickable(role = Role.Button, onClick = retryLyric)
                             .testTag("retry_lyric_${song.id}").padding(vertical = 8.dp))
                 }
@@ -183,11 +183,11 @@ internal fun lyricMatchWindow(text: String, query: String, limit: Int = 24): Str
     val liked = if (native) song.id in nativeLikes else statuses[song.id]?.liked == true
     if (showLike) {
         SearchResultIconAction(if (liked) Icons.Default.Favorite else MusicIcons.Heart,
-            if (liked) "取消喜欢：${song.name}" else "喜欢：${song.name}",
-            Modifier.testTag("search_like_${song.id}").semantics { stateDescription = if (liked) "已喜欢" else "未喜欢" },
+             if (liked) "Bỏ thích: ${song.name}" else "Thích: ${song.name}",
+             Modifier.testTag("search_like_${song.id}").semantics { stateDescription = if (liked) "Đã thích" else "Chưa thích" },
             enabled = !liking && statuses[song.id]?.pending != true, accent = liked, grouped = true) { vm.togglePrimaryLike(song) }
     }
-    SearchResultIconAction(playlistAddIcon, "加入歌单：${song.name}", Modifier.testTag("search_playlist_${song.id}"),
+     SearchResultIconAction(playlistAddIcon, "Thêm vào danh sách phát: ${song.name}", Modifier.testTag("search_playlist_${song.id}"),
         enabled = !busy, grouped = true) { vm.choosePlaylist(song) }
 }
 
@@ -200,11 +200,11 @@ internal fun lyricMatchWindow(text: String, query: String, limit: Int = 24): Str
                 Icon(Icons.Default.PlayArrow, null, Modifier.size(19.dp), tint = Color.White)
             }
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text("播放全部", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                Text("已加载 $count 首 · 共 $total 首", fontSize = 10.sp, color = colors.onSurface.copy(alpha = .4f))
+                 Text("Phát tất cả", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                 Text("Đã tải $count bài · Tổng cộng $total bài", fontSize = 10.sp, color = colors.onSurface.copy(alpha = .4f))
             }
         }
-        SearchResultIconAction(MusicIcons.List, "将已加载的 $count 首歌曲加入队列", Modifier.testTag("search_queue_all"), onClick = onQueueAll)
+         SearchResultIconAction(MusicIcons.List, "Thêm $count bài hát đã tải vào hàng đợi", Modifier.testTag("search_queue_all"), onClick = onQueueAll)
     }
 }
 

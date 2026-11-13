@@ -62,10 +62,10 @@ class OriginalSoundEffectsController internal constructor(
                     when (decoded.type) {
                         1 -> NeteasePresetParameters.fromJson(decoded.bytes.toString(Charsets.UTF_8))
                         2 -> NeteasePresetParameters.fromFir(decoded.bytes)
-                        else -> throw IllegalArgumentException("不支持的预设资源类型")
+                        else -> throw IllegalArgumentException("Loại tài nguyên cài đặt trước không được hỗ trợ")
                     }
                 } catch (failure: IllegalArgumentException) {
-                    throw UnsupportedOperationException(failure.message ?: "不支持的参数版本", failure)
+                    throw UnsupportedOperationException(failure.message ?: "Phiên bản tham số không được hỗ trợ", failure)
                 }
                 NeteaseOriginalPreset(effect.id, effect.name, decoded.type, decoded.bytes)
             }
@@ -76,7 +76,7 @@ class OriginalSoundEffectsController internal constructor(
     private val mutableSelection = MutableStateFlow<NeteaseOriginalPreset?>(null)
     val selection: StateFlow<NeteaseOriginalPreset?> = mutableSelection.asStateFlow()
     private val mutableState = MutableStateFlow(OriginalSoundEffectsState(available = engineAvailable(),
-        unavailableReason = if (engineAvailable()) null else "尚未导入兼容的网易云原版音效引擎"))
+        unavailableReason = if (engineAvailable()) null else "Chưa nhập công cụ hiệu ứng âm thanh gốc tương thích của NetEase"))
     val state: StateFlow<OriginalSoundEffectsState> = mutableState.asStateFlow()
     private var generation = 0L
     private var pending: Job? = null
@@ -160,37 +160,37 @@ class OriginalSoundEffectsController internal constructor(
                 val owner = requireNotNull(currentAccount)
                 if (!state.value.available) throw UnsupportedOperationException(state.value.unavailableReason)
                 val effect = candidate ?: resolveFromServer(id) ?: catalog().firstOrNull { it.id == id }
-                    ?: throw UnsupportedOperationException("此音效已从网易云目录移除，未恢复旧预设")
+                    ?: throw UnsupportedOperationException("Hiệu ứng này đã bị xóa khỏi danh mục NetEase và không thể khôi phục cài đặt trước cũ")
                 if (token != generation || owner != currentAccount) return@launch
-                if (effect.id != id) throw UnsupportedOperationException("网易云返回的音效 ID 与所选项目不一致")
+                if (effect.id != id) throw UnsupportedOperationException("ID hiệu ứng âm thanh do NetEase trả về không khớp với mục đã chọn")
                 originalEffectUnavailableReason(effect, state.value)?.let { throw UnsupportedOperationException(it) }
                 val permission = if (effect.legacyMemberOriginal) {
                     mutableState.value = state.value.copy(permissionPending = true)
                     val uid = owner.ownerKey.removePrefix("netease:").toLongOrNull()
-                        ?: throw OriginalEffectPermissionException("请先在“我的 → 网易云账号”登录，再核验黑胶会员权益")
+                        ?: throw OriginalEffectPermissionException("Vui lòng đăng nhập tại “Cá nhân → Tài khoản NetEase” trước khi xác minh quyền hội viên Vinyl")
                     val rights = entitlement()
                     if (token != generation || owner != currentAccount) return@launch
                     val deadline = rights.expiryFor(effect.memberType)
                     if (rights.userId != uid || deadline <= now())
-                        throw OriginalEffectPermissionException("当前账号没有有效的网易云${if (effect.memberType == 4) "SVIP" else "黑胶会员"}权益，未启用此音效")
+                        throw OriginalEffectPermissionException("Tài khoản hiện tại không có quyền ${if (effect.memberType == 4) "SVIP" else "hội viên Vinyl"} hợp lệ của NetEase, nên hiệu ứng chưa được bật")
                     deadline
                 } else null
                 mutableState.value = state.value.copy(permissionPending = false)
                 val prepared = prepare(effect)
-                require(prepared.id == effect.id) { "音效资源与所选项目不一致" }
+                require(prepared.id == effect.id) { "Tài nguyên hiệu ứng không khớp với mục đã chọn" }
                 if (token != generation || owner != currentAccount) return@launch
                 if (permission != null && permission <= now())
-                    throw OriginalEffectPermissionException("黑胶会员权益已到期，未启用此音效")
+                    throw OriginalEffectPermissionException("Quyền hội viên Vinyl đã hết hạn, hiệu ứng chưa được bật")
                 beforeSelection()
                 if (token != generation || owner != currentAccount) return@launch
                 if (permission != null && permission <= now())
-                    throw OriginalEffectPermissionException("黑胶会员权益已到期，未启用此音效")
+                    throw OriginalEffectPermissionException("Quyền hội viên Vinyl đã hết hạn, hiệu ứng chưa được bật")
                 val previousChoice = selection.value?.let { SavedOriginalSoundEffect(it.id, it.name, owner.ownerKey) }
                 persist(SavedOriginalSoundEffect(effect.id, effect.name, owner.ownerKey), token)
                 if (token != generation || owner != currentAccount) return@launch
                 if (permission != null && permission <= now()) {
                     persist(previousChoice, token)
-                    throw OriginalEffectPermissionException("黑胶会员权益已到期，未启用此音效")
+                    throw OriginalEffectPermissionException("Quyền hội viên Vinyl đã hết hạn, hiệu ứng chưa được bật")
                 }
                 mutableSelection.value = prepared
                 mutableState.value = state.value.copy(loading = false, selectedId = effect.id,
@@ -202,15 +202,15 @@ class OriginalSoundEffectsController internal constructor(
                 permissionFailed(token, restoring, failure.message.orEmpty())
             } catch (failure: ApiException) {
                 if (failure.kind == ErrorKind.NeteaseBindingRequired)
-                    permissionFailed(token, restoring, "网易云登录已失效，请在“我的 → 网易云账号”重新登录")
+                    permissionFailed(token, restoring, "Đăng nhập NetEase đã hết hiệu lực, vui lòng đăng nhập lại tại “Cá nhân → Tài khoản NetEase”")
                 else if (failure.kind == ErrorKind.Forbidden)
-                    permissionFailed(token, restoring, "网易云未授予当前账号此音效的使用权益")
+                    permissionFailed(token, restoring, "NetEase chưa cấp cho tài khoản hiện tại quyền sử dụng hiệu ứng này")
                 else if (token == generation) mutableState.value = state.value.copy(loading = false, permissionPending = false,
-                    error = "无法核验网易云音效资源或权益，请检查网络后重试")
+                    error = "Không thể xác minh tài nguyên hoặc quyền hiệu ứng của NetEase, hãy kiểm tra mạng rồi thử lại")
             }
             catch (failure: UnsupportedOperationException) {
                 if (token == generation) {
-                    val reason = failure.message?.take(160) ?: "此音效的参数版本暂不支持"
+                    val reason = failure.message?.take(160) ?: "Phiên bản tham số của hiệu ứng này hiện chưa được hỗ trợ"
                     mutableState.value = state.value.copy(loading = false, permissionPending = false, error = reason,
                         unsupported = if (state.value.available) state.value.unsupported + (id to reason) else state.value.unsupported)
                     // Do not repeatedly restore a preset whose current catalog/format is incompatible.
@@ -218,8 +218,8 @@ class OriginalSoundEffectsController internal constructor(
                 }
             } catch (_: Exception) {
                 if (token == generation) mutableState.value = state.value.copy(loading = false, permissionPending = false,
-                    error = if (restoring) "自动恢复未完成，请检查网络后重试；当前保持本机音效"
-                        else "原版音效加载未完成，请重试；当前音效保持不变")
+                    error = if (restoring) "Tự động khôi phục chưa hoàn tất, hãy kiểm tra mạng rồi thử lại; hiện vẫn giữ hiệu ứng trên thiết bị"
+                        else "Tải hiệu ứng gốc chưa hoàn tất, hãy thử lại; hiệu ứng hiện tại không thay đổi")
             }
         }
     }
@@ -236,7 +236,7 @@ class OriginalSoundEffectsController internal constructor(
             while (selection.value === preset) {
                 val remaining = deadline - now()
                 if (remaining <= 0) {
-                    reportFailure("网易云黑胶会员权益已到期，已关闭原版会员音效并恢复本机设置")
+                    reportFailure("Quyền hội viên Vinyl của NetEase đã hết hạn; đã tắt hiệu ứng hội viên gốc và khôi phục cài đặt trên thiết bị")
                     return@launch
                 }
                 delay(minOf(remaining, 60_000L))
@@ -266,7 +266,7 @@ class OriginalSoundEffectsController internal constructor(
     fun reportProcessing(presetId: Long) {
         if (closed || selection.value?.id != presetId) return
         if (state.value.permissionExpiresAt?.let { it <= now() } == true)
-            reportFailure("网易云黑胶会员权益已到期，已关闭原版会员音效并恢复本机设置")
+            reportFailure("Quyền hội viên Vinyl của NetEase đã hết hạn; đã tắt hiệu ứng hội viên gốc và khôi phục cài đặt trên thiết bị")
         else mutableState.value = state.value.copy(processing = true)
     }
 
@@ -274,7 +274,7 @@ class OriginalSoundEffectsController internal constructor(
         if (closed) return
         val available = engineAvailable()
         mutableState.value = state.value.copy(available = available,
-            unavailableReason = if (available) null else "尚未导入兼容的网易云原版音效引擎",
+            unavailableReason = if (available) null else "Chưa nhập công cụ hiệu ứng âm thanh gốc tương thích của NetEase",
             error = if (available && !state.value.available) null else state.value.error)
         if (available && selection.value == null && state.value.requestedId != null) retry()
     }
@@ -295,11 +295,11 @@ class OriginalSoundEffectsController internal constructor(
 }
 
 internal fun originalEffectUnavailableReason(effect: NeteaseSoundEffect, state: OriginalSoundEffectsState): String? = when {
-    !effect.legacyOriginalStrategy -> "此音效使用尚未接入的网易云授权策略，需在网易云客户端使用"
-    effect.memberType !in setOf(1, 3, 4) -> "此音效的会员授权类型尚未接入，需在网易云客户端使用"
-    effect.soundType != 1 -> "此类音效尚未接入本机播放链"
-    !effect.compatibleOriginalResource -> "网易云未提供可验证的兼容预设资源"
-    !state.available -> state.unavailableReason ?: "原版音效引擎未载入"
+    !effect.legacyOriginalStrategy -> "Hiệu ứng này dùng cơ chế cấp quyền NetEase chưa được tích hợp; hãy sử dụng trong ứng dụng NetEase"
+    effect.memberType !in setOf(1, 3, 4) -> "Loại quyền hội viên của hiệu ứng này chưa được tích hợp; hãy sử dụng trong ứng dụng NetEase"
+    effect.soundType != 1 -> "Loại hiệu ứng này chưa được tích hợp vào chuỗi phát trên thiết bị"
+    !effect.compatibleOriginalResource -> "NetEase chưa cung cấp tài nguyên cài đặt trước tương thích có thể xác minh"
+    !state.available -> state.unavailableReason ?: "Động cơ hiệu ứng âm thanh gốc chưa được tải"
     else -> state.unsupported[effect.id]
 }
 

@@ -30,16 +30,16 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 @Composable internal fun PlaylistImportHero(mode: PlaylistImportMode) {
     val colors = MiuixTheme.colorScheme
     val title = when (mode) {
-        PlaylistImportMode.LINKS -> "把歌单带过来"
-        PlaylistImportMode.TEXT -> "把歌名变成歌单"
-        PlaylistImportMode.IMAGES -> "从一张截图开始"
-        PlaylistImportMode.LOCAL -> "导入本地收藏"
+        PlaylistImportMode.LINKS -> "Mang danh sách phát sang đây"
+        PlaylistImportMode.TEXT -> "Biến tên bài hát thành danh sách phát"
+        PlaylistImportMode.IMAGES -> "Bắt đầu từ một ảnh chụp màn hình"
+        PlaylistImportMode.LOCAL -> "Nhập bộ sưu tập trên thiết bị"
     }
     val summary = when (mode) {
-        PlaylistImportMode.LINKS -> "复制链接，继续听你的收藏。"
-        PlaylistImportMode.TEXT -> "用歌名和歌手匹配歌曲。"
-        PlaylistImportMode.IMAGES -> "识别截图，收藏喜欢的歌曲。"
-        PlaylistImportMode.LOCAL -> "只匹配信息，音频留在本机。"
+        PlaylistImportMode.LINKS -> "Sao chép liên kết để tiếp tục nghe bộ sưu tập của bạn."
+        PlaylistImportMode.TEXT -> "Tìm bài hát dựa trên tên bài hát và ca sĩ."
+        PlaylistImportMode.IMAGES -> "Nhận diện ảnh chụp màn hình để lưu các bài hát yêu thích."
+        PlaylistImportMode.LOCAL -> "Chỉ đối chiếu thông tin, tệp âm thanh vẫn ở trên thiết bị."
     }
     SettingsGroup { SettingsPreference(title, summary) }
 
@@ -48,9 +48,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 @Composable internal fun PlaylistImportGuide() {
     val colors = MiuixTheme.colorScheme
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        GuideRow("↗", "在原应用里分享歌单", "复制歌单、个人主页或文章的链接。")
+        GuideRow("↗", "Chia sẻ danh sách phát trong ứng dụng gốc", "Sao chép liên kết danh sách phát, trang cá nhân hoặc bài viết.")
         Box(Modifier.padding(start = 19.dp).width(1.dp).height(12.dp).background(colors.onSurfaceVariantSummary.copy(alpha = .2f)))
-        GuideRow("↙", "回到这里粘贴", "支持整段分享文字，一次最多 10 个链接。")
+        GuideRow("↙", "Quay lại đây để dán", "Hỗ trợ toàn bộ nội dung chia sẻ, tối đa 10 liên kết mỗi lần.")
     }
 }
 

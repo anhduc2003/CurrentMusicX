@@ -55,13 +55,12 @@ object FoliaLyricsMatchPolicy {
             prefix.groupValues[2].trim() else song.name.trim()
         var album = song.album.trim()
         if (album.length > 48) album = album.replace(Regex("\\s*※.*$"), "")
-            .replace(Regex("\\s*(歌|歌唱|アーティスト|Artist)\\s*[:：]?\\s*.+$", RegexOption.IGNORE_CASE), "").trim().take(48).trim()
+.replace(Regex("\\s*(歌|歌唱|アーティスト|Artist)\\s*[:：]?\\s*.+$", RegexOption.IGNORE_CASE), "").trim().take(48).trim()
         return listOf(title, song.artists.trim(), album).filter(String::isNotBlank).joinToString(" - ").take(240)
     }
 
     private fun duration(value: Long): Double = if (value <= 0) 0.0 else if (value > 43_200_000) value / 1000.0 else value.toDouble()
-    private val version = Regex("instrumental|inst|off\\s*vocal|karaoke|remix|mix|version|ver\\.?|cover|live|edit|arrange|伴奏|カラオケ|インスト|リミックス|remaster|remastered", RegexOption.IGNORE_CASE)
-    private fun title(value: String): String = normalize(value
+private val version = Regex("instrumental|inst|off\\s*vocal|karaoke|remix|mix|version|ver\\.?|cover|live|edit|arrange|nhạc đệm|カラオケ|インスト|リミックス|remaster|remastered", RegexOption.IGNORE_CASE)    private fun title(value: String): String = normalize(value
         .replace(Regex("[（(\\[【]\\s*(feat|featuring|ft)\\.?\\s+[^)\\]）】]+[)\\]）】]", RegexOption.IGNORE_CASE), "")
         .replace(Regex("\\b(feat|featuring|ft)\\.?\\s+.+$", RegexOption.IGNORE_CASE), "")
         .replace(Regex("[(\\[（【]([^)\\]）】]+)[)\\]）】]")) { if (version.containsMatchIn(it.groupValues[1])) it.value else "" })
@@ -76,8 +75,7 @@ object FoliaLyricsMatchPolicy {
     }
 
     private fun artistSimilarity(first: String, second: String): Double {
-        val split = Regex("[,&、/]|feat\\.?|ft\\.?|featuring|与", RegexOption.IGNORE_CASE)
-        val a = first.split(split).map(::normalize).filter(String::isNotEmpty)
+val split = Regex("[,&、/]|feat\\.?|ft\\.?|featuring|và", RegexOption.IGNORE_CASE)        val a = first.split(split).map(::normalize).filter(String::isNotEmpty)
         val b = second.split(split).map(::normalize).filter(String::isNotEmpty)
         if (a.isEmpty() || b.isEmpty()) return similarity(first, second)
         fun matches(left: String, right: String) = left == right || left.length >= 3 && right.contains(left) || right.length >= 3 && left.contains(right)

@@ -50,9 +50,9 @@ class UpdateSourceProbe(
         try {
             var url = urlFor(release, source).toHttpUrl()
             repeat(9) { redirect ->
-                check(url.scheme == "https" && url.username.isEmpty() && url.password.isEmpty()) { "下载源必须使用 HTTPS" }
+                check(url.scheme == "https" && url.username.isEmpty() && url.password.isEmpty()) { "Nguồn tải xuống phải sử dụng HTTPS" }
                 val remaining = TimeUnit.SECONDS.toNanos(8) - (nanoTime() - started)
-                if (remaining <= 0) return@withContext result(UpdateSourceStatus.TIMEOUT, "检测超时")
+                if (remaining <= 0) return@withContext result(UpdateSourceStatus.TIMEOUT, "Hết thời gian kiểm tra")
                 val call = (if (source == UpdateSource.CURRENTMUSIC) privateMirrorHttp else http)
                     .newCall(Request.Builder().url(url).header("Range", "bytes=0-3")
                     .header("Accept-Encoding", "identity")
@@ -65,20 +65,20 @@ class UpdateSourceProbe(
                 try {
                     call.execute().use { response ->
                         if (response.code in listOf(301, 302, 303, 307, 308)) {
-                            check(redirect < 8) { "重定向次数过多" }
-                            url = response.header("Location")?.let(url::resolve) ?: error("重定向地址无效")
+                            check(redirect < 8) { "Quá nhiều lần chuyển hướng" }
+                            url = response.header("Location")?.let(url::resolve) ?: error("Địa chỉ chuyển hướng không hợp lệ")
                         } else {
                             if (response.code == 429) return@withContext result(UpdateSourceStatus.LIMITED, "HTTP 429")
                             if (!response.isSuccessful) return@withContext result(UpdateSourceStatus.UNAVAILABLE, "HTTP ${response.code}")
-                            val body = response.body ?: return@withContext result(UpdateSourceStatus.UNAVAILABLE, "响应为空")
+                            val body = response.body ?: return@withContext result(UpdateSourceStatus.UNAVAILABLE, "Phản hồi trống")
                             val type = body.contentType()?.let { "${it.type}/${it.subtype}" }
-                            check(type !in setOf("text/html", "application/xhtml+xml", "application/json")) { "返回了网页或错误信息" }
+                            check(type !in setOf("text/html", "application/xhtml+xml", "application/json")) { "Đã trả về trang web hoặc thông tin lỗi" }
                             if (response.code == 206) {
                                 val range = Regex("bytes 0-([0-9]+)/([0-9]+)").matchEntire(response.header("Content-Range").orEmpty())
                                 check(range != null && range.groupValues[1].toLong() >= 3 &&
-                                    (release.size <= 0 || range.groupValues[2].toLong() == release.size)) { "安装包范围或大小不匹配" }
+                                    (release.size <= 0 || range.groupValues[2].toLong() == release.size)) { "Phạm vi hoặc kích thước gói cài đặt không khớp" }
                             } else {
-                                check(release.size <= 0 || body.contentLength() <= 0 || body.contentLength() == release.size) { "安装包大小不匹配" }
+                                check(release.size <= 0 || body.contentLength() <= 0 || body.contentLength() == release.size) { "Kích thước gói cài đặt không khớp" }
                             }
                             val signature = ByteArray(4)
                             val input = body.byteStream()
@@ -88,17 +88,17 @@ class UpdateSourceProbe(
                                 if (count < 0) break
                                 received += count
                             }
-                            check(received == 4 && signature.contentEquals(byteArrayOf(0x50, 0x4b, 0x03, 0x04))) { "未返回 APK 文件" }
-                            return@withContext result(UpdateSourceStatus.AVAILABLE, "APK 文件头可读取；完整下载后仍需校验 SHA-256")
+                            check(received == 4 && signature.contentEquals(byteArrayOf(0x50, 0x4b, 0x03, 0x04))) { "Không trả về tệp APK" }
+                            return@withContext result(UpdateSourceStatus.AVAILABLE, "Có thể đọc phần đầu tệp APK; vẫn cần xác minh SHA-256 sau khi tải xuống đầy đủ")
                         }
                     }
                 } finally { cancel.dispose() }
             }
-            result(UpdateSourceStatus.UNAVAILABLE, "重定向次数过多")
+            result(UpdateSourceStatus.UNAVAILABLE, "Quá nhiều lần chuyển hướng")
         } catch (failure: Exception) {
             currentCoroutineContext().ensureActive()
             result(if (failure is InterruptedIOException) UpdateSourceStatus.TIMEOUT else UpdateSourceStatus.UNAVAILABLE,
-                if (failure is IOException) "连接失败：${failure.message.orEmpty()}" else failure.message.orEmpty())
+                if (failure is IOException) "Kết nối thất bại: ${failure.message.orEmpty()}" else failure.message.orEmpty())
         }
     }
 }

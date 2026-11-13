@@ -38,23 +38,23 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 @Composable private fun AdminUserDetail(initial: AdminUser, state: AdminState, open: (AdminDestination) -> Unit,
     confirm: (AdminConfirmation) -> Unit, onBack: () -> Unit) {
     val user = state.users?.users?.find { it.id == initial.id } ?: initial
-    MusicSubpage("用户管理", "admin_user_detail", onBack, modifier = Modifier.background(MiuixTheme.colorScheme.background)) { inset ->
+    MusicSubpage("Quản lý người dùng", "admin_user_detail", onBack, modifier = Modifier.background(MiuixTheme.colorScheme.background)) { inset ->
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = inset + 12.dp,
             bottom = LocalMusicBottomInset.current + 24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             AdminCard(user.name, "@${user.username} · ID ${user.id}") {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { AdminBadge(adminRole(user)); if (user.disabled) AdminBadge("已禁用", true) }
-                AdminMetric("头衔", user.title.ifBlank { "未设置" }); AdminMetric("等级与积分", "${userLevelLabel(user.level)} · ${adminCount(user.points)} 积分")
-                AdminMetric("在线设备", "${user.sessions} 台")
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { AdminBadge(adminRole(user)); if (user.disabled) AdminBadge("Đã vô hiệu hóa", true) }
+                AdminMetric("Danh hiệu", user.title.ifBlank { "Chưa thiết lập" }); AdminMetric("Cấp độ và điểm", "${userLevelLabel(user.level)} · ${adminCount(user.points)} điểm")
+                AdminMetric("Thiết bị trực tuyến", "${user.sessions} thiết bị")
             }
-            if (user.email.isNotBlank() || user.phone.isNotBlank()) AdminExpandable("联系方式", "查看邮箱与手机号", "admin_user_contact") {
-                if (user.email.isNotBlank()) AdminMetric("邮箱", user.email)
-                if (user.phone.isNotBlank()) AdminMetric("手机号", user.phone)
+            if (user.email.isNotBlank() || user.phone.isNotBlank()) AdminExpandable("Thông tin liên hệ", "Xem email và số điện thoại", "admin_user_contact") {
+                if (user.email.isNotBlank()) AdminMetric("Email", user.email)
+                if (user.phone.isNotBlank()) AdminMetric("Số điện thoại", user.phone)
             }
             val allowed = AdminUserAction.entries.filter { state.actor?.let { actor -> it.allowed(actor, user) } == true }
-            if (allowed.isEmpty()) SettingsHint(if (state.actor?.id == user.id) "当前账号。请在账号与安全中修改自己的登录信息。" else "当前角色无法管理此账号。")
-            listOf("资料与成长" to listOf(AdminUserAction.TITLE, AdminUserAction.PROGRESSION),
-                "管理权限" to listOf(AdminUserAction.ADMIN, AdminUserAction.SUPER, AdminUserAction.OWNER),
-                "账号安全" to listOf(AdminUserAction.PASSWORD, AdminUserAction.KICK, AdminUserAction.DISABLE)).forEach { (title, all) ->
+            if (allowed.isEmpty()) SettingsHint(if (state.actor?.id == user.id) "Tài khoản hiện tại. Hãy chỉnh sửa thông tin đăng nhập của bạn trong mục Tài khoản và bảo mật." else "Vai trò hiện tại không thể quản lý tài khoản này.")
+            listOf("Thông tin và phát triển" to listOf(AdminUserAction.TITLE, AdminUserAction.PROGRESSION),
+                "Quyền quản lý" to listOf(AdminUserAction.ADMIN, AdminUserAction.SUPER, AdminUserAction.OWNER),
+                "Bảo mật tài khoản" to listOf(AdminUserAction.PASSWORD, AdminUserAction.KICK, AdminUserAction.DISABLE)).forEach { (title, all) ->
                 val rows = all.filter { it in allowed }
                 if (rows.isNotEmpty()) {
                     SettingsListHeader(title)
@@ -84,39 +84,39 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val titleMax = state.overview?.number("titleMax") ?: 16L
     val validation = when (action) {
         AdminUserAction.PASSWORD -> when {
-            value.length !in 6..64 -> "新密码需为 6–64 位"
-            value != passwordAgain -> "两次输入的密码需要一致"
+            value.length !in 6..64 -> "Mật khẩu mới phải có từ 6–64 ký tự"
+            value != passwordAgain -> "Hai lần nhập mật khẩu phải giống nhau"
             else -> null
         }
-        AdminUserAction.TITLE -> if (value.codePointCount(0, value.length) > titleMax) "头衔最多 $titleMax 字" else null
+        AdminUserAction.TITLE -> if (value.codePointCount(0, value.length) > titleMax) "Danh hiệu tối đa $titleMax ký tự" else null
         AdminUserAction.PROGRESSION -> state.rules?.let { rules -> when {
-            value.toLongOrNull()?.let { it in 0..rules.maxPoints } != true -> "请输入 0–${rules.maxPoints} 之间的整数"
-            level !in rules.levels.map { it.level } + rules.trial.plusLevel -> "请选择等级"
+            value.toLongOrNull()?.let { it in 0..rules.maxPoints } != true -> "Vui lòng nhập số nguyên trong khoảng 0–${rules.maxPoints}"
+            level !in rules.levels.map { it.level } + rules.trial.plusLevel -> "Vui lòng chọn cấp độ"
             else -> null
-        } } ?: "等级规则暂不可用，请重试"
+        } } ?: "Không thể tải quy tắc cấp độ lúc này, vui lòng thử lại"
         else -> null
     }
     AdminEditorFrame(userActionLabel(action, target), "admin_user_editor", state, onBack,
         dirty = value != initial || passwordAgain.isNotEmpty() || level != target.level, valid = validation == null,
-        saveLabel = if (action == AdminUserAction.PASSWORD) "确认重置密码" else "保存修改",
+        saveLabel = if (action == AdminUserAction.PASSWORD) "Xác nhận đặt lại mật khẩu" else "Lưu thay đổi",
         save = { actions.userAction(target, action, value, level, done) }) {
         AdminCard(target.name, "@${target.username} · ID ${target.id}") { Text(userActionSummary(action, target), fontSize = 13.sp) }
         SettingsGroup { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            AdminField(if (action == AdminUserAction.PASSWORD) "新密码" else if (action == AdminUserAction.PROGRESSION) "累计积分" else "头衔",
+            AdminField(if (action == AdminUserAction.PASSWORD) "Mật khẩu mới" else if (action == AdminUserAction.PROGRESSION) "Tổng điểm" else "Danh hiệu",
                 value, { value = it; actions.clearOperationError() }, "admin_action_value", enabled = !state.busy,
                 password = action == AdminUserAction.PASSWORD, number = action == AdminUserAction.PROGRESSION)
-            if (action == AdminUserAction.TITLE) Text("最多 $titleMax 字，留空可清除头衔", fontSize = 12.sp)
-            if (action == AdminUserAction.PASSWORD) AdminField("再次输入新密码", passwordAgain, { passwordAgain = it; actions.clearOperationError() },
+            if (action == AdminUserAction.TITLE) Text("Tối đa $titleMax ký tự, để trống để xóa danh hiệu", fontSize = 12.sp)
+            if (action == AdminUserAction.PASSWORD) AdminField("Nhập lại mật khẩu mới", passwordAgain, { passwordAgain = it; actions.clearOperationError() },
                 "admin_password_again", enabled = !state.busy, password = true)
             if (validation != null) SettingsHint(validation, error = value.isNotEmpty())
         } }
         if (action == AdminUserAction.PROGRESSION) {
-            if (state.rules == null) AdminNotice(state.rulesError ?: "无法加载等级规则", error = true, retry = actions::refresh)
+            if (state.rules == null) AdminNotice(state.rulesError ?: "Không thể tải quy tắc cấp độ", error = true, retry = actions::refresh)
             else {
-                SettingsListHeader("等级")
+                SettingsListHeader("Cấp độ")
                 SettingsGroup {
                     (state.rules.levels.map { it.level } + state.rules.trial.plusLevel).distinct().forEach { option ->
-                        MusicDialogChoiceRow(userLevelLabel(option) ?: "等级 $option", level == option, { if (!state.busy) level = option })
+                        MusicDialogChoiceRow(userLevelLabel(option) ?: "Cấp độ $option", level == option, { if (!state.busy) level = option })
                     }
                 }
             }
@@ -136,46 +136,46 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val validLink = link.isBlank() || runCatching { java.net.URI(link.trim()).let {
         it.scheme in setOf("http", "https") && !it.host.isNullOrBlank() && it.userInfo == null
     } }.getOrDefault(false)
-    AdminEditorFrame(if (item == null) "发布公告" else "公告详情", "admin_announcement_editor", state, onBack, dirty && editable,
+    AdminEditorFrame(if (item == null) "Đăng thông báo" else "Chi tiết thông báo", "admin_announcement_editor", state, onBack, dirty && editable,
         valid = title.trim().length in 1..60 && validLink && (dirty || item == null),
-        saveLabel = if (item == null) "确认发布" else "保存修改", showSave = editable,
+        saveLabel = if (item == null) "Xác nhận đăng" else "Lưu thay đổi", showSave = editable,
         save = { actions.announcement(item, title, body, link.trim(), pinned, onBack) }) {
-        if (editable) SettingsSegmentedControl(listOf("编辑", "预览"), if (preview) 1 else 0, { preview = it == 1 }, tag = "admin_announcement_mode")
+        if (editable) SettingsSegmentedControl(listOf("Chỉnh sửa", "Xem trước"), if (preview) 1 else 0, { preview = it == 1 }, tag = "admin_announcement_mode")
         if (preview || !editable) {
-            AdminCard(title.ifBlank { "公告标题" }, item?.let { "${it.author} · ${adminTime(it.createdAt)}" } ?: "发布前预览") {
-                if (pinned) AdminBadge("置顶")
-                if (item?.removed == true) AdminBadge("已移除", true)
-                if (body.isNotBlank()) MarkdownText(body, compact = true, onLinkClick = {}) else Text("正文预览将在这里显示", fontSize = 13.sp)
+            AdminCard(title.ifBlank { "Tiêu đề thông báo" }, item?.let { "${it.author} · ${adminTime(it.createdAt)}" } ?: "Xem trước trước khi đăng") {
+                if (pinned) AdminBadge("Ghim")
+                if (item?.removed == true) AdminBadge("Đã gỡ", true)
+                if (body.isNotBlank()) MarkdownText(body, compact = true, onLinkClick = {}) else Text("Bản xem trước nội dung sẽ hiển thị tại đây", fontSize = 13.sp)
                 if (link.isNotBlank()) Text(link, fontSize = 12.sp, color = MiuixTheme.colorScheme.primary)
             }
         } else {
             SettingsGroup { Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                AdminField("标题 · ${title.length}/60", title, { title = it; actions.clearOperationError() }, "admin_announcement_title", enabled = !state.busy)
-                if (title.length > 60) SettingsHint("标题最多 60 字", error = true)
-                AdminField("正文 · 支持 Markdown", body, { body = it; actions.clearOperationError() }, "admin_announcement_body", enabled = !state.busy, multiline = true)
-                AdminField("详情链接（可选）", link, { link = it; actions.clearOperationError() }, "admin_announcement_link", enabled = !state.busy)
-                if (!validLink) SettingsHint("请输入有效的 http / https 链接", error = true)
-                SettingsSwitch("置顶公告", pinned, { if (!state.busy) pinned = it })
+                AdminField("Tiêu đề · ${title.length}/60", title, { title = it; actions.clearOperationError() }, "admin_announcement_title", enabled = !state.busy)
+                if (title.length > 60) SettingsHint("Tiêu đề tối đa 60 ký tự", error = true)
+                AdminField("Nội dung · hỗ trợ Markdown", body, { body = it; actions.clearOperationError() }, "admin_announcement_body", enabled = !state.busy, multiline = true)
+                AdminField("Liên kết chi tiết (không bắt buộc)", link, { link = it; actions.clearOperationError() }, "admin_announcement_link", enabled = !state.busy)
+                if (!validLink) SettingsHint("Vui lòng nhập liên kết http / https hợp lệ", error = true)
+                SettingsSwitch("Ghim thông báo", pinned, { if (!state.busy) pinned = it })
             } }
         }
         if (item != null && editable) {
-            SettingsListHeader("公告状态")
+            SettingsListHeader("Trạng thái thông báo")
             SettingsGroup {
-                if (item.removed) AdminActionRow("恢复公告", "恢复后客户端将重新展示", MusicIcons.Update, "admin_announcement_restore", enabled = !state.busy && !dirty) {
-                    confirm(AdminConfirmation.Announcement(item, "restore", "恢复公告"))
+                if (item.removed) AdminActionRow("Khôi phục thông báo", "Sau khi khôi phục, thông báo sẽ hiển thị lại trên ứng dụng", MusicIcons.Update, "admin_announcement_restore", enabled = !state.busy && !dirty) {
+                    confirm(AdminConfirmation.Announcement(item, "restore", "Khôi phục thông báo"))
                 } else {
-                    AdminActionRow(if (item.pinned) "取消置顶" else "置顶公告", "调整公告展示顺序", MusicIcons.Sort, "admin_announcement_pin", enabled = !state.busy && !dirty) {
-                        confirm(AdminConfirmation.Announcement(item, "pin", if (item.pinned) "取消置顶" else "置顶公告"))
+                    AdminActionRow(if (item.pinned) "Bỏ ghim" else "Ghim thông báo", "Điều chỉnh thứ tự hiển thị thông báo", MusicIcons.Sort, "admin_announcement_pin", enabled = !state.busy && !dirty) {
+                        confirm(AdminConfirmation.Announcement(item, "pin", if (item.pinned) "Bỏ ghim" else "Ghim thông báo"))
                     }
                     SettingsDivider(52.dp)
-                    AdminActionRow("移除公告", "客户端不再展示，可随时恢复", MusicIcons.Close, "admin_announcement_remove", enabled = !state.busy && !dirty, dangerous = true) {
-                        confirm(AdminConfirmation.Announcement(item, "remove", "移除公告"))
+                    AdminActionRow("Gỡ thông báo", "Thông báo sẽ không còn hiển thị trên ứng dụng và có thể khôi phục bất cứ lúc nào", MusicIcons.Close, "admin_announcement_remove", enabled = !state.busy && !dirty, dangerous = true) {
+                        confirm(AdminConfirmation.Announcement(item, "remove", "Gỡ thông báo"))
                     }
                 }
             }
-            if (dirty) SettingsHint("请先保存修改，再调整公告状态。")
+            if (dirty) SettingsHint("Vui lòng lưu thay đổi trước khi điều chỉnh trạng thái thông báo.")
         }
-        SettingsHint(if (!editable) "此公告由其他管理员发布，当前账号仅可查看。" else if (item?.removed == true) "此公告已移除，保存后仍需恢复才会展示。" else "保存后，用户将看到更新后的公告。")
+        SettingsHint(if (!editable) "Thông báo này do quản trị viên khác đăng; tài khoản hiện tại chỉ có thể xem." else if (item?.removed == true) "Thông báo này đã bị gỡ; sau khi lưu, bạn vẫn cần khôi phục để hiển thị lại." else "Sau khi lưu, người dùng sẽ thấy thông báo đã cập nhật.")
     }
 }
 
@@ -200,17 +200,17 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp), content = content)
             state.operationError?.let { AdminNotice(it, error = true) }
-            if (showSave) GlassActionButton(if (state.busy) "正在提交…" else saveLabel, { focus.clearFocus(); save() },
+            if (showSave) GlassActionButton(if (state.busy) "Đang gửi…" else saveLabel, { focus.clearFocus(); save() },
                 Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp).testTag("admin_editor_save"),
                 primary = true, enabled = valid && !state.busy && !state.loading)
             Spacer(Modifier.height(if (keyboardVisible) 8.dp else LocalMusicBottomInset.current + 12.dp))
         }
     }
-    if (discard) SettingsUiScope { MusicDialog("放弃未保存的修改？", { discard = false }) {
-        Text("离开后本次修改不会保存。")
+    if (discard) SettingsUiScope { MusicDialog("Bỏ các thay đổi chưa lưu?", { discard = false }) {
+        Text("Rời đi, các thay đổi lần này sẽ không được lưu.")
         MusicDialogActions {
-            MusicDialogButton("继续编辑", { discard = false }, Modifier.weight(1f))
-            MusicDialogButton("放弃修改", { discard = false; onBack() }, destructive = true, modifier = Modifier.weight(1f).testTag("admin_discard"))
+            MusicDialogButton("Tiếp tục chỉnh sửa", { discard = false }, Modifier.weight(1f))
+            MusicDialogButton("Bỏ thay đổi", { discard = false; onBack() }, destructive = true, modifier = Modifier.weight(1f).testTag("admin_discard"))
         }
     } }
 }
@@ -226,15 +226,15 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             submit = { actions.userAction(confirmation.user, confirmation.action, "", null, done) }
         }
         is AdminConfirmation.Announcement -> {
-            title = confirmation.label; description = "${confirmation.item.title}\n" + if (confirmation.action == "remove") "客户端将不再展示这条公告，可在面板中恢复。" else "将更新该公告的展示状态。"
+            title = confirmation.label; description = "${confirmation.item.title}\n" + if (confirmation.action == "remove") "Thông báo này sẽ không còn hiển thị với người dùng. Bạn có thể khôi phục thông báo trong bảng điều khiển." else "Trạng thái hiển thị của thông báo này sẽ được cập nhật。"
             submit = { actions.announcementAction(confirmation.item, confirmation.action, done) }
         }
         is AdminConfirmation.Kick -> {
-            title = "全部设备下线"; description = "确认撤销 @${confirmation.session.username} 的所有登录会话？该用户需要重新登录。"
+            title = "Đăng xuất khỏi tất cả thiết bị"; description = "Xác nhận thu hồi tất cả phiên đăng nhập của @${confirmation.session.username}? Người dùng này sẽ cần đăng nhập lại."
             submit = { actions.kick(confirmation.session, done) }
         }
         AdminConfirmation.Cache -> {
-            title = "清理辅助缓存"; description = "清理歌词、评论和详情缓存，音质档位探测缓存会保留。"
+            title = "Xóa bộ nhớ đệm phụ trợ"; description = "Xóa bộ nhớ đệm lời bài hát, bình luận và chi tiết; bộ nhớ đệm dò tìm mức chất lượng âm thanh sẽ được giữ lại."
             submit = { actions.clearCache(done) }
         }
     }
@@ -242,25 +242,25 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         Text(description)
         state.operationError?.let { SettingsHint(it, error = true) }
         MusicDialogActions {
-            MusicDialogButton("取消", close, Modifier.weight(1f), enabled = !state.busy)
-            MusicDialogButton(if (state.busy) "提交中…" else "确认", submit, Modifier.weight(1f).testTag("admin_confirm_action"),
+            MusicDialogButton("Hủy", close, Modifier.weight(1f), enabled = !state.busy)
+            MusicDialogButton(if (state.busy) "Đang gửi…" else "Xác nhận", submit, Modifier.weight(1f).testTag("admin_confirm_action"),
                 enabled = !state.busy && !state.loading, destructive = true)
         }
     } }
 }
 internal fun userActionLabel(action: AdminUserAction, target: AdminUser): String = when (action) {
-    AdminUserAction.DISABLE -> if (target.disabled) "解除禁用" else "禁用账号"
-    AdminUserAction.ADMIN -> if (target.isAdmin) "取消管理员" else "设为管理员"
-    AdminUserAction.SUPER -> if (target.isSuper) "取消超级管理员" else "设为超级管理员"
-    AdminUserAction.OWNER -> if (target.isOwner) "取消站长" else "设为站长"
+     AdminUserAction.DISABLE -> if (target.disabled) "Bỏ cấm" else "Cấm tài khoản"
+     AdminUserAction.ADMIN -> if (target.isAdmin) "Hủy quyền quản trị viên" else "Đặt làm quản trị viên"
+     AdminUserAction.SUPER -> if (target.isSuper) "Hủy quyền siêu quản trị viên" else "Đặt làm siêu quản trị viên"
+     AdminUserAction.OWNER -> if (target.isOwner) "Hủy quyền chủ trang" else "Đặt làm chủ trang"
     else -> action.label
 }
 private fun userActionSummary(action: AdminUserAction, target: AdminUser) = when (action) {
-    AdminUserAction.TITLE -> "显示在用户身份旁，留空可以清除"
-    AdminUserAction.PROGRESSION -> "调整累计积分和当前等级"
-    AdminUserAction.PASSWORD -> "重置后该用户需要重新登录"
-    AdminUserAction.KICK -> "撤销该用户的全部登录会话"
-    AdminUserAction.DISABLE -> if (target.disabled) "允许该用户重新登录" else "禁止登录，并撤销已有会话"
-    AdminUserAction.OWNER -> if (target.isOwner) "取消站长后回落为超级管理员" else "授予站长权限，修改后立即生效"
-    else -> "调整管理权限，修改后立即生效"
+     AdminUserAction.TITLE -> "Hiển thị bên cạnh danh tính người dùng; để trống để xóa"
+     AdminUserAction.PROGRESSION -> "Điều chỉnh điểm tích lũy và cấp hiện tại"
+     AdminUserAction.PASSWORD -> "Sau khi đặt lại, người dùng này sẽ cần đăng nhập lại"
+     AdminUserAction.KICK -> "Thu hồi tất cả phiên đăng nhập của người dùng này"
+     AdminUserAction.DISABLE -> if (target.disabled) "Cho phép người dùng này đăng nhập lại" else "Cấm đăng nhập và thu hồi các phiên hiện có"
+     AdminUserAction.OWNER -> if (target.isOwner) "Sau khi hủy quyền chủ trang, người dùng sẽ trở lại làm siêu quản trị viên" else "Cấp quyền chủ trang; thay đổi có hiệu lực ngay lập tức"
+     else -> "Điều chỉnh quyền quản trị; thay đổi có hiệu lực ngay lập tức"
 }

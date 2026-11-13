@@ -69,21 +69,21 @@ class OriginalMoodModelRepository internal constructor(private val directory: Fi
         }, owner)
         val row = ((raw["data"] as? JsonObject)?.get("modelList") as? JsonArray)
             ?.filterIsInstance<JsonObject>()?.firstOrNull { it.text("modelId") == "motional_sound_effects_model" }
-            ?: throw IllegalStateException("网易云未向此设备下发情绪模型")
+            ?: throw IllegalStateException("NetEase chưa gửi mô hình cảm xúc đến thiết bị này")
         val hash = row.text("modelMd5").lowercase()
-        require(hash.matches(Regex("[a-f0-9]{32}"))) { "情绪模型校验信息无效" }
+        require(hash.matches(Regex("[a-f0-9]{32}"))) { "Thông tin xác thực mô hình cảm xúc không hợp lệ" }
         val expectedSize = row.long("modelSize") ?: 0
-        require(expectedSize in 1..MAX_BYTES.toLong()) { "情绪模型大小超出限制" }
+        require(expectedSize in 1..MAX_BYTES.toLong()) { "Kích thước mô hình cảm xúc vượt quá giới hạn" }
         val url = row.text("modelUrl").toHttpUrlOrNull()
         require(url != null && url.isHttps && url.port == 443 && url.username.isEmpty() && url.password.isEmpty() &&
-            url.host.endsWith(".music.126.net") && url.fragment == null) { "情绪模型来源无效" }
+            url.host.endsWith(".music.126.net") && url.fragment == null) { "Nguồn mô hình cảm xúc không hợp lệ" }
         val file = withContext(Dispatchers.IO) {
             check(directory.isDirectory || directory.mkdirs())
             val container = File(directory, "$hash.data")
             val bytes = if (container.isFile && container.length() == expectedSize &&
                 md5(container.readBytes()) == hash) container.readBytes() else {
                 val value = download(requireNotNull(url))
-                require(value.size.toLong() == expectedSize && md5(value) == hash) { "情绪模型资源校验失败" }
+                require(value.size.toLong() == expectedSize && md5(value) == hash) { "Xác thực tài nguyên mô hình cảm xúc thất bại" }
                 transport.sessions.check(owner)
                 container.writeBytes(value)
                 value
@@ -93,7 +93,7 @@ class OriginalMoodModelRepository internal constructor(private val directory: Fi
             if (!target.isFile || !target.readBytes().contentEquals(model)) {
                 val pending = File(directory, "$hash.pending")
                 pending.writeBytes(model)
-                check(pending.renameTo(target)) { "情绪模型写入失败" }
+                check(pending.renameTo(target)) { "Ghi mô hình cảm xúc thất bại" }
             }
             target
         }
@@ -130,7 +130,7 @@ class OriginalMoodModelRepository internal constructor(private val directory: Fi
             }
             override fun onResponse(call: Call, response: Response) {
                 val outcome = runCatching { response.use {
-                    check(it.isSuccessful) { "情绪模型下载失败" }
+                    check(it.isSuccessful) { "Tải mô hình cảm xúc thất bại" }
                     val body = requireNotNull(it.body)
                     require(body.contentLength() <= MAX_BYTES)
                     body.byteStream().use { input -> readMoodBounded(input, MAX_BYTES) }
@@ -189,7 +189,7 @@ internal fun decodeMoodModel(container: ByteArray): ByteArray {
             } else if (!entry.isDirectory) readMoodBounded(zip, 4096)
             zip.closeEntry()
         }
-        requireNotNull(result) { "情绪模型容器缺少原版网络" }
+        requireNotNull(result) { "Bộ chứa mô hình cảm xúc thiếu mạng gốc" }
     }
 }
 
@@ -202,7 +202,7 @@ private fun readMoodBounded(input: java.io.InputStream, limit: Int): ByteArray {
     while (true) {
         val count = input.read(buffer)
         if (count < 0) break
-        require(output.size() + count <= limit) { "情绪模型数据超出限制" }
+        require(output.size() + count <= limit) { "Dữ liệu mô hình cảm xúc vượt quá giới hạn" }
         output.write(buffer, 0, count)
     }
     return output.toByteArray()

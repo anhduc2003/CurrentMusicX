@@ -32,31 +32,30 @@ import kotlin.math.roundToInt
     var qualityOpen by rememberSaveable { mutableStateOf(false) }
     var appleLyricsOpen by rememberSaveable { mutableStateOf(false) }
     var seconds by remember(settings.crossfadeSeconds) { mutableFloatStateOf(settings.crossfadeSeconds.toFloat()) }
-    val modes = mapOf(MusicTransitionMode.OFF to "关闭", MusicTransitionMode.SMART to "智能过渡", MusicTransitionMode.CROSSFADE to "淡入淡出")
-    SettingsPage("播放", "playback_settings") {
-        item("quality") { SettingsSection("音质", MusicIcons.Headphones) {
-            MusicDestinationRow("默认音质", { qualityOpen = true }, Modifier.testTag("default_quality"), summary = settings.quality.label)
+val modes = mapOf(MusicTransitionMode.OFF to "Tắt", MusicTransitionMode.SMART to "Chuyển tiếp thông minh", MusicTransitionMode.CROSSFADE to "Chuyển tiếp chéo")    SettingsPage("Phát nhạc", "playback_settings") {
+        item("quality") { SettingsSection("Chất lượng âm thanh", MusicIcons.Headphones) {
+            MusicDestinationRow("Chất lượng âm thanh mặc định", { qualityOpen = true }, Modifier.testTag("default_quality"), summary = settings.quality.label)
         } }
-        item("listening") { SettingsSection("听歌足迹", MusicIcons.Headphones) {
+        item("listening") { SettingsSection("Lịch sử nghe nhạc", MusicIcons.Headphones) {
             Column(Modifier.testTag("listening_source_setting").semantics { selectableGroup() }) {
                 ListeningSource.entries.forEachIndexed { index, source ->
                     if(index > 0) SettingsDivider()
                     SettingsChoiceRow(source.label, settings.listeningSource == source,
                         { vm.listeningSource(source) }, Modifier.testTag("listening_source_${source.name.lowercase()}"),
-                        summary = if(source == ListeningSource.LOCAL) "统计这台设备在 CurrentMusicX 中的播放记录"
-                            else "查看已绑定网易云账号的云端听歌足迹")
+                        summary = if(source == ListeningSource.LOCAL) "Thống kê lịch sử phát nhạc trên thiết bị này trong CurrentMusicX"
+                            else "Xem lịch sử nghe nhạc trên đám mây của tài khoản NetEase Cloud đã liên kết")
                 }
             }
         } }
-        item("lyrics") { SettingsSection("歌词样式", MusicIcons.File) {
+        item("lyrics") { SettingsSection("Kiểu lời bài hát", MusicIcons.File) {
             LyricsStyleSelector(settings.lyricsDisplay.style, vm::lyricsStyle)
             if (settings.lyricsDisplay.style == LyricsStyle.APPLE_MUSIC) {
                 SettingsDivider()
-                MusicDestinationRow("Apple Music 自定义", { appleLyricsOpen = true },
-                    Modifier.testTag("open_apple_lyrics_settings"), summary = "字号、间距、动画速度与光效")
+                MusicDestinationRow("Tùy chỉnh Apple Music", { appleLyricsOpen = true },
+                    Modifier.testTag("open_apple_lyrics_settings"), summary = "Cỡ chữ, khoảng cách, tốc độ hoạt ảnh và hiệu ứng ánh sáng")
             }
         } }
-        item("transition") { SettingsSection("歌曲衔接", MusicIcons.Update) {
+        item("transition") { SettingsSection("Chuyển tiếp bài hát", MusicIcons.Update) {
             Column(Modifier.testTag("playback_transition").semantics { selectableGroup() }) {
                 modes.entries.forEachIndexed { index, (mode, title) ->
                     if (index > 0) SettingsDivider()
@@ -70,7 +69,7 @@ import kotlin.math.roundToInt
             }
             AnimatedVisibility(settings.transitionMode == MusicTransitionMode.CROSSFADE,
                 enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
-                SettingsPreference("过渡时长", "${seconds.roundToInt()} 秒", footer = {
+                SettingsPreference("Thời lượng chuyển tiếp", "${seconds.roundToInt()} giây", footer = {
                     GlassSlider(seconds, { seconds = it.roundToInt().toFloat() }, valueRange = 1f..12f,
                         onValueChangeFinished = { vm.crossfadeSeconds(seconds.roundToInt()) },
                         modifier = Modifier.fillMaxWidth().testTag("crossfade_duration").semantics {
@@ -84,34 +83,34 @@ import kotlin.math.roundToInt
                 })
             }
         } }
-        item("background") { SettingsSection("播放行为", MusicIcons.Play) {
-            SettingsSwitch("允许与其他应用同时播放", settings.allowConcurrentPlayback, vm::concurrentPlayback,
-                summary = "允许音乐与其他应用的声音同时播放", modifier = Modifier.testTag("allow_concurrent_playback"))
+        item("background") { SettingsSection("Hành vi phát nhạc", MusicIcons.Play) {
+            SettingsSwitch("Cho phép phát đồng thời với ứng dụng khác", settings.allowConcurrentPlayback, vm::concurrentPlayback,
+                summary = "Cho phép âm thanh từ nhạc và ứng dụng khác phát đồng thời", modifier = Modifier.testTag("allow_concurrent_playback"))
             SettingsDivider()
-            SettingsSwitch("恢复播放队列", settings.restoreQueue, vm::restore,
-                summary = "重新打开应用时回到上次的播放位置", modifier = Modifier.testTag("restore_queue"))
+            SettingsSwitch("Khôi phục hàng đợi phát", settings.restoreQueue, vm::restore,
+                summary = "Quay lại vị trí phát lần trước khi mở lại ứng dụng", modifier = Modifier.testTag("restore_queue"))
         } }
-        item("preload") { SettingsSection("预加载", MusicIcons.Download) {
-            SettingsSwitch("预加载下一首", settings.preloadAudio, vm::preload, modifier = Modifier.testTag("preload_audio"))
+        item("preload") { SettingsSection("Tải trước", MusicIcons.Download) {
+            SettingsSwitch("Tải trước bài tiếp theo", settings.preloadAudio, vm::preload, modifier = Modifier.testTag("preload_audio"))
             SettingsDivider()
-            SettingsSwitch("允许计费网络预加载", settings.preloadMetered, vm::preloadMetered,
-                summary = "包括移动网络，会额外消耗流量", enabled = settings.preloadAudio, modifier = Modifier.testTag("preload_metered"))
+            SettingsSwitch("Cho phép tải trước qua mạng tính phí", settings.preloadMetered, vm::preloadMetered,
+                summary = "Bao gồm mạng di động, sẽ tiêu tốn thêm dữ liệu", enabled = settings.preloadAudio, modifier = Modifier.testTag("preload_metered"))
         } }
-        item("likes") { SettingsSection("红心与点赞", MusicIcons.Heart) {
-            SettingsOptionsRow("默认红心位置", settings.likeMode.label, LikeMode.entries.map { mode ->
+        item("likes") { SettingsSection("Yêu thích và thích", MusicIcons.Heart) {
+            SettingsOptionsRow("Vị trí biểu tượng trái tim mặc định", settings.likeMode.label, LikeMode.entries.map { mode ->
                 SettingsOption("like_mode_${mode.name}", mode.label, mode == settings.likeMode,
                     summary = when (mode) {
-                        LikeMode.AUTO -> "已绑定网易云则同步，否则使用 CurrentMusic"
-                        LikeMode.NETEASE -> "未绑定网易云时使用 CurrentMusic"
-                        LikeMode.CURRENT_MUSIC -> "仅存入本站，不影响网易云账号"
+                        LikeMode.AUTO -> "Đồng bộ nếu đã liên kết NetEase Cloud, nếu không thì dùng CurrentMusic"
+LikeMode.NETEASE -> "Dùng CurrentMusic khi chưa liên kết với Nhạc Vân NetEase"
+LikeMode.CURRENT_MUSIC -> "Chỉ lưu trên ứng dụng này, không ảnh hưởng đến tài khoản Nhạc Vân NetEase"
                     },
                     onSelect = { vm.likeMode(mode) })
             }, Modifier.testTag("like_mode"))
         } }
     }
     if (qualityOpen) io.github.currencortex.music.feature.player.AudioQualitySheet(settings.quality, vm::quality,
-        { qualityOpen = false }, title = "默认播放音质")
-    if (appleLyricsOpen) MusicDialog("Apple Music 歌词", { appleLyricsOpen = false }) {
+         { qualityOpen = false }, title = "Chất lượng phát mặc định")
+    if (appleLyricsOpen) MusicDialog("Lời bài hát Apple Music", { appleLyricsOpen = false }) {
         Column(Modifier.fillMaxWidth().heightIn(max = 420.dp).verticalScroll(rememberScrollState())
             .testTag("apple_lyrics_settings")) {
             LyricsSizeSlider(settings.lyricsFontSize, vm::lyricsFontSize)

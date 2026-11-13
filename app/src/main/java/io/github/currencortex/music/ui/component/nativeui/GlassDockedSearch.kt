@@ -57,7 +57,7 @@ private val dockedSearchCurve = Easing { t ->
 /** The docked field stays visible; its cancel button grows out when focused or non-empty. */
 @Composable internal fun GlassDockedSearch(value: String, onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier, inputTag: String = "settings_search",
-    placeholder: String = "搜索", focusRequester: FocusRequester? = null,
+    placeholder: String = "Tìm kiếm", focusRequester: FocusRequester? = null,
     onInputFocus: (Boolean) -> Unit = {}, onSubmit: (() -> Unit)? = null,
     onActivate: (() -> Unit)? = null, submitTag: String? = null, clearTag: String = "${inputTag}_clear",
     onCancel: () -> Unit = {}) {
@@ -87,7 +87,7 @@ private val dockedSearchCurve = Easing { t ->
     BoxWithConstraints(modifier.fillMaxWidth().height(DockedSearchHeight.dp)
         .then(if (onActivate != null) Modifier.semantics(mergeDescendants = true) {
             role = Role.Button
-            onClick("搜索") { onActivate(); true }
+            onClick("Tìm kiếm") { onActivate(); true }
         } else Modifier)
         .testTag("${inputTag}_dock").semantics { this[DockedSearchExpansion] = expansion }
         // Flutter's TextFieldTapRegion keeps this sibling button out of the editor's
@@ -181,7 +181,7 @@ private val dockedSearchCurve = Easing { t ->
             ElasticPress(Modifier.fillMaxSize().then(if (active) Modifier.testTag("${inputTag}_cancel")
                     .clickable(role = Role.Button, interactionSource = remember { MutableInteractionSource() }, indication = null) {
                         cancelSearch()
-                    }.semantics { contentDescription = "取消搜索" } else Modifier.clearAndSetSemantics {}),
+                     }.semantics { contentDescription = "Hủy tìm kiếm" } else Modifier.clearAndSetSemantics {}),
                 state = cancelPress, enabled = active) {
                 Box(Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center) { Icon(MusicIcons.Close, null, Modifier.size(24.dp), tint = colors.onSurface) }

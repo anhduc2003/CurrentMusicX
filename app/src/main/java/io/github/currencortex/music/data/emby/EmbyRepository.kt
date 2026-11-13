@@ -54,9 +54,9 @@ class EmbyRepository(private val vault: TokenStore, scope: CoroutineScope) {
                 put("Username", candidate.username); put("Pw", password)
             }, expected = candidate, provisional = true)
             val user = result.obj("User")
-            require(result.text("AccessToken").isNotBlank() && user.text("Id").isNotBlank()) { "Emby 登录响应无效" }
+            require(result.text("AccessToken").isNotBlank() && user.text("Id").isNotBlank()) { "Phản hồi đăng nhập Emby không hợp lệ" }
             if (user.obj("Policy")["EnableMediaPlayback"] == JsonPrimitive(false))
-                throw ApiException(ErrorKind.Forbidden, userMessage = "此 Emby 账号未开放媒体播放")
+                throw ApiException(ErrorKind.Forbidden, userMessage = "Tài khoản Emby này chưa được cấp quyền phát nhạc")
             val next = EmbyAccess(candidate.server, candidate.username, user.text("Id"), result.text("AccessToken"), candidate.deviceId)
             val download = user.obj("Policy").flag("EnableContentDownloading")
             vault.write(buildJsonObject {
@@ -170,11 +170,11 @@ class EmbyRepository(private val vault: TokenStore, scope: CoroutineScope) {
         val expected = client.current()
         val ref = track(song)
         client.ensure(expected)
-        if (download && !state.value.download) throw ApiException(ErrorKind.Forbidden, userMessage = "此 Emby 账号不允许下载")
+        if (download && !state.value.download) throw ApiException(ErrorKind.Forbidden, userMessage = "Tài khoản Emby này không được phép tải xuống")
         val path = if (download) listOf("Items", ref.id, "Download") else listOf("Audio", ref.id, "stream")
         val params = if (download) emptyList() else listOf("Static" to "true") +
             ref.mediaSourceId.takeIf(String::isNotBlank)?.let { listOf("MediaSourceId" to it) }.orEmpty()
-        return AudioSource(client.media(path, params, expected), "Emby 原音质", ref.sampleRate, ref.channels, ref.format, validForSeconds = 600)
+        return AudioSource(client.media(path, params, expected), "Chất lượng âm thanh gốc Emby", ref.sampleRate, ref.channels, ref.format, validForSeconds = 600)
     }
     companion object { const val PAGE_SIZE = 40 }
 }

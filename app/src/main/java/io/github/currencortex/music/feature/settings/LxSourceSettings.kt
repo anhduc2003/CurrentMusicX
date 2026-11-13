@@ -33,10 +33,10 @@ import top.yukonga.miuix.kmp.basic.TextField
         uri?.let(vm::importLxFile)
     }
     val selected = sources.firstOrNull { it.id == provider.lxSourceId }
-    fun timeSuffix(id: String): String = resolveTimes[id]?.let { "，取链 $it ms" } ?: ""
-    SettingsSection("落雪音源", MusicIcons.File) {
+    fun timeSuffix(id: String): String = resolveTimes[id]?.let { "，lấy liên kết $it ms" } ?: ""
+    SettingsSection("Nguồn nhạc Luoxue", MusicIcons.File) {
         if (sources.isNotEmpty()) {
-            SettingsOptionsRow(if (provider.lxSmartSwitch) "默认音源" else "当前音源", selected?.name ?: "请选择", sources.map { source ->
+            SettingsOptionsRow(if (provider.lxSmartSwitch) "Nguồn mặc định" else "Nguồn hiện tại", selected?.name ?: "Vui lòng chọn", sources.map { source ->
                 SettingsOption("lx_source_${source.id}", source.name, source.id == provider.lxSourceId,
                     summary = source.summary + timeSuffix(source.id),
                     leadingContent = { LxHealthBadge(vm, source.id) }, onSelect = { vm.selectLxSource(source.id) })
@@ -45,64 +45,64 @@ import top.yukonga.miuix.kmp.basic.TextField
             selected?.let { source ->
                 Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                     if (source.description.isNotBlank()) SettingsHint(source.description.take(500))
-                    if (source.author.isNotBlank()) SettingsHint("作者 · ${source.author.take(100)}")
+                    if (source.author.isNotBlank()) SettingsHint("Tác giả · ${source.author.take(100)}")
                     SettingsHint(source.capabilities.joinToString("；") { capability ->
-                        "网易云 · ${capability.qualities.joinToString(" / ")}"
+                        "Nhạc Vân NetEase · ${capability.qualities.joinToString(" / ")}"
                     })
-                    resolveTimes[source.id]?.let { SettingsHint("最近成功取链 · $it ms") }
+                    resolveTimes[source.id]?.let { SettingsHint("Lấy liên kết thành công gần đây nhất · $it ms") }
                     health[source.id]?.message?.let { SettingsHint(it) }
                 }
             }
             SettingsDivider()
-            SettingsSwitch("多音源智能切换", provider.lxSmartSwitch, vm::lxSmartSwitch,
-                Modifier.testTag("lx_smart_switch"), summary = "优先使用取链更快的插件，失败时自动尝试其他已导入音源。",
+            SettingsSwitch("Tự động chuyển đổi giữa nhiều nguồn nhạc", provider.lxSmartSwitch, vm::lxSmartSwitch,
+                Modifier.testTag("lx_smart_switch"), summary = "Ưu tiên plugin lấy liên kết nhanh hơn; nếu thất bại, tự động thử các nguồn nhạc khác đã nhập.",
                 enabled = !state.busy)
             SettingsDivider()
-        } else SettingsHint("尚未导入音源")
-        SettingsPreference(if (state.busy) "正在处理音源…" else "从文件导入", "选择落雪自定义音源 .js 文件",
+        } else SettingsHint("Chưa nhập nguồn nhạc")
+        SettingsPreference(if (state.busy) "Đang xử lý nguồn nhạc…" else "Nhập từ tệp", "Chọn tệp nguồn nhạc tùy chỉnh .js của Luoxue",
             Modifier.testTag("lx_import_file"), enabled = !state.busy, onClick = { file.launch(arrayOf("*/*")) })
         SettingsDivider()
-        SettingsPreference("从链接导入", "填写脚本文件的下载链接", Modifier.testTag("lx_import_url"),
+        SettingsPreference("Nhập từ liên kết", "Nhập liên kết tải xuống tệp script", Modifier.testTag("lx_import_url"),
             enabled = !state.busy, onClick = { urlOpen = true })
         if (selected != null) {
             SettingsDivider()
-            SettingsPreference("移除此音源", modifier = Modifier.testTag("lx_remove"), enabled = !state.busy,
+            SettingsPreference("Xóa nguồn nhạc này", modifier = Modifier.testTag("lx_remove"), enabled = !state.busy,
                 onClick = { removal = selected.id })
         }
-        if (!vm.lxSupported()) SettingsHint("当前系统缺少脚本运行环境，请更新 Android System WebView。", error = true)
+        if (!vm.lxSupported()) SettingsHint("Môi trường chạy script không có trên hệ thống hiện tại, vui lòng cập nhật Android System WebView.", error = true)
         state.message?.let { SettingsHint(it) }
     }
     if (urlOpen) LxSourceUrlDialog(onDismiss = { urlOpen = false }, onImport = vm::importLxUrl)
     removal?.let { id ->
-        MusicChoiceDialog("移除音源？", { removal = null }, footer = {
+        MusicChoiceDialog("Xóa nguồn nhạc?", { removal = null }, footer = {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                MusicDialogButton("取消", { removal = null }, Modifier.weight(1f))
-                MusicDialogButton("移除", { vm.removeLxSource(id); removal = null }, Modifier.weight(1f).testTag("lx_remove_confirm"))
+                MusicDialogButton("Hủy", { removal = null }, Modifier.weight(1f))
+                MusicDialogButton("Xóa", { vm.removeLxSource(id); removal = null }, Modifier.weight(1f).testTag("lx_remove_confirm"))
             }
-        }) { SettingsHint("移除后请重新选择或导入落雪音源。") }
+        }) { SettingsHint("Sau khi xóa, vui lòng chọn hoặc nhập lại nguồn nhạc Luoxue.") }
     }
 }
 
 @Composable private fun LxHealthBadge(vm: MusicSettingsViewModel, id: String) {
     val health by vm.lxHealth.collectAsStateWithLifecycle()
     val status = health[id]?.status ?: io.github.currencortex.music.core.network.SourceAvailabilityStatus.UNKNOWN
-    SourceAvailabilityBadge(status, Modifier.testTag("lx_source_badge_$id"), "音源：${status.label}")
+    SourceAvailabilityBadge(status, Modifier.testTag("lx_source_badge_$id"), "Nguồn nhạc: ${status.label}")
 }
 
 @Composable private fun LxSourceUrlDialog(onDismiss: () -> Unit, onImport: (String) -> Unit) {
     // The link may include a private source key. Never put it in saved instance state.
     var value by remember { mutableStateOf("") }
-    MusicChoiceDialog("链接导入音源", onDismiss, footer = {
+    MusicChoiceDialog("Nhập nguồn nhạc từ liên kết", onDismiss, footer = {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            MusicDialogButton("取消", onDismiss, Modifier.weight(1f))
-            MusicDialogButton("导入", { onImport(value); onDismiss() }, Modifier.weight(1f).testTag("lx_url_confirm"),
+            MusicDialogButton("Hủy", onDismiss, Modifier.weight(1f))
+            MusicDialogButton("Nhập", { onImport(value); onDismiss() }, Modifier.weight(1f).testTag("lx_url_confirm"),
                 enabled = value.isNotBlank())
         }
     }) {
         Column(Modifier.padding(horizontal = 24.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            TextField(value, { value = it }, singleLine = true, label = "脚本下载链接",
+            TextField(value, { value = it }, singleLine = true, label = "Liên kết tải xuống script",
                 modifier = Modifier.fillMaxWidth().testTag("lx_url_input"))
-            SettingsHint("填写返回 .js 脚本内容的 HTTP 或 HTTPS 链接。导入时会检查音源声明的接口。")
+            SettingsHint("Nhập liên kết HTTP hoặc HTTPS trả về nội dung script .js. Khi nhập, hệ thống sẽ kiểm tra các API mà nguồn nhạc khai báo.")
         }
     }
 }

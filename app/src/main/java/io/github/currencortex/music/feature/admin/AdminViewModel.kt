@@ -10,7 +10,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.*
 
-enum class AdminTab(val label: String) { OVERVIEW("概览"), USERS("用户"), ANNOUNCEMENTS("公告"), DEVICES("设备"), CLIENTS("客户端"), SYSTEM("系统") }
+enum class AdminTab(val label: String) { OVERVIEW("Tổng quan"), USERS("Người dùng"), ANNOUNCEMENTS("Thông báo"), DEVICES("Thiết bị"), CLIENTS("Ứng dụng khách"), SYSTEM("Hệ thống") }
 data class AdminIdentity(val server: String, val id: Long?, val revision: Long)
 data class AdminState(
     val identity: AdminIdentity? = null, val actor: ProfileUser? = null,
@@ -128,7 +128,7 @@ class AdminViewModel(val container: AppContainer) : ViewModel(), AdminActions {
             ensureActive()
             if (current(id, owner)) {
                 if (result is AppResult.Failure && result.kind in setOf(ErrorKind.Unauthorized, ErrorKind.Forbidden))
-                    state.value = AdminState(identity = id, error = "当前账号没有管理权限，或登录已失效")
+                    state.value = AdminState(identity = id, error = "Tài khoản hiện tại không có quyền quản trị hoặc phiên đăng nhập đã hết hạn")
                 else state.update { it.copy(loading = false, error = (result as? AppResult.Failure)?.message) }
             }
         }
@@ -148,12 +148,12 @@ class AdminViewModel(val container: AppContainer) : ViewModel(), AdminActions {
                 }
                 is AppResult.Failure -> {
                     val uncertain = result.kind in setOf(ErrorKind.Network, ErrorKind.Timeout, ErrorKind.Server)
-                    state.update { it.copy(operationError = result.message + if (uncertain) "。操作结果尚未确认，请刷新核对后再试。" else "") }
+                    state.update { it.copy(operationError = result.message + if (uncertain) ". Chưa xác nhận được kết quả thao tác. Vui lòng làm mới để kiểm tra rồi thử lại." else "") }
                     if (result.kind in setOf(ErrorKind.Unauthorized, ErrorKind.Forbidden)) {
                         // A protected target can return 403 while the operator is still an administrator.
                         val actor = appResult { validate(id, owner) }
                         if (current(id, owner) && actor is AppResult.Failure)
-                            state.value = AdminState(identity = id, error = "无法确认管理权限，请刷新重试")
+                            state.value = AdminState(identity = id, error = "Không thể xác nhận quyền quản trị. Vui lòng làm mới rồi thử lại")
                     }
                     if (current(id, owner)) state.update { it.copy(busy = false) }
                 }
@@ -161,7 +161,7 @@ class AdminViewModel(val container: AppContainer) : ViewModel(), AdminActions {
         }
     }
     override fun userAction(target: AdminUser, action: AdminUserAction, value: String, level: Int?, done: () -> Unit) =
-        mutate("用户已更新", done) { actor, owner ->
+        mutate("Đã cập nhật người dùng", done) { actor, owner ->
             if (!action.allowed(actor, target)) throw ApiException(ErrorKind.Forbidden)
             val body = buildJsonObject {
                 when (action) {
@@ -182,26 +182,26 @@ class AdminViewModel(val container: AppContainer) : ViewModel(), AdminActions {
             }
             repository.write("POST", "admin/users/${target.id}/${action.path}", body, owner)
         }
-    override fun kick(session: AdminSession, done: () -> Unit) = mutate("该用户的全部设备已下线", done) { actor, owner ->
+    override fun kick(session: AdminSession, done: () -> Unit) = mutate("Đã đăng xuất người dùng này khỏi tất cả thiết bị", done) { actor, owner ->
         if (actor.id == session.user_id) throw ApiException(ErrorKind.Forbidden)
         repository.write("POST", "admin/users/${session.user_id}/kick", buildJsonObject {}, owner)
     }
     override fun announcement(item: AdminAnnouncement?, title: String, body: String, link: String, pinned: Boolean, done: () -> Unit) =
-        mutate(if (item == null) "公告已发布" else "公告已保存", done) { _, owner ->
+        mutate(if (item == null) "Đã đăng thông báo" else "Đã lưu thông báo", done) { _, owner ->
             require(title.trim().length in 1..60)
             require(link.isBlank() || runCatching { java.net.URI(link).let { it.scheme in setOf("https", "http") && !it.host.isNullOrBlank() && it.userInfo == null } }.getOrDefault(false))
             if (item != null && !item.canEdit) throw ApiException(ErrorKind.Forbidden)
             repository.write(if (item == null) "POST" else "PUT", if (item == null) "announcements" else "announcements/${item.id}",
                 buildJsonObject { put("title", title.trim()); put("body", body.trim()); put("link", link.trim()); put("pinned", pinned) }, owner)
         }
-    override fun announcementAction(item: AdminAnnouncement, action: String, done: () -> Unit) = mutate("公告已更新", done) { _, owner ->
+    override fun announcementAction(item: AdminAnnouncement, action: String, done: () -> Unit) = mutate("Đã cập nhật thông báo", done) { _, owner ->
         require(action in setOf("pin", "restore", "remove"))
         if (!item.canEdit) throw ApiException(ErrorKind.Forbidden)
         repository.write(if (action == "remove") "DELETE" else "POST",
             "announcements/${item.id}" + if (action == "remove") "" else "/$action",
             buildJsonObject { if (action == "pin") put("pinned", !item.pinned) }, owner)
     }
-    override fun clearCache(done: () -> Unit) = mutate("辅助缓存已清理", done) { _, owner ->
+    override fun clearCache(done: () -> Unit) = mutate("Đã xóa bộ nhớ đệm phụ trợ", done) { _, owner ->
         repository.write("POST", "admin/cache/clear", buildJsonObject { put("scope", "aux") }, owner)
     }
 }

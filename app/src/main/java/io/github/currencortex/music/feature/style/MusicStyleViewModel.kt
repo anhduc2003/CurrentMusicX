@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.*
 
 data class StyleCatalogState(val loading: Boolean = true, val styles: List<MusicStyle> = emptyList(), val error: String? = null,
     val covers: Map<Long, String> = emptyMap())
-data class StyleDetailState(val loading: Boolean = true, val title: String = "曲风", val description: StyleDescription? = null,
+data class StyleDetailState(val loading: Boolean = true, val title: String = "Phong cách âm nhạc", val description: StyleDescription? = null,
     val style: MusicStyle? = null, val songs: List<Song> = emptyList(), val sort: Int = 0, val cursor: Int = 0,
     val more: Boolean = false, val total: Int = 0, val error: String? = null, val detailError: String? = null,
     val heroCover: String = "")

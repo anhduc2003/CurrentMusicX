@@ -18,17 +18,17 @@ object RecognitionDesktopSession {
 }
 
 internal fun recognitionIslandTitle(state: RecognitionState): String = when (state.phase) {
-    RecognitionPhase.RECORDING -> "${if (state.source == RecognitionAudioSource.SYSTEM) "系统音频" else "正在聆听"} · ${state.seconds} 秒"
-    RecognitionPhase.RECOGNIZING -> "正在识别音乐…"
-    RecognitionPhase.MATCHED -> state.songs.firstOrNull()?.name ?: "找到这首歌了"
-    RecognitionPhase.NO_MATCH -> "暂未识别到歌曲"
-    RecognitionPhase.ERROR -> "识曲未完成"
-    RecognitionPhase.IDLE -> "听歌识曲"
+    RecognitionPhase.RECORDING -> "${if (state.source == RecognitionAudioSource.SYSTEM) "Âm thanh hệ thống" else "Đang lắng nghe"} · ${state.seconds} giây"
+    RecognitionPhase.RECOGNIZING -> "Đang nhận diện bài hát…"
+    RecognitionPhase.MATCHED -> state.songs.firstOrNull()?.name ?: "Đã tìm thấy bài hát này"
+    RecognitionPhase.NO_MATCH -> "Chưa nhận diện được bài hát"
+    RecognitionPhase.ERROR -> "Không thể hoàn tất nhận diện bài hát"
+    RecognitionPhase.IDLE -> "Nghe nhạc nhận diện bài hát"
 }
 
 internal fun recognitionIslandSubtitle(state: RecognitionState): String = when (state.phase) {
-    RecognitionPhase.RECORDING -> if (state.round == 0) "${if (state.source == RecognitionAudioSource.SYSTEM) "播放音乐" else "靠近音源"} · 最长 15 秒" else "边听边识别 · 第 ${state.round} 次匹配"
-    RecognitionPhase.RECOGNIZING -> if (state.step == RecognitionStep.MATCH) "正在匹配歌曲" else "正在分析声音"
-    RecognitionPhase.MATCHED -> state.songs.firstOrNull()?.artists.orEmpty().ifBlank { "点击查看识别结果" }
-    else -> state.message ?: "点击返回听歌识曲"
+    RecognitionPhase.RECORDING -> if (state.round == 0) "${if (state.source == RecognitionAudioSource.SYSTEM) "Phát nhạc" else "Đưa lại gần nguồn âm thanh"} · tối đa 15 giây" else "Vừa nghe vừa nhận diện · lần khớp thứ ${state.round}"
+    RecognitionPhase.RECOGNIZING -> if (state.step == RecognitionStep.MATCH) "Đang tìm bài hát" else "Đang phân tích âm thanh"
+    RecognitionPhase.MATCHED -> state.songs.firstOrNull()?.artists.orEmpty().ifBlank { "Nhấn để xem kết quả nhận diện" }
+    else -> state.message ?: "Nhấn để quay lại nghe nhạc nhận diện bài hát"
 }

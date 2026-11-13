@@ -41,7 +41,7 @@ fun coverRequestUrl(url: String, pixels: Int): String {
     if (loading) MusicPlaceholder(Modifier.matchParentSize(), shape = RoundedCornerShape(cornerRadius))
     if (failed) Box(Modifier.matchParentSize().background(MiuixTheme.colorScheme.onSurface.copy(alpha = .06f)), contentAlignment = androidx.compose.ui.Alignment.Center) { Text("♪", fontSize = 20.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .3f)) }
     AsyncImage(remember(context, url, pixels) { ImageRequest.Builder(context).data(coverRequestUrl(url, pixels)).size(pixels).build() },
-        contentDescription = "歌曲封面", contentScale = ContentScale.Crop,
+        contentDescription = "Ảnh bìa bài hát", contentScale = ContentScale.Crop,
         onLoading = { loading = true; failed = false }, onSuccess = { loading = false; failed = false }, onError = { loading = false; failed = true },
         modifier = Modifier.matchParentSize())
     }
@@ -59,7 +59,7 @@ fun coverRequestUrl(url: String, pixels: Int): String {
     }
     val pending = request?.pending?.invoke(row.song.id) == true
     Row(Modifier.fillMaxWidth().testTag("song_row_${row.song.id}").combinedClickable(enabled = !pending, onClick = primary,
-        onLongClickLabel = "预览歌曲与操作", onLongClick = { if (!coverBounds.isEmpty) openMenu(coverBounds) }).padding(vertical = 8.dp),
+        onLongClickLabel = "Xem trước bài hát và thao tác", onLongClick = { if (!coverBounds.isEmpty) openMenu(coverBounds) }).padding(vertical = 8.dp),
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
             MusicCover(row.song.cover, Modifier.size(52.dp).onGloballyPositioned { coordinates ->
                 coverBounds = Rect(coordinates.localToWindow(Offset.Zero),
@@ -67,7 +67,7 @@ fun coverRequestUrl(url: String, pixels: Int): String {
             })
             Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
                 Text(row.title, fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(if (pending) "正在提交点歌…" else row.subtitle,
+                Text(if (pending) "Đang gửi yêu cầu bài hát…" else row.subtitle,
                     fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .6f), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 if (row.song.mv != 0L) Text("MV", fontSize = 10.sp, color = MiuixTheme.colorScheme.primary)
             }

@@ -41,7 +41,7 @@ internal class PlaylistImportImageUpload(base: String) {
                     override fun onResponse(call: Call, response: Response) {
                         try {
                             val result = response.use {
-                                if (!it.isSuccessful) throw ApiException(ErrorKind.Server, userMessage = "图片上传失败，请稍后重试")
+                                if (!it.isSuccessful) throw ApiException(ErrorKind.Server, userMessage = "Tải ảnh lên thất bại, vui lòng thử lại sau")
                                 val source = it.body?.source() ?: throw ApiException(ErrorKind.Parse)
                                 source.request(64 * 1024L + 1)
                                 if (source.buffer.size > 64 * 1024) throw ApiException(ErrorKind.Parse)
@@ -54,7 +54,7 @@ internal class PlaylistImportImageUpload(base: String) {
             }
             checkOwner()
             if ((raw["offset"] as? JsonPrimitive)?.intOrNull != offset + count)
-                throw ApiException(ErrorKind.Parse, userMessage = "网易云未确认图片上传完整，请重新选择图片后重试")
+                throw ApiException(ErrorKind.Parse, userMessage = "Nhạc Vân NetEase chưa xác nhận ảnh đã được tải lên đầy đủ, vui lòng chọn lại ảnh rồi thử lại")
             offset += count
             context = (raw["context"] as? JsonPrimitive)?.contentOrNull?.takeIf(String::isNotBlank)
             if (!complete && context == null) throw ApiException(ErrorKind.Parse)

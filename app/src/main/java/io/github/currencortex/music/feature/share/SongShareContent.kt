@@ -4,10 +4,10 @@ import io.github.currencortex.music.data.song.MusicSource
 import io.github.currencortex.music.data.song.Song
 
 internal data class SongShareContent(val title: String, val artists: String, val publicUrl: String?) {
-    val text: String get() = listOf("分享歌曲《$title》", artists, publicUrl.orEmpty())
+    val text: String get() = listOf("Chia sẻ bài hát 《$title》", artists, publicUrl.orEmpty())
         .filter(String::isNotBlank).joinToString("\n")
     val filename: String get() = title.replace(Regex("[\\\\/:*?\"<>|\\p{Cntrl}]"), "_")
-        .take(64).trim().ifBlank { "歌曲分享" } + ".png"
+        .take(64).trim().ifBlank { "Chia sẻ bài hát" } + ".png"
 
     companion object {
         fun from(song: Song): SongShareContent {
@@ -15,8 +15,8 @@ internal data class SongShareContent(val title: String, val artists: String, val
             // IDs from other sources and private Navidrome credentials are never public song URLs.
             val id = if (!song.video && song.musicSource == MusicSource.NETEASE && song.navidrome == null && song.emby == null)
                 (song.externalIds.neteaseId?.toLongOrNull() ?: song.id).takeIf { it > 0 } else null
-            return SongShareContent(clean(song.name).ifBlank { "未命名歌曲" },
-                clean(song.artists).ifBlank { "未知歌手" },
+            return SongShareContent(clean(song.name).ifBlank { "Bài hát chưa có tên" },
+                clean(song.artists).ifBlank { "Ca sĩ không xác định" },
                 id?.let { "https://music.20110208.xyz/app/#/song/$it" })
         }
     }

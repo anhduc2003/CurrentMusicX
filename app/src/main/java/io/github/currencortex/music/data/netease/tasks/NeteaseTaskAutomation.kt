@@ -42,7 +42,7 @@ class NeteaseTaskAutomation(private val repository: NeteaseTaskRepository, val p
             val uid = owner.credential.profile!!.uid
             val day = NeteaseTaskPreferences.day(clock())
             val options = preferences.snapshot(uid)
-            if (options.signedDay(kind) == day) return@withLock "今日已签到"
+            if (options.signedDay(kind) == day) return@withLock "Hôm nay đã điểm danh"
             val prefix = kind.title
             when (val result = appResult { repository.sign(owner, kind) }) {
                 is AppResult.Success -> {

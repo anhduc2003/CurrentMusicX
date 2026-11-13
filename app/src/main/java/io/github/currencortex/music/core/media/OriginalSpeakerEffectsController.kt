@@ -13,7 +13,7 @@ data class OriginalSpeakerState(
     val available: Boolean = false,
     val scene: OriginalSpeakerScene = OriginalSpeakerScene.NORMAL,
     val modelId: Long? = null,
-    val message: String = "网易云原版外放音效已关闭",
+    val message: String = "Hiệu ứng âm thanh loa ngoài bản gốc của Nhạc Vân NetEase đã tắt",
 )
 
 /** Keeps the original negative material ID, live SVIP ownership, and speaker-only routing together. */
@@ -37,10 +37,10 @@ class OriginalSpeakerEffectsController internal constructor(
         rights = repository::entitlement, catalog = repository::catalog,
         prepare = { material -> withContext(Dispatchers.Default) {
             val decoded = repository.download(material)
-            require(decoded.type == 1) { "此外放音效素材不是兼容的原版 JSON 参数" }
+            require(decoded.type == 1) { "Tài nguyên hiệu ứng âm thanh loa ngoài này không phải tham số JSON bản gốc tương thích" }
             // Type-10 original speakers explicitly use modern aev2 when present.
             NeteasePresetParameters.fromJson(decoded.bytes.toString(Charsets.UTF_8), soundType = 9)
-            NeteaseOriginalPreset(material.id, material.name.ifBlank { "外放音效" }, decoded.type, decoded.bytes)
+            NeteaseOriginalPreset(material.id, material.name.ifBlank { "Hiệu ứng âm thanh loa ngoài" }, decoded.type, decoded.bytes)
         } }, scope = scope, beforeEnable = beforeEnable)
 
     private data class PlaybackContext(val account: OriginalSmartAccount, val environment: OriginalSpeakerEnvironment, val engine: Boolean)
@@ -64,7 +64,7 @@ class OriginalSpeakerEffectsController internal constructor(
             val old = context
             context = next
             if (requested && ownerId > 0 && (ownerId != next.account.userId || !next.account.loggedIn || next.account.stale)) {
-                disable("网易云账号已变化，请重新开启外放音效")
+                disable("Tài khoản Nhạc Vân NetEase đã thay đổi, vui lòng bật lại hiệu ứng âm thanh loa ngoài")
             } else if (old?.account != next.account || old?.engine != next.engine || old?.environment?.speaker != next.environment.speaker ||
                 old?.let { originalSpeakerId(scene, it.environment.landscape, it.environment.volume) } !=
                 originalSpeakerId(scene, next.environment.landscape, next.environment.volume)) evaluate()
@@ -80,7 +80,7 @@ class OriginalSpeakerEffectsController internal constructor(
     }
     fun setScene(value: OriginalSpeakerScene) { if (!closed) { scene = value; if (requested) evaluate() else mutableState.value = state.value.copy(scene = value) } }
     fun refresh() { if (!closed) evaluate() }
-    fun disable() = disable("网易云原版外放音效已关闭")
+    fun disable() = disable("Hiệu ứng âm thanh loa ngoài bản gốc của Nhạc Vân NetEase đã tắt")
     private fun disable(message: String) {
         requested = false; ownerId = 0
         invalidate()
@@ -96,43 +96,43 @@ class OriginalSpeakerEffectsController internal constructor(
         val current = context
         val base = OriginalSpeakerState(available = current?.engine == true, requestedEnabled = requested, scene = scene)
         if (!requested) { mutableState.value = base; return }
-        if (current == null) { mutableState.value = base.copy(loading = true, message = "正在读取外放音效状态"); return }
+        if (current == null) { mutableState.value = base.copy(loading = true, message = "Đang đọc trạng thái hiệu ứng âm thanh loa ngoài"); return }
         if (!current.account.loggedIn || current.account.stale || current.account.userId <= 0) {
-            mutableState.value = base.copy(message = "请先登录网易云账号，再核验外放音效权益"); return
+            mutableState.value = base.copy(message = "Vui lòng đăng nhập tài khoản Nhạc Vân NetEase trước, rồi xác minh quyền sử dụng hiệu ứng âm thanh loa ngoài"); return
         }
-        if (!current.engine) { mutableState.value = base.copy(message = "请先导入网易云原版音效引擎"); return }
-        if (!current.environment.speaker) { mutableState.value = base.copy(message = "外放音效仅在手机扬声器播放时启用，当前已暂停处理"); return }
+        if (!current.engine) { mutableState.value = base.copy(message = "Vui lòng nhập engine hiệu ứng âm thanh bản gốc của Nhạc Vân NetEase trước"); return }
+        if (!current.environment.speaker) { mutableState.value = base.copy(message = "Hiệu ứng âm thanh loa ngoài chỉ bật khi phát qua loa điện thoại; hiện đã tạm dừng xử lý"); return }
         val selectedScene = scene
         val id = originalSpeakerId(selectedScene, current.environment.landscape, current.environment.volume)
-        mutableState.value = base.copy(loading = true, modelId = id, message = "正在加载网易云原版外放音效")
+        mutableState.value = base.copy(loading = true, modelId = id, message = "Đang tải hiệu ứng âm thanh loa ngoài bản gốc của Nhạc Vân NetEase")
         pending = scope.launch {
             try {
                 val permission = rights()
                 check(permission.userId == current.account.userId && permission.canUse && permission.expiresAt > now()) {
-                    "当前网易云账号没有有效的 SVIP 外放音效权益"
+                    "Tài khoản Nhạc Vân NetEase hiện tại không có quyền sử dụng hiệu ứng âm thanh loa ngoài SVIP hợp lệ"
                 }
                 val material = catalog(selectedScene).firstOrNull { it.id == id }
-                    ?: error("网易云未下发当前姿态、音量和场景的外放素材")
+                    ?: error("Nhạc Vân NetEase không cung cấp tài nguyên âm thanh loa ngoài cho tư thế, âm lượng và ngữ cảnh hiện tại")
                 val prepared = prepare(material)
-                check(prepared.id == id) { "外放音效素材与所选项目不一致" }
+                check(prepared.id == id) { "Tài nguyên hiệu ứng âm thanh loa ngoài không khớp với mục đã chọn" }
                 if (closed || token != generation) return@launch
-                check(permission.expiresAt > now()) { "网易云 SVIP 权益已到期" }
+                check(permission.expiresAt > now()) { "Quyền SVIP của Nhạc Vân NetEase đã hết hạn" }
                 beforeEnable()
                 if (closed || token != generation) return@launch
-                check(permission.expiresAt > now()) { "网易云 SVIP 权益已到期" }
+                check(permission.expiresAt > now()) { "Quyền SVIP của Nhạc Vân NetEase đã hết hạn" }
                 ownerId = permission.userId
                 mutableSelection.value = prepared
-                mutableState.value = base.copy(enabled = true, modelId = id, message = "${selectedScene.label} · 原版外放音效已启用")
+                mutableState.value = base.copy(enabled = true, modelId = id, message = "${selectedScene.label} · Đã bật hiệu ứng âm thanh loa ngoài bản gốc")
                 expiry = scope.launch {
                     while (token == generation && permission.expiresAt > now())
                         delay((permission.expiresAt - now()).coerceIn(1, 60_000))
-                    if (token == generation) disable("网易云 SVIP 权益已到期，已停止外放音效")
+                    if (token == generation) disable("Quyền SVIP của Nhạc Vân NetEase đã hết hạn, hiệu ứng âm thanh loa ngoài đã dừng")
                 }
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (failure: Exception) {
                 if (token == generation) mutableState.value = base.copy(modelId = id,
                     message = failure.message?.takeIf { it.isNotBlank() && it.length < 180 }
-                        ?: "外放音效资源或权益核验未完成，请重试")
+                         ?: "Chưa xác minh xong tài nguyên hoặc quyền sử dụng hiệu ứng âm thanh loa ngoài, vui lòng thử lại")
             }
         }
     }

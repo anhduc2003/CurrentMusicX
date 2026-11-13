@@ -51,7 +51,7 @@ class LibraryViewModel(val container: AppContainer) : ViewModel() {
                     val sameAccount = identity == nextIdentity
                     if (!sameAccount) likes.dismiss()
                     identity = nextIdentity
-                    val pending = setOf("每日推荐", "每日推荐歌单", "最近播放", "我的歌单")
+                    val pending = setOf("Đề xuất hằng ngày", "Danh sách phát đề xuất hằng ngày", "Nghe gần đây", "Danh sách phát của tôi")
                     home.value = if (sameAccount) home.value.copy(loading = true, errors = emptyMap(), pendingSections = pending)
                         else LibraryHomeState(loading = true, pendingSections = pending)
                     loadHome()
@@ -67,7 +67,7 @@ class LibraryViewModel(val container: AppContainer) : ViewModel() {
     }
     fun refresh() {
         if (home.value.loading) return
-        home.update { it.copy(loading = true, errors = emptyMap(), pendingSections = setOf("每日推荐", "每日推荐歌单", "最近播放", "我的歌单")) }
+        home.update { it.copy(loading = true, errors = emptyMap(), pendingSections = setOf("Đề xuất hằng ngày", "Danh sách phát đề xuất hằng ngày", "Nghe gần đây", "Danh sách phát của tôi")) }
         container.libraryRepository.clearReads(); container.neteaseLibrary.invalidate(); refreshRequest.update { it + 1 }
     }
     fun refreshForNewDay() { if (homeDay != LocalDate.now()) refresh() }
@@ -81,21 +81,21 @@ class LibraryViewModel(val container: AppContainer) : ViewModel() {
             }
         }
         listOf(
-            launch { section("每日推荐", { container.libraryRepository.daily() }) { s, d -> s.copy(daily = d.songs, forYou = d.forYou) } },
-            launch { section("每日推荐歌单", { container.neteaseLibrary.recommendedPlaylists() }) { s, d -> s.copy(recommendedPlaylists = d) } },
-            launch { section("最近播放", { container.libraryRepository.recent() }) { s, d -> s.copy(recent = d) } },
-            launch { section("我的歌单", { container.primaryLibrary.playlists() }) { s, d -> s.copy(playlists = d) } },
+            launch { section("Đề xuất hằng ngày", { container.libraryRepository.daily() }) { s, d -> s.copy(daily = d.songs, forYou = d.forYou) } },
+            launch { section("Danh sách phát đề xuất hằng ngày", { container.neteaseLibrary.recommendedPlaylists() }) { s, d -> s.copy(recommendedPlaylists = d) } },
+            launch { section("Nghe gần đây", { container.libraryRepository.recent() }) { s, d -> s.copy(recent = d) } },
+            launch { section("Danh sách phát của tôi", { container.primaryLibrary.playlists() }) { s, d -> s.copy(playlists = d) } },
         ).joinAll()
         home.update { it.copy(loading = false, loaded = true, pendingSections = emptySet()) }
     }
     fun toggle(song: Song) = viewModelScope.launch {
         when (val result = container.libraryRepository.toggleLike(song)) {
             is AppResult.Failure -> container.errorNotices.show(result.kind.message)
-            is AppResult.Success -> message.value = "点赞已更新"
+            is AppResult.Success -> message.value = "Đã cập nhật lượt thích"
         }
     }
     fun choosePlaylist(song: Song) {
-        if (song.emby != null) { message.value = "Emby 歌单当前仅支持浏览"; return }
+        if (song.emby != null) { message.value = "Danh sách phát Emby hiện chỉ hỗ trợ duyệt"; return }
         if (busy.value) return
         likes.dismiss()
         selectedSong.value = song
@@ -136,7 +136,7 @@ class LibraryViewModel(val container: AppContainer) : ViewModel() {
     fun addToPlaylist(playlist: Playlist) {
         val song = selectedSong.value ?: return
         if (playlist !in availablePlaylists.value) return
-        action("已加入歌单") {
+            action("Đã thêm vào danh sách phát") {
             if (playlist.source == "navidrome") container.navidrome.add(playlist.remoteId, song)
             else if (playlist.source == "netease") container.neteaseLibrary.add(playlist.id, song)
             else container.libraryRepository.add(playlist.id, listOf(song))
@@ -182,7 +182,7 @@ class LibraryViewModel(val container: AppContainer) : ViewModel() {
                     }
                 }) {
                     is AppResult.Success -> if (expected == container.musicSession()) {
-                        message.value = "已${if (liked) "收藏" else "取消收藏"} ${selected.size} 首歌曲"
+                         message.value = "Đã${if (liked) " lưu vào mục yêu thích" else " bỏ lưu"} ${selected.size} bài hát"
                         onSuccess()
                     }
                     is AppResult.Failure -> batchFavorites.update { it.copy(error = result.kind.message) }
@@ -243,7 +243,7 @@ class LibraryViewModel(val container: AppContainer) : ViewModel() {
                         if (!song.privateLibrary) container.libraryRepository.invalidate()
                         if (undoable && !result.value) {
                             val restoreLike = requireNotNull(restore)
-                            likeUndoNotice = container.errorNotices.showUndo("已取消喜欢") {
+                             likeUndoNotice = container.errorNotices.showUndo("Đã bỏ thích") {
                                 if (!primaryLikeBusy.value && expected == container.musicSession()) {
                                     primaryLikeBusy.value = true
                                     viewModelScope.launch {
@@ -254,7 +254,7 @@ class LibraryViewModel(val container: AppContainer) : ViewModel() {
                                             }) {
                                                 is AppResult.Success -> if (expected == container.musicSession()) {
                                                     if (!song.privateLibrary) container.libraryRepository.invalidate()
-                                                    container.errorNotices.showMessage("已恢复喜欢")
+                                                     container.errorNotices.showMessage("Đã khôi phục lượt thích")
                                                 }
                                                 is AppResult.Failure -> if (expected == container.musicSession()) container.errorNotices.show(undone.kind.message)
                                             }
@@ -262,14 +262,14 @@ class LibraryViewModel(val container: AppContainer) : ViewModel() {
                                     }
                                 }
                             }
-                        } else message.value = if (result.value) "已加入我喜欢" else "已取消喜欢"
+                         } else message.value = if (result.value) "Đã thêm vào mục Tôi thích" else "Đã bỏ thích"
                     }
                     is AppResult.Failure -> if (expected == container.musicSession()) container.errorNotices.show(result.kind.message)
                 }
             } finally { primaryLikeBusy.value = false }
         }
     }
-    fun create(name: String, description: String, done: () -> Unit) = action("歌单已创建") {
+     fun create(name: String, description: String, done: () -> Unit) = action("Đã tạo danh sách phát") {
         if (container.nativeNetease != null && container.primaryLibrary.resolveNetease()) container.neteaseLibrary.create(name)
         else container.libraryRepository.create(name, description)
         done()
@@ -408,12 +408,12 @@ class LibraryDetailViewModel(val container: AppContainer, val route: String) : V
         task = viewModelScope.launch {
             when (val result = appResult {
                 when (kind) {
-                    "daily", "foryou" -> container.libraryRepository.daily(fresh = force).let { previous.copy(title = if (kind == "daily") "每日推荐" else "猜你喜欢", songs = if (kind == "daily") it.songs else it.forYou) }
+                     "daily", "foryou" -> container.libraryRepository.daily(fresh = force).let { previous.copy(title = if (kind == "daily") "Đề xuất hằng ngày" else "Dành cho bạn", songs = if (kind == "daily") it.songs else it.forYou) }
                     "likes" -> container.primaryLibrary.likedPlaylist(force)?.let {
                         previous.copy(title = it.name, description = it.description, cover = it.cover, songs = it.songs, playlist = it)
-                    } ?: previous.copy(title = "我喜欢的音乐", cover = "", description = "", playlist = null,
+                     } ?: previous.copy(title = "Nhạc tôi yêu thích", cover = "", description = "", playlist = null,
                         songs = container.libraryRepository.likedSongs(fresh = force))
-                    "recent" -> previous.copy(title = "最近播放", songs = container.libraryRepository.recent(fresh = force))
+                     "recent" -> previous.copy(title = "Nghe gần đây", songs = container.libraryRepository.recent(fresh = force))
                     "ncmplaylist" -> container.neteaseLibrary.playlist(id, fresh = force).let { previous.copy(title = it.name,
                         description = it.description, cover = it.cover, songs = it.songs, playlist = it) }
                     "playlist" -> container.libraryRepository.playlist(id, fresh = force).let { previous.copy(title = it.name, description = it.description,

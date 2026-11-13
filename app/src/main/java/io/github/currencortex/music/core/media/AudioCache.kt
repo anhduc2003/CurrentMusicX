@@ -64,11 +64,11 @@ class AudioCache(context: Context, directory: File,
 
     /** Called on the resolver's IO dispatcher; the provider enforces current URI read access. */
     internal fun validateLocalUri(uri: Uri) {
-        require(uri.scheme == "content" && !uri.authority.isNullOrBlank()) { "本地音频地址无效" }
+        require(uri.scheme == "content" && !uri.authority.isNullOrBlank()) { "Địa chỉ âm thanh cục bộ không hợp lệ" }
         if (uri.authority == "media") return
-        require(android.provider.DocumentsContract.isDocumentUri(appContext, uri)) { "本地音频地址无效" }
+        require(android.provider.DocumentsContract.isDocumentUri(appContext, uri)) { "Địa chỉ âm thanh cục bộ không hợp lệ" }
         appContext.contentResolver.openAssetFileDescriptor(uri, "r")?.use { }
-            ?: throw java.io.FileNotFoundException("无法读取本地音频，请重新选择文件夹")
+            ?: throw java.io.FileNotFoundException("Không thể đọc âm thanh cục bộ, vui lòng chọn lại thư mục")
     }
 
     // MV and room URLs have no custom key and bypass the audio cache entirely.

@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
- * Sleep timer ("定时关闭"). Counts down on wall-clock deadlines rather than playback position, so it
+  * Sleep timer ("Hẹn giờ tắt"). Counts down on wall-clock deadlines rather than playback position, so it
  * keeps working while the player is paused, the sheet is closed or the app is backgrounded. The
  * player stays the only source of truth for what is playing.
  */
@@ -90,7 +90,7 @@ class SleepTimer(private val player: PlayerController, private val scope: Corout
         }
         player.pause()
         job = null
-        state.value = State(notice = if (current.extendToSongEnd) "已播完当前歌曲，已暂停播放" else "定时关闭已生效，已暂停播放")
+         state.value = State(notice = if (current.extendToSongEnd) "Đã phát xong bài hát hiện tại, đã tạm dừng phát" else "Hẹn giờ tắt đã có hiệu lực, đã tạm dừng phát")
     }
 
     companion object {

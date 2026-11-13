@@ -28,24 +28,24 @@ import io.github.currencortex.music.data.song.NeteaseSongActionsRepository
         val liked = likePreview?.takeIf { it.song.id == queue.current?.id && it.song.musicSource == queue.current?.musicSource &&
             it.song.privateIdentity == queue.current?.privateIdentity }?.liked
             ?: if (neteaseMain || navidrome) current?.liked == true else statuses[queue.current?.id]?.liked == true
-        PlayerIconButton(PlayerIcon.LIKE, if (liked) "取消喜欢" else "喜欢", vm::togglePrimaryLike,
+        PlayerIconButton(PlayerIcon.LIKE, if (liked) "Bỏ thích" else "Thích", vm::togglePrimaryLike,
             Modifier.testTag("player_like"), selected = liked, count = current?.likeCount,
             showCount = true, enabled = queue.current?.video == false && queue.current?.musicSource != io.github.currencortex.music.data.song.MusicSource.LOCAL &&
                 (queue.current?.musicSource != io.github.currencortex.music.data.song.MusicSource.EMBY || current?.liked != null), onLongClick = onLike)
         Box(middleSlot, contentAlignment = Alignment.Center) {
-            PlayerIconButton(PlayerIcon.COMMENT, "评论区", onComments, Modifier.testTag("player_comments"),
+            PlayerIconButton(PlayerIcon.COMMENT, "Khu vực bình luận", onComments, Modifier.testTag("player_comments"),
                 count = current?.commentCount, showCount = true, enabled = id != null)
         }
         // Lit while a timer is running, so an armed timer is visible without opening the sheet.
         Box(middleSlot, contentAlignment = Alignment.Center) {
-            PlayerIconButton(PlayerIcon.ALARM, "定时关闭${if (sleep.enabled) "，正在计时" else ""}", onSleep,
+            PlayerIconButton(PlayerIcon.ALARM, "Tắt theo giờ${if (sleep.enabled) "，đang đếm giờ" else ""}", onSleep,
                 Modifier.testTag("player_sleep_timer"), selected = sleep.enabled)
         }
         if (onOptions != null) {
             Box(middleSlot, contentAlignment = Alignment.Center) {
-                PlayerIconButton(PlayerIcon.EFFECTS, "音效", onEffects ?: {}, Modifier.testTag("player_effects"), enabled = onEffects != null)
+                PlayerIconButton(PlayerIcon.EFFECTS, "Hiệu ứng âm thanh", onEffects ?: {}, Modifier.testTag("player_effects"), enabled = onEffects != null)
             }
-            PlayerIconButton(PlayerIcon.MORE, "播放与歌词设置", onOptions, Modifier.testTag("lyrics_options"))
+            PlayerIconButton(PlayerIcon.MORE, "Cài đặt phát nhạc và lời bài hát", onOptions, Modifier.testTag("lyrics_options"))
         } else {
             PlayerPlaybackModeButton(vm)
             PlayerQueueButton(vm, onQueue)
@@ -69,12 +69,12 @@ import io.github.currencortex.music.data.song.NeteaseSongActionsRepository
         onLongClick = if (!together.active && player.mode == PlayerMode.LOCAL &&
             NeteaseSongActionsRepository.songId(queue.current) != null) {
             { vm.setPlaybackMode(PlaybackMode.HEART) }
-        } else null, onLongClickLabel = "启用心动模式")
+        } else null, onLongClickLabel = "Bật chế độ rung động trái tim")
 }
 
 @Composable internal fun PlayerQueueButton(vm: PlayerViewModel, onQueue: () -> Unit) {
     val queue by vm.queue.collectAsStateWithLifecycle()
     val together by vm.together.state.collectAsStateWithLifecycle()
     val shared by vm.together.queue.collectAsStateWithLifecycle()
-    PlayerIconButton(PlayerIcon.QUEUE, if (together.active) "一起听歌单，${shared.songs.size} 首" else "播放列表，${queue.songs.size} 首", onQueue, Modifier.testTag("open_player_queue"))
+    PlayerIconButton(PlayerIcon.QUEUE, if (together.active) "Danh sách nghe cùng nhau, ${shared.songs.size} bài" else "Danh sách phát, ${queue.songs.size} bài", onQueue, Modifier.testTag("open_player_queue"))
 }

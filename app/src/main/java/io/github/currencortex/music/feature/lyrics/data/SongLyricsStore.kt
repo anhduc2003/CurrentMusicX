@@ -65,7 +65,7 @@ class SongLyricsStore(private val directory: File) {
     suspend fun saveMatched(song: Song, saved: SavedLyrics) = save(song, saved, false, null)
 
     suspend fun selectImported(song: Song, enabled: Boolean) = mutate(song) { previous ->
-        require(!enabled || previous.imported != null) { "尚未导入这首歌的歌词" }
+        require(!enabled || previous.imported != null) { "Chưa nhập lời bài hát này" }
         if (previous.settings.useImported == enabled) previous else previous.copy(settings = previous.settings.copy(
             useImported = enabled, contentRevision = nextRevision(previous)))
     }
@@ -83,10 +83,10 @@ class SongLyricsStore(private val directory: File) {
             val clean = saved.copy(document = saved.document.withoutEstimatedTiming())
             LyricsFileCodec.validate(clean.document)
             val bytes = json.encodeToString(clean).toByteArray(Charsets.UTF_8)
-            require(bytes.size <= LyricsFileCodec.MAX_BYTES) { "歌词文件过大，最多支持 2 MB" }
+            require(bytes.size <= LyricsFileCodec.MAX_BYTES) { "Tệp lời bài hát quá lớn, chỉ hỗ trợ tối đa 2 MB" }
             val key = identity(song)
-            require(key.length <= 1024) { "歌曲标识过长" }
-            require(entries.containsKey(key) || entries.size < MAX_SONGS) { "已保存的单曲歌词设置达到 1000 首上限" }
+            require(key.length <= 1024) { "Mã định danh bài hát quá dài" }
+            require(entries.containsKey(key) || entries.size < MAX_SONGS) { "Đã đạt giới hạn 1000 bài hát cho cài đặt lời bài hát đã lưu" }
             val previous = entries[key] ?: Entry()
             ensureDirectory()
             val name = "${UUID.randomUUID()}.json"
@@ -113,11 +113,11 @@ class SongLyricsStore(private val directory: File) {
         withContext(Dispatchers.IO) {
             checkWritable()
             val key = identity(song)
-            require(key.length <= 1024) { "歌曲标识过长" }
+            require(key.length <= 1024) { "Mã định danh bài hát quá dài" }
             val previous = entries[key] ?: Entry()
             val next = transform(previous)
             if (next == previous) return@withContext
-            require(entries.containsKey(key) || entries.size < MAX_SONGS) { "已保存的单曲歌词设置达到 1000 首上限" }
+            require(entries.containsKey(key) || entries.size < MAX_SONGS) { "Đã đạt giới hạn 1000 bài hát cho cài đặt lời bài hát đã lưu" }
             currentCoroutineContext().ensureActive()
             commit(key, next)
         }
@@ -128,7 +128,7 @@ class SongLyricsStore(private val directory: File) {
         ensureDirectory()
         val updated = entries + (key to next)
         val bytes = json.encodeToString(Index(entries = updated)).toByteArray(Charsets.UTF_8)
-        require(bytes.size <= MAX_INDEX_BYTES) { "歌词设置索引过大" }
+        require(bytes.size <= MAX_INDEX_BYTES) { "Chỉ mục cài đặt lời bài hát quá lớn" }
         previousIndex?.let { atomicWrite(File(directory, "index.backup.json"), it) }
         atomicWrite(File(directory, "index.json"), bytes)
         val previousEntries = entries
@@ -150,7 +150,7 @@ class SongLyricsStore(private val directory: File) {
         val backupPresent = Files.exists(backup.toPath(), java.nio.file.LinkOption.NOFOLLOW_LINKS)
         if (!primaryPresent && !backupPresent) {
             if (directory.listFiles()?.any { it.name.startsWith("index") && ".corrupt-" in it.name } == true) {
-                blockedReason = "单曲歌词索引仅剩损坏文件，原文件已保留；为防止覆盖，暂时无法修改歌词设置"
+                blockedReason = "Chỉ mục lời bài hát riêng cho từng bài chỉ còn tệp bị hỏng; tệp gốc đã được giữ lại. Để tránh ghi đè, hiện chưa thể chỉnh sửa cài đặt lời bài hát"
                 recoveryMessage = blockedReason
             }
             return emptyMap()
@@ -160,21 +160,21 @@ class SongLyricsStore(private val directory: File) {
         if (first?.isSuccess == true) {
             previousIndex = first.getOrThrow().first
             if (second?.isFailure == true) {
-                recoveryMessage = "歌词设置备份损坏，原文件已保留；当前设置仍可读取"
-                if (!preserveDamaged(backup)) blockedReason = "无法保留损坏的歌词备份，暂时无法修改歌词设置"
+                recoveryMessage = "Bản sao lưu cài đặt lời bài hát bị hỏng; tệp gốc đã được giữ lại. Cài đặt hiện tại vẫn có thể đọc được"
+                if (!preserveDamaged(backup)) blockedReason = "Không thể giữ lại bản sao lưu lời bài hát bị hỏng; hiện chưa thể chỉnh sửa cài đặt lời bài hát"
             }
             return first.getOrThrow().second
         }
         if (second?.isSuccess == true) {
             previousIndex = second.getOrThrow().first
-            recoveryMessage = "歌词设置索引无法读取，已从上一次保存的备份恢复；损坏原文件已保留"
-            if (primaryPresent && !preserveDamaged(primary)) blockedReason = "无法保留损坏的歌词索引，已恢复的设置仅可读取"
+            recoveryMessage = "Không thể đọc chỉ mục cài đặt lời bài hát; đã khôi phục từ bản sao lưu gần nhất. Tệp gốc bị hỏng đã được giữ lại"
+            if (primaryPresent && !preserveDamaged(primary)) blockedReason = "Không thể giữ lại chỉ mục lời bài hát bị hỏng; cài đặt đã khôi phục chỉ có thể đọc"
             return second.getOrThrow().second
         }
         // Do not reinterpret an unreadable existing library as an empty writable library.
         if (primaryPresent) preserveDamaged(primary)
         if (backupPresent) preserveDamaged(backup)
-        blockedReason = "已保存的单曲歌词索引及备份无法读取，原文件已保留；为防止覆盖，暂时无法修改歌词设置"
+        blockedReason = "Không thể đọc chỉ mục lời bài hát riêng cho từng bài và bản sao lưu đã lưu; tệp gốc đã được giữ lại. Để tránh ghi đè, hiện chưa thể chỉnh sửa cài đặt lời bài hát"
         recoveryMessage = blockedReason
         return emptyMap()
     }
@@ -182,7 +182,7 @@ class SongLyricsStore(private val directory: File) {
     private fun decodeIndex(file: File): Pair<ByteArray, Map<String, Entry>> {
         val bytes = boundedRead(file, MAX_INDEX_BYTES)
         val index = json.decodeFromString<Index>(bytes.toString(Charsets.UTF_8))
-        require(index.version == 1 && index.entries.size <= MAX_SONGS) { "不支持的歌词设置索引" }
+        require(index.version == 1 && index.entries.size <= MAX_SONGS) { "Chỉ mục cài đặt lời bài hát không được hỗ trợ" }
         index.entries.forEach { (key, value) ->
             require(key.length <= 1024 && value.settings.offsetMs in -60_000L..60_000L && value.settings.contentRevision >= 0)
             listOfNotNull(value.imported, value.matched).forEach { name ->
@@ -204,14 +204,14 @@ class SongLyricsStore(private val directory: File) {
     }.isSuccess
 
     private fun boundedRead(file: File, maximum: Long): ByteArray {
-        require(file.isFile && !Files.isSymbolicLink(file.toPath()) && file.length() <= maximum) { "保存的歌词文件无法读取或超过大小限制" }
+        require(file.isFile && !Files.isSymbolicLink(file.toPath()) && file.length() <= maximum) { "Không thể đọc tệp lời bài hát đã lưu hoặc tệp vượt quá giới hạn kích thước" }
         file.inputStream().use { input ->
             val result = java.io.ByteArrayOutputStream()
             val buffer = ByteArray(8192)
             while (true) {
                 val size = input.read(buffer)
                 if (size < 0) break
-                require(result.size().toLong() + size <= maximum) { "保存的歌词文件超过大小限制" }
+                require(result.size().toLong() + size <= maximum) { "Tệp lời bài hát đã lưu vượt quá giới hạn kích thước" }
                 result.write(buffer, 0, size)
             }
             return result.toByteArray()
@@ -228,10 +228,10 @@ class SongLyricsStore(private val directory: File) {
         return clean
     }
 
-    private fun ensureDirectory() { check(directory.isDirectory || directory.mkdirs()) { "无法保存单曲歌词" } }
+    private fun ensureDirectory() { check(directory.isDirectory || directory.mkdirs()) { "Không thể lưu lời bài hát riêng cho từng bài" } }
     private fun checkWritable() { check(blockedReason == null) { blockedReason.orEmpty() } }
     private fun nextRevision(entry: Entry): Long {
-        check(entry.settings.contentRevision < Long.MAX_VALUE) { "歌词设置版本过大" }
+        check(entry.settings.contentRevision < Long.MAX_VALUE) { "Phiên bản cài đặt lời bài hát quá lớn" }
         return entry.settings.contentRevision + 1
     }
 
@@ -267,7 +267,7 @@ class SongLyricsStore(private val directory: File) {
             return "${song.musicSource.name.lowercase(Locale.ROOT)}:${external?.takeIf { it.isNotBlank() } ?: song.id}"
         }
         private fun validateOrigin(origin: LyricsOrigin) {
-            require(origin.label.length <= 256 && origin.provider.length <= 128 && origin.reference.length <= 2048) { "歌词来源信息过长" }
+            require(origin.label.length <= 256 && origin.provider.length <= 128 && origin.reference.length <= 2048) { "Thông tin nguồn lời bài hát quá dài" }
         }
     }
 }

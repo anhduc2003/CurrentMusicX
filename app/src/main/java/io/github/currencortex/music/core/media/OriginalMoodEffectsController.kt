@@ -16,7 +16,7 @@ import kotlinx.coroutines.sync.withLock
 data class OriginalMoodState(
     val enabled: Boolean = false,
     val loading: Boolean = false,
-    val message: String = "网易云原版AI 情绪音效已关闭",
+    val message: String = "Hiệu ứng âm thanh cảm xúc AI bản gốc của Nhạc Vân NetEase đã tắt",
     val processing: Boolean = false,
     val available: Boolean = false,
     val requestedEnabled: Boolean = false,
@@ -80,7 +80,7 @@ class OriginalMoodEffectsController internal constructor(
                 val old = context
                 context = next
                 if (requested.enabled && requested.ownerId > 0 && requested.ownerId != next.account.userId) {
-                    revoke("账号已切换，请为当前网易云账号重新开启AI 情绪音效")
+                    revoke("Tài khoản đã chuyển đổi, vui lòng bật lại hiệu ứng âm thanh cảm xúc AI cho tài khoản Nhạc Vân NetEase hiện tại")
                 } else if (old != next) evaluate()
             }
     }
@@ -119,24 +119,24 @@ class OriginalMoodEffectsController internal constructor(
         mutableState.value = OriginalMoodState(available = current?.engine ?: false,
             requestedEnabled = requested.enabled, songId = current?.target?.id,
             loading = requested.enabled && current != null,
-            message = if (requested.enabled) "正在验证网易云 AI 情绪专属权益" else "网易云原版AI 情绪音效已关闭")
+            message = if (requested.enabled) "Đang xác minh quyền lợi dành riêng cho AI cảm xúc của Nhạc Vân NetEase" else "Hiệu ứng âm thanh cảm xúc AI bản gốc của Nhạc Vân NetEase đã tắt")
         if (!requested.enabled || closed || current == null) return
         val account = current.account
         if (!account.loggedIn || account.stale || account.userId <= 0) {
-            revoke("请先登录有效的网易云 AI 情绪专属账号")
+            revoke("Vui lòng đăng nhập tài khoản Nhạc Vân NetEase dành riêng cho AI cảm xúc hợp lệ trước")
             return
         }
         if (requested.ownerId != 0L && requested.ownerId != account.userId) {
-            revoke("保存的AI 情绪音效不属于当前网易云账号")
+            revoke("Hiệu ứng âm thanh cảm xúc AI đã lưu không thuộc tài khoản Nhạc Vân NetEase hiện tại")
             return
         }
         pending = scope.launch request@ {
             try {
                 val right = retryMoodNetwork { entitlement() }
                 if (!isCurrent(token, current)) return@request
-                if (right.userId != account.userId) { revoke("网易云权益账号校验未通过，请重新登录后再试"); return@request }
+                if (right.userId != account.userId) { revoke("Xác minh tài khoản quyền lợi Nhạc Vân NetEase không thành công, vui lòng đăng nhập lại rồi thử lại"); return@request }
                 if (!right.canUse || right.expiresAt <= now()) {
-                    revoke("网易云原版AI 情绪音效需要有效AI 情绪专属权益")
+                    revoke("Hiệu ứng âm thanh cảm xúc AI bản gốc của Nhạc Vân NetEase yêu cầu quyền lợi AI cảm xúc hợp lệ")
                     return@request
                 }
                 requested = OriginalSmartPreferences(true, account.userId)
@@ -153,14 +153,14 @@ class OriginalMoodEffectsController internal constructor(
                 }
                 if (!current.engine) {
                     mutableState.value = state.value.copy(loading = false,
-                        message = "已记住开启意图；导入兼容原版引擎后将重新验证权益")
+                        message = "Đã ghi nhớ ý định bật; sẽ xác minh lại quyền lợi sau khi nhập engine tương thích với bản gốc")
                     return@request
                 }
                 val raw = withContext(workDispatcher) { definition()?.copyOf() }
                 if (!isCurrent(token, current)) return@request
                 if (raw == null) {
                     mutableState.value = state.value.copy(loading = false,
-                        message = "原版AI 情绪音效资源尚未导入，当前继续使用手动音效")
+                        message = "Chưa nhập tài nguyên hiệu ứng âm thanh cảm xúc AI bản gốc, hiện tiếp tục sử dụng hiệu ứng âm thanh thủ công")
                     return@request
                 }
                 val target = current.target
@@ -170,9 +170,9 @@ class OriginalMoodEffectsController internal constructor(
                     if (!isCurrent(token, current)) return@request
                     beforeEnable()
                     if (!isCurrent(token, current)) return@request
-                    if (right.expiresAt <= now()) { revoke("网易云 AI 情绪专属权益已过期，已恢复手动音效"); return@request }
+                    if (right.expiresAt <= now()) { revoke("Quyền lợi dành riêng cho AI cảm xúc của Nhạc Vân NetEase đã hết hạn, đã khôi phục hiệu ứng âm thanh thủ công"); return@request }
                     mutableState.value = state.value.copy(enabled = true, loading = false,
-                        message = "已开启，播放网易云歌曲时自动匹配原版音效")
+                        message = "Đã bật, tự động khớp hiệu ứng âm thanh bản gốc khi phát bài hát Nhạc Vân NetEase")
                     return@request
                 }
                 val prepared = withContext(workDispatcher) {
@@ -189,18 +189,18 @@ class OriginalMoodEffectsController internal constructor(
                 if (!isCurrent(token, current)) return@request
                 beforeEnable()
                 if (!isCurrent(token, current)) return@request
-                if (right.expiresAt <= now()) { revoke("网易云 AI 情绪权益已过期，已恢复手动音效"); return@request }
+                if (right.expiresAt <= now()) { revoke("Quyền lợi AI cảm xúc của Nhạc Vân NetEase đã hết hạn, đã khôi phục hiệu ứng âm thanh thủ công"); return@request }
                 mutableSelection.value = prepared.preset()
                 mutableState.value = state.value.copy(enabled = true, loading = false, processing = false,
                     emotion = prepared.emotion, family = prepared.family, visualExtra = prepared.visualExtra,
-                    message = if (prepared.inferred) "原版 AI 情绪模型已匹配，等待音频处理" else "特征不足，已匹配原版情绪模板")
+                    message = if (prepared.inferred) "Đã khớp mô hình cảm xúc AI bản gốc, đang chờ xử lý âm thanh" else "Đặc trưng không đủ, đã khớp mẫu cảm xúc bản gốc")
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: LinkageError) {
-                if (isCurrent(token, current)) reportFailure("原版 AI 情绪引擎加载失败，请重新导入兼容安装包后重试")
+                if (isCurrent(token, current)) reportFailure("Tải engine cảm xúc AI bản gốc thất bại, vui lòng nhập lại gói cài đặt tương thích rồi thử lại")
             }
             catch (_: Exception) {
                 if (isCurrent(token, current)) mutableState.value = state.value.copy(enabled = false, loading = false,
-                    processing = false, message = "原版AI 情绪音效暂不可用，请检查网络或资源后重试；当前使用手动音效")
+                    processing = false, message = "Hiệu ứng âm thanh cảm xúc AI bản gốc hiện không khả dụng, vui lòng kiểm tra mạng hoặc tài nguyên rồi thử lại; hiện đang dùng hiệu ứng âm thanh thủ công")
             }
         }
     }
@@ -222,7 +222,7 @@ class OriginalMoodEffectsController internal constructor(
             catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) {
                 if (!closed && token == generation) mutableState.value = state.value.copy(
-                    message = "原版AI 情绪音效已关闭，但设置保存失败，请稍后重试")
+                    message = "Hiệu ứng âm thanh cảm xúc AI bản gốc đã tắt nhưng lưu cài đặt thất bại, vui lòng thử lại sau")
             }
         }
     }
@@ -238,7 +238,7 @@ class OriginalMoodEffectsController internal constructor(
     fun reportProcessing(presetId: Long) {
         if (closed || presetId != ORIGINAL_MOOD_PRESET_ID || selection.value?.id != presetId || !state.value.enabled) return
         if (permissionExpiresAt <= now()) evaluate()
-        else mutableState.value = state.value.copy(processing = true, message = "网易云原版AI 情绪音效正在处理音频")
+        else mutableState.value = state.value.copy(processing = true, message = "Hiệu ứng âm thanh cảm xúc AI bản gốc của Nhạc Vân NetEase đang xử lý âm thanh")
     }
 
     /** A native failure withdraws output but keeps the user's account-bound retry intention. */
@@ -247,7 +247,7 @@ class OriginalMoodEffectsController internal constructor(
         invalidate()
         mutableState.value = state.value.copy(enabled = false, loading = false, processing = false,
             requestedEnabled = requested.enabled, emotion = null, family = null, visualExtra = null,
-            message = message.take(200).ifBlank { "原版AI 情绪音效处理失败，当前使用手动音效；可重试" })
+            message = message.take(200).ifBlank { "Xử lý hiệu ứng âm thanh cảm xúc AI bản gốc thất bại, hiện đang dùng hiệu ứng âm thanh thủ công; có thể thử lại" })
     }
 
     override fun close() {

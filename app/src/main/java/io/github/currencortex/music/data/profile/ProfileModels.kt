@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonNames
 import kotlinx.serialization.ExperimentalSerializationApi
 import io.github.currencortex.music.core.network.ApiBooleanSerializer
 
-enum class UserRole(val label: String) { ADMIN("管理员"), SUPER_ADMIN("超级管理员"), OWNER("站长") }
+enum class UserRole(val label: String) { ADMIN("Quản trị viên"), SUPER_ADMIN("Quản trị viên cấp cao"), OWNER("Chủ trang") }
 fun userRole(isAdmin: Boolean, isSuper: Boolean, isOwner: Boolean = false): UserRole? = when {
     isOwner -> UserRole.OWNER
     isSuper -> UserRole.SUPER_ADMIN
@@ -57,5 +57,5 @@ fun userRole(isAdmin: Boolean, isSuper: Boolean, isOwner: Boolean = false): User
 
 fun listeningDuration(ms: Long): String {
     val minutes = ms.coerceAtLeast(0) / 60_000
-    return if (minutes >= 60) "${minutes / 60} 小时 ${minutes % 60} 分" else "$minutes 分钟"
+    return if (minutes >= 60) "${minutes / 60} giờ ${minutes % 60} phút" else "$minutes phút"
 }

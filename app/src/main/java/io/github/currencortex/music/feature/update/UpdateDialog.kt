@@ -85,7 +85,7 @@ fun UpdatePage(service: UpdateService, transfer: UpdateTransfer, cover: String =
         onSourceSelected = { source -> scope.launch {
             try { service.settings.setDownloadSource(source) }
             catch (cancelled: kotlinx.coroutines.CancellationException) { throw cancelled }
-            catch (_: Exception) { context.showMusicMessage("无法保存下载源，请重试") }
+            catch (_: Exception) { context.showMusicMessage("Không thể lưu nguồn tải xuống, vui lòng thử lại") }
         } },
         installedNotesState = installedNotes, onRetryInstalledNotes = { scope.launch { service.loadInstalledNotes() } })
     if (!visible) prompt?.let { available ->
@@ -122,23 +122,23 @@ fun UpdateDialogContent(state: UpdateState, onDismiss: () -> Unit, onRetry: () -
             (LocalConfiguration.current.screenHeightDp * .82f).dp.coerceAtMost(680.dp))) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text(if (release != null && downloadExperience) "下载体验" else if (release != null) "发现新版本" else "检查更新", fontSize = 20.sp,
+            Text(if (release != null && downloadExperience) "Tải bản trải nghiệm" else if (release != null) "Đã có phiên bản mới" else "Kiểm tra cập nhật", fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
             if (release != null) Text("v${release.version}", fontSize = 14.sp,
                 fontWeight = FontWeight.Medium, color = MiuixTheme.colorScheme.primary,
                 maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
-        if (release != null) Text("${if (release.isCi) "CI 版" else "正式版"} · 安装包 ${formatSize(release.size)}",
+        if (release != null) Text("${if (release.isCi) "Bản CI" else "Bản chính thức"} · Gói cài đặt ${formatSize(release.size)}",
             fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary,
             modifier = Modifier.padding(top = 4.dp))
         Spacer(Modifier.height(14.dp))
-        if (downloadExperience) Text("下载进度优先显示在灵动岛；完成后可点击查看更新详情。", fontSize = 13.sp,
+        if (downloadExperience) Text("Tiến trình tải xuống sẽ ưu tiên hiển thị trên Đảo động; sau khi hoàn tất, bạn có thể nhấn để xem chi tiết cập nhật.", fontSize = 13.sp,
             color = MiuixTheme.colorScheme.primary, modifier = Modifier.padding(bottom = 10.dp))
         val message = when (state) {
-            UpdateState.Idle, UpdateState.Checking -> "正在检查更新…"
-            UpdateState.UpToDate -> "当前已是最新版本"
+            UpdateState.Idle, UpdateState.Checking -> "Đang kiểm tra cập nhật…"
+            UpdateState.UpToDate -> "Bạn đang dùng phiên bản mới nhất"
             is UpdateState.Failed -> state.reason
-            is UpdateState.Available -> state.release.notes.ifBlank { "新版本已发布。" }
+            is UpdateState.Available -> state.release.notes.ifBlank { "Phiên bản mới đã được phát hành." }
         }
         val notesHeight = (LocalConfiguration.current.screenHeightDp - 240).coerceIn(88, 440).dp
         val notesModifier = Modifier.fillMaxWidth().heightIn(max = notesHeight)
@@ -146,45 +146,45 @@ fun UpdateDialogContent(state: UpdateState, onDismiss: () -> Unit, onRetry: () -
         if (release != null) MarkdownText(stripVersionHeadings(release.version, message), modifier = notesModifier, compact = true)
         else Text(message, fontSize = 15.sp, modifier = notesModifier)
         if (release != null) {
-            if (preview) Text("测试预览", fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
+            if (preview) Text("Bản xem trước thử nghiệm", fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
             Spacer(Modifier.height(12.dp))
             HorizontalDivider()
             Row(Modifier.fillMaxWidth().clickable(
                 enabled = (!downloading || onChangeSource != null) && !ready && !transferState.installing,
                 role = Role.Button, onClick = { showSources = true })
                 .padding(vertical = 14.dp).testTag("update_source"), verticalAlignment = Alignment.CenterVertically) {
-                Text("下载源 · ${source.compactLabel()}", modifier = Modifier.weight(1f), fontSize = 15.sp)
-                Text("选择 ›", color = MiuixTheme.colorScheme.onSurfaceVariantSummary, fontSize = 13.sp)
+                Text("Nguồn tải xuống · ${source.compactLabel()}", modifier = Modifier.weight(1f), fontSize = 15.sp)
+                Text("Chọn ›", color = MiuixTheme.colorScheme.onSurfaceVariantSummary, fontSize = 13.sp)
             }
             when {
                 previewDownloading -> {
                     Text("${formatReceived((release.size * previewProgress).toLong())} / ${formatSize(release.size)}", fontSize = 13.sp)
                     LinearProgressIndicator(progress = animatedProgress, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
                 }
-                previewProgress >= 1f -> Text("测试下载完成，未下载真实安装包")
+                 previewProgress >= 1f -> Text("Đã tải xong bản thử nghiệm, không tải gói cài đặt thực tế")
                 else -> when (val download = transferState.download) {
                     is UpdateDownloadState.Downloading -> {
                         transferState.activeSource?.let { active ->
-                            Text(if (transferState.attempt > 1) "已切换至 ${active.label}（${transferState.attempt}/${transferState.totalSources}）"
-                                else "正在使用 ${active.label}", fontSize = 12.sp, modifier = Modifier.testTag("update_active_source"))
+                            Text(if (transferState.attempt > 1) "Đã chuyển sang ${active.label}（${transferState.attempt}/${transferState.totalSources}）"
+                                else "Đang dùng ${active.label}", fontSize = 12.sp, modifier = Modifier.testTag("update_active_source"))
                         }
                         Text("${formatReceived(download.received)} / ${formatSize(download.total)} · ${(animatedProgress * 100).toInt()}%", fontSize = 13.sp)
                         LinearProgressIndicator(progress = animatedProgress,
                             modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
-                        Text("关闭弹窗后继续下载，可从设置或通知查看进度", fontSize = 12.sp,
+                        Text("Tiếp tục tải xuống sau khi đóng hộp thoại; xem tiến trình trong Cài đặt hoặc thông báo", fontSize = 12.sp,
                             color = MiuixTheme.colorScheme.onSurfaceVariantSummary, modifier = Modifier.padding(top = 6.dp))
                     }
-                    is UpdateDownloadState.Ready -> Text("下载完成，已校验安装包", fontSize = 13.sp,
+                    is UpdateDownloadState.Ready -> Text("Đã tải xong, gói cài đặt đã được xác minh", fontSize = 13.sp,
                         color = MiuixTheme.colorScheme.primary)
                     is UpdateDownloadState.Failed -> Text(download.message, fontSize = 13.sp, maxLines = 3, overflow = TextOverflow.Ellipsis)
-                    UpdateDownloadState.Idle -> Text("下载失败时自动尝试其他来源", fontSize = 12.sp,
+                    UpdateDownloadState.Idle -> Text("Tự động thử nguồn khác nếu tải xuống thất bại", fontSize = 12.sp,
                         color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
                 }
             }
             transferState.message?.let { Text(it, fontSize = 13.sp, maxLines = 3, overflow = TextOverflow.Ellipsis) }
         }
         Row(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MusicDialogButton(if (downloading) "后台下载" else "关闭", onClick = onDismiss,
+            MusicDialogButton(if (downloading) "Tải xuống nền" else "Đóng", onClick = onDismiss,
                 enabled = !transferState.installing, minHeight = 48.dp, cornerRadius = 16.dp,
                 insideMargin = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
                 textStyle = MiuixTheme.textStyles.body1.copy(fontSize = 15.sp),
@@ -193,16 +193,16 @@ fun UpdateDialogContent(state: UpdateState, onDismiss: () -> Unit, onRetry: () -
                 val verifiedAsset = release.apkUrl != null && release.size in 1..UpdateDownloader.MAX_APK_BYTES &&
                     Regex("[a-f0-9]{64}").matches(release.sha256)
                 val label = when {
-                    transferState.installing -> "请求安装…"
-                    ready -> "请求安装"
-                    !verifiedAsset && !preview -> "查看发布"
-                    transferState.download is UpdateDownloadState.Failed -> "重试下载"
-                    downloading -> "取消下载"
-                    else -> "下载更新"
+                    transferState.installing -> "Đang yêu cầu cài đặt…"
+                    ready -> "Yêu cầu cài đặt"
+                    !verifiedAsset && !preview -> "Xem bản phát hành"
+                    transferState.download is UpdateDownloadState.Failed -> "Thử tải xuống lại"
+                    downloading -> "Hủy tải xuống"
+                    else -> "Tải bản cập nhật"
                 }
                 Button(onClick = {
                     if (preview) {
-                        if (ready) context.showMusicMessage("测试预览不会安装应用")
+                         if (ready) context.showMusicMessage("Bản xem trước thử nghiệm sẽ không cài đặt ứng dụng")
                         else scope.launch {
                             previewProgress = 0f
                             repeat(10) { delay(120); previewProgress = (it + 1) / 10f }
@@ -217,12 +217,12 @@ fun UpdateDialogContent(state: UpdateState, onDismiss: () -> Unit, onRetry: () -
                     Text(label, fontSize = 15.sp, fontWeight = FontWeight.Medium)
                 }
             } else if (state is UpdateState.Failed) Button(onClick = onRetry,
-                colors = ButtonDefaults.buttonColorsPrimary(), modifier = Modifier.weight(1f)) { Text("重试") }
+                colors = ButtonDefaults.buttonColorsPrimary(), modifier = Modifier.weight(1f)) { Text("Thử lại") }
         }
         if (release != null && !downloading && !ready && !transferState.installing) Box(
             Modifier.fillMaxWidth().heightIn(min = 40.dp).clickable(role = Role.Button, onClick = onIgnore)
                 .testTag("update_ignore"), contentAlignment = Alignment.Center) {
-            Text("忽略此版本", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
+             Text("Bỏ qua phiên bản này", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
         }
         }
     }
@@ -235,17 +235,17 @@ fun UpdateDialogContent(state: UpdateState, onDismiss: () -> Unit, onRetry: () -
 }
 
 private fun UpdateSource.compactLabel() = when (this) {
-    UpdateSource.CURRENTMUSIC -> "专用镜像"
-    UpdateSource.GITHUB -> "GitHub 原站"
-    UpdateSource.TBAP -> "TBAP 镜像"
-    UpdateSource.GH_PROXY -> "GH-Proxy 镜像"
-    UpdateSource.GEEKERTAO -> "Geekertao 镜像"
-    UpdateSource.DPIK -> "DPIK 镜像"
+     UpdateSource.CURRENTMUSIC -> "Mirror chuyên dụng"
+     UpdateSource.GITHUB -> "GitHub chính thức"
+     UpdateSource.TBAP -> "Mirror TBAP"
+     UpdateSource.GH_PROXY -> "Mirror GH-Proxy"
+     UpdateSource.GEEKERTAO -> "Mirror Geekertao"
+     UpdateSource.DPIK -> "Mirror DPIK"
 }
 
 private fun formatReceived(value: Long) = if (value <= 0) "0 MB" else formatSize(value)
 
-private fun formatSize(value: Long): String = if (value <= 0) "大小未提供" else when {
+ private fun formatSize(value: Long): String = if (value <= 0) "Chưa có thông tin kích thước" else when {
     value >= 1024 * 1024 -> String.format(java.util.Locale.ROOT, "%.1f MB", value / (1024.0 * 1024))
     value >= 1024 -> String.format(java.util.Locale.ROOT, "%.1f KB", value / 1024.0)
     else -> "$value B"

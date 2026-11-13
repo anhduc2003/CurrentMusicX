@@ -4,8 +4,7 @@
 
 # CurrentMusicX
 
-[简体中文](README.md) · **English**
-
+[Tiếng Trung giản thể](README.md) · **English**
 **Artwork and lyrics that move with the music**
 
 NetEase Cloud Music · Self-hosted Navidrome / Emby libraries · Two-person listening
@@ -188,8 +187,7 @@ The address applies to CurrentMusic accounts, audio and lyrics, cloud bindings, 
 
 The deployment notes also describe a separate `ncm-inject` entry point. It adds the server SVIP cookie to allowlisted requests that arrive without a caller cookie, then passes them to the NCM API. The default client routes in the diagram use `/cm/`.
 
-[X request routing](app/src/main/java/io/github/currencortex/music/core/network/ApiClient.kt) · [Engine backend](https://github.com/backrooms-yrc/CurrentMusic/tree/main/backend) · [Playback URL resolution](https://github.com/backrooms-yrc/CurrentMusic/blob/main/docs/playback-sources.md) · [Account linking](https://github.com/backrooms-yrc/CurrentMusic/blob/main/docs/third-party-ncm-sync.md) · [Deployment notes](https://github.com/backrooms-yrc/CurrentMusic/blob/main/docs/api-5-phase-plan.md#1-实测拓扑)
-
+[Định tuyến yêu cầu X](app/src/main/java/io/github/currencortex/music/core/network/ApiClient.kt) · [Backend của engine](https://github.com/backrooms-yrc/CurrentMusic/tree/main/backend) · [Phân giải URL phát nhạc](https://github.com/backrooms-yrc/CurrentMusic/blob/main/docs/playback-sources.md) · [Liên kết tài khoản](https://github.com/backrooms-yrc/CurrentMusic/blob/main/docs/third-party-ncm-sync.md) · [Ghi chú triển khai](https://github.com/backrooms-yrc/CurrentMusic/blob/main/docs/api-5-phase-plan.md#1-sơ đồ thực tế)
 ## Compatibility
 
 | Item | Requirement |

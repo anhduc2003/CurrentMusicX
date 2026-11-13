@@ -63,7 +63,7 @@ class PostsViewModel(val container: AppContainer) : ViewModel() {
     }
     private fun action(success: String, block: suspend () -> Unit, refresh: Boolean = true, after: () -> Unit = {}) {
         if (state.value.busy) return
-        if (session().token == null) { state.update { it.copy(message = "登录 CurrentMusic 账户后可操作") }; return }
+        if (session().token == null) { state.update { it.copy(message = "Đăng nhập tài khoản CurrentMusic để thao tác") }; return }
         val expected = session()
         state.update { it.copy(busy = true, message = null) }
         actionTask = viewModelScope.launch {
@@ -75,13 +75,13 @@ class PostsViewModel(val container: AppContainer) : ViewModel() {
     }
     fun like(post: CommunityPost) {
         val on = !post.likedByMe
-        action(if (on) "已点赞" else "已取消点赞", { repository.like(post.id, on) }, refresh = false) {
+         action(if (on) "Đã thích" else "Đã bỏ thích", { repository.like(post.id, on) }, refresh = false) {
             state.update { it.copy(posts = it.posts.map { current -> if (current.id != post.id) current else current.copy(
                 likedByMe = on, likeCount = (current.likeCount + if (current.likedByMe == on) 0 else if (on) 1 else -1).coerceAtLeast(0)) }) }
         }
     }
     fun delete(post: CommunityPost) {
-        if (post.canDelete) action("帖子已删除", { repository.delete(post.id) }, refresh = false) {
+         if (post.canDelete) action("Đã xóa bài viết", { repository.delete(post.id) }, refresh = false) {
             state.update { it.copy(posts = it.posts.filterNot { current -> current.id == post.id },
                 total = (it.total - 1).coerceAtLeast(0), offset = (it.offset - 1).coerceAtLeast(0)) }
         }
@@ -95,7 +95,7 @@ class PostsViewModel(val container: AppContainer) : ViewModel() {
     fun publish() {
         val content = state.value.draft
         val attachments = state.value.attachments
-        if (content.isNotBlank()) action("帖子已发布", { repository.create(content, attachments) }) {
+         if (content.isNotBlank()) action("Đã đăng bài viết", { repository.create(content, attachments) }) {
             state.update { it.copy(editor = false, draft = "", attachments = emptyList(), picker = false) }
         }
     }
@@ -139,7 +139,7 @@ class PostsViewModel(val container: AppContainer) : ViewModel() {
         if (state.value.busy) return
         state.update {
             if (it.attachments.any { current -> current.type == card.type && current.id == card.id }) it
-            else if (it.attachments.size >= 5) it.copy(message = "最多添加 5 项内容")
+             else if (it.attachments.size >= 5) it.copy(message = "Có thể thêm tối đa 5 mục")
             else it.copy(attachments = validMusicAttachments(it.attachments + card), message = null)
         }
     }
@@ -161,14 +161,14 @@ class PostsViewModel(val container: AppContainer) : ViewModel() {
     }
     fun sendComment(content: String) {
         val id = state.value.commentsFor ?: return
-        if (content.isNotBlank()) action("评论已发布", { repository.comment(id, content) }, refresh = false) {
+         if (content.isNotBlank()) action("Đã đăng bình luận", { repository.comment(id, content) }, refresh = false) {
             state.update { it.copy(posts = it.posts.map { post -> if (post.id == id) post.copy(commentCount = post.commentCount + 1) else post }) }
             if (state.value.commentsFor == id) comments(id)
         }
     }
     fun delete(comment: PostComment) {
         val id = state.value.commentsFor ?: return
-        if (comment.canDelete) action("评论已删除", { repository.deleteComment(comment.id) }, refresh = false) {
+         if (comment.canDelete) action("Đã xóa bình luận", { repository.deleteComment(comment.id) }, refresh = false) {
             state.update { it.copy(posts = it.posts.map { post -> if (post.id == id) post.copy(commentCount = (post.commentCount - 1).coerceAtLeast(0)) else post }) }
             if (state.value.commentsFor == id) comments(id)
         }

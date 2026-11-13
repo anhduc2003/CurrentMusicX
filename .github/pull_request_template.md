@@ -1,17 +1,17 @@
-## 变化
+## Thay đổi
 
-说明用户会看到的变化及原因；一个 PR 只解决一个独立问题。
+Mô tả thay đổi người dùng sẽ thấy và lý do; mỗi PR chỉ giải quyết một vấn đề riêng biệt.
 
-## 关联问题
+## Vấn đề liên quan
 
-若确实完整解决某个 Issue，填写 `Fixes #编号`；只关联讨论用 `Refs #编号`。没有对应 Issue 可留空，不为凑编号创建 Issue。
+Nếu thực sự giải quyết hoàn toàn một Issue, hãy điền `Fixes #số`; nếu chỉ liên kết để thảo luận, dùng `Refs #số`. Nếu không có Issue tương ứng, có thể để trống; không tạo Issue chỉ để điền số.
 
-## 验证
+## Xác minh
 
-- 实际执行的命令与结果：
-- 真机验证（设备、系统、场景；未验证请说明）：
-- UI 变化的截图或录屏（如适用）：
+- Lệnh đã chạy và kết quả:
+- Kiểm thử trên thiết bị thật (thiết bị, hệ thống, tình huống; nếu chưa kiểm thử, hãy nêu rõ):
+- Ảnh chụp màn hình hoặc video ghi lại thay đổi UI (nếu phù hợp):
 
-## 影响与限制
+## Ảnh hưởng và giới hạn
 
-说明兼容性、迁移要求与未验证范围。不要提交密钥、账号凭据、调试产物或无关改动。
+Nêu rõ khả năng tương thích, yêu cầu di chuyển và phạm vi chưa được xác minh. Không gửi lên khóa bí mật, thông tin đăng nhập tài khoản, sản phẩm gỡ lỗi hoặc các thay đổi không liên quan.

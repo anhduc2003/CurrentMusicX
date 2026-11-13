@@ -39,7 +39,7 @@ import kotlin.math.roundToInt
     val config by viewModel.settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val fontLabel by produceState("默认", config.customFont) {
+    val fontLabel by produceState("Mặc định", config.customFont) {
         value = withContext(Dispatchers.IO) {
             io.github.currencortex.music.ui.theme.appearanceFontLabel(context, config.customFont)
         }
@@ -51,50 +51,50 @@ import kotlin.math.roundToInt
     val colors = MiuixTheme.colorScheme
     val glass = config.liquidGlass && Build.VERSION.SDK_INT >= 33
     SettingsUiScope {
-        SettingsPage("外观", "appearance_screen", onBack, padding = PaddingValues(bottom = 32.dp)) {
+        SettingsPage("Giao diện", "appearance_screen", onBack, padding = PaddingValues(bottom = 32.dp)) {
             item("live_preview") { AppearanceLivePreview(config) }
             item("theme_mode") {
-                SettingsPreviewChoiceGroup("主题模式", MusicIcons.Sun, listOf("自动", "浅色", "深色"),
+                SettingsPreviewChoiceGroup("Chế độ giao diện", MusicIcons.Sun, listOf("Tự động", "Sáng", "Tối"),
                     config.themeMode.ordinal, { index -> viewModel.edit { it.copy(themeMode = ThemeMode.entries[index]) } }, "appearance_theme") { index ->
                     AppearanceMiniThumb(if (index == 2) dark else light, config.floatingBar, glass, split = if (index == 0) dark else null)
                 }
             }
             item("pure_black") {
-                SettingsPreviewChoiceGroup("纯黑模式", MusicIcons.PureBlack, listOf("标准", "纯黑"),
+                SettingsPreviewChoiceGroup("Chế độ đen tuyền", MusicIcons.PureBlack, listOf("Tiêu chuẩn", "Đen tuyền"),
                     if (config.pureBlack) 1 else 0, { index -> viewModel.edit { it.copy(pureBlack = index == 1) } }, "appearance_black") { index ->
                     AppearanceMiniThumb(if (index == 0) standardDark else black, config.floatingBar, glass)
                 }
             }
             item("primary_color") { AppearancePalette(config, viewModel) }
             item("liquid_glass") {
-                SettingsPreviewChoiceGroup("液态玻璃", MusicIcons.Drop, listOf("标准", "液态"),
+                SettingsPreviewChoiceGroup("Kính lỏng", MusicIcons.Drop, listOf("Tiêu chuẩn", "Kính lỏng"),
                     if (config.liquidGlass) 1 else 0, { index -> viewModel.edit { it.copy(liquidGlass = index == 1) } },
                     "setting_liquid", enabled = { index -> index == 0 || Build.VERSION.SDK_INT >= 33 }) { index ->
                     AppearanceMiniThumb(colors, true, index == 1, selected = 1)
                 }
-                if (Build.VERSION.SDK_INT < 33) SettingsHint("液态效果需要 Android 13 或更高版本")
+                if (Build.VERSION.SDK_INT < 33) SettingsHint("Hiệu ứng kính lỏng yêu cầu Android 13 trở lên")
             }
             item("launch_animation") {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SettingsPreviewChoiceGroup("开屏动画", MusicIcons.Play, LaunchStyle.entries.map { it.label },
+                    SettingsPreviewChoiceGroup("Hoạt ảnh mở ứng dụng", MusicIcons.Play, LaunchStyle.entries.map { it.label },
                         config.launchStyle.ordinal, { index -> viewModel.edit { it.copy(launchStyle = LaunchStyle.entries[index]) } }, "setting_launch_style") { index ->
                         AppearanceLaunchThumb(LaunchStyle.entries[index], config)
                     }
                     SettingsGroup(Modifier.padding(horizontal = 16.dp)) {
-                        SettingsPreference("预览开屏动画", "查看当前样式与用户名效果", Modifier.testTag("setting_launch_preview"),
+                        SettingsPreference("Xem trước hoạt ảnh mở ứng dụng", "Xem hiệu ứng kiểu hiện tại và tên người dùng", Modifier.testTag("setting_launch_preview"),
                             enabled = config.launchStyle != LaunchStyle.NONE, onClick = onPreviewLaunch)
                     }
                 }
             }
             item("player_cover") {
-                SettingsPreviewChoiceGroup("播放封面", MusicIcons.Image, PlayerCoverStyle.entries.map { it.label },
+                SettingsPreviewChoiceGroup("Ảnh bìa trình phát", MusicIcons.Image, PlayerCoverStyle.entries.map { it.label },
                     config.playerCoverStyle.ordinal, { index -> viewModel.edit {
                         it.copy(playerCoverStyle = PlayerCoverStyle.entries[index])
                     } }, "appearance_player_cover") { index -> AppearancePlayerCoverThumb(PlayerCoverStyle.entries[index]) }
             }
             item("font_family") {
-                AppearanceSection("字体", MusicIcons.Font) {
-                    val source = rememberPageNavigationSource("字体", fontLabel, MusicIcons.Font)
+                AppearanceSection("Phông chữ", MusicIcons.Font) {
+                    val source = rememberPageNavigationSource("Phông chữ", fontLabel, MusicIcons.Font)
                     SettingsPreference(fontLabel, modifier = Modifier.testTag("setting_custom_font").then(source.modifier),
                         onClick = { source.open(onOpenFont) }, leading = {
                             Text("Aa", fontSize = 17.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold)
@@ -103,24 +103,24 @@ import kotlin.math.roundToInt
             }
             item("text_scale") { AppearanceTextScale(config, viewModel) }
             item("interface_effects") {
-                AppearanceSection("界面效果", MusicIcons.Blur) {
-                    SettingsSwitch("模糊", config.blur, { value -> viewModel.edit { it.copy(blur = value) } },
+                AppearanceSection("Hiệu ứng giao diện", MusicIcons.Blur) {
+                    SettingsSwitch("Làm mờ", config.blur, { value -> viewModel.edit { it.copy(blur = value) } },
                         enabled = Build.VERSION.SDK_INT >= 31, summary = when {
-                            Build.VERSION.SDK_INT >= 33 -> "模糊悬浮底栏背景和转场中被盖住的页面"
-                            Build.VERSION.SDK_INT >= 31 -> "模糊转场中被盖住的页面"
-                            else -> "需要 Android 12 或更高版本"
+                            Build.VERSION.SDK_INT >= 33 -> "Làm mờ nền thanh điều hướng nổi và các trang bị che trong quá trình chuyển cảnh"
+                            Build.VERSION.SDK_INT >= 31 -> "Làm mờ các trang bị che trong quá trình chuyển cảnh"
+                            else -> "Yêu cầu Android 12 trở lên"
                         },
                         modifier = Modifier.testTag("setting_blur"))
-                    SettingsSwitch("底栏律动光效", config.navigationGlow, { value -> viewModel.edit { it.copy(navigationGlow = value) } },
-                        summary = "封面色雾随音乐缓缓起伏", modifier = Modifier.testTag("setting_navigation_glow"))
-                    SettingsSwitch("预测性返回手势", config.predictiveBack, { value -> viewModel.edit { it.copy(predictiveBack = value) } },
+                    SettingsSwitch("Hiệu ứng ánh sáng nhịp theo nhạc ở thanh điều hướng", config.navigationGlow, { value -> viewModel.edit { it.copy(navigationGlow = value) } },
+                        summary = "Sương màu từ ảnh bìa nhẹ nhàng chuyển động theo nhạc", modifier = Modifier.testTag("setting_navigation_glow"))
+                    SettingsSwitch("Cử chỉ quay lại dự đoán", config.predictiveBack, { value -> viewModel.edit { it.copy(predictiveBack = value) } },
                         enabled = Build.VERSION.SDK_INT >= 34, modifier = Modifier.testTag("setting_predictive"))
                 }
             }
             item("display_scale") {
-                AppearanceSection("显示缩放", MusicIcons.Scale) {
+                AppearanceSection("Tỷ lệ hiển thị", MusicIcons.Scale) {
                     var draft by remember(config.uiScale) { mutableFloatStateOf(config.uiScale) }
-                    SettingsPreference("显示缩放", "调整界面整体缩放", onClick = onOpenScale,
+                    SettingsPreference("Tỷ lệ hiển thị", "Điều chỉnh tỷ lệ tổng thể của giao diện", onClick = onOpenScale,
                         trailing = { Text("${(config.uiScale * 100).roundToInt()}%", color = colors.onSurfaceVariantSummary) })
                     // Keep the slider outside the header's button semantics and tap target.
                     Box(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) {
@@ -136,12 +136,12 @@ import kotlin.math.roundToInt
             }
             item("refresh_rate") {
                 val display by rememberDisplayRefreshStatus()
-                AppearanceSection("刷新率", MusicIcons.Update) {
-                    SettingsPreference("应用刷新率", "持续请求所选刷新率；系统省电、温控仍可能限制，高刷会增加耗电。",
+                AppearanceSection("Tần số quét", MusicIcons.Update) {
+                    SettingsPreference("Tần số quét ứng dụng", "Liên tục yêu cầu tần số quét đã chọn; chế độ tiết kiệm pin và kiểm soát nhiệt của hệ thống vẫn có thể giới hạn, tần số quét cao sẽ tiêu tốn nhiều pin hơn.",
                         Modifier.testTag("setting_refresh_rate"), footer = {
                             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                                 RefreshRateSlider(config.refreshRate, display.supported) { option -> viewModel.edit { it.copy(refreshRate = option) } }
-                                Text("当前刷新率：${display.current.roundToInt()} Hz · 屏幕支持：${display.supported.joinToString(" / ")} Hz",
+                                Text("Tần số quét hiện tại: ${display.current.roundToInt()} Hz · Màn hình hỗ trợ: ${display.supported.joinToString(" / ")} Hz",
                                     Modifier.testTag("refresh_rate_actual"), fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
                             }
                         })
@@ -165,9 +165,9 @@ import kotlin.math.roundToInt
     var showReset by remember { mutableStateOf(false) }
     val colors = MiuixTheme.colorScheme
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SettingsInfoHeader("主题色彩", MusicIcons.Palette, actions = {
+        SettingsInfoHeader("Màu chủ đề", MusicIcons.Palette, actions = {
             SettingsFadingReset(config.monet || config.primaryColors != DefaultThemeColors || config.primaryColor != DefaultThemeColors.first() || config.colorStyle != ThemeColorStyle.VIVID,
-                { showReset = true }, "重置主题色", Modifier.testTag("appearance_color_reset"))
+                { showReset = true }, "Đặt lại màu chủ đề", Modifier.testTag("appearance_color_reset"))
         })
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             AppearanceColorSwatches(config,
@@ -175,7 +175,7 @@ import kotlin.math.roundToInt
                 onEdit = { color -> editing = color; showEditor = true },
                 onAdd = { editing = null; showEditor = true })
             SettingsGroup {
-                SettingsOptionsRow("配色风格", config.colorStyle.label, ThemeColorStyle.entries.map { style ->
+                SettingsOptionsRow("Kiểu phối màu", config.colorStyle.label, ThemeColorStyle.entries.map { style ->
                     SettingsOption("appearance_color_style_${style.name}", style.label, style == config.colorStyle,
                         onSelect = { vm.edit { it.copy(colorStyle = style) } })
                 }, Modifier.testTag("appearance_color_style"))
@@ -192,9 +192,9 @@ import kotlin.math.roundToInt
                     it.copy(primaryColors = palette, primaryColor = if (it.primaryColor == editing) palette.first() else it.primaryColor) }
             } })
     }
-    if (showReset) MusicDialog("重置主题色？", { showReset = false }) {
-        Text("恢复默认颜色和色彩风格。")
-        MusicDialogButton("重置", onClick = { vm.edit { it.copy(monet = false, primaryColor = DefaultThemeColors.first(), primaryColors = DefaultThemeColors, colorStyle = ThemeColorStyle.VIVID) }; showReset = false },
+    if (showReset) MusicDialog("Đặt lại màu chủ đề?", { showReset = false }) {
+        Text("Khôi phục màu sắc và kiểu phối màu mặc định.")
+        MusicDialogButton("Đặt lại", onClick = { vm.edit { it.copy(monet = false, primaryColor = DefaultThemeColors.first(), primaryColors = DefaultThemeColors, colorStyle = ThemeColorStyle.VIVID) }; showReset = false },
             modifier = Modifier.testTag("appearance_color_reset_confirm"))
     }
 }
@@ -205,12 +205,12 @@ import kotlin.math.roundToInt
     val value = if (config.customTextScale) draft else systemScale
     val colors = MiuixTheme.colorScheme
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        SettingsInfoHeader("文字缩放", MusicIcons.TextSize, actions = {
-            SettingsFadingReset(config.customTextScale && config.textScale != 1f, { vm.edit { it.copy(textScale = 1f) } }, "重置文字缩放",
+         SettingsInfoHeader("Cỡ chữ", MusicIcons.TextSize, actions = {
+             SettingsFadingReset(config.customTextScale && config.textScale != 1f, { vm.edit { it.copy(textScale = 1f) } }, "Đặt lại cỡ chữ",
                 Modifier.testTag("appearance_text_scale_reset"))
         })
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            SettingsSegmentedControl(listOf("跟随系统", "自定义"), if (config.customTextScale) 1 else 0,
+             SettingsSegmentedControl(listOf("Theo hệ thống", "Tùy chỉnh"), if (config.customTextScale) 1 else 0,
                 { index -> vm.edit { it.copy(customTextScale = index == 1) } }, tag = "appearance_text_scale_mode")
             SettingsGroup {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -219,7 +219,7 @@ import kotlin.math.roundToInt
                         CompositionLocalProvider(LocalDensity provides Density(density.density, value)) {
                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                 Text("Aa", fontSize = 20.sp, lineHeight = 25.sp, fontWeight = FontWeight.SemiBold)
-                                Text("应用内的文字将以这个大小显示", fontSize = 15.sp, lineHeight = 20.sp, color = colors.onSurfaceVariantSummary)
+                                 Text("Văn bản trong ứng dụng sẽ hiển thị với cỡ chữ này", fontSize = 15.sp, lineHeight = 20.sp, color = colors.onSurfaceVariantSummary)
                             }
                         }
                         Text("${(value * 100).roundToInt()}%", Modifier.clip(CircleShape).background(colors.surfaceContainerHigh).padding(horizontal = 10.dp, vertical = 4.dp),

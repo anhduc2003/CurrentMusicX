@@ -63,7 +63,7 @@ import kotlin.math.abs
 /** A root overlay: only the page is sampled, so neither the lifted cover nor the menu blurs itself. */
 @Composable internal fun MusicArtworkPreview(
     cover: String, title: String, anchor: Rect, actions: List<GlassMenuItem>,
-    destinations: List<GlassMenuItem>, onDismiss: () -> Unit, previewKind: String = "歌曲",
+    destinations: List<GlassMenuItem>, onDismiss: () -> Unit, previewKind: String = "Bài hát",
 ) {
     val visible = remember { mutableStateOf(true) }
     val progress = remember { Animatable(0f) }
@@ -185,7 +185,7 @@ import kotlin.math.abs
         }.clickable(enabled = currentEnabled && item.enabled, role = Role.Button,
             interactionSource = remember { MutableInteractionSource() }, indication = null) { currentActivate(item) }
     BoxWithConstraints(Modifier.fillMaxSize().testTag("artwork_preview")
-        .semantics { paneTitle = "$title · ${previewKind}操作" }
+        .semantics { paneTitle = "$title · ${previewKind} thao tác" }
         .onGloballyPositioned { origin = it.boundsInWindow().topLeft }) {
         val width = constraints.maxWidth.toFloat()
         val height = constraints.maxHeight.toFloat()
@@ -221,7 +221,7 @@ import kotlin.math.abs
                 }, onDrawSurface = { drawRect(colors.background.copy(alpha = .14f)) })
             else Modifier.background(colors.background.copy(alpha = .82f)))
             .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null,
-                onClickLabel = "关闭${previewKind}预览", onClick = { if (submenuOpen) submenuOpen = false else close {} }))
+                onClickLabel = "Đóng bản xem trước ${previewKind}", onClick = { if (submenuOpen) submenuOpen = false else close {} }))
         MusicCover(cover, Modifier.size(with(density) { coverSize.toDp() })
             .graphicsLayer {
                 val p = progress()

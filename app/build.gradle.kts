@@ -108,7 +108,7 @@ android {
             if (updateDownloadExperience) {
                 versionNameSuffix = "-alpha.0"
                 buildConfigField("boolean", "UPDATE_DOWNLOAD_EXPERIENCE", "true")
-                manifestPlaceholders["appLabel"] = "CurrentMusic 下载体验"
+                 manifestPlaceholders["appLabel"] = "CurrentMusic Trải nghiệm tải xuống"
             }
         }
         getByName("release") {
@@ -125,7 +125,7 @@ android {
             signingConfig = signingConfigs.getByName("debug")
             isDebuggable = false
             matchingFallbacks += listOf("release")
-            manifestPlaceholders["appLabel"] = "CurrentMusic 性能测试"
+             manifestPlaceholders["appLabel"] = "CurrentMusic Kiểm tra hiệu năng"
         }
     }
     compileOptions {

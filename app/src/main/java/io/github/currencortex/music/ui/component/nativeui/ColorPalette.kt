@@ -73,7 +73,7 @@ internal object PaletteGrid {
     // Gray and black must retain the hue/saturation just chosen with the sliders.
     LaunchedEffect(color) { if (hsv.color.toArgb() != color.toArgb()) hsv = PaletteHsv.from(color) }
     Column(modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        SettingsSegmentedControl(listOf("网格", "光谱", "滑块"), mode, {
+        SettingsSegmentedControl(listOf("Lưới", "Quang phổ", "Thanh trượt"), mode, {
             focus.clearFocus(); keyboard?.hide(); mode = it
         }, tag = "appearance_palette_mode")
         Box(Modifier.fillMaxWidth().animateContentSize(tween(250, easing = CubicBezierEasing(.215f, .61f, .355f, 1f)))) {
@@ -118,7 +118,7 @@ internal object PaletteGrid {
     Canvas(Modifier.fillMaxWidth().aspectRatio(6f / 5).clip(RoundedCornerShape(8.dp))
         .testTag("appearance_color_grid").pickArea({ point, size -> onChanged(PaletteGrid.at(point, size)) })
         .semantics {
-            contentDescription = "颜色网格"; stateDescription = hexDigits(color)
+            contentDescription = "Lưới màu"; stateDescription = hexDigits(color)
             progressBarRangeInfo = ProgressBarRangeInfo(index.coerceAtLeast(0).toFloat(), 0f..119f, 118)
             setProgress { onChanged(all[it.roundToInt().coerceIn(0, 119)]); true }
         }.onKeyEvent {
@@ -154,12 +154,12 @@ internal object PaletteGrid {
             val next = Color.hsl((fraction.x * 360).coerceIn(0f, 359.99f), 1f, 1 - fraction.y)
             picked = fraction to next.toArgb(); onChanged(next)
         }).semantics {
-            contentDescription = "颜色光谱"; stateDescription = hexDigits(color)
+            contentDescription = "Quang phổ màu"; stateDescription = hexDigits(color)
             customActions = listOf(
-                CustomAccessibilityAction("增加色相") { onChanged(Color.hsl((hue + 5) % 360, 1f, lightness)); true },
-                CustomAccessibilityAction("减少色相") { onChanged(Color.hsl((hue + 355) % 360, 1f, lightness)); true },
-                CustomAccessibilityAction("提高亮度") { onChanged(Color.hsl(hue, 1f, (lightness + .05f).coerceAtMost(1f))); true },
-                CustomAccessibilityAction("降低亮度") { onChanged(Color.hsl(hue, 1f, (lightness - .05f).coerceAtLeast(0f))); true })
+                CustomAccessibilityAction("Tăng sắc độ") { onChanged(Color.hsl((hue + 5) % 360, 1f, lightness)); true },
+                CustomAccessibilityAction("Giảm sắc độ") { onChanged(Color.hsl((hue + 355) % 360, 1f, lightness)); true },
+                CustomAccessibilityAction("Tăng độ sáng") { onChanged(Color.hsl(hue, 1f, (lightness + .05f).coerceAtMost(1f))); true },
+                CustomAccessibilityAction("Giảm độ sáng") { onChanged(Color.hsl(hue, 1f, (lightness - .05f).coerceAtLeast(0f))); true })
         }) {
         drawRoundRect(Brush.horizontalGradient(hueColors), cornerRadius = CornerRadius(8.dp.toPx()))
         drawRoundRect(Brush.verticalGradient(0f to Color.White, .5f to Color.White.copy(alpha = 0f),
@@ -173,12 +173,12 @@ internal object PaletteGrid {
     val hueStops = remember { (0..6).map { Color.hsv((it * 60 % 360).toFloat(), 1f, 1f) } }
     Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(colors.surfaceContainer)
         .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        GradientColorSlider("色相", "${hsv.hue.roundToInt()}°", hsv.hue, 360f, hueStops,
+        GradientColorSlider("Sắc độ", "${hsv.hue.roundToInt()}°", hsv.hue, 360f, hueStops,
             hsv.copy(saturation = 1f, value = 1f).color, "appearance_color_hue") { onChanged(hsv.copy(hue = it)) }
-        GradientColorSlider("饱和度", "${(hsv.saturation * 100).roundToInt()}%", hsv.saturation, 1f,
+        GradientColorSlider("Độ bão hòa", "${(hsv.saturation * 100).roundToInt()}%", hsv.saturation, 1f,
             listOf(hsv.copy(saturation = 0f).color, hsv.copy(saturation = 1f).color), hsv.color,
             "appearance_color_saturation") { onChanged(hsv.copy(saturation = it)) }
-        GradientColorSlider("亮度", "${(hsv.value * 100).roundToInt()}%", hsv.value, 1f,
+        GradientColorSlider("Độ sáng", "${(hsv.value * 100).roundToInt()}%", hsv.value, 1f,
             listOf(Color.Black, hsv.copy(value = 1f).color), hsv.color,
             "appearance_color_brightness") { onChanged(hsv.copy(value = it)) }
     }

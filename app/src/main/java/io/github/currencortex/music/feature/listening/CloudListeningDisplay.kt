@@ -14,12 +14,12 @@ internal suspend fun loadCloudListening(repository: NeteaseListeningRepository, 
         val years = repository.years(session)
         val selected = years?.find { it.year == date.year }
         ListeningDisplay(totalMs = selected?.durationMs, songCount = selected?.songCount?.count(),
-            yearFacts = years.orEmpty().map { year -> ListeningFact("${year.year} 年", year.durationMs?.let(::listeningDuration) ?: "时长暂无数据",
-                year.songCount?.let { "收听 $it 首歌曲" }.orEmpty()) },
-            note = "年度数据以网易云已发布的年度听歌报告为准。尚未发布的年份没有完整汇总。")
+            yearFacts = years.orEmpty().map { year -> ListeningFact("${year.year} năm", year.durationMs?.let(::listeningDuration) ?: "Chưa có dữ liệu về thời lượng",
+                year.songCount?.let { "Đã nghe $it bài hát" }.orEmpty()) },
+            note = "Dữ liệu hằng năm dựa trên báo cáo nghe nhạc hằng năm đã được Nhạc Vân NetEase phát hành. Những năm chưa phát hành báo cáo sẽ không có bản tổng hợp đầy đủ.")
     } else {
         val report = repository.report(session, if (period == ListeningPeriod.WEEK) NeteaseListeningPeriod.WEEK else NeteaseListeningPeriod.MONTH, date)
-        report?.display(period) ?: ListeningDisplay(note = "该时段的完整报告尚未生成，请稍后再来。")
+        report?.display(period) ?: ListeningDisplay(note = "Báo cáo đầy đủ cho khoảng thời gian này chưa được tạo, vui lòng quay lại sau.")
     }
     display.copy(cumulativeMs = total.await()).also { repository.checkSession(session) }
 }
@@ -47,63 +47,63 @@ internal fun NeteaseListeningReport.display(period: ListeningPeriod) = Listening
         days = sleep.days.mapNotNull { day -> day.durationMs?.let { day.date to it } }.toMap(),
         averageDurationMs = sleep.averageDurationMs, maximumDurationMs = sleep.maximumDurationMs, complete = !current) },
     facts = buildList {
-        if (achievementTitle.isNotBlank()) add(ListeningFact("听歌印记", achievementTitle, achievementSubtitle))
+        if (achievementTitle.isNotBlank()) add(ListeningFact("Dấu ấn nghe nhạc", achievementTitle, achievementSubtitle))
         sections.forEach { section -> when (section.type) {
             "lateSleep", "earlySleep" -> section.value.toLongOrNull()?.takeIf { it > 0 }?.let {
                 val time = Instant.ofEpochMilli(it).atZone(neteaseListeningZone).toLocalTime()
-                add(ListeningFact(if (section.type == "lateSleep") "最晚收听" else "最早收听", "%02d:%02d".format(time.hour, time.minute)))
+                add(ListeningFact(if (section.type == "lateSleep") "Nghe muộn nhất" else "Nghe sớm nhất", "%02d:%02d".format(time.hour, time.minute)))
             }
             "durationDiffPositive", "durationDiffNegative" -> section.value.toLongOrNull()?.takeIf { it in 0..Long.MAX_VALUE / 1000 }?.let {
-                add(ListeningFact("与上期相比", "${if (section.type == "durationDiffNegative") "少听" else "多听"} ${listeningDuration(it * 1000)}"))
+                add(ListeningFact("So với kỳ trước", "${if (section.type == "durationDiffNegative") "Nghe ít hơn" else "Nghe nhiều hơn"} ${listeningDuration(it * 1000)}"))
             }
             "maxPlayUserLikeChannel", "maxPlayRcmdChannel" -> section.value.toDoubleOrNull()?.takeIf { it in 0.0..100.0 }?.let {
-                add(ListeningFact(if (section.type == "maxPlayUserLikeChannel") "红心收听" else "推荐收听", "${percentText(it)}%"))
+                add(ListeningFact(if (section.type == "maxPlayUserLikeChannel") "Nghe bài đã thích" else "Nghe bài được đề xuất", "${percentText(it)}%"))
             }
         } }
         ages.forEach { age -> age.age?.let { value ->
-            add(ListeningFact("听歌年代 · ${ageLabel(value)}", age.songCount?.let { "$it 首" } ?: "暂无数量",
+            add(ListeningFact("Thập niên nghe nhạc · ${ageLabel(value)}", age.songCount?.let { "$it bài" } ?: "Chưa có số lượng",
                 age.song?.name.orEmpty(), age.song?.coverUrl.orEmpty(), age.song?.id))
         } }
         languages.forEach { language ->
-            add(ListeningFact("听歌语言 · ${language.language}", language.percent?.let { "${percentText(it)}%" } ?: "暂无占比",
+            add(ListeningFact("Ngôn ngữ nhạc · ${language.language}", language.percent?.let { "${percentText(it)}%" } ?: "Chưa có tỷ lệ",
                 language.song?.name.orEmpty(), language.song?.coverUrl.orEmpty(), language.song?.id))
         }
-    }, note = if (current) "云端数据可能延迟更新，完整报告以网易云发布为准。" else "来自网易云历史听歌报告。")
+    }, note = if (current) "Dữ liệu đám mây có thể cập nhật trễ, báo cáo đầy đủ theo thông tin Nhạc Vân NetEase phát hành." else "Lấy từ báo cáo nghe nhạc lịch sử của Nhạc Vân NetEase.")
 
 internal fun cloudListeningDay(report: ListeningDisplay, selected: LocalDate, today: LocalDate): ListeningDisplay =
     ListeningDisplay(totalMs = report.days[selected], songCount = if (selected == today) report.todaySongCount else null,
-        tracks = if (selected != today) emptyList() else report.todayCovers.mapIndexed { index, url -> ListeningTrack("today_$index", "今日歌曲封面", cover = url) })
+        tracks = if (selected != today) emptyList() else report.todayCovers.mapIndexed { index, url -> ListeningTrack("today_$index", "Ảnh bìa bài hát hôm nay", cover = url) })
 
 private fun Long.count(): Int? = takeIf { it in 0..Int.MAX_VALUE }?.toInt()
 private fun percentText(value: Double) = java.math.BigDecimal.valueOf(value).stripTrailingZeros().toPlainString()
 private fun ageLabel(year: Int): String = when {
-    year >= 2020 -> "2020 年后"
+    year >= 2020 -> "Sau năm 2020"
     year >= 2000 -> "${year / 10 * 10} – ${year / 10 * 10 + 9}"
-    year >= 1910 -> "${year % 100 / 10 * 10} 年代"
-    year >= 1900 -> "20 世纪初"
-    else -> "$year 年代"
+    year >= 1910 -> "Thập niên ${year % 100 / 10 * 10}"
+    year >= 1900 -> "Đầu thế kỷ 20"
+    else -> "Thập niên $year"
 }
 
 private fun NeteaseListeningSection.summary(period: ListeningPeriod): ListeningSummarySection? {
-    val previous = if (period == ListeningPeriod.MONTH) "月" else "周"
+    val previous = if (period == ListeningPeriod.MONTH) "tháng" else "tuần"
     val label: String
     val text: String
     when (type) {
         "lateSleep", "earlySleep" -> {
             val timestamp = value.toLongOrNull()?.takeIf { it > 0 } ?: return null
             val time = Instant.ofEpochMilli(timestamp).atZone(neteaseListeningZone).toLocalTime()
-            label = if (type == "lateSleep") "最晚听歌" else "最早听歌"
+            label = if (type == "lateSleep") "Nghe nhạc muộn nhất" else "Nghe nhạc sớm nhất"
             text = "%02d:%02d".format(java.util.Locale.ROOT, time.hour, time.minute)
         }
         "durationDiffPositive", "durationDiffNegative" -> {
             val seconds = value.toDoubleOrNull()?.takeIf { it.isFinite() && it >= 0 && it < Long.MAX_VALUE.toDouble() } ?: return null
             val minutes = kotlin.math.floor(seconds / 60 + .5).toLong()
-            label = "比上$previous${if (type == "durationDiffNegative") "少听" else "多听"}"
-            text = if (minutes >= 60) "${minutes / 60}小时${minutes % 60}分" else "${minutes}分"
+            label = "So với $previous trước${if (type == "durationDiffNegative") "nghe ít hơn" else "nghe nhiều hơn"}"
+            text = if (minutes >= 60) "${minutes / 60} giờ ${minutes % 60} phút" else "${minutes} phút"
         }
         "maxPlayUserLikeChannel", "maxPlayRcmdChannel" -> {
             val percentage = value.toDoubleOrNull()?.takeIf { it in 0.0..100.0 } ?: return null
-            label = if (type == "maxPlayUserLikeChannel") "红心收听" else "推荐收听"
+            label = if (type == "maxPlayUserLikeChannel") "Nghe bài đã thích" else "Nghe bài được đề xuất"
             text = "${percentText(percentage)}%"
         }
         else -> return null
@@ -153,15 +153,15 @@ private fun NeteaseListeningWeekly.display() = ListeningWeeklyDisplay(
     songs = songs.orEmpty().map { it.weeklyColumn(artist = false) },
     artists = artists.orEmpty().map { it.weeklyColumn(artist = true) },
     vip = if (canShowVip) vipSections.orEmpty().take(2).map { ListeningSummarySection(it.type, when (it.type) {
-        "vipSongCount" -> "会员歌曲收听数"
-        "vipSongDuration" -> "会员歌曲收听时长"
+        "vipSongCount" -> "Số bài hát hội viên đã nghe"
+        "vipSongDuration" -> "Thời lượng nghe bài hát hội viên"
         else -> it.field
     }, it.mainText) } else emptyList(),
     superVip = superVip == true,
     genres = genres.orEmpty().take(3).map { ListeningMonthlyGenre(it.name, it.percent, it.id?.let { id -> ListeningMonthlyAction.Genre(id) }) },
     // Week rankings are already ordered by the server. Month's chronological sort does not apply.
     eras = ages.orEmpty().take(3).mapNotNull { age -> age.age?.let { year -> ListeningWeeklyEra(
-        ageLabel(year).replace(" – ", "-").replace(" 年后", "年后").replace(" 年代", "年代"),
+        ageLabel(year).replace(" – ", "-").replace(" năm sau", "năm sau").replace(" thập niên", "thập niên"),
         age.song?.name.orEmpty(), age.song?.coverUrl.orEmpty(), age.song?.let { song -> song.id?.let { id ->
             ListeningMonthlyAction.Song(id, song.name, song.artists, song.coverUrl) } }) } },
     languages = languages.orEmpty().take(3).map { ListeningWeeklyLanguage(it.language, it.percent) },

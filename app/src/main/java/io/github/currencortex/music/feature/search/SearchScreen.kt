@@ -96,7 +96,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             Column(Modifier.fillMaxWidth().onSizeChanged { headerHeight = it.height }.statusBarsPadding().testTag("search_toolbar")) {
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 if (onBack != null && sheet == null) {
-                    GlassIconButton(::back, "返回", Modifier.testTag(if (roomName != null) "room_search_back" else "search_back")) {
+                    GlassIconButton(::back, "Quay lại", Modifier.testTag(if (roomName != null) "room_search_back" else "search_back")) {
                         Icon(MusicIcons.Back, null)
                     }
                     Spacer(Modifier.width(12.dp))
@@ -125,7 +125,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 item(key = "search_categories") {
                     categoryStrip()
                 }
-                if (roomName != null) item { Text("$roomName · 点击歌曲提交点歌", fontSize = 13.sp) }
+                if (roomName != null) item { Text("$roomName · Nhấn vào bài hát để gửi yêu cầu", fontSize = 13.sp) }
                 if (!state.searched) item {
                     SearchLandingContent(history, landing, charts, recommendations, recent,
                         onSearch = ::submit, onClearHistory = { vm.clearHistory() }, onDeleteHistory = { vm.deleteHistory(it) },
@@ -135,23 +135,23 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 }
         page.error?.let { error -> item {
             Text(error)
-            MusicTextAction("重试", vm::retry, Modifier.testTag("search_retry"), enabled = !page.loading)
+            MusicTextAction("Thử lại", vm::retry, Modifier.testTag("search_retry"), enabled = !page.loading)
         } }
         if (page.loading && page.count == 0) item { LoadingSongList(4, searchActions = quickActions != null) }
         if (state.searched && page.loaded) item {
             val count = when (category) {
-                SearchCategory.SONG -> "${page.total} 首歌曲"
-                SearchCategory.LYRIC -> "${page.total} 首歌词匹配歌曲"
-                SearchCategory.ARTIST -> "${page.total} 位作者"
-                SearchCategory.ALBUM -> "${page.total} 张专辑"
-                SearchCategory.PLAYLIST -> "${page.total} 个歌单"
+                SearchCategory.SONG -> "${page.total} bài hát"
+                SearchCategory.LYRIC -> "${page.total} bài hát khớp lời"
+                SearchCategory.ARTIST -> "${page.total} nghệ sĩ"
+                SearchCategory.ALBUM -> "${page.total} album"
+                SearchCategory.PLAYLIST -> "${page.total} danh sách phát"
             }
             if (roomName == null && page.songs.isNotEmpty() && onPlayAll != null)
                 SearchResultsToolbar(page.songs.size, page.total, { onPlayAll(page.songs) }, { page.songs.forEach { player.add(it) } })
-            else Text("找到 $count", Modifier.padding(vertical = 12.dp), fontSize = 13.sp, color = colors.onSurface.copy(alpha = .45f))
+            else Text("Tìm thấy $count", Modifier.padding(vertical = 12.dp), fontSize = 13.sp, color = colors.onSurface.copy(alpha = .45f))
         }
         if (state.searched && page.loaded && !page.loading && page.error == null && page.count == 0) item {
-            Text("没有找到${category.label}，试试其他关键词", fontSize = 14.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .6f))
+            Text("Không tìm thấy ${category.label}, hãy thử từ khóa khác", fontSize = 14.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .6f))
         }
         itemsIndexed(page.entries, key = { _, entry -> "${category.route}-${entry.id}" }, contentType = { _, _ -> "catalog" }) { _, entry ->
             Row(Modifier.fillMaxWidth().clickable(enabled = entry.id > 0, role = Role.Button) {
@@ -161,9 +161,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 Column(Modifier.weight(1f).padding(horizontal = 14.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
                     Text(searchMatchText(entry.name, state.submitted, colors.primary), fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 2, overflow = TextOverflow.Ellipsis)
                     Text(entry.subtitle.ifBlank { when (category) {
-                        SearchCategory.ARTIST -> "艺人"
-                        SearchCategory.PLAYLIST -> "网易云歌单"
-                        else -> "专辑"
+                        SearchCategory.ARTIST -> "Nghệ sĩ"
+                        SearchCategory.PLAYLIST -> "Danh sách phát Nhạc Vân NetEase"
+                        else -> "Album"
                     } }, fontSize = 12.sp,
                         color = MiuixTheme.colorScheme.onSurface.copy(alpha = .6f), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
@@ -182,7 +182,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         }
         if (page.loading && page.count > 0) item { LoadingSongList(2, searchActions = quickActions != null) }
         if (page.more && page.error == null) item {
-            MusicTextAction("加载更多", { vm.search(more = true) }, Modifier.fillMaxWidth().testTag("search_load_more"), enabled = !page.loading)
+            MusicTextAction("Tải thêm", { vm.search(more = true) }, Modifier.fillMaxWidth().testTag("search_load_more"), enabled = !page.loading)
         }
             }
                 if (showSuggestions) SearchSuggestionsContent(state.query.trim(), suggestions, ::submit,

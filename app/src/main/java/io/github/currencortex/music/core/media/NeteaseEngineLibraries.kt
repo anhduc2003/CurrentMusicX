@@ -47,9 +47,9 @@ internal object NeteaseEngineLibraries {
 
     @Synchronized fun loadMoodLibraries() {
         if (moodLoaded) return
-        check(available()) { "请先导入兼容的网易云原版引擎" }
+        check(available()) { "Vui lòng nhập engine gốc tương thích của Nhạc Vân NetEase trước" }
         val owner = checkNotNull(context)
-        check(moodAvailable()) { "请重新导入网易云安装包以补充原版情绪模型引擎" }
+        check(moodAvailable()) { "Vui lòng nhập lại gói cài đặt Nhạc Vân NetEase để bổ sung engine mô hình cảm xúc gốc" }
         moodLibraries.keys.forEach {
             if (BuildConfig.NETEASE_ORIGINAL_EFFECTS) System.loadLibrary(it.removePrefix("lib").removeSuffix(".so"))
             else System.load(File(directory(owner), it).absolutePath)
@@ -105,21 +105,21 @@ internal object NeteaseEngineLibraries {
         try {
             temporary.setWritable(true, true)
             temporary.writeBytes(bytes)
-            check(temporary.setReadOnly()) { "无法保护音效库文件" }
-            if (!temporary.renameTo(file)) throw IOException("无法保存音效引擎")
+            check(temporary.setReadOnly()) { "Không thể bảo vệ tệp thư viện hiệu ứng âm thanh" }
+            if (!temporary.renameTo(file)) throw IOException("Không thể lưu engine hiệu ứng âm thanh")
         } finally { temporary.delete() }
     }
 
     suspend fun installFromApk(context: Context, uri: Uri) = withContext(Dispatchers.IO) {
-        require("arm64-v8a" in Build.SUPPORTED_ABIS.orEmpty()) { "当前设备暂不支持此原版引擎" }
+        require("arm64-v8a" in Build.SUPPORTED_ABIS.orEmpty()) { "Thiết bị hiện tại chưa hỗ trợ engine gốc này" }
         val copy = File.createTempFile("netease-engine-", ".apk", context.cacheDir)
         try {
-            val stream = context.contentResolver.openInputStream(uri) ?: throw IOException("无法读取安装包")
+            val stream = context.contentResolver.openInputStream(uri) ?: throw IOException("Không thể đọc gói cài đặt")
             stream.use { input -> copy.outputStream().use { output ->
                 val buffer = ByteArray(64 * 1024); var total = 0L
                 while (true) {
                     val count = input.read(buffer); if (count < 0) break
-                    total += count; require(total <= MAX_APK) { "安装包超过导入大小限制" }
+                    total += count; require(total <= MAX_APK) { "Gói cài đặt vượt quá giới hạn kích thước nhập" }
                     output.write(buffer, 0, count)
                 }
             } }
@@ -129,20 +129,20 @@ internal object NeteaseEngineLibraries {
 
     suspend fun installFromInstalled(context: Context) = withContext(Dispatchers.IO) {
         val source = try { context.packageManager.getApplicationInfo("com.netease.cloudmusic", 0).sourceDir }
-        catch (_: Exception) { throw IllegalArgumentException("请先安装兼容的网易云音乐，或选择安装包导入") }
+        catch (_: Exception) { throw IllegalArgumentException("Vui lòng cài đặt Nhạc Vân NetEase tương thích trước hoặc chọn gói cài đặt để nhập") }
         installFile(context, File(source))
     }
 
     private fun readLibrary(archive: ZipFile, name: String): ByteArray {
-        val entry = archive.getEntry("lib/arm64-v8a/$name") ?: throw IllegalArgumentException("安装包不含兼容的 arm64 音效引擎")
-        require(entry.size in 1..(16L * 1024 * 1024)) { "音效引擎文件大小无效" }
+        val entry = archive.getEntry("lib/arm64-v8a/$name") ?: throw IllegalArgumentException("Gói cài đặt không chứa engine hiệu ứng âm thanh arm64 tương thích")
+        require(entry.size in 1..(16L * 1024 * 1024)) { "Kích thước tệp engine hiệu ứng âm thanh không hợp lệ" }
         return archive.getInputStream(entry).use { bounded(it, 16 * 1024 * 1024) }
     }
     private fun bounded(input: InputStream, maximum: Int): ByteArray {
         val output = java.io.ByteArrayOutputStream(); val scratch = ByteArray(8192)
         while (true) {
             val count = input.read(scratch); if (count < 0) break
-            require(output.size().toLong() + count <= maximum) { "音效文件过大" }
+            require(output.size().toLong() + count <= maximum) { "Tệp hiệu ứng âm thanh quá lớn" }
             output.write(scratch, 0, count)
         }
         return output.toByteArray()
@@ -155,17 +155,17 @@ internal object NeteaseEngineLibraries {
                 mood = moodLibraries.mapValues { (name, _) -> readLibrary(archive, name) }
                 val smart = archive.getEntry(SMART_ENTRY)?.let { entry ->
                     archive.getInputStream(entry).use { bounded(it, 256 * 1024) }
-                } ?: throw IllegalArgumentException("安装包缺少兼容的原版智能音效资源")
+                } ?: throw IllegalArgumentException("Gói cài đặt thiếu tài nguyên hiệu ứng âm thanh thông minh gốc tương thích")
                 Triple(readLibrary(archive, "libneaudioeffects.so"), readLibrary(archive, "libc++_shared.so"), smart)
             }
         } catch (failure: IllegalArgumentException) { throw failure }
-        catch (_: Exception) { throw IOException("无法读取网易云安装包，请选择完整 APK 文件") }
+        catch (_: Exception) { throw IOException("Không thể đọc gói cài đặt Nhạc Vân NetEase, vui lòng chọn tệp APK đầy đủ") }
         val (engine, runtime, smart) = imported
         require(digest(engine) == ENGINE_HASH && digest(runtime) == RUNTIME_HASH && digest(smart) == SMART_HASH) {
-            "目前兼容网易云音乐 9.5.30 的 arm64 引擎，此安装包版本尚未适配"
+            "Hiện chỉ tương thích với engine arm64 của Nhạc Vân NetEase 9.5.30; phiên bản gói cài đặt này chưa được hỗ trợ"
         }
         require(moodLibraries.all { (name, hash) -> digest(checkNotNull(mood[name])) == hash }) {
-            "此安装包的原版情绪模型引擎尚未适配"
+            "Engine mô hình cảm xúc gốc của gói cài đặt này chưa được hỗ trợ"
         }
         val folder = directory(context)
         writeReadOnly(File(folder, "smartae.ncae"), smart)
@@ -176,6 +176,6 @@ internal object NeteaseEngineLibraries {
             writeReadOnly(File(folder, "libneaudioeffects.so"), engine)
         }
         attempted = false
-        check(available()) { "当前系统未能加载原版引擎，已保留本机音效" }
+        check(available()) { "Hệ thống hiện tại không thể tải engine gốc, hiệu ứng âm thanh trên thiết bị đã được giữ lại" }
     }
 }

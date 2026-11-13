@@ -32,7 +32,7 @@ object LyricsParser {
             source = obj.string("source").ifBlank { "CurrentMusic" },
             wordLevel = (obj["wordLevel"] as? JsonPrimitive)?.booleanOrNull,
             instrumental = if (pure) true else (obj["instrumental"] as? JsonPrimitive)?.booleanOrNull)
-        return if (pure) LyricsDocument(merged.ifEmpty { listOf(LyricLine(0, 5000, "纯音乐，请欣赏")) },
+        return if (pure) LyricsDocument(merged.ifEmpty { listOf(LyricLine(0, 5000, "Nhạc không lời, mời thưởng thức")) },
             metadata) else LyricsDocument(merged, metadata)
     }
 

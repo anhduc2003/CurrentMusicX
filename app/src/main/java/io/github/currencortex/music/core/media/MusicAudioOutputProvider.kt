@@ -30,7 +30,7 @@ internal class MusicAudioOutputProvider(context: Context, private val settings: 
     }
     override fun getAudioOutput(config: AudioOutputProvider.OutputConfig): AudioOutput {
         val requested = settings()
-        check(!requested.mode.rawPcm) { "${requested.mode.label} 必须通过独立的原始 PCM 输出链路" }
+        check(!requested.mode.rawPcm) { "${requested.mode.label} phải dùng chuỗi đầu ra PCM thô riêng biệt" }
         if (requested.mode != AudioOutputMode.AUDIO_TRACK) {
             try {
                 val api = when (requested.mode) { AudioOutputMode.OPENSL_ES -> 1; AudioOutputMode.AAUDIO, AudioOutputMode.DIRECT -> 2; else -> 0 }
@@ -40,7 +40,7 @@ internal class MusicAudioOutputProvider(context: Context, private val settings: 
                 val decision = AudioFormatNegotiator.negotiate(AudioPcmFormat(config.sampleRate, config.encoding,
                     Integer.bitCount(config.channelMask)), requested.mode, capabilities)
                 require(decision.accepted) { decision.reason.orEmpty() }
-                require(config.encoding == C.ENCODING_PCM_16BIT) { "当前原生后端仅支持 PCM 16 bit" }
+                require(config.encoding == C.ENCODING_PCM_16BIT) { "Backend gốc hiện tại chỉ hỗ trợ PCM 16 bit" }
                 val queueMs = when (requested.bufferPolicy) {
                     AudioBufferPolicy.BALANCED -> 500
                     AudioBufferPolicy.RESPONSIVE -> 120
@@ -49,11 +49,11 @@ internal class MusicAudioOutputProvider(context: Context, private val settings: 
                 val output = NativeAudioOutput(config, api, requested.mode == AudioOutputMode.DIRECT, device?.id ?: 0, queueMs)
                 val actual = if (output.actualApi == 2) "AAudio" else "OpenSL ES"
                 report("${requested.mode.label} · $actual · PCM 16 bit · ${config.sampleRate} Hz" +
-                    if (requested.mode == AudioOutputMode.DIRECT && output.actualExclusive) " · 流已报告独占" else if (actual == "OpenSL ES" && device != null) " · 设备路由跟随系统" else "")
+                    if (requested.mode == AudioOutputMode.DIRECT && output.actualExclusive) " · Luồng đã báo cáo chế độ độc quyền" else if (actual == "OpenSL ES" && device != null) " · Tuyến thiết bị tuân theo hệ thống" else "")
                 return tracked(output, config, actual)
             } catch (error: Exception) {
-                if (primary()) router?.fallback("${requested.mode.label} 创建失败（${error.javaClass.simpleName}）")
-                report("${requested.mode.label} 不可用，已回退 AudioTrack · ${config.sampleRate} Hz：${error.message}")
+                if (primary()) router?.fallback("${requested.mode.label} tạo thất bại（${error.javaClass.simpleName}）")
+                report("${requested.mode.label} không khả dụng, đã chuyển về AudioTrack · ${config.sampleRate} Hz：${error.message}")
                 return tracked(fallback.getAudioOutput(config), config, "AudioTrack")
             }
         }

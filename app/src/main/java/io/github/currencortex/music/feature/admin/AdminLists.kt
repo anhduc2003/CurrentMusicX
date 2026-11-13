@@ -27,8 +27,8 @@ import io.github.currencortex.music.ui.component.nativeui.*
 import top.yukonga.miuix.kmp.basic.*
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 
-private val adminSorts = listOf("reg" to "最新注册", "reg_asc" to "最早注册", "name" to "昵称", "active" to "最近活跃",
-    "sessions" to "在线设备", "likes" to "点赞", "plays" to "播放", "role" to "角色")
+private val adminSorts = listOf("reg" to "Đăng ký mới nhất", "reg_asc" to "Đăng ký sớm nhất", "name" to "Biệt danh", "active" to "Hoạt động gần đây",
+    "sessions" to "Thiết bị trực tuyến", "likes" to "Lượt thích", "plays" to "Lượt phát", "role" to "Vai trò")
 
 @Composable internal fun AdminSearch(state: AdminState, actions: AdminActions) {
     var query by rememberSaveable { mutableStateOf(state.query) }
@@ -44,22 +44,22 @@ private val adminSorts = listOf("reg" to "最新注册", "reg_asc" to "最早注
         MusicSearchBar(query, { search() }, Modifier.fillMaxWidth(), onInput = {
             query = it
             if (it.isEmpty() && state.query.isNotEmpty()) search("")
-        }, placeholder = "用户名、昵称、邮箱或手机号", inputTag = "admin_user_query", submitTag = "admin_search",
+        }, placeholder = "Tên người dùng, biệt danh, email hoặc số điện thoại", inputTag = "admin_user_query", submitTag = "admin_search",
             clearTag = "admin_search_clear", onCancel = { query = ""; focus.clearFocus(); keyboard?.hide() })
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(if (state.loading) "正在查找…" else "${state.users?.total ?: 0} 位用户", Modifier.weight(1f), fontSize = 12.sp,
+            Text(if (state.loading) "Đang tìm…" else "${state.users?.total ?: 0} người dùng", Modifier.weight(1f), fontSize = 12.sp,
                 color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
             Row(Modifier.heightIn(min = 48.dp).clickable(enabled = !state.busy, role = Role.Button) {
                 focus.clearFocus(); keyboard?.hide(); sorting = true
             }.testTag("admin_sort").padding(start = 12.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text(adminSorts.firstOrNull { it.first == state.sort }?.second ?: "排序", fontSize = 13.sp,
+                Text(adminSorts.firstOrNull { it.first == state.sort }?.second ?: "Sắp xếp", fontSize = 13.sp,
                     color = MiuixTheme.colorScheme.primary)
                 Icon(MusicIcons.Sort, null, Modifier.size(16.dp), tint = MiuixTheme.colorScheme.primary)
             }
         }
     }
-    if (sorting) MusicDialog("用户排序", { sorting = false }) {
+    if (sorting) MusicDialog("Sắp xếp người dùng", { sorting = false }) {
         Column(Modifier.heightIn(max = 380.dp).verticalScroll(rememberScrollState())) {
             adminSorts.forEach { (value, label) -> MusicDialogChoiceRow(label, state.sort == value, {
                 sorting = false; search(query, value)
@@ -70,7 +70,7 @@ private val adminSorts = listOf("reg" to "最新注册", "reg_asc" to "最早注
 
 internal fun LazyListScope.adminUsers(state: AdminState, actions: AdminActions, open: (AdminDestination) -> Unit) {
     val result = state.users ?: return
-    if (result.users.isEmpty()) item { AdminEmpty("没有匹配的用户", "试试其他关键词，或查看全部账号", "清除搜索") { actions.search("", state.sort) } }
+    if (result.users.isEmpty()) item { AdminEmpty("Không tìm thấy người dùng phù hợp", "Hãy thử từ khóa khác hoặc xem tất cả tài khoản", "Xóa tìm kiếm") { actions.search("", state.sort) } }
     items(result.users, key = { "user-${it.id}" }) { user -> SettingsGroup {
         Row(Modifier.fillMaxWidth().clickable(role = Role.Button, enabled = !state.loading && !state.busy) { open(AdminDestination.User(user)) }
             .testTag("admin_manage_${user.id}").padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -82,8 +82,8 @@ internal fun LazyListScope.adminUsers(state: AdminState, actions: AdminActions, 
                 Text("@${user.username}", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     if (user.isAdmin || user.isSuper || user.isOwner) AdminBadge(adminRole(user))
-                    if (user.disabled) AdminBadge("已禁用", warning = true)
-                    if (user.sessions > 0) Text("${user.sessions} 台在线", fontSize = 11.sp, color = MiuixTheme.colorScheme.primary)
+                    if (user.disabled) AdminBadge("Đã vô hiệu hóa", warning = true)
+                    if (user.sessions > 0) Text("${user.sessions} thiết bị trực tuyến", fontSize = 11.sp, color = MiuixTheme.colorScheme.primary)
                 }
             }
             Icon(MusicIcons.Forward, null, Modifier.size(16.dp), tint = MiuixTheme.colorScheme.onSurfaceVariantSummary)
@@ -91,23 +91,23 @@ internal fun LazyListScope.adminUsers(state: AdminState, actions: AdminActions, 
     } }
     if (result.total > 0 || state.offset > 0) item { Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween) {
-        MusicTextAction("上一页", { actions.page(-1) }, Modifier.testTag("admin_previous_page"), enabled = !state.loading && !state.busy && state.offset > 0)
+        MusicTextAction("Trang trước", { actions.page(-1) }, Modifier.testTag("admin_previous_page"), enabled = !state.loading && !state.busy && state.offset > 0)
         Text("${state.offset / AdminRepository.PAGE_SIZE + 1} / ${((result.total + AdminRepository.PAGE_SIZE - 1) / AdminRepository.PAGE_SIZE).coerceAtLeast(1)}",
             fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
-        MusicTextAction("下一页", { actions.page(1) }, Modifier.testTag("admin_next_page"),
+        MusicTextAction("Trang sau", { actions.page(1) }, Modifier.testTag("admin_next_page"),
             enabled = !state.loading && !state.busy && state.offset + AdminRepository.PAGE_SIZE < result.total)
     } }
 }
 
 internal fun LazyListScope.adminAnnouncements(state: AdminState, open: (AdminDestination) -> Unit) {
     val rows = state.announcements ?: return
-    if (rows.isEmpty()) item { AdminEmpty("还没有公告", "发布后，用户将在客户端中看到公告。") }
+    if (rows.isEmpty()) item { AdminEmpty("Chưa có thông báo", "Sau khi đăng, người dùng sẽ thấy thông báo trong ứng dụng.") }
     items(rows, key = { "announcement-${it.id}" }) { item -> SettingsGroup {
         Column(Modifier.fillMaxWidth().clickable(role = Role.Button, enabled = !state.busy) { open(AdminDestination.Announcement(item)) }
             .testTag("admin_announcement_${item.id}").padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                AdminBadge(if (item.removed) "已移除" else if (item.pinned) "置顶" else "生效中", warning = item.removed)
-                if (!item.canEdit) AdminBadge("只读")
+                AdminBadge(if (item.removed) "Đã gỡ" else if (item.pinned) "Đã ghim" else "Đang có hiệu lực", warning = item.removed)
+                if (!item.canEdit) AdminBadge("Chỉ đọc")
             }
             Text(item.title, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
             Text(item.body, fontSize = 13.sp, maxLines = 2, overflow = TextOverflow.Ellipsis, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
@@ -122,20 +122,20 @@ internal fun LazyListScope.adminAnnouncements(state: AdminState, open: (AdminDes
 internal fun LazyListScope.adminDevices(state: AdminState, confirm: (AdminConfirmation) -> Unit) {
     val sessions = state.sessions ?: return
     val groups = sessions.groupBy { it.user_id }.values.toList()
-    item { Text("${groups.size} 位用户 · ${sessions.size} 台设备" + if (sessions.size >= 100) "（最多显示 100 台）" else "",
+    item { Text("${groups.size} người dùng · ${sessions.size} thiết bị" + if (sessions.size >= 100) "（Hiển thị tối đa 100 thiết bị）" else "",
         Modifier.padding(horizontal = 2.dp, vertical = 4.dp), fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary) }
-    if (groups.isEmpty()) item { AdminEmpty("暂无在线设备", "新会话会在刷新后显示。") }
+    if (groups.isEmpty()) item { AdminEmpty("Chưa có thiết bị trực tuyến", "Các phiên mới sẽ hiển thị sau khi làm mới.") }
     items(groups, key = { "devices-${it.first().user_id}" }) { rows ->
         val first = rows.first()
-        AdminExpandable(first.nickname.ifBlank { first.username }, "@${first.username} · ${rows.size} 台设备", "admin_devices_${first.user_id}") {
+        AdminExpandable(first.nickname.ifBlank { first.username }, "@${first.username} · ${rows.size} thiết bị", "admin_devices_${first.user_id}") {
             rows.forEachIndexed { index, session ->
                 if (index > 0) SettingsDivider(0.dp)
                 Text(session.device, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                Text("${session.platform} · 最近活跃 ${adminTime(session.last_seen)}", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
+                Text("${session.platform} · Hoạt động gần đây ${adminTime(session.last_seen)}", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
             }
-            if (first.user_id == state.actor?.id) SettingsHint("当前账号，请在账号与安全中管理自己的登录。")
-            else MusicTextAction("全部设备下线", { confirm(AdminConfirmation.Kick(first)) }, enabled = !state.loading && !state.busy, destructive = true)
+            if (first.user_id == state.actor?.id) SettingsHint("Tài khoản hiện tại, hãy quản lý đăng nhập của bạn trong mục Tài khoản và bảo mật.")
+            else MusicTextAction("Đăng xuất khỏi tất cả thiết bị", { confirm(AdminConfirmation.Kick(first)) }, enabled = !state.loading && !state.busy, destructive = true)
         }
     }
 }
-internal fun adminRole(user: AdminUser) = if (user.isOwner) "站长" else if (user.isSuper) "超级管理员" else if (user.isAdmin) "管理员" else "普通用户"
+internal fun adminRole(user: AdminUser) = if (user.isOwner) "Chủ trang" else if (user.isSuper) "Quản trị viên cấp cao" else if (user.isAdmin) "Quản trị viên" else "Người dùng thường"

@@ -81,7 +81,7 @@ import kotlinx.coroutines.launch
 @Composable fun MeScreen(vm: ProfileViewModel, auth: AuthViewModel, navigate: (String) -> Unit, onSettings: () -> Unit,
     play: (List<Song>, Int) -> Unit) {
     val account by vm.container.accountRepository.state.collectAsStateWithLifecycle()
-    // The bottom navigation already owns "设置"; a second entry above the login form was redundant.
+// Thanh điều hướng dưới đã có mục “Cài đặt”; mục thứ hai phía trên biểu mẫu đăng nhập là dư thừa.
     if (account.account == null && vm.container.nativeNetease != null) NativeMeScreen(vm.container, navigate, onSettings)
     else if (account.account == null) ProfilePageLayout(navigate, onSettings) { topInset ->
         LoginScreen(auth, showTitle = false, contentTopInset = topInset)
@@ -112,7 +112,7 @@ import kotlinx.coroutines.launch
         account.profile?.let { native -> item("identity") { SettingsGroup {
             Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 Box(Modifier.testTag("my_profile_avatar").clickable(role = Role.Button) { avatarPreview = true }
-                    .semantics { contentDescription = "查看头像" }.onGloballyPositioned {
+                     .semantics { contentDescription = "Xem ảnh đại diện" }.onGloballyPositioned {
                     val center = (placement?.landingBounds(it) ?: it.boundsInRoot()).center
                     val radius = with(density) { 32.dp.toPx() }
                     val landing = Rect(center - Offset(radius, radius), center + Offset(radius, radius))
@@ -125,13 +125,13 @@ import kotlinx.coroutines.launch
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(native.nickname, fontSize = 23.sp, fontWeight = FontWeight.SemiBold,
                         maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    Text(if (account.stale) "网易云登录已过期" else "网易云音乐", fontSize = 13.sp,
+                     Text(if (account.stale) "Đăng nhập Nhạc Vân NetEase đã hết hạn" else "Nhạc Vân NetEase", fontSize = 13.sp,
                         color = MiuixTheme.colorScheme.onSurface.copy(alpha = .55f))
                 }
             }
         } } }
         if (account.profile == null) item("identity") { SettingsGroup {
-            ProfileDestination("登录 CurrentMusic", "登录后同步资料与音乐收藏", MusicIcons.Account,
+             ProfileDestination("Đăng nhập CurrentMusic", "Đăng nhập để đồng bộ hồ sơ và nhạc yêu thích", MusicIcons.Account,
                 "open_currentmusic_login") { navigate("user/login") }
         } }
         item("library") { ProfileLibrarySection(navigate) }
@@ -187,14 +187,14 @@ import kotlinx.coroutines.launch
         if ((state.loading || account.loading) && user == null) item { LoadingProfileCard() }
         state.error?.let { message -> item("error") { SettingsGroup {
             SettingsHint(message, error = true)
-            MusicTextAction("重试", vm::reload, Modifier.padding(start = 16.dp, bottom = 12.dp))
+             MusicTextAction("Thử lại", vm::reload, Modifier.padding(start = 16.dp, bottom = 12.dp))
         } } }
         if (user != null) {
             item("identity") { SettingsGroup(Modifier.testTag("profile_identity")) {
                 Row(Modifier.fillMaxWidth().padding(start = 20.dp, top = 20.dp, end = 20.dp, bottom = 12.dp),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Box(Modifier.testTag("my_profile_avatar").clickable(role = Role.Button) { avatarPreview = true }
-                        .semantics { contentDescription = "查看头像" }.onGloballyPositioned {
+                         .semantics { contentDescription = "Xem ảnh đại diện" }.onGloballyPositioned {
                         val center = (placement?.landingBounds(it) ?: it.boundsInRoot()).center
                         val radius = with(density) { 32.dp.toPx() }
                         val landing = Rect(center - Offset(radius, radius), center + Offset(radius, radius))
@@ -216,10 +216,10 @@ import kotlinx.coroutines.launch
                         UserIdentityDetails("", user.ipRegion)
                     }
                 }
-                Text(if (state.loading && state.profile == null) "正在加载资料…" else user.bio.ifBlank { "还没有填写简介" },
+                 Text(if (state.loading && state.profile == null) "Đang tải hồ sơ…" else user.bio.ifBlank { "Chưa có phần giới thiệu" },
                             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 12.dp).then(if (own) Modifier.testTag("edit_profile")
                                 .clickable(enabled = !busy && state.profile != null, role = Role.Button) { vm.dialog.value = "edit" }
-                                .semantics { contentDescription = "编辑资料" } else Modifier),
+                                 .semantics { contentDescription = "Chỉnh sửa hồ sơ" } else Modifier),
                             fontSize = 13.sp, lineHeight = 19.sp, maxLines = 2, overflow = TextOverflow.Ellipsis,
                             color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
                 state.profile?.stat?.let { ProfileStatsBlock(it, if (own) ({ navigate("user/listening") }) else null) }
@@ -231,21 +231,21 @@ import kotlinx.coroutines.launch
                 item("account") { ProfileAccountSection(navigate, administrator = !account.loading && !account.offline &&
                     account.account?.let { it.isAdmin || it.isSuper || it.isOwner } == true) }
             }
-            state.profile?.current?.let { song -> item { SettingsListHeader("当前在听")
+             state.profile?.current?.let { song -> item { SettingsListHeader("Đang nghe")
                 SongRow(SongRowUi(song.toDomain()), { play(listOf(song.toDomain()), 0) },
                     { vm.container.playerController.add(song.toDomain(), true) }, { vm.container.playerController.add(song.toDomain()) })
             } }
             val recent = state.profile?.recent.orEmpty().map { it.toDomain() }
-            if (recent.isNotEmpty()) item { SettingsListHeader("最近听过") }
+             if (recent.isNotEmpty()) item { SettingsListHeader("Nghe gần đây") }
             itemsIndexed(recent, key = { _, song -> "recent-${song.id}" }) { index, song ->
                 SongRow(SongRowUi(song), { play(recent, index) }, { vm.container.playerController.add(song, true) }, { vm.container.playerController.add(song) })
             }
             val lists = state.profile?.playlists.orEmpty()
-            if (lists.isNotEmpty()) item { SettingsListHeader(if (own) "我的歌单" else "公开歌单") }
+             if (lists.isNotEmpty()) item { SettingsListHeader(if (own) "Danh sách phát của tôi" else "Danh sách phát công khai") }
             items(lists, key = { "playlist-${it.source}-${it.id}" }) { list ->
                 SettingsGroup(Modifier.padding(bottom = 12.dp)) {
                     SettingsUiScope {
-                        SettingsPreference(list.name, "${list.count} 首" + if (list.source in setOf("ncm", "netease")) " · 网易云" else "",
+                         SettingsPreference(list.name, "${list.count} bài" + if (list.source in setOf("ncm", "netease")) " · Nhạc Vân NetEase" else "",
                             Modifier.testTag("profile_playlist_${list.id}"),
                             onClick = { navigate("lib/${if (list.source == "netease") "ncmplaylist" else "playlist"}/${list.id}") },
                             leading = { MusicCover(list.cover, Modifier.size(48.dp)) },
@@ -275,13 +275,13 @@ import kotlinx.coroutines.launch
     val colors = MiuixTheme.colorScheme
     var removing by remember { mutableStateOf<io.github.currencortex.music.data.auth.SavedAccount?>(null) }
     var protection by remember { mutableStateOf<String?>(null) }
-    MusicSubpage("账号与安全", "security_page", onBack, actions = {
-        MusicTextAction("添加账号", add, Modifier.testTag("add_account"), enabled = !state.loading)
+     MusicSubpage("Tài khoản và bảo mật", "security_page", onBack, actions = {
+         MusicTextAction("Thêm tài khoản", add, Modifier.testTag("add_account"), enabled = !state.loading)
     }) { topInset ->
     LazyColumn(Modifier.fillMaxSize().testTag("security_screen"),
         contentPadding = musicScrollPadding(PaddingValues(16.dp, topInset + 8.dp, 16.dp, 32.dp)),
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        item { SettingsListHeader("已保存账号") }
+         item { SettingsListHeader("Tài khoản đã lưu") }
         item { SettingsGroup {
             accounts.forEachIndexed { index, saved ->
                 if (index > 0) SettingsDivider(68.dp)
@@ -292,39 +292,39 @@ import kotlinx.coroutines.launch
                         if (active) SettingsSelectionCheck(true, Modifier.testTag("current_account_${saved.id}"))
                     }, footer = if (active) null else ({
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            MusicTextAction("切换", { auth.switch(saved.key) },
+                             MusicTextAction("Chuyển đổi", { auth.switch(saved.key) },
                                 Modifier.testTag("switch_account_${saved.id}"), enabled = !state.loading)
-                            MusicTextAction("移除", { removing = saved },
+                             MusicTextAction("Xóa", { removing = saved },
                                 Modifier.testTag("remove_account_${saved.id}"), enabled = !state.loading, destructive = true)
                         }
                     }))
             }
-            if (accounts.isEmpty()) SettingsHint("本机还没有保存的账号")
+             if (accounts.isEmpty()) SettingsHint("Thiết bị này chưa lưu tài khoản nào")
         } }
-        item { SettingsListHeader("安全") }
+         item { SettingsListHeader("Bảo mật") }
         item { SettingsGroup {
-            MusicDestinationRow("登录密保", { protection = "question" }, Modifier.testTag("open_security_question"),
-                "设置或关闭登录密保问题", enabled = !busy && account.account != null)
+             MusicDestinationRow("Câu hỏi bảo mật đăng nhập", { protection = "question" }, Modifier.testTag("open_security_question"),
+                 "Thiết lập hoặc tắt câu hỏi bảo mật đăng nhập", enabled = !busy && account.account != null)
             SettingsDivider()
-            MusicDestinationRow("验证器", { protection = "totp" }, Modifier.testTag("open_authenticator"),
-                "绑定、关闭与查看恢复码剩余数量", enabled = !busy && account.account != null)
+             MusicDestinationRow("Ứng dụng xác thực", { protection = "totp" }, Modifier.testTag("open_authenticator"),
+                 "Liên kết, tắt và xem số mã khôi phục còn lại", enabled = !busy && account.account != null)
             SettingsDivider()
-            MusicDestinationRow("修改密码", { vm.dialog.value = "password" }, Modifier.testTag("open_password"),
-                "登录密码至少 6 位", enabled = !busy)
+             MusicDestinationRow("Đổi mật khẩu", { vm.dialog.value = "password" }, Modifier.testTag("open_password"),
+                "Mật khẩu đăng nhập phải có ít nhất 6 ký tự", enabled = !busy)
             SettingsDivider()
-            MusicDestinationRow("退出登录", { vm.dialog.value = "logout" }, Modifier.testTag("open_logout"),
-                "仅移除本机凭据，其他已保存账号保留", enabled = !busy)
+            MusicDestinationRow("Đăng xuất", { vm.dialog.value = "logout" }, Modifier.testTag("open_logout"),
+                "Chỉ xóa thông tin đăng nhập trên thiết bị này, các tài khoản đã lưu khác vẫn được giữ lại", enabled = !busy)
         } }
         state.message?.let { item { SettingsHint(it) } }
-        if (state.loading) item { SettingsHint("正在验证账号…") }
+        if (state.loading) item { SettingsHint("Đang xác minh tài khoản…") }
     }
     }
     SettingsUiScope {
     protection?.let { kind -> io.github.currencortex.music.feature.auth.LoginProtectionDialog(container,
         questionMode = kind == "question", onDismiss = { protection = null }) }
-    removing?.let { saved -> MusicDialog("移除已保存账号？", { removing = null }) {
-        Text(saved.nickname.ifBlank { saved.username }); Text("仅移除本机凭据，账号本身不受影响。")
-        MusicDialogButton("确认移除", onClick = { removing = null; auth.removeSaved(saved.key) },
+    removing?.let { saved -> MusicDialog("Xóa tài khoản đã lưu?", { removing = null }) {
+        Text(saved.nickname.ifBlank { saved.username }); Text("Chỉ xóa thông tin đăng nhập trên thiết bị này, tài khoản vẫn không bị ảnh hưởng.")
+        MusicDialogButton("Xác nhận xóa", onClick = { removing = null; auth.removeSaved(saved.key) },
             modifier = Modifier.testTag("confirm_remove_account"))
     } }
     }
@@ -343,11 +343,11 @@ import kotlinx.coroutines.launch
             var nickname by rememberSaveable(user.id) { mutableStateOf(user.nickname) }
             var bio by rememberSaveable(user.id) { mutableStateOf(user.bio) }
             var visible by rememberSaveable(user.id) { mutableStateOf(user.visible) }
-            MusicDialog("编辑资料", ::close) {
-                Text("昵称"); TextField(nickname, { nickname = it }, singleLine = true, modifier = Modifier.fillMaxWidth().then(Modifier.testTag("profile_nickname")))
-                Text("简介"); TextField(bio, { bio = it }, modifier = Modifier.fillMaxWidth().then(Modifier.testTag("profile_bio")))
-                visible?.let { current -> SettingsSwitch("在用户广场公开资料", current, { visible = it }) }
-                MusicDialogButton("保存", onClick = { vm.update(nickname, bio, visible) }, enabled = nickname.isNotBlank() && !busy,
+            MusicDialog("Chỉnh sửa hồ sơ", ::close) {
+                Text("Biệt danh"); TextField(nickname, { nickname = it }, singleLine = true, modifier = Modifier.fillMaxWidth().then(Modifier.testTag("profile_nickname")))
+                Text("Giới thiệu"); TextField(bio, { bio = it }, modifier = Modifier.fillMaxWidth().then(Modifier.testTag("profile_bio")))
+                visible?.let { current -> SettingsSwitch("Công khai hồ sơ trên Quảng trường người dùng", current, { visible = it }) }
+                MusicDialogButton("Lưu", onClick = { vm.update(nickname, bio, visible) }, enabled = nickname.isNotBlank() && !busy,
                     modifier = Modifier.testTag("save_profile"))
             }
         }
@@ -361,9 +361,9 @@ import kotlinx.coroutines.launch
                     if (usingCode) vm.passwordWithEmailCode(credential, new) else vm.password(credential, new)
                 })
         }
-        "logout" -> MusicDialog("退出当前账号？", ::close) {
-            Text("会移除本机保存的当前账号凭据，其他已保存账号保留。")
-            MusicDialogButton("确认退出", onClick = { vm.container.playerController.pause(); vm.dialog.value = null; auth.logout() })
+        "logout" -> MusicDialog("Đăng xuất khỏi tài khoản hiện tại?", ::close) {
+            Text("Thông tin đăng nhập của tài khoản hiện tại được lưu trên thiết bị này sẽ bị xóa; các tài khoản đã lưu khác vẫn được giữ lại.")
+            MusicDialogButton("Xác nhận đăng xuất", onClick = { vm.container.playerController.pause(); vm.dialog.value = null; auth.logout() })
         }
     }
 }

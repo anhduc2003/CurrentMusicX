@@ -90,7 +90,7 @@ internal class ListenTogetherFateController(
         if (generation != epoch) return
         val message = when (failure) {
             is ApiException -> failure.kind.message
-            else -> "暂时无法处理缘分报告，请重试"
+else -> "Hiện chưa thể xử lý báo cáo nhân duyên, vui lòng thử lại"
         }
         // On account changes the old person's report must not remain visible or shareable.
         if (failure is ApiException && failure.kind in setOf(ErrorKind.NeteaseSessionChanged, ErrorKind.NeteaseBindingRequired)) {

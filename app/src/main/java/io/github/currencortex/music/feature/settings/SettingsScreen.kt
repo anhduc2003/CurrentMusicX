@@ -36,8 +36,8 @@ fun SettingsScreen(onAppearance: () -> Unit, onNetwork: () -> Unit,
     CompositionLocalProvider(LocalPageContainerSource provides (onNavigateFrom ?: LocalPageContainerSource.current)) {
     SettingsUiScope {
     SettingsScrollLayout(Modifier.fillMaxSize(), topBar = {
-        if (onBack == null) SettingsRootTopBar("设置", Modifier.testTag("settings_root_toolbar"))
-        else SettingsTopBar("设置", onBack, tag = "settings_root_toolbar")
+        if (onBack == null) SettingsRootTopBar("Cài đặt", Modifier.testTag("settings_root_toolbar"))
+        else SettingsTopBar("Cài đặt", onBack, tag = "settings_root_toolbar")
     }) { topInset ->
     LazyColumn(Modifier.fillMaxSize().testTag("settings_screen"),
         contentPadding = musicScrollPadding(PaddingValues(16.dp, topInset + 24.dp, 16.dp, 20.dp))) {
@@ -51,13 +51,13 @@ fun SettingsScreen(onAppearance: () -> Unit, onNetwork: () -> Unit,
             }) {
                 val progress = updateTransfer.download
                 val updateTitle = when (progress) {
-                    is io.github.currencortex.music.core.update.UpdateDownloadState.Downloading -> "更新下载中 · ${(progress.received.toDouble() / progress.total.coerceAtLeast(1) * 100).toInt()}%"
-                    is io.github.currencortex.music.core.update.UpdateDownloadState.Ready -> "更新已下载"
-                    is io.github.currencortex.music.core.update.UpdateDownloadState.Failed -> "更新下载失败"
-                    else -> "检查更新"
+                    is io.github.currencortex.music.core.update.UpdateDownloadState.Downloading -> "Đang tải bản cập nhật · ${(progress.received.toDouble() / progress.total.coerceAtLeast(1) * 100).toInt()}%"
+                    is io.github.currencortex.music.core.update.UpdateDownloadState.Ready -> "Đã tải bản cập nhật"
+                    is io.github.currencortex.music.core.update.UpdateDownloadState.Failed -> "Tải bản cập nhật thất bại"
+                    else -> "Kiểm tra cập nhật"
                 }
                 val summary = if (progress is io.github.currencortex.music.core.update.UpdateDownloadState.Idle)
-                    "查看版本和更新说明" else "查看下载进度、切换来源或安装"
+                    "Xem phiên bản và ghi chú cập nhật" else "Xem tiến trình tải xuống, chuyển nguồn hoặc cài đặt"
                 SettingsPreference(title = updateTitle, summary = summary,
                     leading = { SettingIcon(MusicIcons.Download) }, trailing = { Icon(MusicIcons.Forward, null, Modifier.size(16.dp)) }, onClick = {
                         onUpdates(origin?.takeIf { it.isAttached }?.let { UpdatePageOrigin(it, color, updateTitle, summary, sourceLayer = sourceLayer) })
@@ -65,39 +65,39 @@ fun SettingsScreen(onAppearance: () -> Unit, onNetwork: () -> Unit,
             }
         }
         item {
-            SettingsListSection("个性化") {
-                SettingsPagePreference("外观", "主题、颜色与界面效果", MusicIcons.Image,"open_appearance",onAppearance)
+            SettingsListSection("Cá nhân hóa") {
+                SettingsPagePreference("Giao diện", "Chủ đề, màu sắc và hiệu ứng giao diện", MusicIcons.Image,"open_appearance",onAppearance)
                 SettingsDivider(52.dp)
-                SettingsPagePreference("桌面悬浮歌词", "实时预览、字幕样式与窗口控制", MusicIcons.BottomBar,"open_desktop_lyrics",onDesktopLyrics)
+                SettingsPagePreference("Lời bài hát nổi trên màn hình nền", "Xem trước trực tiếp, kiểu phụ đề và điều khiển cửa sổ", MusicIcons.BottomBar,"open_desktop_lyrics",onDesktopLyrics)
             }
         }
         item {
-            SettingsListSection("音乐") {
-                SettingsPagePreference("播放", "音质、歌曲衔接、预加载与播放行为", MusicIcons.Play,"open_playback",onPlayback)
+            SettingsListSection("Âm nhạc") {
+                SettingsPagePreference("Phát lại", "Chất lượng âm thanh, chuyển tiếp bài hát, tải trước và hành vi phát", MusicIcons.Play,"open_playback",onPlayback)
                 SettingsDivider(52.dp)
-                SettingsPagePreference("音源与网络", "音乐音源、歌词来源与服务器", MusicIcons.Storage,"open_network",onNetwork)
+                SettingsPagePreference("Nguồn nhạc và mạng", "Nguồn nhạc, nguồn lời bài hát và máy chủ", MusicIcons.Storage,"open_network",onNetwork)
                 SettingsDivider(52.dp)
-                SettingsPagePreference("音效", "智能调音、音效与均衡器", MusicIcons.Headphones,"open_equalizer",onEffects)
+                SettingsPagePreference("Hiệu ứng âm thanh", "Điều chỉnh âm thanh thông minh, hiệu ứng âm thanh và bộ chỉnh âm", MusicIcons.Headphones,"open_equalizer",onEffects)
                 SettingsDivider(52.dp)
-                SettingsPagePreference("音频输出", "输出采样率、设备与能力信息", MusicIcons.Device,"open_audio_output",onAudioOutput)
+                SettingsPagePreference("Đầu ra âm thanh", "Tần số lấy mẫu đầu ra, thiết bị và thông tin khả năng", MusicIcons.Device,"open_audio_output",onAudioOutput)
             }
         }
         item {
-            SettingsListSection("应用") {
-                SettingsPreference("默认打开链接", "在系统中允许打开网易云和 CurrentMusic 网站链接", Modifier.testTag("open_app_links"),
+            SettingsListSection("Ứng dụng") {
+                SettingsPreference("Mở liên kết mặc định", "Cho phép mở liên kết Nhạc Vân NetEase và trang web CurrentMusic trong hệ thống", Modifier.testTag("open_app_links"),
                     leading = { SettingIcon(MusicIcons.Info) },
                     trailing = { Icon(MusicIcons.Forward, null, Modifier.size(16.dp)) },
                     onClick = { io.github.currencortex.music.ui.util.openAppLinkSettings(context) })
                 SettingsDivider(52.dp)
-                SettingsPagePreference("存储空间", "缓存与下载占用", MusicIcons.Storage,"open_storage",onStorage)
+                SettingsPagePreference("Dung lượng lưu trữ", "Dung lượng bộ nhớ đệm và nội dung tải xuống", MusicIcons.Storage,"open_storage",onStorage)
                 SettingsDivider(52.dp)
-                SettingsPreference("导出日志", "保存或分享脱敏诊断文件", Modifier.testTag("open_logs"),
+                SettingsPreference("Xuất nhật ký", "Lưu hoặc chia sẻ tệp chẩn đoán đã ẩn thông tin nhạy cảm", Modifier.testTag("open_logs"),
                     leading = { SettingIcon(MusicIcons.File) }, onClick = onLogs,
                     trailing = { Icon(MusicIcons.Forward, null, Modifier.size(16.dp)) })
                 SettingsDivider(52.dp)
-                SettingsPagePreference("支持开发者", "自愿赞助项目开发与维护", MusicIcons.Heart,"open_support",onSupport)
+                SettingsPagePreference("Ủng hộ nhà phát triển", "Tự nguyện tài trợ cho việc phát triển và bảo trì dự án", MusicIcons.Heart,"open_support",onSupport)
                 SettingsDivider(52.dp)
-                SettingsPagePreference("关于", "版本、开源许可与隐私", MusicIcons.Info,"open_about",onAbout)
+                SettingsPagePreference("Giới thiệu", "Phiên bản, giấy phép mã nguồn mở và quyền riêng tư", MusicIcons.Info,"open_about",onAbout)
             }
         }
     }

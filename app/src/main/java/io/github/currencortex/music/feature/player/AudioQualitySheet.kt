@@ -43,7 +43,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 /** Quality is a requested level, never a claim about the stream returned by the provider. */
 @Composable internal fun AudioQualitySheet(selected: AudioQuality, onSelect: (AudioQuality) -> Unit,
-    onDismiss: () -> Unit, enabled: Boolean = true, title: String = "当前歌曲音质", onNetwork: (() -> Unit)? = null,
+    onDismiss: () -> Unit, enabled: Boolean = true, title: String = "Chất lượng bài hát hiện tại", onNetwork: (() -> Unit)? = null,
     song: Song? = null, insights: SongInsightsRepository? = null,
     audioInfo: io.github.currencortex.music.core.media.AudioStreamInfo? = null, onRefresh: (() -> Unit)? = null) {
     var visible by remember { mutableStateOf(true) }
@@ -60,11 +60,11 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             }
         }, enabled, onNetwork?.let { action -> { afterDismiss = action; visible = false } }, extraContent = {
             audioInfo?.let { info ->
-                Text("实际播放 · ${info.summary}", Modifier.padding(4.dp).testTag("actual_audio_source"), fontSize = 13.sp)
-                if (info.matched) Text("官方音源暂不可用，正在播放匹配音源。音质与版本以实际文件为准。",
+                Text("Đang phát · ${info.summary}", Modifier.padding(4.dp).testTag("actual_audio_source"), fontSize = 13.sp)
+                if (info.matched) Text("Nguồn âm thanh chính thức hiện không khả dụng, đang phát nguồn phù hợp. Chất lượng và phiên bản tùy thuộc vào tệp thực tế.",
                     Modifier.padding(4.dp), fontSize = 12.sp)
             }
-            onRefresh?.let { refresh -> MusicTextAction("重新获取音源", { afterDismiss = refresh; visible = false }, Modifier.testTag("refresh_audio_source")) }
+            onRefresh?.let { refresh -> MusicTextAction("Tải lại nguồn âm thanh", { afterDismiss = refresh; visible = false }, Modifier.testTag("refresh_audio_source")) }
             if (visible && song != null && insights != null && NeteaseSongActionsRepository.songId(song) != null)
                 SongQualityFileDetails(song, insights)
         })
@@ -84,8 +84,8 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         verticalArrangement = Arrangement.spacedBy(8.dp)) {
         run {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("已选 · ${selected.label}", Modifier.weight(1f), fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
-                onNetwork?.let { action -> Text("网络与播放 ›", Modifier.heightIn(min = 48.dp).testTag("quality_network_settings")
+                Text("Đã chọn · ${selected.label}", Modifier.weight(1f), fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+                onNetwork?.let { action -> Text("Mạng và phát nhạc ›", Modifier.heightIn(min = 48.dp).testTag("quality_network_settings")
                     .clickable(role = Role.Button, interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = action)
                     .padding(horizontal = 8.dp, vertical = 14.dp), fontSize = 12.sp, color = colors.primary) }
             }
@@ -101,8 +101,8 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         }
         QualityRow(AudioQuality.AUTO, selected, enabled, onSelect)
         run {
-            Text(if (enabled) "按所选档位请求音源，实际音质取决于歌曲、音源及账号权限。自动最高会优先请求可用高音质。"
-                else "请先退出一起听，再切换音质。",
+            Text(if (enabled) "Yêu cầu nguồn âm thanh theo mức đã chọn; chất lượng thực tế phụ thuộc vào bài hát, nguồn âm thanh và quyền tài khoản. Tự động cao nhất sẽ ưu tiên yêu cầu chất lượng cao nhất hiện có."
+                else "Vui lòng thoát chế độ Nghe cùng nhau trước khi chuyển đổi chất lượng.",
                 Modifier.padding(horizontal = 4.dp, vertical = 8.dp).testTag("quality_note"),
                 fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
         }
@@ -122,18 +122,18 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         }
     }
     Column(Modifier.fillMaxWidth().padding(4.dp).testTag("song_quality_files"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("歌曲文件资料", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+        Text("Thông tin tệp bài hát", fontSize = 15.sp, fontWeight = FontWeight.Medium)
         when (val result = response) {
-            null -> Text("正在加载…", fontSize = 13.sp)
-            is AppResult.Failure -> MusicTextAction("${if (result.status == 404) "当前服务器暂不支持" else result.message} · 重试",
+            null -> Text("Đang tải…", fontSize = 13.sp)
+            is AppResult.Failure -> MusicTextAction("${if (result.status == 404) "Máy chủ hiện tại chưa hỗ trợ" else result.message} · Thử lại",
                 { retry++ }, Modifier.testTag("song_quality_files_retry"))
             is AppResult.Success -> {
-                if (result.value.isEmpty()) Text("暂无文件资料", fontSize = 13.sp)
+                if (result.value.isEmpty()) Text("Chưa có thông tin tệp", fontSize = 13.sp)
                 result.value.forEach { file ->
                     Text(file.label.ifBlank { file.level }, fontSize = 14.sp)
                     Text(qualityFileSummary(file.br, file.size, file.sr), fontSize = 12.sp,
                         color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
-                    file.variants.forEach { variant -> Text("${variant.immerseType.ifBlank { "音质变体" }} · ${qualityFileSummary(variant.br, variant.size, variant.sr)}",
+                    file.variants.forEach { variant -> Text("${variant.immerseType.ifBlank { "Biến thể chất lượng âm thanh" }} · ${qualityFileSummary(variant.br, variant.size, variant.sr)}",
                         fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary) }
                 }
             }
@@ -157,7 +157,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         }
         Spacer(Modifier.height(10.dp))
         Text(quality.label, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = colors.onSurface)
-        Text(if (quality == AudioQuality.SKY) "多声道环绕音源" else "高解析母带音源", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+        Text(if (quality == AudioQuality.SKY) "Nguồn âm thanh vòm đa kênh" else "Nguồn âm thanh master độ phân giải cao", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
     }
 }
 
@@ -196,24 +196,24 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 }
 
 private fun AudioQuality.shortName() = when (this) {
-    AudioQuality.VIVID -> "全景"
-    AudioQuality.DOLBY -> "杜比"
-    AudioQuality.JYEFFECT -> "臻音"
+    AudioQuality.VIVID -> "Âm thanh toàn cảnh"
+    AudioQuality.DOLBY -> "Dolby"
+    AudioQuality.JYEFFECT -> "Âm thanh tinh tuyển"
     AudioQuality.HIRES -> "HR"
     AudioQuality.LOSSLESS -> "SQ"
     AudioQuality.EXHIGH -> "HQ"
-    AudioQuality.HIGHER -> "高"
-    AudioQuality.STANDARD -> "标"
-    else -> "自动"
+    AudioQuality.HIGHER -> "Cao"
+    AudioQuality.STANDARD -> "Tiêu chuẩn"
+    else -> "Tự động"
 }
 private fun AudioQuality.description() = when (this) {
-    AudioQuality.VIVID -> "臻音全景声档位，需歌曲与账号支持"
-    AudioQuality.DOLBY -> "杜比全景声档位，需音源、账号与设备支持"
-    AudioQuality.JYEFFECT -> "网易云高清臻音档位，与 Hi-Res 分开选择"
-    AudioQuality.HIRES -> "请求高解析度音源，不代表设备已高解析输出"
-    AudioQuality.LOSSLESS -> "无损音源，还原原始细节"
-    AudioQuality.EXHIGH -> "清晰细腻，兼顾音质与流量"
-    AudioQuality.HIGHER -> "较高码率，兼顾清晰度与流量"
-    AudioQuality.STANDARD -> "均衡音质，更省流量"
-    else -> "优先请求可用的最高音质"
+    AudioQuality.VIVID -> "Mức âm thanh toàn cảnh tinh tuyển, cần bài hát và tài khoản hỗ trợ"
+    AudioQuality.DOLBY -> "Mức âm thanh vòm Dolby, cần nguồn âm thanh, tài khoản và thiết bị hỗ trợ"
+    AudioQuality.JYEFFECT -> "Mức âm thanh tinh tuyển độ phân giải cao của Nhạc Vân NetEase, chọn riêng với Hi-Res"
+    AudioQuality.HIRES -> "Yêu cầu nguồn âm thanh độ phân giải cao; không đồng nghĩa thiết bị đang xuất âm thanh độ phân giải cao"
+    AudioQuality.LOSSLESS -> "Nguồn âm thanh không tổn hao, tái hiện chi tiết nguyên bản"
+    AudioQuality.EXHIGH -> "Âm thanh trong trẻo, chi tiết, cân bằng chất lượng và lưu lượng"
+    AudioQuality.HIGHER -> "Tốc độ bit cao hơn, cân bằng độ rõ và lưu lượng"
+    AudioQuality.STANDARD -> "Chất lượng âm thanh cân bằng, tiết kiệm lưu lượng hơn"
+    else -> "Ưu tiên yêu cầu chất lượng âm thanh cao nhất hiện có"
 }

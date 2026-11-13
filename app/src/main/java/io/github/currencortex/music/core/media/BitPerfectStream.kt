@@ -42,7 +42,7 @@ internal class AndroidBitPerfectStream private constructor(private val manager: 
     private val devices = object : android.media.AudioDeviceCallback() {
         override fun onAudioDevicesRemoved(removed: Array<out AudioDeviceInfo>) {
             if (removed.any { it.id == session.device.id }) {
-                session.invalidate(BitPerfectFailureCode.DISCONNECTED, "USB 输出设备已断开")
+                 session.invalidate(BitPerfectFailureCode.DISCONNECTED, "Thiết bị đầu ra USB đã bị ngắt kết nối")
                 close()
             }
         }
@@ -68,7 +68,7 @@ internal class AndroidBitPerfectStream private constructor(private val manager: 
             clock: Clock, report: (String) -> Unit,
             diagnostics: io.github.currencortex.music.core.media.engine.AudioDiagnostics? = null,
             primary: () -> Boolean = { true }): BitPerfectStream = synchronized(ownership) {
-            check(owner == null) { "已有 Bit-perfect 输出占用设备，请先停止另一段播放" }
+             check(owner == null) { "Đầu ra Bit-perfect đã chiếm thiết bị, vui lòng dừng phiên phát khác trước" }
             val manager = context.getSystemService(AudioManager::class.java)
             val native = AndroidBitPerfectPlatform(manager, mediaAttributes, format, clock)
             val mask = if (format.channelMask != Format.NO_VALUE) format.channelMask else Util.getAudioTrackChannelConfig(format.channelCount)
@@ -79,7 +79,7 @@ internal class AndroidBitPerfectStream private constructor(private val manager: 
                     output = io.github.currencortex.music.core.media.engine.AudioPcmFormat(actual.rate, actual.encoding, actual.channels),
                     backend = "AudioTrack / Android Bit-perfect",
                     bitPerfect = io.github.currencortex.music.core.media.engine.BitPerfectEvidence.ANDROID_CONFIGURATION_VERIFIED,
-                    formatEvidence = "Android API 已确认逐位配置和实际 USB 路由；最终 DAC 逐位透明度未验证",
+                     formatEvidence = "API Android đã xác nhận cấu hình bit-perfect và định tuyến USB thực tế; chưa xác minh tính trong suốt bit-perfect của DAC cuối cùng",
                     device = sessionDeviceLabel(native, settings.deviceKey)) } }
             }
             val result = AndroidBitPerfectStream(manager, session, native, native.createdTrack!!.output)
@@ -103,7 +103,7 @@ internal class AndroidBitPerfectStream private constructor(private val manager: 
                     }
                 }
             } catch (e: Exception) {
-                session.invalidate(BitPerfectFailureCode.PLATFORM_ERROR, "注册音频路由监听失败（${e.javaClass.simpleName}）")
+                 session.invalidate(BitPerfectFailureCode.PLATFORM_ERROR, "Đăng ký trình lắng nghe định tuyến âm thanh thất bại（${e.javaClass.simpleName}）")
                 result.close()
                 throw e
             }
@@ -145,7 +145,7 @@ private class AndroidBitPerfectPlatform(private val manager: AudioManager, priva
         // This legacy sizing API accepts positional masks only. This does NOT select the track format.
         val minimum = AudioTrack.getMinBufferSize(actualFormat.sampleRate, trackingMask, actualFormat.encoding)
         CurrentMusicAudioDiagnostics.record("minBufferBytes=$minimum frameBytes=$frameSize trackingPositionMask=0x${trackingMask.toString(16)}")
-        if (minimum <= 0) throw BitPerfectFailure(BitPerfectFailureCode.TRACK_INITIALIZATION, "AudioTrack 缓冲区查询拒绝此 PCM 格式，返回 $minimum")
+         if (minimum <= 0) throw BitPerfectFailure(BitPerfectFailureCode.TRACK_INITIALIZATION, "Truy vấn bộ đệm AudioTrack từ chối định dạng PCM này, trả về $minimum")
         val bytes = ((maxOf(minimum, actualFormat.sampleRate * frameSize / 4) + frameSize - 1) / frameSize) * frameSize
         val track = AudioTrack.Builder().setAudioAttributes(attributes).setAudioFormat(actualFormat)
             .setBufferSizeInBytes(bytes).setTransferMode(AudioTrack.MODE_STREAM).build()

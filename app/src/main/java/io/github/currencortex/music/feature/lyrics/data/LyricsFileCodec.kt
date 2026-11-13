@@ -36,8 +36,8 @@ object LyricsFileCodec {
     private val qrcTag = Regex("\\((\\d+),(\\d+)(?:,\\d+)?\\)")
 
     fun decode(bytes: ByteArray, fileName: String): LyricsFileDocument {
-        require(bytes.size <= MAX_BYTES) { "歌词文件过大，最多支持 2 MB" }
-        require(bytes.isNotEmpty()) { "歌词文件为空" }
+        require(bytes.size <= MAX_BYTES) { "Tệp lời bài hát quá lớn, tối đa 2 MB" }
+        require(bytes.isNotEmpty()) { "Tệp lời bài hát trống" }
         val encryptedKrc = bytes.size >= 4 && bytes.copyOfRange(0, 4).contentEquals(byteArrayOf(107, 114, 99, 49))
         val raw = if (encryptedKrc) inflateKrc(bytes) else bytes
         val text = decodeText(raw).removePrefix("\uFEFF").replace(Regex("\\r+\\n?|\\n"), "\n")
@@ -57,7 +57,7 @@ object LyricsFileCodec {
         }
         val clean = result.document.withoutEstimatedTiming()
         validate(clean)
-        require(clean.lines.isNotEmpty() || extension == "fia" || trimmed.contains("\"folia-lyricdata\"")) { "没有找到可识别的时间轴歌词" }
+        require(clean.lines.isNotEmpty() || extension == "fia" || trimmed.contains("\"folia-lyricdata\"")) { "Không tìm thấy lời bài hát có mốc thời gian hợp lệ" }
         return result.copy(document = clean)
     }
 
@@ -89,7 +89,7 @@ object LyricsFileCodec {
                 timingAlignment?.let { put("timingAlignment", json.encodeToJsonElement(it)) }
             })
         }
-        return (json.encodeToString(value) + "\n").also { require(it.toByteArray(Charsets.UTF_8).size <= MAX_BYTES) { "导出的歌词文件超过 2 MB" } }
+        return (json.encodeToString(value) + "\n").also { require(it.toByteArray(Charsets.UTF_8).size <= MAX_BYTES) { "Tệp lời bài hát đã xuất vượt quá 2 MB" } }
     }
 
     /** LRC exports original text and real word tags. It has no reliable auxiliary-role metadata. */
@@ -115,27 +115,27 @@ object LyricsFileCodec {
                 append('\n')
             }
         }
-        require(output.toByteArray(Charsets.UTF_8).size <= MAX_BYTES) { "导出的歌词文件超过 2 MB" }
+        require(output.toByteArray(Charsets.UTF_8).size <= MAX_BYTES) { "Tệp lời bài hát đã xuất vượt quá 2 MB" }
         return output
     }
 
     internal fun validate(document: LyricsDocument) {
-        require(document.lines.size <= 20_000) { "歌词行数过多" }
-        require(document.lines.zipWithNext().all { it.first.startTimeMs <= it.second.startTimeMs }) { "歌词行时间顺序无效" }
+        require(document.lines.size <= 20_000) { "Quá nhiều dòng lời bài hát" }
+        require(document.lines.zipWithNext().all { it.first.startTimeMs <= it.second.startTimeMs }) { "Thứ tự thời gian của các dòng lời bài hát không hợp lệ" }
         fun line(value: LyricLine, depth: Int) {
-            require(depth <= 8 && value.startTimeMs in 0..MAX_TIME && value.endTimeMs in value.startTimeMs..MAX_TIME) { "歌词时间轴无效" }
-            require(value.text.length <= 100_000 && value.words.size <= 20_000) { "歌词单行过长" }
+            require(depth <= 8 && value.startTimeMs in 0..MAX_TIME && value.endTimeMs in value.startTimeMs..MAX_TIME) { "Mốc thời gian lời bài hát không hợp lệ" }
+            require(value.text.length <= 100_000 && value.words.size <= 20_000) { "Dòng lời bài hát quá dài" }
             fun annotations(items: List<LyricRuby>, from: Int, until: Int, start: Long, end: Long) {
-                require(items.size <= 20_000) { "歌词注音数量过多" }
+                require(items.size <= 20_000) { "Quá nhiều mục chú âm lời bài hát" }
                 fun codePointBoundary(offset: Int): Boolean = offset == 0 || offset == value.text.length ||
                     !(value.text[offset].isLowSurrogate() && value.text[offset - 1].isHighSurrogate())
                 items.forEach { ruby ->
                     require(ruby.text.isNotBlank() && ruby.text.length <= 10_000 && ruby.startOffset >= from &&
                         ruby.endOffset <= until && ruby.endOffset > ruby.startOffset &&
-                        codePointBoundary(ruby.startOffset) && codePointBoundary(ruby.endOffset)) { "歌词注音文本范围无效" }
-                    require((ruby.startTimeMs == null) == (ruby.endTimeMs == null)) { "歌词注音时间不完整" }
+                        codePointBoundary(ruby.startOffset) && codePointBoundary(ruby.endOffset)) { "Phạm vi văn bản chú âm lời bài hát không hợp lệ" }
+                    require((ruby.startTimeMs == null) == (ruby.endTimeMs == null)) { "Thiếu mốc thời gian chú âm lời bài hát" }
                     ruby.startTimeMs?.let { at ->
-                        require(at in start..end && ruby.endTimeMs!! in at..end) { "歌词注音时间超出声部范围" }
+                        require(at in start..end && ruby.endTimeMs!! in at..end) { "Mốc thời gian chú âm lời bài hát nằm ngoài phạm vi của phần hát" }
                     }
                 }
             }
@@ -145,8 +145,8 @@ object LyricsFileCodec {
             value.words.forEach { word ->
                 require(word.startTimeMs in previousStart..value.endTimeMs && word.endTimeMs in word.startTimeMs..value.endTimeMs &&
                     word.startOffset >= cursor && word.endOffset in word.startOffset..value.text.length &&
-                    value.text.substring(word.startOffset, word.endOffset) == word.text) { "歌词逐字时间或文本范围无效" }
-                require(word.romanization.length <= 10_000) { "歌词逐词音译过长" }
+                    value.text.substring(word.startOffset, word.endOffset) == word.text) { "Mốc thời gian hoặc phạm vi văn bản của từng từ trong lời bài hát không hợp lệ" }
+                require(word.romanization.length <= 10_000) { "Phiên âm từng từ trong lời bài hát quá dài" }
                 annotations(word.ruby, word.startOffset, word.endOffset, word.startTimeMs, word.endTimeMs)
                 cursor = word.endOffset
                 previousStart = word.startTimeMs
@@ -158,13 +158,13 @@ object LyricsFileCodec {
 
     private fun decodeFia(text: String): LyricsFileDocument {
         checkJsonDepth(text)
-        val root = json.parseToJsonElement(text) as? JsonObject ?: error("FIA 歌词文件结构无效")
-        require(root.string("format") == "folia-lyricdata" && root["version"]?.jsonPrimitive?.intOrNull == 1) { "不支持的 FIA 歌词版本" }
-        val lyrics = root["lyrics"] as? JsonObject ?: error("FIA 歌词内容缺失")
-        val rows = lyrics["lines"] as? JsonArray ?: error("FIA 歌词行缺失")
+        val root = json.parseToJsonElement(text) as? JsonObject ?: error("Cấu trúc tệp lời bài hát FIA không hợp lệ")
+        require(root.string("format") == "folia-lyricdata" && root["version"]?.jsonPrimitive?.intOrNull == 1) { "Phiên bản lời bài hát FIA không được hỗ trợ" }
+        val lyrics = root["lyrics"] as? JsonObject ?: error("Thiếu nội dung lời bài hát FIA")
+        val rows = lyrics["lines"] as? JsonArray ?: error("Thiếu các dòng lời bài hát FIA")
         require(rows.size <= 20_000)
         val isWordTimed = lyrics["isWordByWord"]?.jsonPrimitive?.booleanOrNull == true
-        val parsed = rows.map { decodeFoliaLine(it as? JsonObject ?: error("FIA 歌词行无效"), isWordTimed, false) }
+        val parsed = rows.map { decodeFoliaLine(it as? JsonObject ?: error("Dòng lời bài hát FIA không hợp lệ"), isWordTimed, false) }
             .sortedBy { it.startTimeMs }
         val agents = (lyrics["ttml"] as? JsonObject)?.get("agents") as? JsonObject
         val meta = LyricsMetadata(agents = agents?.mapNotNull { (key, raw) ->
@@ -183,7 +183,7 @@ object LyricsFileCodec {
                 LyricsDocument(parsed.map(::voice), meta)
             }
         val offset = (root["offsetMs"] as? JsonPrimitive)?.doubleOrNull?.let {
-            require(it.isFinite()) { "FIA 时间偏移无效" }; it.roundToLong().coerceIn(-60_000, 60_000)
+            require(it.isFinite()) { "Độ lệch thời gian FIA không hợp lệ" }; it.roundToLong().coerceIn(-60_000, 60_000)
         }
         val alignment = extension?.takeIf { it["version"]?.jsonPrimitive?.intOrNull == 1 }
             ?.get("timingAlignment")?.let { json.decodeFromJsonElement<LyricsTimingAlignment>(it) }
@@ -191,16 +191,16 @@ object LyricsFileCodec {
     }
 
     private fun decodeFoliaLine(row: JsonObject, timed: Boolean, background: Boolean, depth: Int = 0): LyricLine {
-        require(depth <= 8) { "FIA 和声嵌套过深" }
+        require(depth <= 8) { "Các bè hòa âm FIA lồng nhau quá sâu" }
         val text = (row[if (background) "text" else "fullText"] as? JsonPrimitive)?.takeIf { it.isString }?.content
-            ?: error("FIA 歌词文本无效")
+            ?: error("Văn bản lời bài hát FIA không hợp lệ")
         val start = seconds(row["startTime"]); val end = seconds(row["endTime"])
-        val rawWords = row["words"] as? JsonArray ?: error("FIA 逐字数据无效")
+        val rawWords = row["words"] as? JsonArray ?: error("Dữ liệu từng từ FIA không hợp lệ")
         var cursor = 0
         var aligned = true
         val words = rawWords.map { raw ->
-            val word = raw as? JsonObject ?: error("FIA 逐字数据无效")
-            val token = (word["text"] as? JsonPrimitive)?.takeIf { it.isString }?.content ?: error("FIA 单字文本无效")
+            val word = raw as? JsonObject ?: error("Dữ liệu từng chữ FIA không hợp lệ")
+            val token = (word["text"] as? JsonPrimitive)?.takeIf { it.isString }?.content ?: error("Văn bản một chữ FIA không hợp lệ")
             val from = seconds(word["startTime"]); val until = seconds(word["endTime"])
             val offset = text.indexOf(token, cursor)
             if (offset < 0 || token.isEmpty()) { aligned = false; null } else {
@@ -335,7 +335,7 @@ object LyricsFileCodec {
             val output = ByteArrayOutputStream(); val buffer = ByteArray(8192)
             while (true) {
                 val size = input.read(buffer); if (size < 0) break
-                require(output.size() + size <= MAX_BYTES) { "解压后的歌词超过 2 MB" }
+                require(output.size() + size <= MAX_BYTES) { "Lời bài hát sau khi giải nén vượt quá 2 MB" }
                 output.write(buffer, 0, size)
             }
             output.toByteArray()
@@ -355,12 +355,12 @@ object LyricsFileCodec {
     }
 
     private fun seconds(value: JsonElement?): Long {
-        val number = (value as? JsonPrimitive)?.takeUnless { it.isString }?.doubleOrNull ?: error("FIA 时间戳无效")
-        require(number.isFinite() && number >= 0 && number <= MAX_TIME / 1000.0) { "FIA 时间戳超出范围" }
+        val number = (value as? JsonPrimitive)?.takeUnless { it.isString }?.doubleOrNull ?: error("Dấu thời gian FIA không hợp lệ")
+        require(number.isFinite() && number >= 0 && number <= MAX_TIME / 1000.0) { "Dấu thời gian FIA vượt quá phạm vi cho phép" }
         return (number * 1000).roundToLong()
     }
     private fun safeAdd(first: Long, second: Long): Long {
-        require(first >= 0 && second >= 0 && first <= MAX_TIME && second <= MAX_TIME - first) { "歌词时间戳超出范围" }
+        require(first >= 0 && second >= 0 && first <= MAX_TIME && second <= MAX_TIME - first) { "Dấu thời gian lời bài hát vượt quá phạm vi cho phép" }
         return first + second
     }
     private fun checkJsonDepth(text: String) {
@@ -370,7 +370,7 @@ object LyricsFileCodec {
                 if (escaped) escaped = false else if (char == '\\') escaped = true else if (char == '"') quoted = false
             } else when (char) {
                 '"' -> quoted = true
-                '{', '[' -> { depth++; require(depth <= 64) { "FIA 文件嵌套过深" } }
+                '{', '[' -> { depth++; require(depth <= 64) { "Tệp FIA lồng quá sâu" } }
                 '}', ']' -> depth--
             }
         }

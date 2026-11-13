@@ -80,7 +80,7 @@ internal val QueuePageProgress = SemanticsPropertyKey<Float>("QueuePageProgress"
     var collecting by remember { mutableStateOf(false) }
     var batch by remember { mutableStateOf<List<Song>>(emptyList()) }
     val nativeActions = if (shared) NativeQueueActions(together.room?.openHeartRcmd == true,
-        together.room?.playlistCopywriting.orEmpty().ifBlank { "根据双方口味，心动推荐" }, vm.together::setRecommendation,
+        together.room?.playlistCopywriting.orEmpty().ifBlank { "Theo sở thích của cả hai, gợi ý khiến bạn rung động" }, vm.together::setRecommendation,
         { batch = displayed.songs.toList(); downloading = true },
         { batch = displayed.songs.toList(); collecting = true },
         { song -> openMenu?.invoke(SongMenu(song, { vm.together.selectSong(song.id) },
@@ -237,8 +237,8 @@ internal val QueuePageProgress = SemanticsPropertyKey<Float>("QueuePageProgress"
                     Text("${if (queue.index >= 0) queue.index + 1 else 0} / ${queue.songs.size}",
                         Modifier.align(Alignment.CenterStart).padding(start = 8.dp).testTag("queue_position"),
                         fontSize = 13.sp, color = Color.White.copy(alpha = .4f))
-                    Text(if (shared) "一起听歌单" else "播放队列", Modifier.align(Alignment.Center), fontSize = 17.sp, fontWeight = FontWeight.Medium, color = Color.White)
-                    QueueTextAction("清除", { confirmClear = true }, editable && queue.songs.isNotEmpty(),
+                     Text(if (shared) "Danh sách phát nghe cùng" else "Hàng đợi phát", Modifier.align(Alignment.Center), fontSize = 17.sp, fontWeight = FontWeight.Medium, color = Color.White)
+                     QueueTextAction("Xóa", { confirmClear = true }, editable && queue.songs.isNotEmpty(),
                         Modifier.align(Alignment.CenterEnd).width(48.dp).testTag("queue_clear"))
                 }
                 Box(Modifier.fillMaxWidth().height(1.dp).background(Color.White.copy(alpha = .07f)))
@@ -254,8 +254,8 @@ internal val QueuePageProgress = SemanticsPropertyKey<Float>("QueuePageProgress"
                             Text(nativeActions.description, Modifier.padding(start = 8.dp, end = 8.dp), fontSize = 12.sp, lineHeight = 18.sp,
                                 maxLines = 2, overflow = TextOverflow.Ellipsis, color = Color.White.copy(alpha = .6f))
                         }
-                        QueueIconAction(MusicIcons.Download, "下载全部", editable && queue.songs.isNotEmpty(), nativeActions.onDownload, "queue_download_all")
-                        QueueIconAction(MusicIcons.Folder, "收藏全部到歌单", editable && queue.songs.isNotEmpty(), nativeActions.onCollect, "queue_collect_all")
+                         QueueIconAction(MusicIcons.Download, "Tải xuống tất cả", editable && queue.songs.isNotEmpty(), nativeActions.onDownload, "queue_download_all")
+                         QueueIconAction(MusicIcons.Folder, "Thêm tất cả vào danh sách phát", editable && queue.songs.isNotEmpty(), nativeActions.onCollect, "queue_collect_all")
                     }
                 }
             }
@@ -263,7 +263,7 @@ internal val QueuePageProgress = SemanticsPropertyKey<Float>("QueuePageProgress"
             // the side gutters. Content padding preserves the resting row alignment;
             // the viewport still clips vertically at the header and footer.
             if (queue.songs.isEmpty()) Box(Modifier.weight(1f).fillMaxWidth().then(dragHeader), contentAlignment = Alignment.Center) {
-                Text("播放队列为空", color = Color.White.copy(alpha = .5f), fontSize = 16.sp)
+                 Text("Hàng đợi phát trống", color = Color.White.copy(alpha = .5f), fontSize = 16.sp)
             } else LazyColumn(Modifier.weight(1f).fillMaxWidth().clipToBounds().testTag("queue_songs").nestedScroll(nested).then(reorderGesture),
                 state = list, contentPadding = PaddingValues(horizontal = horizontalInset, vertical = 8.dp)) {
                 itemsIndexed(reorder.order, key = { _, source -> rowKeys[source] }) { index, source ->
@@ -290,8 +290,8 @@ internal val QueuePageProgress = SemanticsPropertyKey<Float>("QueuePageProgress"
                             .semantics {
                                 selected = source == queue.index
                                 if (canReorder && !reorder.active) customActions = buildList {
-                                    if (source > 0) add(CustomAccessibilityAction("上移") { onMove(source, source - 1, queue.songs); true })
-                                    if (source < queue.songs.lastIndex) add(CustomAccessibilityAction("下移") { onMove(source, source + 1, queue.songs); true })
+                                     if (source > 0) add(CustomAccessibilityAction("Di chuyển lên") { onMove(source, source - 1, queue.songs); true })
+                                     if (source < queue.songs.lastIndex) add(CustomAccessibilityAction("Di chuyển xuống") { onMove(source, source + 1, queue.songs); true })
                                 }
                             }.testTag("queue_song_$index")
                             .padding(horizontal = 8.dp, vertical = 10.dp)) {
@@ -300,7 +300,7 @@ internal val QueuePageProgress = SemanticsPropertyKey<Float>("QueuePageProgress"
                         }
                         Box(Modifier.size(48.dp).testTag("queue_remove_$index").clickable(enabled = editable && !reorder.active,
                             interactionSource = remember { MutableInteractionSource() }, indication = null) { onRemove(source) }
-                            .semantics { contentDescription = "移除 ${song.name}" }, contentAlignment = Alignment.Center) {
+                             .semantics { contentDescription = "Xóa ${song.name}" }, contentAlignment = Alignment.Center) {
                             Text("−", color = Color.White.copy(alpha = if (editable) .5f else .2f), fontSize = 21.sp)
                         }
                     }
@@ -310,15 +310,15 @@ internal val QueuePageProgress = SemanticsPropertyKey<Float>("QueuePageProgress"
                 Box(Modifier.fillMaxWidth().height(1.dp).background(Color.White.copy(alpha = .07f)))
                 error?.let { Text(it, color = Color.White.copy(alpha = .55f), fontSize = 12.sp,
                     modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 10.dp)) }
-                if (!shared && !editable) Text("请先退出一起听，再编辑队列", color = Color.White.copy(alpha = .55f), fontSize = 12.sp,
+                 if (!shared && !editable) Text("Vui lòng thoát chế độ nghe cùng trước khi chỉnh sửa hàng đợi", color = Color.White.copy(alpha = .55f), fontSize = 12.sp,
                     modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 10.dp))
                 Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    QueueTextAction(queue.mode.label + if (loading) " · 加载中" else "", { modeOpen = true }, editable,
+                     QueueTextAction(queue.mode.label + if (loading) " · Đang tải" else "", { modeOpen = true }, editable,
                         Modifier.testTag("open_player_mode"), pill = true)
                     Spacer(Modifier.width(12.dp))
-                    Text(if (shared) { if (editable) "双方共享歌单" else "正在同步操作…" }
-                        else if (canReorder) "长按拖动排序 · 下滑返回"
-                        else if (backdrop) "向下轻扫关闭队列" else "向下轻扫返回播放界面",
+                     Text(if (shared) { if (editable) "Danh sách phát dùng chung" else "Đang đồng bộ thao tác…" }
+                         else if (canReorder) "Nhấn giữ để kéo sắp xếp · Vuốt xuống để quay lại"
+                         else if (backdrop) "Vuốt xuống để đóng hàng đợi" else "Vuốt xuống để quay lại màn hình phát nhạc",
                         Modifier.weight(1f).padding(end = 8.dp), color = Color.White.copy(alpha = .4f), fontSize = 11.sp,
                         maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = androidx.compose.ui.text.style.TextAlign.End)
                 }
@@ -326,7 +326,7 @@ internal val QueuePageProgress = SemanticsPropertyKey<Float>("QueuePageProgress"
         }
         }
         miniTransfer?.let { MiniQueueSharedElements(it) }
-        MusicOverlayDialog(show = modeOpen, title = "播放模式", edgeToEdgeContent = true, onDismissRequest = { modeOpen = false }) {
+         MusicOverlayDialog(show = modeOpen, title = "Chế độ phát", edgeToEdgeContent = true, onDismissRequest = { modeOpen = false }) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             PlaybackMode.entries.filter { !shared || it != PlaybackMode.HEART }.forEach { mode ->
                 MusicDialogChoiceRow(mode.label, mode == queue.mode,
@@ -336,11 +336,11 @@ internal val QueuePageProgress = SemanticsPropertyKey<Float>("QueuePageProgress"
             }
             }
         }
-        MusicOverlayDialog(show = confirmClear, title = "清除播放队列？", onDismissRequest = { confirmClear = false }) {
+         MusicOverlayDialog(show = confirmClear, title = "Xóa hàng đợi phát?", onDismissRequest = { confirmClear = false }) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text(if (shared) "会同步清空双方的歌单并暂停播放，一起听会话仍会保留。" else "清除后将停止当前播放。")
-            MusicDialogButton("取消", { confirmClear = false }, modifier = Modifier.testTag("queue_clear_cancel"))
-            MusicDialogButton("清除", { onClear(); confirmClear = false }, enabled = editable, modifier = Modifier.testTag("queue_clear_confirm"))
+             Text(if (shared) "Danh sách phát của cả hai sẽ được xóa đồng bộ và quá trình phát sẽ tạm dừng; phiên nghe cùng vẫn được giữ lại." else "Sau khi xóa, quá trình phát hiện tại sẽ dừng.")
+             MusicDialogButton("Hủy", { confirmClear = false }, modifier = Modifier.testTag("queue_clear_cancel"))
+             MusicDialogButton("Xóa", { onClear(); confirmClear = false }, enabled = editable, modifier = Modifier.testTag("queue_clear_confirm"))
             }
         }
     }

@@ -28,14 +28,14 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val automatic by vm.automaticServer.collectAsStateWithLifecycle()
     val checking by vm.serverProbeBusy.collectAsStateWithLifecycle()
     LaunchedEffect(vm) { vm.refreshServers() }
-    MusicChoiceDialog("CurrentMusic 服务器", onDismiss, footer = {
+    MusicChoiceDialog("Máy chủ CurrentMusic", onDismiss, footer = {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            MusicDialogButton(if (checking) "检测中" else "重新检测", { vm.refreshServers() },
+            MusicDialogButton(if (checking) "Đang kiểm tra" else "Kiểm tra lại", { vm.refreshServers() },
                 Modifier.weight(1f).testTag("server_probe_refresh"), enabled = !checking)
-            MusicDialogButton("关闭", onDismiss, Modifier.weight(1f))
+            MusicDialogButton("Đóng", onDismiss, Modifier.weight(1f))
         }
     }) {
-        Text("自动在启动时选择较快的可用线路。延迟为公告接口响应耗时，列表顺序固定。",
+        Text("Tự động chọn tuyến khả dụng nhanh hơn khi khởi động. Độ trễ là thời gian phản hồi của giao diện thông báo, thứ tự danh sách được cố định.",
             Modifier.padding(horizontal = 24.dp, vertical = 12.dp), fontSize = 12.sp,
             color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
         CurrentMusicServer.entries.forEach { candidate ->
@@ -57,9 +57,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             }, Modifier.testTag("server_source_${candidate.name}"), enabled = !state.busy,
                 showDivider = candidate != CurrentMusicServer.CUSTOM,
                 summary = when (candidate) {
-                    CurrentMusicServer.AUTO -> "优选：${CurrentMusicServer.presets.first { it.url == automatic }.label}"
-                    CurrentMusicServer.CUSTOM -> settings.customServer.ifBlank { "填写自己的服务器地址" }
-                    CurrentMusicServer.MAIN -> "主站"
+                    CurrentMusicServer.AUTO -> "Ưu tiên: ${CurrentMusicServer.presets.first { it.url == automatic }.label}"
+                    CurrentMusicServer.CUSTOM -> settings.customServer.ifBlank { "Nhập địa chỉ máy chủ của bạn" }
+                    CurrentMusicServer.MAIN -> "Máy chủ chính"
                     CurrentMusicServer.CDN, CurrentMusicServer.CDN_GEEKERTAO, CurrentMusicServer.CDN_CTCEHS -> "CDN"
                 }, leadingContent = {
                     ServerHealthBadge(candidate, health[address])
@@ -70,11 +70,11 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable private fun ServerHealthBadge(source: CurrentMusicServer, health: ServerHealth?) {
     val label = when (health?.status) {
-        ServerStatus.CHECKING -> "检测中"
-        ServerStatus.AVAILABLE -> "可用"
-        ServerStatus.TIMEOUT -> "超时"
-        ServerStatus.UNAVAILABLE -> "不可用"
-        null -> "未检测"
+        ServerStatus.CHECKING -> "Đang kiểm tra"
+        ServerStatus.AVAILABLE -> "Khả dụng"
+        ServerStatus.TIMEOUT -> "Quá thời gian chờ"
+        ServerStatus.UNAVAILABLE -> "Không khả dụng"
+        null -> "Chưa kiểm tra"
     }
     val dark = MiuixTheme.colorScheme.onBackground.luminance() > .5f
     val color = when (health?.status) {
@@ -85,7 +85,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     }
     Column(Modifier.width(72.dp).background(color.copy(alpha = .12f), RoundedCornerShape(10.dp))
         .padding(horizontal = 4.dp, vertical = 5.dp).testTag("server_source_badge_${source.name}")
-        .semantics { contentDescription = "${source.label}：$label，${health?.latencyMs?.let { "${it}毫秒" }.orEmpty()}" },
+        .semantics { contentDescription = "${source.label}: $label, ${health?.latencyMs?.let { "${it} mili giây" }.orEmpty()}" },
         horizontalAlignment = Alignment.CenterHorizontally) {
         Text(label, color = color, fontSize = 11.sp, lineHeight = 14.sp)
         Text(health?.latencyMs?.let { "$it ms" } ?: "— ms", color = color, fontSize = 10.sp, lineHeight = 13.sp)
@@ -96,10 +96,10 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     onSave: (String) -> Unit, onDismiss: () -> Unit) {
     var address by rememberSaveable { mutableStateOf(saved) }
     var error by remember { mutableStateOf<String?>(null) }
-    MusicChoiceDialog("自定义服务器", onDismiss, footer = {
+    MusicChoiceDialog("Máy chủ tùy chỉnh", onDismiss, footer = {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            MusicDialogButton("取消", onDismiss, Modifier.weight(1f))
-            MusicDialogButton("保存", {
+            MusicDialogButton("Hủy", onDismiss, Modifier.weight(1f))
+            MusicDialogButton("Lưu", {
                 val normalized = try { ServerUrl.normalize(address) } catch (failure: IllegalArgumentException) {
                     error = failure.message; return@MusicDialogButton
                 }
@@ -108,9 +108,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         }
     }) {
         Column(Modifier.padding(horizontal = 24.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            TextField(address, { address = it; error = null }, singleLine = true, label = "服务器地址",
+            TextField(address, { address = it; error = null }, singleLine = true, label = "Địa chỉ máy chủ",
                 modifier = Modifier.fillMaxWidth().testTag("server_input"))
-            Text("填写完整的 API 地址，包含 /cm/ 等路径。切换到其他服务器后需重新登录。",
+            Text("Nhập đầy đủ địa chỉ API, bao gồm các đường dẫn như /cm/. Cần đăng nhập lại sau khi chuyển sang máy chủ khác.",
                 fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
             error?.let { Text(it, fontSize = 12.sp, color = MiuixTheme.colorScheme.error) }
         }

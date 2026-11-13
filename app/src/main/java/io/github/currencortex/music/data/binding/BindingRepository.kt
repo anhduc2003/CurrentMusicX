@@ -17,8 +17,8 @@ import kotlinx.coroutines.sync.withLock
 @Serializable data class QrKey(val key: String)
 @Serializable data class QrStatus(val code: Int, val profile: BoundProfile? = null)
 @Serializable data class SyncResult(val imported: Int = 0, val tracks: Int = 0, val pending: Int = 0, val failed: Int = 0) {
-    fun message() = "已同步 $imported 个歌单 / $tracks 首歌曲" +
-        (if (pending > 0) "，$pending 个待续传" else "") + (if (failed > 0) "，$failed 个失败" else "")
+    fun message() = "Đã đồng bộ $imported danh sách phát / $tracks bài hát" +
+        (if (pending > 0) ", $pending mục chờ tải tiếp" else "") + (if (failed > 0) ", $failed mục thất bại" else "")
 }
 class BindingRepository(private val api: ApiClient, private val session: () -> RequestSession, private val invalidate: () -> Unit) {
     private val projectSync = ProjectBindingSync(session, { owner ->

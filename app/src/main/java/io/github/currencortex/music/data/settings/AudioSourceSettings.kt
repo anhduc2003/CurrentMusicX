@@ -9,7 +9,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.security.MessageDigest
 
-enum class AudioProvider(val label: String) { CURRENT_MUSIC("CurrentMusic"), NETEASE("网易云原生"), LEIZ("LeiZ API"), LX("落雪音源") }
+enum class AudioProvider(val label: String) { CURRENT_MUSIC("CurrentMusic"), NETEASE("Nhạc Vân NetEase nguyên bản"), LEIZ("LeiZ API"), LX("Nguồn nhạc Luoxue") }
 data class AudioProviderState(val provider: AudioProvider = AudioProvider.CURRENT_MUSIC,
     val keyConfigured: Boolean = false, val identity: String = "currentmusic", val lxSourceId: String = "", val lxSmartSwitch: Boolean = false)
 
@@ -56,7 +56,7 @@ class AudioSourceSettings(private val store: DataStore<Preferences>, private val
         lock.withLock { store.edit { it[preference] = provider.name }; publish(provider) }
     }
     suspend fun selectLxSource(id: String) {
-        require(id.isEmpty() || id.matches(Regex("[a-f0-9]{64}"))) { "请选择有效的落雪音源" }
+        require(id.isEmpty() || id.matches(Regex("[a-f0-9]{64}"))) { "Vui lòng chọn nguồn nhạc Luoxue hợp lệ" }
         ready.await()
         lock.withLock {
             store.edit { it[lxPreference] = id }
@@ -74,7 +74,7 @@ class AudioSourceSettings(private val store: DataStore<Preferences>, private val
     }
     suspend fun saveKey(value: String) {
         val key = value.trim()
-        require(key.isNotBlank() && key.length <= 512 && key.all { it.isLetterOrDigit() || it in "_-" }) { "请输入有效的 API Key" }
+        require(key.isNotBlank() && key.length <= 512 && key.all { it.isLetterOrDigit() || it in "_-" }) { "Vui lòng nhập API Key hợp lệ" }
         ready.await()
         withContext(Dispatchers.IO) { lock.withLock { vault.write(key); savedKey = key; publish(current.provider) } }
     }

@@ -47,7 +47,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                     if (old.isNotBlank() && old != name) withContext(Dispatchers.IO) { deleteCustomFont(context, old) }
                 }
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (_: Exception) { error = "无法导入字体，请选择有效的 TTF 或 OTF 文件" }
+            catch (_: Exception) { error = "Không thể nhập phông chữ, vui lòng chọn tệp TTF hoặc OTF hợp lệ" }
             finally {
                 if (!saved) imported?.let { deleteCustomFont(context, it) }
                 importing = false
@@ -55,7 +55,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         }
     }
     val import = { picker.launch(arrayOf("*/*")) }
-    OverlayDropdownMenu(title = "歌词字体", summary = if (importing) "正在导入…" else font.label,
+    OverlayDropdownMenu(title = "Phông chữ lời bài hát", summary = if (importing) "Đang nhập…" else font.label,
         insideMargin = PaddingValues(vertical = 12.dp),
         modifier = Modifier.testTag("lyrics_font_dropdown"), enabled = !importing,
         renderInRootScaffold = false,
@@ -65,7 +65,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 if (option == LyricsFont.IMPORTED && file.isBlank()) import() else onFont(option)
             })
         }))
-    if (file.isNotBlank()) Text("更换导入字体", fontSize = 13.sp,
+    if (file.isNotBlank()) Text("Thay đổi phông chữ đã nhập", fontSize = 13.sp,
         color = MiuixTheme.colorScheme.primary,
         modifier = Modifier.testTag("lyrics_font_import").clickable(enabled = !importing, role = Role.Button, onClick = import)
             .padding(vertical = 12.dp))

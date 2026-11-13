@@ -29,8 +29,8 @@ internal const val listeningPairArtworkAspectRatio = 1.6f
     val members = pair.participants.distinctBy { it.userId }.take(2)
     Box(modifier) {
         BoxWithConstraints(Modifier.fillMaxSize().testTag("listening_pair_artwork").semantics(mergeDescendants = true) {
-            contentDescription = "一起听：" + (0..1).joinToString("、") { index ->
-                members.getOrNull(index)?.nickname?.takeIf(String::isNotBlank) ?: if (index == 0) "我" else "等待好友加入"
+             contentDescription = "Cùng nghe:" + (0..1).joinToString("、") { index ->
+                 members.getOrNull(index)?.nickname?.takeIf(String::isNotBlank) ?: if (index == 0) "Tôi" else "Đang chờ bạn bè tham gia"
             }
         }) {
             val diameter = minOf(maxHeight, maxWidth / listeningPairArtworkAspectRatio)

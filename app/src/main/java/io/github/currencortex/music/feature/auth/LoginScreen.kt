@@ -53,7 +53,7 @@ import io.github.currencortex.music.data.auth.RegistrationInput
     var recovering by remember { mutableStateOf(false) }
     val resetDeadline by vm.resetCodeUntil.collectAsStateWithLifecycle()
     LaunchedEffect(state.message) {
-        if (state.message == "密码已重置，请使用新密码登录") { recovering = false; password = ""; revealPassword = false }
+        if (state.message == "Đã đặt lại mật khẩu, hãy đăng nhập bằng mật khẩu mới") { recovering = false; password = ""; revealPassword = false }
     }
     val deadline by vm.codeUntil.collectAsStateWithLifecycle()
     val emailDeadline by vm.loginEmailCodeUntil.collectAsStateWithLifecycle()
@@ -62,7 +62,7 @@ import io.github.currencortex.music.data.auth.RegistrationInput
         now = SystemClock.elapsedRealtime()
         while (now < maxOf(deadline, emailDeadline)) { delay(1000); now = SystemClock.elapsedRealtime() }
     }
-    LaunchedEffect(state.message) { if (addingAccount && state.message in listOf("登录成功", "注册成功")) onDone() }
+    LaunchedEffect(state.message) { if (addingAccount && state.message in listOf("Đăng nhập thành công", "Đăng ký thành công")) onDone() }
     // Entering the page starts a clean attempt: a stale error must not greet the user.
     LaunchedEffect(Unit) { vm.clearMessage() }
     LaunchedEffect(state.message, state.failed, account.error) {
@@ -81,7 +81,7 @@ import io.github.currencortex.music.data.auth.RegistrationInput
         else {
         account.account?.takeIf { !addingAccount }?.let {
             Text(it.nickname, fontSize = 24.sp)
-            GlassActionButton("退出登录", onClick = { vm.logout() }, enabled = !state.loading)
+            GlassActionButton("Đăng xuất", onClick = { vm.logout() }, enabled = !state.loading)
         } ?: run {
             val canLogin = !state.loading && if (emailLogin) contact.isNotBlank() && code.isNotBlank()
                 else username.isNotBlank() && password.isNotBlank()
@@ -95,36 +95,36 @@ import io.github.currencortex.music.data.auth.RegistrationInput
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     // The mode switch lives in the header so it stays visible without scrolling.
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Text(if (register) "注册 CurrentMusic" else "登录 CurrentMusic", Modifier.weight(1f),
+                        Text(if (register) "Đăng ký CurrentMusic" else "Đăng nhập CurrentMusic", Modifier.weight(1f),
                             fontSize = 20.sp, fontWeight = FontWeight.Medium)
-                        GlassActionButton(if (register) "返回登录" else "注册", {
+                        GlassActionButton(if (register) "Quay lại đăng nhập" else "Đăng ký", {
                             register = !register; password = ""; code = ""; contact = ""; revealPassword = false
                         }, Modifier.testTag("login_switch_mode"), enabled = !state.loading, fillWidth = false)
                     }
-                    if (!register) SettingsSegmentedControl(listOf("密码登录", "邮箱验证码"), if (emailLogin) 1 else 0, {
+                    if (!register) SettingsSegmentedControl(listOf("Đăng nhập bằng mật khẩu", "Mã xác minh email"), if (emailLogin) 1 else 0, {
                         edit { emailLogin = it == 1; password = ""; code = ""; revealPassword = false }
                     }, enabled = !state.loading, tag = "login_method")
                     if (!register && emailLogin) {
-                        Text("使用已绑定的邮箱登录。", fontSize = 13.sp, color = secondary)
-                        TextField(contact, { edit { contact = it } }, label = "邮箱", singleLine = true,
+                        Text("Đăng nhập bằng email đã liên kết.", fontSize = 13.sp, color = secondary)
+                        TextField(contact, { edit { contact = it } }, label = "Email", singleLine = true,
                             enabled = !state.loading,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
                             modifier = Modifier.fillMaxWidth().testTag("login_email"))
                         TextField(code, { edit { code = it.filter { char -> char in '0'..'9' }.take(6) } },
-                            label = "邮箱验证码", singleLine = true, enabled = !state.loading,
+                            label = "Mã xác minh email", singleLine = true, enabled = !state.loading,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
                             keyboardActions = KeyboardActions(onDone = { if (canLogin) submit() }),
                             modifier = Modifier.fillMaxWidth().testTag("login_email_code"))
-                        GlassActionButton(if (emailDeadline > now) "${(emailDeadline - now + 999) / 1000}s 后重发" else "获取登录验证码",
+                        GlassActionButton(if (emailDeadline > now) "Gửi lại sau ${(emailDeadline - now + 999) / 1000}s" else "Lấy mã đăng nhập",
                             { vm.loginEmailCode(contact) }, enabled = contact.isNotBlank() && !state.loading && now >= emailDeadline,
                             modifier = Modifier.testTag("login_email_send_code"))
                     } else {
-                    Text(if (register) "注册后可同步我喜欢与歌单。" else "用户名或手机号均可。", fontSize = 13.sp, color = secondary)
+                    Text(if (register) "Sau khi đăng ký, bạn có thể đồng bộ mục Yêu thích và danh sách phát." else "Có thể dùng tên người dùng hoặc số điện thoại.", fontSize = 13.sp, color = secondary)
                     // One label per field, keyboard hints and a reveal toggle replace the bare rows.
-                    TextField(username, { edit { username = it } }, singleLine = true, label = "用户名",
+                    TextField(username, { edit { username = it } }, singleLine = true, label = "Tên người dùng",
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next, autoCorrectEnabled = false),
                         modifier = Modifier.fillMaxWidth().testTag("login_username"))
-                    TextField(password, { edit { password = it } }, singleLine = true, label = "密码",
+                    TextField(password, { edit { password = it } }, singleLine = true, label = "Mật khẩu",
                         visualTransformation = if (revealPassword) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = if (register) ImeAction.Next else ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = { if (canLogin) submit() }),
@@ -134,66 +134,66 @@ import io.github.currencortex.music.data.auth.RegistrationInput
                                     .testTag("login_password_toggle"),
                                 contentAlignment = Alignment.Center) {
                                 Image(painterResource(if (revealPassword) R.drawable.auth_password_hidden else R.drawable.auth_password_visible),
-                                    contentDescription = if (revealPassword) "隐藏密码" else "显示密码",
+                                    contentDescription = if (revealPassword) "Ẩn mật khẩu" else "Hiện mật khẩu",
                                     modifier = Modifier.size(20.dp), colorFilter = ColorFilter.tint(secondary))
                             }
                         },
                         modifier = Modifier.fillMaxWidth().testTag("login_password"))
                     }
-                    if (!register) GlassActionButton("忘记密码？", onClick = { vm.clearMessage(); recovering = true }, fillWidth = false,
+                    if (!register) GlassActionButton("Quên mật khẩu?", onClick = { vm.clearMessage(); recovering = true }, fillWidth = false,
                         enabled = !state.loading, modifier = Modifier.testTag("forgot_password"))
                     // Registration needs a 6-character password; say so instead of only greying the button.
                     if (register && password.isNotEmpty() && password.length < 6)
-                        Text("密码至少 6 位（当前 ${password.length} 位）", fontSize = 12.sp,
+                        Text("Mật khẩu phải có ít nhất 6 ký tự (hiện có ${password.length} ký tự)", fontSize = 12.sp,
                             color = colors.error, modifier = Modifier.testTag("register_password_hint"))
                     if (register) {
-                        TextField(nickname, { edit { nickname = it } }, singleLine = true, label = "昵称（可选）",
+                        TextField(nickname, { edit { nickname = it } }, singleLine = true, label = "Biệt danh (không bắt buộc)",
                             modifier = Modifier.fillMaxWidth().testTag("register_nickname"))
-                        SettingsSegmentedControl(listOf("邮箱验证", "手机验证"), if (phone) 1 else 0, {
+                        SettingsSegmentedControl(listOf("Xác minh email", "Xác minh điện thoại"), if (phone) 1 else 0, {
                             phone = it == 1; contact = ""; code = ""
                         }, enabled = !state.loading, tag = "register_verification")
                         TextField(contact, { edit { contact = it } }, singleLine = true,
-                            label = if (phone) "手机号" else "邮箱",
+                            label = if (phone) "Số điện thoại" else "Email",
                             keyboardOptions = KeyboardOptions(keyboardType = if (phone) KeyboardType.Phone else KeyboardType.Email),
                             modifier = Modifier.fillMaxWidth().testTag("register_contact"))
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            TextField(code, { edit { code = it } }, singleLine = true, label = "验证码",
+                            TextField(code, { edit { code = it } }, singleLine = true, label = "Mã xác minh",
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
                                 keyboardActions = KeyboardActions(onDone = { if (canRegister) {
                                     vm.register(RegistrationInput(username, password, nickname, contact, code, phone)); password = ""; code = ""
                                 } }),
                                 modifier = Modifier.weight(1f).testTag("register_code"))
-                            GlassActionButton(if (deadline > now) "${(deadline - now + 999) / 1000}s" else "获取验证码",
+                            GlassActionButton(if (deadline > now) "${(deadline - now + 999) / 1000}s" else "Lấy mã xác minh",
                                 onClick = { vm.code(contact, phone) },
                                 enabled = contact.isNotBlank() && !state.loading && now >= deadline,
                                 modifier = Modifier.testTag("register_send_code"), fillWidth = false)
                         }
                     }
                     Spacer(Modifier.height(2.dp))
-                    GlassActionButton(if (state.loading) (if (register) "正在注册…" else "正在登录…") else (if (register) "注册" else "登录"), {
+                    GlassActionButton(if (state.loading) (if (register) "Đang đăng ký…" else "Đang đăng nhập…") else (if (register) "Đăng ký" else "Đăng nhập"), {
                         if (register) { vm.register(RegistrationInput(username, password, nickname, contact, code, phone)); password = ""; code = "" }
                         else submit()
                     }, enabled = if (register) canRegister else canLogin, primary = true,
                         modifier = Modifier.fillMaxWidth().testTag("login_submit"))
-                    if (!register) GlassActionButton("使用通行密钥登录", {
+                    if (!register) GlassActionButton("Đăng nhập bằng khóa truy cập", {
                         password = ""; code = ""; vm.loginWithPasskey(context)
                     }, enabled = !state.loading, modifier = Modifier.fillMaxWidth().testTag("login_passkey"))
                 }
             }
         }
         }
-        if (account.loading) Text("正在验证会话…", fontSize = 13.sp, color = secondary)
+        if (account.loading) Text("Đang xác minh phiên…", fontSize = 13.sp, color = secondary)
         state.message?.takeIf { !state.failed }?.let {
             Text(it, fontSize = 13.sp, color = secondary, modifier = Modifier.testTag("login_message"))
         }
         if (account.offline) {
-            Text("当前离线，会话凭据已保留", fontSize = 13.sp, color = secondary)
-            GlassActionButton("重新连接", onClick = { vm.retry() })
+            Text("Đang ngoại tuyến, thông tin phiên đăng nhập đã được giữ lại", fontSize = 13.sp, color = secondary)
+            GlassActionButton("Kết nối lại", onClick = { vm.retry() })
         }
     }
     }
     SettingsUiScope {
-        if (showTitle) MusicSubpage("CurrentMusic 账号", "login_page", onBack, content = form)
+        if (showTitle) MusicSubpage("Tài khoản CurrentMusic", "login_page", onBack, content = form)
         else form(contentTopInset + 16.dp)
     }
     if (recovering) PasswordDialog(true, state.loading, resetDeadline,

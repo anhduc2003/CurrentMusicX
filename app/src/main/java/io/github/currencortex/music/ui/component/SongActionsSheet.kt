@@ -32,19 +32,19 @@ val LocalRoomSongRequest = staticCompositionLocalOf<RoomSongRequest?> { null }
         Column(Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState()).testTag("song_actions_sheet")) {
             Text(menu.song.artists, Modifier.padding(horizontal = 16.dp, vertical = 8.dp), fontSize = 13.sp,
                 color = MiuixTheme.colorScheme.onSurface.copy(alpha = .6f))
-            if (menu.transport) MusicDestinationRow(if (menu.roomRequest) "为房间点歌" else "立即播放", { onDismiss(); menu.play() }, chevron = false)
+            if (menu.transport) MusicDestinationRow(if (menu.roomRequest) "Yêu cầu bài hát cho phòng" else "Phát ngay", { onDismiss(); menu.play() }, chevron = false)
             if (menu.transport && !menu.roomRequest) {
-                MusicDestinationRow("下一首播放", { onDismiss(); menu.next() }, chevron = false)
-                MusicDestinationRow("加入队列", { onDismiss(); menu.queue() }, chevron = false)
+                MusicDestinationRow("Phát tiếp theo", { onDismiss(); menu.next() }, chevron = false)
+                MusicDestinationRow("Thêm vào hàng đợi", { onDismiss(); menu.queue() }, chevron = false)
             }
-            if (!menu.song.video && menu.song.musicSource != io.github.currencortex.music.data.song.MusicSource.LOCAL && onDownload != null) MusicDestinationRow("下载歌曲", {
+            if (!menu.song.video && menu.song.musicSource != io.github.currencortex.music.data.song.MusicSource.LOCAL && onDownload != null) MusicDestinationRow("Tải bài hát", {
                 onDismiss(); onDownload(menu.song)
-            }, modifier = Modifier.testTag("song_download"), summary = "保存歌曲信息、封面与歌词", chevron = false)
-            if (!menu.song.video && menu.song.musicSource != io.github.currencortex.music.data.song.MusicSource.LOCAL) MusicDestinationRow("分享歌曲", { sharing = true },
-                modifier = Modifier.testTag("song_share"), summary = "生成海报、保存图片或复制链接", chevron = false)
+            }, modifier = Modifier.testTag("song_download"), summary = "Lưu thông tin bài hát, ảnh bìa và lời bài hát", chevron = false)
+            if (!menu.song.video && menu.song.musicSource != io.github.currencortex.music.data.song.MusicSource.LOCAL) MusicDestinationRow("Chia sẻ bài hát", { sharing = true },
+                modifier = Modifier.testTag("song_share"), summary = "Tạo áp phích, lưu ảnh hoặc sao chép liên kết", chevron = false)
             CompositionLocalProvider(LocalDismissSongMenu provides onDismiss) { menu.extra?.invoke() }
             menu.onMultiSelect?.let { select ->
-                MusicDestinationRow("多选", { onDismiss(); select() },
+                MusicDestinationRow("Chọn nhiều", { onDismiss(); select() },
                     modifier = Modifier.testTag("playlist_multi_select"), chevron = false)
             }
         }

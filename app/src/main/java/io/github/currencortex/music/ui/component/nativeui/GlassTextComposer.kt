@@ -18,7 +18,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 /** Stable editable surface; only the action slots deform, so dragging text keeps the caret aligned. */
 @Composable internal fun GlassTextComposer(value: String, onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier, fieldModifier: Modifier = Modifier,
-    placeholder: String = "输入消息…", enabled: Boolean = true,
+    placeholder: String = "Nhập tin nhắn…", enabled: Boolean = true,
     leading: @Composable () -> Unit, trailing: @Composable () -> Unit) {
     val colors = MiuixTheme.colorScheme
     Row(modifier.fillMaxWidth().glassSurface(LocalGlassBackdrop.current, RoundedCornerShape(28.dp))

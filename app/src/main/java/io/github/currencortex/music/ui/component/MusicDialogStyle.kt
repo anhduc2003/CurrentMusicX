@@ -161,7 +161,7 @@ private fun Modifier.frostedMusicDialog(backdrop: Backdrop, dark: Boolean, shape
 }
 
 @Composable fun MusicChoiceDialog(title: String, onDismiss: () -> Unit,
-    footer: @Composable ColumnScope.() -> Unit = { MusicDialogButton("取消", onDismiss) },
+    footer: @Composable ColumnScope.() -> Unit = { MusicDialogButton("Hủy", onDismiss) },
     content: @Composable ColumnScope.() -> Unit) {
     MusicDialog(title, onDismiss, footer, edgeToEdgeContent = true, content = content)
 }

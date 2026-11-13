@@ -35,7 +35,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 /** Shared cover tile for home recommendations, playlists and artist albums. */
 @Composable internal fun MusicArtworkCard(cover: String, title: String, subtitle: String,
     onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, pixels: Int = 320,
-    onLongClick: ((Rect) -> Unit)? = null, longClickLabel: String = "预览歌曲与操作",
+    onLongClick: ((Rect) -> Unit)? = null, longClickLabel: String = "Xem trước bài hát và thao tác",
     playlistTransition: Boolean = false) {
     val motion = if (playlistTransition && LocalPageContainerSource.current != null)
         remember(cover, title) { PlaylistContainerMotion(cover, title) } else null

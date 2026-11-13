@@ -3,15 +3,15 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 已验证并推送的本次 tag（vX.Y.Z）
+        description: Tag của bản phát hành này đã được xác minh và đẩy lên (vX.Y.Z)
         required: true
         type: string
       previous_tag:
-        description: 上次已发布正式版本 tag
+         description: Tag của phiên bản chính thức đã phát hành trước đó
         required: true
         type: string
       summary:
-        description: 中文更新摘要（不得把未验证的内容写成已验证）
+         description: Tóm tắt cập nhật bằng tiếng Trung (không được trình bày nội dung chưa xác minh như đã xác minh)
         required: true
         type: string
 permissions:

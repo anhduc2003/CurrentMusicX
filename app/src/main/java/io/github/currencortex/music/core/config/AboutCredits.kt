@@ -13,36 +13,35 @@ data class AboutSection(val title: String, val members: List<AboutMember>)
 
 object AboutCredits {
     val sections = listOf(
-        AboutSection("开发组", listOf(
-            AboutMember("3140014249", "bileizhen", "总开发 · 设计 · 维护",
-                detail = "CurrentMusicX 总开发，负责项目整体开发、架构与界面设计。\n" +
-                    "统筹功能迭代与贡献整合，持续维护应用体验、版本发布和项目协作。",
+        AboutSection("Nhóm phát triển", listOf(
+            AboutMember("3140014249", "bileizhen", "Phát triển chính · Thiết kế · Bảo trì",
+                detail = "Phát triển chính toàn bộ CurrentMusicX, phụ trách phát triển tổng thể dự án, kiến trúc và thiết kế giao diện.\n" +
+                    "Điều phối việc cải tiến tính năng và tích hợp đóng góp, liên tục duy trì trải nghiệm ứng dụng, phát hành phiên bản và phối hợp dự án.",
                 githubUrl = "https://github.com/bileizhen"),
-            AboutMember("1945826346", "Rcst20", "原项目开发 · 音源与播放适配",
-                detail = "开发 CurrentMusic 原项目，并参与 CurrentMusicX 的音源与播放适配。\n" +
-                    "为自动最高音质增加可播放杜比音源的优先选择与失败回退，修复网易云听歌上报的设备名称。\n" +
-                    "修复桌面灵动岛歌词在文字未溢出时仍左右漂移的问题。\n" +
-                    "补充中英双语实现原理图，说明音源、歌词与前后端请求链路。",
+            AboutMember("1945826346", "Rcst20", "Phát triển dự án gốc · Tương thích nguồn nhạc và phát nhạc",
+                detail = "Phát triển dự án CurrentMusic gốc, đồng thời tham gia tương thích nguồn nhạc và phát nhạc cho CurrentMusicX.\n" +
+                    "Bổ sung ưu tiên chọn nguồn Dolby có thể phát khi tự động chọn chất lượng âm thanh cao nhất, kèm phương án dự phòng khi thất bại; sửa tên thiết bị trong báo cáo nghe nhạc trên Nhạc Vân NetEase.\n" +
+                    "Sửa lỗi lời bài hát trên linh động đảo ở màn hình chính vẫn trôi sang trái phải khi văn bản chưa bị tràn.\n" +
+                    "Bổ sung sơ đồ nguyên lý bằng tiếng Trung và tiếng Anh, mô tả nguồn nhạc, lời bài hát và luồng yêu cầu giữa frontend và backend.",
                 githubUrl = "https://github.com/backrooms-yrc"),
-            AboutMember("2468872022", "LinYe2804", "歌词体验 · 界面性能 · 横屏适配",
-                detail = "优化迷你播放器歌词更新与过渡动画，修复歌词闪烁问题。\n" +
-                    "新增 Apple Music 风格逐字歌词，支持间距、动画速度、辉光与模糊强度调节，以及翻译、罗马音和注音显示，优化歌词渲染流畅度。\n" +
-                    "优化界面重组、播放队列序列化、歌单与搜索列表加载，以及页面模糊过渡和液态玻璃绘制，减少主线程与渲染开销。\n" +
-                    "改善沉浸式封面透明渐变与横竖屏衔接，修复宽屏歌单白边和横屏迷你播放器律动光效，统一侧栏交互。\n" +
-                    "修复从搜索进入 CD 唱片架时的渲染、排序筛选与旋转恢复问题，完善横屏布局和安全区适配。\n" +
-                    "固定发现页顶部切页控件，避免与内容滚动发生冲突。",
+            AboutMember("2468872022", "LinYe2804", "Trải nghiệm lời bài hát · Hiệu năng giao diện · Tương thích màn hình ngang",
+                detail = "Tối ưu cập nhật lời bài hát và hoạt ảnh chuyển tiếp của trình phát mini, sửa lỗi lời bài hát nhấp nháy.\n" +
+                    "Thêm lời bài hát từng chữ theo phong cách Apple Music, hỗ trợ điều chỉnh khoảng cách, tốc độ hoạt ảnh, cường độ phát sáng và làm mờ, cùng tùy chọn hiển thị bản dịch, phiên âm La-tinh và chú âm; tối ưu độ mượt khi hiển thị lời bài hát.\n" +
+                    "Tối ưu việc tái cấu trúc giao diện, tuần tự hóa hàng đợi phát, tải danh sách phát và kết quả tìm kiếm, cùng hiệu ứng chuyển tiếp làm mờ trang và cách vẽ kính lỏng, giảm tải cho luồng chính và quá trình kết xuất.\n" +
+                    "Cải thiện hiệu ứng chuyển sắc trong suốt của ảnh bìa ở chế độ đắm chìm và chuyển tiếp giữa màn hình ngang, dọc; sửa viền trắng của danh sách phát trên màn hình rộng và hiệu ứng ánh sáng nhịp điệu của trình phát mini ở chế độ ngang, thống nhất cách tương tác với thanh bên.\n" +
+                    "Sửa lỗi kết xuất, sắp xếp, lọc và khôi phục sau khi xoay khi mở kệ đĩa CD từ trang tìm kiếm; hoàn thiện bố cục ngang và khả năng tương thích với vùng an toàn.\n" +
+                    "Cố định điều khiển chuyển tab ở đầu trang Khám phá để tránh xung đột với thao tác cuộn nội dung.",
                 githubUrl = "https://github.com/LinYe2804"),
-            AboutMember("442259851", "KelierAndes", "歌词交互 · 歌词搜索优化",
-                detail = "修复歌词拖动时的高亮跟随与回弹跳变，改善快速拖动和返回当前演唱行的连续滑移体验。\n" +
-                    "完善歌词浏览与播放跟随之间的切换：浏览时隐藏翻译和罗马音，返回当前歌词后恢复显示，回弹途中可重新拖动接管。\n" +
-                    "为歌词搜索增加命中句及前后文展示、匹配词高亮与缺失上下文补齐，并优化搜索结果布局。",
+            AboutMember("442259851", "KelierAndes", "Tương tác lời bài hát · Tối ưu tìm kiếm lời bài hát",
+                detail = "Sửa lỗi phần tô sáng không bám theo khi kéo lời bài hát và hiện tượng giật khi bật nảy; cải thiện trải nghiệm trượt liên tục khi kéo nhanh và quay về dòng đang được hát.\n" +
+                    "Hoàn thiện việc chuyển đổi giữa duyệt lời bài hát và đồng bộ theo phát nhạc: ẩn bản dịch và phiên âm La-tinh khi duyệt, khôi phục hiển thị khi quay lại lời bài hát hiện tại; có thể kéo lại để tiếp tục điều khiển trong lúc bật nảy.\n" +
+                    "Bổ sung hiển thị câu khớp cùng ngữ cảnh trước và sau, tô sáng từ khớp và tự bổ sung ngữ cảnh bị thiếu cho tính năng tìm kiếm lời bài hát; đồng thời tối ưu bố cục kết quả tìm kiếm.",
                 githubUrl = "https://github.com/KelierAndes"),
-            AboutMember("2711058826", "十三", "歌词显示 · 全面屏适配",
-                detail = "修复播放页封面歌词预览因固定行高导致的底部裁切，让行高与预览区域随字号和系统字体缩放调整。\n" +
-                    "适配全面屏手势导航，让页面内容延伸至底部手势条区域，并为聊天输入区保留导航栏安全间距。",
+AboutMember("2711058826", "Mười Ba", "Hiển thị lời bài hát · Tương thích màn hình tràn viền",                detail = "Sửa lỗi phần xem trước lời bài hát trên ảnh bìa ở trang phát nhạc bị cắt ở cạnh dưới do chiều cao dòng cố định; điều chỉnh chiều cao dòng và vùng xem trước theo cỡ chữ và tỷ lệ phóng to phông chữ hệ thống.\n" +
+                    "Tương thích với điều hướng bằng cử chỉ trên màn hình tràn viền, cho phép nội dung trang kéo dài xuống vùng thanh cử chỉ phía dưới và chừa khoảng cách an toàn của thanh điều hướng cho vùng nhập tin nhắn."
                 githubUrl = "https://github.com/WhiteXero"),
         )),
-        AboutSection("CDN 组", listOf(
+        AboutSection("Nhóm CDN", listOf(
             AboutMember("2536843865", "Hutao_felicity", "CDN · currentmusic.geekertao.com",
                 githubUrl = "https://github.com/Geekertao"),
             AboutMember("3140014249", "bileizhen", "CDN · cm.bileizhen.top",

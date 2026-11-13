@@ -82,7 +82,7 @@ import top.yukonga.miuix.kmp.basic.*
     DisposableEffect(Unit) { onDispose { onDialogActive(false) } }
     val clipboard = LocalClipboard.current; val scope = rememberCoroutineScope()
     LaunchedEffect(live.detail?.room?.id) { if (live.detail != null) create = false }
-    MusicSubpage("一起听", "room_page", onBack) { topInset ->
+    MusicSubpage("Cùng nghe", "room_page", onBack) { topInset ->
     Column(Modifier.fillMaxSize().testTag("room_screen")) {
         val detail = live.detail
         if (detail == null) {
@@ -92,59 +92,59 @@ import top.yukonga.miuix.kmp.basic.*
                     top = topInset + 8.dp, bottom = 24.dp)),
                 verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 item {
-                    SettingsSection("与好友一起", io.github.currencortex.music.ui.component.MusicIcons.Headphones) {
-                        MusicDestinationRow("网易云双人一起听", onNative, Modifier.testTag("open_netease_listen_together"),
-                            summary = if (native.active) "正在一起听 · 查看会话" else "和网易云好友同步听歌")
+                    SettingsSection("Cùng bạn bè", io.github.currencortex.music.ui.component.MusicIcons.Headphones) {
+                        MusicDestinationRow("Nhạc Vân NetEase cùng nghe hai người", onNative, Modifier.testTag("open_netease_listen_together"),
+                            summary = if (native.active) "Đang cùng nghe · Xem phiên" else "Nghe nhạc đồng bộ với bạn bè trên Nhạc Vân NetEase")
                     }
                 }
                 item {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        SettingsInfoHeader("CurrentMusic 房间", io.github.currencortex.music.ui.component.MusicIcons.Room,
+                        SettingsInfoHeader("Phòng CurrentMusic", io.github.currencortex.music.ui.component.MusicIcons.Room,
                             horizontalInset = 0.dp)
-                        MusicCategoryTabs(listOf("public" to "公开房间", "mine" to "我的房间"), browser.scope.query,
+                        MusicCategoryTabs(listOf("public" to "Phòng công khai", "mine" to "Phòng của tôi"), browser.scope.query,
                             { vm.load(query, roomScope = if (it == "mine") RoomScope.MINE else RoomScope.PUBLIC) }, "room_scope")
                     }
                 }
                 item {
                     MusicSearchBar(query, { vm.search(query.trim()) }, onInput = { query = it },
-                        placeholder = "六位房间号或房间名称", inputTag = "room_query")
+                        placeholder = "Mã phòng gồm sáu chữ số hoặc tên phòng", inputTag = "room_query")
                 }
                 item {
                     FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        GlassActionButton("查找", { vm.search(query.trim()) }, enabled = !busy, fillWidth = false)
-                        GlassActionButton("创建房间", { create = true }, primary = true,
+                        GlassActionButton("Tìm", { vm.search(query.trim()) }, enabled = !busy, fillWidth = false)
+                        GlassActionButton("Tạo phòng", { create = true }, primary = true,
                             enabled = account.account != null && !busy, fillWidth = false)
-                        GlassActionButton(if (browser.loading) "刷新中" else "刷新", { vm.load() },
+                         GlassActionButton(if (browser.loading) "Đang làm mới" else "Làm mới", { vm.load() },
                             enabled = !browser.loading && !busy, fillWidth = false)
                     }
-                    if (account.account == null) SettingsHint("登录 CurrentMusic 账号后可创建房间。")
+                    if (account.account == null) SettingsHint("Đăng nhập tài khoản CurrentMusic để tạo phòng.")
                 }
-                if (busy) item { ListenLoadingLabel("正在处理房间…") }
-                if (browser.loading && browser.rooms.isEmpty()) item { ListenTogetherSkeleton("正在加载房间…", "room_browser_loading", rows = 2) }
+                if (busy) item { ListenLoadingLabel("Đang xử lý phòng…") }
+                if (browser.loading && browser.rooms.isEmpty()) item { ListenTogetherSkeleton("Đang tải phòng…", "room_browser_loading", rows = 2) }
                 browser.error?.let { error -> item {
-                    SettingsGroup { SettingsHint(error, error = true); MusicTextAction("重试", { vm.load() }, Modifier.padding(16.dp)) }
+                    SettingsGroup { SettingsHint(error, error = true); MusicTextAction("Thử lại", { vm.load() }, Modifier.padding(16.dp)) }
                 } }
                 live.error?.let { error -> item { SettingsHint(error, error = true) } }
                 items(browser.rooms, key = { it.id }) { room ->
                     SettingsGroup(Modifier.animateItem()) {
                         SettingsPreference(room.name,
                             "#${room.code} · " + if (room.archived) {
-                                if (room.archiveReason == "idle") "闲置后自动归档" else "已归档"
-                            } else "${room.online} 人在线",
-                            trailing = { MusicTextAction(if (room.archived) "恢复并进入" else "加入",
+                                if (room.archiveReason == "idle") "Tự động lưu trữ khi không hoạt động" else "Đã lưu trữ"
+                            } else "${room.online} người đang trực tuyến",
+                            trailing = { MusicTextAction(if (room.archived) "Khôi phục và vào" else "Tham gia",
                                 { if (browser.scope == RoomScope.MINE) vm.enterOwned(room) else vm.find(room.code) }, enabled = !busy) })
                         SettingsDivider()
                         SettingsHint(listOf(room.ownerName.takeIf { it.isNotBlank() },
-                            if (room.freeMode) "自由点歌" else "普通模式").filterNotNull().joinToString(" · "))
-                        if (browser.scope == RoomScope.MINE) MusicTextAction("永久删除", { deleteRoom = room to vm.container.roomRepository.session() },
+                            if (room.freeMode) "Yêu cầu bài hát tự do" else "Chế độ thông thường").filterNotNull().joinToString(" · "))
+                        if (browser.scope == RoomScope.MINE) MusicTextAction("Xóa vĩnh viễn", { deleteRoom = room to vm.container.roomRepository.session() },
                             Modifier.padding(horizontal = 16.dp, vertical = 8.dp), enabled = !busy)
                     }
                 }
-                if (browser.more) item { GlassActionButton("加载更多", { vm.load(more = true) }, enabled = !browser.loading) }
+                if (browser.more) item { GlassActionButton("Tải thêm", { vm.load(more = true) }, enabled = !browser.loading) }
                 if (!browser.loading && browser.rooms.isEmpty() && browser.error == null) item {
-                    SettingsGroup { SettingsPreference(if (browser.scope == RoomScope.MINE) "暂无我的房间" else "暂无公开房间",
-                        if (browser.scope == RoomScope.MINE) "你创建的房间和已归档房间会显示在这里。" else "创建一个房间，或使用好友的六位房间号加入。") }
+                    SettingsGroup { SettingsPreference(if (browser.scope == RoomScope.MINE) "Bạn chưa có phòng nào" else "Chưa có phòng công khai",
+                        if (browser.scope == RoomScope.MINE) "Các phòng bạn tạo và phòng đã lưu trữ sẽ hiển thị ở đây." else "Tạo phòng hoặc dùng mã phòng sáu chữ số của bạn bè để tham gia.") }
                 }
             }
         } else {
@@ -154,15 +154,15 @@ import top.yukonga.miuix.kmp.basic.*
             SettingsGroup {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(detail.room.name, fontSize = 24.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            Text("#${detail.room.code} · ${detail.members.size} 人 · ${when(role) { RoomRole.OWNER -> "房主"; RoomRole.ADMIN -> "管理员"; else -> "成员" }}",
+            Text("#${detail.room.code} · ${detail.members.size} người · ${when(role) { RoomRole.OWNER -> "Chủ phòng"; RoomRole.ADMIN -> "Quản trị viên"; else -> "Thành viên" }}",
                 fontSize = 14.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
-            Text(if (live.connected) "已连接 · 播放同步中" else "正在连接房间，自动恢复同步…", fontSize = 13.sp, color = MiuixTheme.colorScheme.primary)
-            Row { MusicTextAction("复制房间号", onClick = { scope.launch { clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("房间号", detail.room.code))) } })
-                MusicTextAction("退出房间", onClick = { exit = true }, enabled = !busy) }
+            Text(if (live.connected) "Đã kết nối · Đang đồng bộ phát nhạc" else "Đang kết nối phòng, tự động khôi phục đồng bộ…", fontSize = 13.sp, color = MiuixTheme.colorScheme.primary)
+            Row { MusicTextAction("Sao chép mã phòng", onClick = { scope.launch { clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("Mã phòng", detail.room.code))) } })
+                MusicTextAction("Rời phòng", onClick = { exit = true }, enabled = !busy) }
             } }
             live.error?.let { Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(it, Modifier.weight(1f), fontSize = 13.sp)
-                MusicTextAction("知道了", onClick = vm.session::dismissError)
+                MusicTextAction("Đã hiểu", onClick = vm.session::dismissError)
             } }
             SettingsGroup(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(14.dp)) {
@@ -170,25 +170,25 @@ import top.yukonga.miuix.kmp.basic.*
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         MusicCover(track?.pic.orEmpty(), Modifier.size(56.dp), cornerRadius = 16.dp)
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(track?.name ?: "等待点歌", fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                            Text(track?.artists?.takeIf { it.isNotBlank() } ?: if (detail.room.freeMode || !detail.room.needApproval) "所有成员可直接点歌" else "点歌通过审批后加入队列",
+                            Text(track?.name ?: "Đang chờ chọn bài", fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(track?.artists?.takeIf { it.isNotBlank() } ?: if (detail.room.freeMode || !detail.room.needApproval) "Tất cả thành viên có thể chọn bài trực tiếp" else "Bài hát sẽ được thêm vào hàng đợi sau khi được duyệt",
                                 fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
                     }
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        MusicTextAction("点歌", onClick = onSearch)
-                        MusicTextAction("播放器", onClick = onPlayer)
-                        MusicTextAction(if (live.refreshing) "刷新中" else "刷新", onClick = vm.session::refreshWithFeedback, enabled = !live.refreshing)
+                        MusicTextAction("Chọn bài", onClick = onSearch)
+                        MusicTextAction("Trình phát", onClick = onPlayer)
+                        MusicTextAction(if (live.refreshing) "Đang làm mới" else "Làm mới", onClick = vm.session::refreshWithFeedback, enabled = !live.refreshing)
                     }
                     if (role?.controls == true) {
                         val controlsBusy = live.pendingActions.any { it in setOf("prev", "next", "play", "pause", "seek") }
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                            RoomTransport("上一首", R.drawable.player_symbol_skip_previous_fill1, vm.session::previous, !controlsBusy)
-                            RoomTransport(if(detail.timeline?.playing == true) "暂停" else "播放", if (detail.timeline?.playing == true) R.drawable.player_symbol_pause_fill1 else R.drawable.player_symbol_play_arrow_fill1,
+                            RoomTransport("Bài trước", R.drawable.player_symbol_skip_previous_fill1, vm.session::previous, !controlsBusy)
+                            RoomTransport(if(detail.timeline?.playing == true) "Tạm dừng" else "Phát", if (detail.timeline?.playing == true) R.drawable.player_symbol_pause_fill1 else R.drawable.player_symbol_play_arrow_fill1,
                                 { vm.session.play(detail.timeline?.playing != true) }, !controlsBusy, primary = true)
-                            RoomTransport("下一首", R.drawable.player_symbol_skip_next_fill1, vm.session::next, !controlsBusy)
+                            RoomTransport("Bài tiếp theo", R.drawable.player_symbol_skip_next_fill1, vm.session::next, !controlsBusy)
                         }
-                        if (controlsBusy) Text("正在同步操作…", fontSize = 12.sp, color = MiuixTheme.colorScheme.primary)
+                        if (controlsBusy) Text("Đang đồng bộ thao tác…", fontSize = 12.sp, color = MiuixTheme.colorScheme.primary)
                     }
                 }
             }
@@ -199,7 +199,7 @@ import top.yukonga.miuix.kmp.basic.*
                 } else {
                     var members by rememberSaveable { mutableStateOf(false) }
                     Column {
-                        MusicCategoryTabs(listOf("queue" to "点歌队列 ${detail.queue.size}", "members" to "成员与设置 ${detail.members.size}"),
+                        MusicCategoryTabs(listOf("queue" to "Hàng đợi chọn bài ${detail.queue.size}", "members" to "Thành viên và cài đặt ${detail.members.size}"),
                             if (members) "members" else "queue", { members = it == "members" }, "room_tab")
                         if (members) RoomMembers(detail, role, vm, Modifier.weight(1f), { close = true }, { memberDialog = it })
                         else RoomQueue(detail, role, vm, Modifier.weight(1f)) }
@@ -209,28 +209,28 @@ import top.yukonga.miuix.kmp.basic.*
         }
     }
     }
-    if (create) RoomForm("创建房间", { if (!busy) create = false }, saving = busy, error = browser.error) { name, pw, public, free, approval, locked ->
+    if (create) RoomForm("Tạo phòng", { if (!busy) create = false }, saving = busy, error = browser.error) { name, pw, public, free, approval, locked ->
         vm.create(name, pw.orEmpty(), public, free, approval, locked) }
-    deleteRoom?.let { (room, expected) -> MusicDialog("永久删除房间", onDismiss = { deleteRoom = null }) {
-        Text("将永久删除「${room.name}」（#${room.code}）及其成员、点歌队列、事件与封禁记录。此操作无法恢复。")
-        MusicDialogButton("永久删除", onClick = { deleteRoom = null; vm.deleteOwned(room, expected) }, enabled = !busy,
+    deleteRoom?.let { (room, expected) -> MusicDialog("Xóa phòng vĩnh viễn", onDismiss = { deleteRoom = null }) {
+        Text("Phòng «${room.name}» (#${room.code}) cùng thành viên, hàng đợi chọn bài, sự kiện và danh sách cấm sẽ bị xóa vĩnh viễn. Thao tác này không thể hoàn tác.")
+        MusicDialogButton("Xóa vĩnh viễn", onClick = { deleteRoom = null; vm.deleteOwned(room, expected) }, enabled = !busy,
             modifier = Modifier.testTag("confirm_delete_room"))
     } }
     passwordRoom?.let { room ->
         var password by remember(room.id) { mutableStateOf("") }
-        MusicDialog("加入 ${room.name}", onDismiss = { vm.passwordRoom.value = null }) {
-            TextField(password, { password = it }, label = "房间密码", visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
+        MusicDialog("Tham gia ${room.name}", onDismiss = { vm.passwordRoom.value = null }) {
+            TextField(password, { password = it }, label = "Mật khẩu phòng", visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
             browser.error?.let { Text(it, fontSize = 13.sp) }
-            MusicDialogButton(if (busy) "正在加入…" else "加入", onClick = { vm.join(room, password) }, enabled = !busy)
+            MusicDialogButton(if (busy) "Đang tham gia…" else "Tham gia", onClick = { vm.join(room, password) }, enabled = !busy)
         }
     }
-    if (exit) MusicDialog("退出一起听", onDismiss = { exit = false }) {
-        Text("退出后恢复本地队列，保持暂停。")
-        MusicDialogButton("退出房间", onClick = { exit = false; vm.leave() }, modifier = Modifier.testTag("confirm_leave_room"))
+    if (exit) MusicDialog("Rời phòng nghe cùng nhau", onDismiss = { exit = false }) {
+        Text("Sau khi rời phòng, hàng đợi cục bộ sẽ được khôi phục và giữ ở trạng thái tạm dừng.")
+        MusicDialogButton("Rời phòng", onClick = { exit = false; vm.leave() }, modifier = Modifier.testTag("confirm_leave_room"))
     }
-    if (close) MusicDialog("归档房间", onDismiss = { close = false }) {
-        Text("播放将停止，所有成员都会离开。房间号、队列和进度会保留，你可以从“我的房间”恢复。")
-        MusicDialogButton("归档房间", onClick = { close = false; vm.session.action("close", permission = { it == RoomRole.OWNER }) })
+    if (close) MusicDialog("Lưu trữ phòng", onDismiss = { close = false }) {
+        Text("Phát sẽ dừng lại và tất cả thành viên sẽ rời khỏi phòng. Mã phòng, hàng đợi và tiến trình sẽ được giữ lại; bạn có thể khôi phục từ “Phòng của tôi”.")
+        MusicDialogButton("Lưu trữ phòng", onClick = { close = false; vm.session.action("close", permission = { it == RoomRole.OWNER }) })
     }
 }
 @Composable private fun RoomTransport(label: String, icon: Int, onClick: () -> Unit, enabled: Boolean, primary: Boolean = false) {
@@ -252,24 +252,24 @@ import top.yukonga.miuix.kmp.basic.*
             Text(item.name, fontWeight = FontWeight.Medium, maxLines = 2, overflow = TextOverflow.Ellipsis)
             val subtitle = listOf(item.artists, item.requester).filter { it.isNotBlank() }.joinToString(" · ")
             if (subtitle.isNotBlank()) Text(subtitle, fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
-            Text(when(item.status) { "pending" -> "待审批"; "playing" -> "正在播放"; "rejected" -> "已拒绝"; else -> "已加入队列" })
-            if (pending) Text("正在提交…", fontSize = 12.sp, color = MiuixTheme.colorScheme.primary)
+            Text(when(item.status) { "pending" -> "Chờ duyệt"; "playing" -> "Đang phát"; "rejected" -> "Đã từ chối"; else -> "Đã thêm vào hàng đợi" })
+            if (pending) Text("Đang gửi…", fontSize = 12.sp, color = MiuixTheme.colorScheme.primary)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (item.status == "pending" && role?.controls == true) {
-                    MusicTextAction("通过", onClick = { vm.session.queueAction(item, "approve") }, enabled = !pending)
-                    MusicTextAction("拒绝", onClick = { vm.session.queueAction(item, "reject") }, enabled = !pending)
+                    MusicTextAction("Duyệt", onClick = { vm.session.queueAction(item, "approve") }, enabled = !pending)
+                    MusicTextAction("Từ chối", onClick = { vm.session.queueAction(item, "reject") }, enabled = !pending)
                 }
-                if (RoomPermissions.remove(role, item)) MusicTextAction("移除", onClick = { vm.session.queueAction(item, "remove") }, enabled = !pending)
+                if (RoomPermissions.remove(role, item)) MusicTextAction("Xóa", onClick = { vm.session.queueAction(item, "remove") }, enabled = !pending)
                 if (item.status == "approved" && role?.controls == true) {
                     val index = waiting.indexOfFirst { it.id == item.id }
                     val reordering = live.pendingActions.any { it.startsWith("queue:") }
-                    if (index > 0) MusicTextAction("上移", { vm.session.reorder(item, index - 1) }, enabled = !reordering)
-                    if (index >= 0 && index < waiting.lastIndex) MusicTextAction("下移", { vm.session.reorder(item, index + 1) }, enabled = !reordering)
+                    if (index > 0) MusicTextAction("Di chuyển lên", { vm.session.reorder(item, index - 1) }, enabled = !reordering)
+                    if (index >= 0 && index < waiting.lastIndex) MusicTextAction("Di chuyển xuống", { vm.session.reorder(item, index + 1) }, enabled = !reordering)
                 }
             }
         } } }
         if (detail.queue.isEmpty()) item {
-            SettingsGroup { SettingsPreference("还没有点歌", "进入搜索，选择“加入队列”即可提交点歌。") }
+            SettingsGroup { SettingsPreference("Chưa có yêu cầu bài hát", "Vào mục tìm kiếm, chọn “Thêm vào hàng đợi” để gửi yêu cầu bài hát.") }
         }
     }
 }
@@ -286,58 +286,58 @@ import top.yukonga.miuix.kmp.basic.*
     LazyColumn(modifier, contentPadding = musicScrollPadding(PaddingValues(0.dp)), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (role == RoomRole.OWNER) item {
             SettingsGroup {
-                MusicDestinationRow("房间设置", { settings = true }, summary = "名称、密码、可见性与点歌权限")
+                MusicDestinationRow("Cài đặt phòng", { settings = true }, summary = "Tên, mật khẩu, chế độ hiển thị và quyền yêu cầu bài hát")
                 SettingsDivider()
-                SettingsToggle("锁定加入", detail.room.joinLocked, { locked ->
+                SettingsToggle("Khóa tham gia", detail.room.joinLocked, { locked ->
                     vm.session.action("settings", buildJsonObject { put("joinLocked", locked) }, { it == RoomRole.OWNER }) },
-                    summary = "开启后不再接受新成员")
+                    summary = "Sau khi bật, phòng sẽ không nhận thêm thành viên mới")
                 SettingsDivider()
-                MusicDestinationRow("封禁名单", { showBans = true; vm.loadBans() }, summary = "查看并解除禁止加入")
+                MusicDestinationRow("Danh sách chặn", { showBans = true; vm.loadBans() }, summary = "Xem và gỡ lệnh cấm tham gia")
                 SettingsDivider()
-                SettingsPreference("归档房间", "保留房间号、队列和进度，可稍后恢复", onClick = onClose,
+                SettingsPreference("Lưu trữ phòng", "Giữ lại mã phòng, hàng đợi và tiến trình để khôi phục sau", onClick = onClose,
                     trailing = { Icon(io.github.currencortex.music.ui.component.MusicIcons.Close, null, tint = MiuixTheme.colorScheme.error) })
             }
         }
-        item { SettingsSectionHeader("成员 · ${detail.members.size}") }
+        item { SettingsSectionHeader("Thành viên · ${detail.members.size}") }
         items(detail.members, key = { it.userId }) { member ->
             SettingsGroup(Modifier.animateItem()) {
                 SettingsPreference(member.nickname, when (RoomRole.parse(member.role)) {
-                    RoomRole.OWNER -> "房主"; RoomRole.ADMIN -> "管理员"; else -> "成员"
+                    RoomRole.OWNER -> "Chủ phòng"; RoomRole.ADMIN -> "Quản trị viên"; else -> "Thành viên"
                 }, leading = { Icon(io.github.currencortex.music.ui.component.MusicIcons.Account, null) }, trailing = {
                     if (member.userId != account.account?.id && RoomPermissions.kick(role, RoomRole.parse(member.role)))
-                        MusicTextAction("管理", { target = member })
+                        MusicTextAction("Quản lý", { target = member })
                 })
             }
         }
     }
-    target?.let { member -> MusicChoiceDialog("管理 ${member.nickname}", onDismiss = { target = null }) {
+    target?.let { member -> MusicChoiceDialog("Quản lý ${member.nickname}", onDismiss = { target = null }) {
         if (role == RoomRole.OWNER) {
-            MusicTextAction(if (RoomRole.parse(member.role) == RoomRole.ADMIN) "取消管理员" else "设为管理员", onClick = {
+            MusicTextAction(if (RoomRole.parse(member.role) == RoomRole.ADMIN) "Hủy quyền quản trị viên" else "Đặt làm quản trị viên", onClick = {
                 vm.session.action("admins", buildJsonObject { put("userId", member.userId); put("on", RoomRole.parse(member.role) != RoomRole.ADMIN) }, { it == RoomRole.OWNER }); target = null })
             var transfer by remember { mutableStateOf(false) }
-            if (!transfer) MusicTextAction("转让房主", onClick = { transfer = true })
-            else MusicTextAction("确认转让房主", onClick = { vm.session.action("transfer", buildJsonObject { put("userId", member.userId) }, { it == RoomRole.OWNER }); target = null })
+            if (!transfer) MusicTextAction("Chuyển quyền chủ phòng", onClick = { transfer = true })
+            else MusicTextAction("Xác nhận chuyển quyền chủ phòng", onClick = { vm.session.action("transfer", buildJsonObject { put("userId", member.userId) }, { it == RoomRole.OWNER }); target = null })
         }
-        MusicTextAction("移出房间", onClick = { vm.session.action("kick", buildJsonObject { put("userId", member.userId); put("ban", false) }, { RoomPermissions.kick(it, RoomRole.parse(member.role)) }); target = null })
-        MusicTextAction("移出并禁止加入", onClick = { vm.session.action("kick", buildJsonObject { put("userId", member.userId); put("ban", true) }, { RoomPermissions.kick(it, RoomRole.parse(member.role)) }); target = null })
+        MusicTextAction("Mời khỏi phòng", onClick = { vm.session.action("kick", buildJsonObject { put("userId", member.userId); put("ban", false) }, { RoomPermissions.kick(it, RoomRole.parse(member.role)) }); target = null })
+        MusicTextAction("Mời khỏi phòng và cấm tham gia", onClick = { vm.session.action("kick", buildJsonObject { put("userId", member.userId); put("ban", true) }, { RoomPermissions.kick(it, RoomRole.parse(member.role)) }); target = null })
     } }
-    if (showBans) MusicDialog("封禁名单", onDismiss = { showBans = false }) {
+    if (showBans) MusicDialog("Danh sách bị cấm", onDismiss = { showBans = false }) {
         Column(Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            if (bans.loading) Text("正在加载…")
-            bans.error?.let { Text(it); MusicTextAction("重试", vm::loadBans) }
-            if (!bans.loading && bans.error == null && bans.bans.isEmpty()) Text("暂无封禁成员")
+            if (bans.loading) Text("Đang tải…")
+            bans.error?.let { Text(it); MusicTextAction("Thử lại", vm::loadBans) }
+            if (!bans.loading && bans.error == null && bans.bans.isEmpty()) Text("Chưa có thành viên nào bị cấm")
             bans.bans.forEach { ban ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text(ban.nickname.ifBlank { "用户 ${ban.userId}" })
+                        Text(ban.nickname.ifBlank { "Người dùng ${ban.userId}" })
                         if (ban.reason.isNotBlank()) Text(ban.reason, fontSize = 12.sp)
                     }
-                    MusicTextAction("解除封禁", { vm.unban(ban.userId) }, enabled = !bans.loading)
+                    MusicTextAction("Gỡ cấm", { vm.unban(ban.userId) }, enabled = !bans.loading)
                 }
             }
         }
     }
-    if (settings) RoomForm("房间设置", { settings = false }, detail.room) { name, password, public, free, approval, locked ->
+    if (settings) RoomForm("Cài đặt phòng", { settings = false }, detail.room) { name, password, public, free, approval, locked ->
         vm.session.action("settings", buildJsonObject { put("name", name); put("isPublic", public); put("freeMode", free); put("needApproval", approval); put("joinLocked", locked)
             if (password != null) put("password", password) }, { it == RoomRole.OWNER }); settings = false
     }
@@ -353,20 +353,20 @@ import top.yukonga.miuix.kmp.basic.*
     MusicDialog(title, onDismiss = onDismiss) {
         Column(Modifier.heightIn(max = 360.dp).verticalScroll(rememberScrollState()).testTag("room_form"),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            TextField(name, { if (it.length <= 60) name = it }, label = "房间名称", modifier = Modifier.fillMaxWidth())
-            if (initial != null) SettingsToggle("修改密码", changePassword, { changePassword = it }, summary = "留空保存可解除密码")
-            if (changePassword) TextField(password, { if (it.length <= 128) password = it }, label = "房间密码", visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
+            TextField(name, { if (it.length <= 60) name = it }, label = "Tên phòng", modifier = Modifier.fillMaxWidth())
+            if (initial != null) SettingsToggle("Đổi mật khẩu", changePassword, { changePassword = it }, summary = "Để trống rồi lưu để gỡ mật khẩu")
+            if (changePassword) TextField(password, { if (it.length <= 128) password = it }, label = "Mật khẩu phòng", visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
             SettingsGroup {
-                SettingsToggle("公开房间", public, { public = it }, summary = "在房间大厅中显示")
+                SettingsToggle("Phòng công khai", public, { public = it }, summary = "Hiển thị trong sảnh phòng")
                 SettingsDivider()
-                SettingsToggle("自由点歌", free, { free = it }, summary = "开启后，普通成员点歌直接加入待播队列")
+                SettingsToggle("Tự do yêu cầu bài hát", free, { free = it }, summary = "Khi bật, yêu cầu bài hát của thành viên thường sẽ được thêm trực tiếp vào hàng đợi")
                 SettingsDivider()
-                SettingsToggle("点歌需要审批", approval, { approval = it }, summary = if (free) "自由点歌开启时暂不执行审批" else "关闭后，普通成员点歌直接入队")
+                SettingsToggle("Yêu cầu bài hát cần phê duyệt", approval, { approval = it }, summary = if (free) "Tạm thời không phê duyệt khi bật chế độ tự do yêu cầu bài hát" else "Khi tắt, yêu cầu bài hát của thành viên thường sẽ được thêm trực tiếp vào hàng đợi")
                 SettingsDivider()
-                SettingsToggle("锁定加入", locked, { locked = it }, summary = "开启后不再接受新成员")
+                SettingsToggle("Khóa tham gia", locked, { locked = it }, summary = "Khi bật, phòng sẽ không nhận thêm thành viên mới")
             }
             error?.let { Text(it, fontSize = 13.sp) }
-            MusicDialogButton(if (saving) "正在创建…" else "保存", enabled = name.trim().length in 1..60 && !saving,
+            MusicDialogButton(if (saving) "Đang tạo…" else "Lưu", enabled = name.trim().length in 1..60 && !saving,
                 onClick = { onSave(name.trim(), if (changePassword) password else null, public, free, approval, locked) })
         }
     }

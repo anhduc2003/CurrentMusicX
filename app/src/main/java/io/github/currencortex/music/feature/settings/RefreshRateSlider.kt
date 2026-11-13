@@ -48,9 +48,9 @@ internal fun refreshRateSliderOptions(supported: List<Int>): List<RefreshRatePre
                     }
                 })
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("跟随系统", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
+                Text("Theo hệ thống", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
                 Text(options.last().label, fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
             }
-        } else Text("正在读取屏幕刷新率…", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
+        } else Text("Đang đọc tần số quét màn hình…", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
     }
 }

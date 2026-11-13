@@ -7,7 +7,7 @@ import java.util.UUID
 /** Picker payloads survive cache cleanup and recreation; only their small IDs enter saved state. */
 internal class DocumentExportFiles(private val directory: File) {
     fun stage(write: (OutputStream) -> Unit): String {
-        check(directory.mkdirs() || directory.isDirectory) { "无法准备导出文件" }
+        check(directory.mkdirs() || directory.isDirectory) { "Không thể chuẩn bị tệp xuất" }
         // A picker abandoned with its task has no result callback to release its payload.
         val cutoff = System.currentTimeMillis() - 7 * 86_400_000L
         directory.listFiles()?.filter { it.isFile && NAME.matches(it.name) && it.lastModified() < cutoff }
@@ -24,7 +24,7 @@ internal class DocumentExportFiles(private val directory: File) {
     }
 
     fun file(id: String): File {
-        require(ID.matches(id)) { "导出请求无效" }
+         require(ID.matches(id)) { "Yêu cầu xuất không hợp lệ" }
         return File(directory, "$id.payload")
     }
 

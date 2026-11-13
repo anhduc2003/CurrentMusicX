@@ -92,7 +92,7 @@ private class CreateDocument : ActivityResultContract<DocumentTarget, Uri?>() {
             else withContext(Dispatchers.IO) {
                 // Open the source first: a missing payload must not truncate the selected document.
                 files.file(current.id).inputStream().use { input ->
-                    checkNotNull(resolver.openOutputStream(uri, "wt")) { "无法打开保存位置" }.use { output ->
+                    checkNotNull(resolver.openOutputStream(uri, "wt")) { "Không thể mở vị trí lưu" }.use { output ->
                         val buffer = ByteArray(8192)
                         while (true) {
                             ensureActive()
@@ -104,13 +104,13 @@ private class CreateDocument : ActivityResultContract<DocumentTarget, Uri?>() {
                 }
             }
             finished = true
-            container.errorNotices.showMessage(if (current.song != null) "歌词已导入" else "已保存 ${current.name}")
+            container.errorNotices.showMessage(if (current.song != null) "Đã nhập lời bài hát" else "Đã lưu ${current.name}")
         } catch (cancelled: CancellationException) {
             // Leave request, destination and payload intact; the new host resumes this write.
             throw cancelled
         } catch (failure: Exception) {
             finished = true
-            container.errorNotices.show(failure.message ?: "文件处理失败，请重试")
+            container.errorNotices.show(failure.message ?: "Xử lý tệp thất bại, vui lòng thử lại")
         } finally {
             if (finished) {
                 pending = null
@@ -126,7 +126,7 @@ private class CreateDocument : ActivityResultContract<DocumentTarget, Uri?>() {
     }
 
     return DocumentRequests(isBusy = { pending != null || preparing }, importLyrics = { song ->
-        check(pending == null && !preparing) { "请先完成当前文件选择" }
+        check(pending == null && !preparing) { "Vui lòng hoàn tất lựa chọn tệp hiện tại trước" }
         // Import only needs the immutable song identity, not artwork or playback metadata.
         val target = Song(song.id, "", musicSource = song.musicSource, externalIds = song.externalIds,
             navidrome = song.navidrome, emby = song.emby)
@@ -134,7 +134,7 @@ private class CreateDocument : ActivityResultContract<DocumentTarget, Uri?>() {
         try { importer.launch(arrayOf("*/*")) }
         catch (failure: Exception) { pending = null; throw failure }
     }, export = { name, mime, write ->
-        check(pending == null && !preparing) { "请先完成当前文件选择" }
+        check(pending == null && !preparing) { "Vui lòng hoàn tất lựa chọn tệp hiện tại trước" }
         preparing = true
         var staged: String? = null
         try {

@@ -122,30 +122,30 @@ import java.util.Locale
                 TextField(query, {
                     showingPreview = false; onQuery(it.take(OnlineLyricsMatcher.MAX_QUERY_LENGTH))
                 }, Modifier.weight(1f).testTag("lyrics_match_query"),
-                    label = "歌名 / 歌手", useLabelAsPlaceholder = true, singleLine = true,
+                    label = "Tên bài hát / Ca sĩ", useLabelAsPlaceholder = true, singleLine = true,
                     insideMargin = DpSize(12.dp, 10.dp), cornerRadius = 12.dp,
                     textStyle = MiuixTheme.textStyles.main.copy(fontSize = 14.sp), enabled = !busy,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = { submit() }))
-                LyricsActionButton("搜索", ::submit, Modifier.testTag("lyrics_match_search"),
+                LyricsActionButton("Tìm kiếm", ::submit, Modifier.testTag("lyrics_match_search"),
                     enabled = !busy && !searching && query.isNotBlank(), primary = true)
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(if (searching) "正在搜索…" else if (previewing) "正在读取歌词…"
-                    else if (hasSearched) "${results.size} 个候选 · 信息匹配度" else "信息匹配 ≥75% · 逐字优先 · 逐行兜底",
+                Text(if (searching) "Đang tìm kiếm…" else if (previewing) "Đang đọc lời bài hát…"
+                    else if (hasSearched) "${results.size} ứng viên · mức độ khớp thông tin" else "Khớp thông tin ≥75% · ưu tiên từng từ · dự phòng từng dòng",
                     Modifier.weight(1f), fontSize = 12.sp, color = colors.onSurfaceVariantSummary,
                     maxLines = 1, overflow = TextOverflow.Ellipsis)
-                LyricsActionButton("自动择优", {
+                LyricsActionButton("Tự động chọn phù hợp nhất", {
                     focus.clearFocus(); keyboard?.hide(); showingPreview = true; onAutomatic()
                 }, Modifier.testTag("lyrics_match_auto"), enabled = !busy && !loading)
-                if (loading) LyricsActionButton("停止", onCancelLoading,
+                if (loading) LyricsActionButton("Dừng", onCancelLoading,
                     Modifier.testTag("lyrics_match_cancel_loading"), enabled = !busy)
             }
             } else if (loading) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically) {
-                Text("正在读取歌词…", Modifier.weight(1f),
+                Text("Đang đọc lời bài hát…", Modifier.weight(1f),
                     fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
-                LyricsActionButton("停止", onCancelLoading, Modifier.testTag("lyrics_match_cancel_loading"), enabled = !busy)
+                LyricsActionButton("Dừng", onCancelLoading, Modifier.testTag("lyrics_match_cancel_loading"), enabled = !busy)
             }
             if (message != null) Text(message,
                 Modifier.fillMaxWidth().testTag("lyrics_match_message").semantics { liveRegion = LiveRegionMode.Polite },
@@ -169,10 +169,10 @@ import java.util.Locale
             }
             Box(Modifier.fillMaxWidth().height(1.dp).background(colors.onSurface.copy(alpha = .08f)))
             Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                LyricsActionButton("取消", {
+                LyricsActionButton("Hủy", {
                     focus.clearFocus(); keyboard?.hide(); onBack()
                 }, Modifier.weight(1f).testTag("lyrics_match_back"), enabled = !busy)
-                LyricsActionButton(if (busy) "保存中…" else "保存歌词", onApply,
+                LyricsActionButton(if (busy) "Đang lưu…" else "Lưu lời bài hát", onApply,
                     Modifier.weight(1f).testTag("lyrics_match_apply"), enabled = preview != null && !loading && !busy,
                     primary = true)
             }
@@ -204,9 +204,9 @@ import java.util.Locale
         if (results.isEmpty()) item {
             Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 28.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(if (searching) "正在搜索 ${source.shortLabel}…" else if (hasSearched) "没有找到候选" else "搜索这首歌的歌词",
+                Text(if (searching) "Đang tìm kiếm ${source.shortLabel}…" else if (hasSearched) "Không tìm thấy ứng viên" else "Tìm lời bài hát này",
                     fontSize = 15.sp, fontWeight = FontWeight.Medium)
-                Text(if (searching) "可随时停止" else if (hasSearched) "修改关键词或切换来源重试" else "也可以自动比较各来源的歌词",
+                Text(if (searching) "Có thể dừng bất cứ lúc nào" else if (hasSearched) "Hãy sửa từ khóa hoặc chuyển nguồn rồi thử lại" else "Bạn cũng có thể tự động so sánh lời bài hát từ các nguồn",
                     fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
             }
         }
@@ -225,17 +225,17 @@ import java.util.Locale
                         Text(candidate.title, Modifier.weight(1f, fill = false), fontSize = 14.sp, fontWeight = FontWeight.SemiBold,
                             color = colors.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Text("$metadataPercent%", Modifier.testTag("lyrics_match_metadata_$index")
-                            .clearAndSetSemantics { text = AnnotatedString("信息匹配 $metadataPercent%") }
+                            .clearAndSetSemantics { text = AnnotatedString("Khớp thông tin $metadataPercent%") }
                             .clip(RoundedCornerShape(6.dp)).background(colors.primary.copy(alpha = .12f))
                             .padding(horizontal = 6.dp, vertical = 2.dp), fontSize = 10.sp,
                             fontWeight = FontWeight.Medium, color = colors.primary)
                     }
-                    Text(listOf(candidate.artists.ifBlank { "歌手信息缺失" }, candidate.album.takeIf(String::isNotBlank))
+                    Text(listOf(candidate.artists.ifBlank { "Thiếu thông tin ca sĩ" }, candidate.album.takeIf(String::isNotBlank))
                         .filterNotNull().joinToString(" · "), fontSize = 12.sp,
                         color = colors.onSurfaceVariantSummary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 Box(Modifier.size(20.dp), contentAlignment = Alignment.Center) {
-                    if (chosen) Text("✓", Modifier.semantics { contentDescription = "已选中" },
+                    if (chosen) Text("✓", Modifier.semantics { contentDescription = "Đã chọn" },
                         fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = colors.primary)
                 }
             }
@@ -253,7 +253,7 @@ import java.util.Locale
     }
     LaunchedEffect(candidate, preview) { scroll.scrollToItem(0) }
     Column(modifier.testTag("lyrics_match_preview"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (onBackToResults != null) LyricsActionButton("‹ 返回结果", onBackToResults,
+        if (onBackToResults != null) LyricsActionButton("‹ Quay lại kết quả", onBackToResults,
             Modifier.testTag("lyrics_match_back_results"))
         LazyColumn(Modifier.weight(1f).fillMaxWidth(), state = scroll,
             contentPadding = PaddingValues(bottom = 12.dp)) {
@@ -270,7 +270,7 @@ import java.util.Locale
                 Spacer(Modifier.height(16.dp))
             }
             if (previewing) item {
-                Text("正在读取歌词…", Modifier.testTag("lyrics_match_preview_loading").semantics { liveRegion = LiveRegionMode.Polite },
+                Text("Đang đọc lời bài hát…", Modifier.testTag("lyrics_match_preview_loading").semantics { liveRegion = LiveRegionMode.Polite },
                     fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
                 Spacer(Modifier.height(12.dp))
             }
@@ -283,31 +283,31 @@ import java.util.Locale
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(preview.origin.label, Modifier.weight(1f), fontSize = 12.sp,
                                 color = colors.onSurfaceVariantSummary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                            Text(if (realWords) "逐字歌词" else "逐行歌词", Modifier.testTag("lyrics_match_timing_kind"),
+                            Text(if (realWords) "Lời bài hát từng từ" else "Lời bài hát từng dòng", Modifier.testTag("lyrics_match_timing_kind"),
                                 fontSize = 11.sp, color = colors.primary)
                         }
-                        Text("歌曲信息 ${assessment?.matchPercent?.let { "$it%" } ?: "未校验"}",
+                        Text("Thông tin bài hát ${assessment?.matchPercent?.let { "$it%" } ?: "Chưa xác minh"}",
                             Modifier.testTag("lyrics_match_content_score"), fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
-                        Text("信息匹配 ≥75% · 按来源顺序选择 · 逐字优先", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+                         Text("Khớp thông tin ≥75% · chọn theo thứ tự nguồn · ưu tiên từng từ", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
                         preview.timingAlignment?.let {
                             Text(lyricsAlignmentLabel(it), Modifier.testTag("lyrics_match_alignment"),
                                 fontSize = 12.sp, color = colors.primary)
                         }
-                        Text(if (previewing) "正在读取候选…" else when {
-                            assessment == null -> "未校验 · 可手动保存"
-                            !assessment.accepted -> "未达到自动匹配条件 · 可手动保存"
-                            assessment.preferredWord -> "符合自动条件 · 逐字歌词优先"
-                            else -> "符合自动条件 · 逐行歌词兜底"
+                         Text(if (previewing) "Đang đọc ứng viên…" else when {
+                             assessment == null -> "Chưa xác minh · có thể lưu thủ công"
+                             !assessment.accepted -> "Chưa đạt điều kiện khớp tự động · có thể lưu thủ công"
+                             assessment.preferredWord -> "Đạt điều kiện tự động · ưu tiên lời bài hát từng từ"}]}
+else -> "Đáp ứng điều kiện tự động · dự phòng bằng lời bài hát từng dòng"
                         }, Modifier.testTag("lyrics_match_policy"), fontSize = 12.sp,
                             color = if (!previewing && assessment?.accepted == false) colors.error else colors.onSurfaceVariantSummary)
                         assessmentNote?.takeIf { !previewing && it.isNotBlank() }?.let { Text(it, fontSize = 12.sp, lineHeight = 17.sp,
                             color = colors.onSurfaceVariantSummary, modifier = Modifier.testTag("lyrics_match_assessment_note")) }
                     }
-                    Text("歌词预览", Modifier.padding(top = 16.dp, bottom = 12.dp), fontSize = 13.sp,
+Text("Xem trước lời bài hát", Modifier.padding(top = 16.dp, bottom = 12.dp), fontSize = 13.sp,
                         color = colors.onSurfaceVariantSummary, fontWeight = FontWeight.Medium)
                 }
                 if (previewDocument!!.lines.isEmpty()) item {
-                    Text("这份歌词为空", fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
+Text("Lời bài hát này trống", fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
                 }
                 itemsIndexed(previewDocument!!.lines, key = { index, _ -> index }) { index, line ->
                     val shape = RoundedCornerShape(topStart = if (index == 0) 12.dp else 0.dp,
@@ -324,14 +324,14 @@ import java.util.Locale
                         }
                         if (line.romanization.isNotBlank()) Text(line.romanization, fontSize = 11.sp, color = colors.onSurfaceVariantSummary)
                         line.backgroundVocals.filter { it.text.isNotBlank() }.forEach {
-                            Text("和声 · ${it.text}", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+Text("Hòa âm · ${it.text}", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
                         }
                     }
                 }
             } else if (!previewing) item {
                 Column(Modifier.fillMaxWidth().padding(vertical = 24.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text("选择候选预览", fontSize = 15.sp, fontWeight = FontWeight.Medium)
-                    Text("查看原文、翻译与匹配度后保存", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+Text("Xem trước ứng viên", fontSize = 15.sp, fontWeight = FontWeight.Medium)
+Text("Xem bản gốc, bản dịch và mức độ khớp trước khi lưu", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
                 }
             }
         }
@@ -343,7 +343,7 @@ import java.util.Locale
     val colors = MiuixTheme.colorScheme
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = if (centered) Alignment.CenterHorizontally else Alignment.Start) {
-        Text(candidate?.title ?: "已匹配歌词", Modifier.fillMaxWidth(), fontSize = 16.sp,
+Text(candidate?.title ?: "Lời bài hát đã khớp", Modifier.fillMaxWidth(), fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis,
             textAlign = if (centered) TextAlign.Center else TextAlign.Start)
         Text(candidate?.artists?.ifBlank { null } ?: preview?.origin?.label.orEmpty(), Modifier.fillMaxWidth(),
@@ -364,7 +364,7 @@ private fun lyricsMatchTime(value: Long): String {
 
 internal fun lyricsAlignmentLabel(alignment: LyricsTimingAlignment): String {
     val amount = String.format(Locale.ROOT, "%.2f", kotlin.math.abs(alignment.initialOffsetMs) / 1000.0)
-    val direction = if (alignment.initialOffsetMs < 0) "提前" else "延后"
-    return if (alignment.varying) "自适应对齐 · $direction $amount 秒起 · 渐变校正"
-    else "自动偏移 · $direction $amount 秒"
+val direction = if (alignment.initialOffsetMs < 0) "sớm" else "muộn"
+return if (alignment.varying) "Căn chỉnh thích ứng · bắt đầu $direction $amount giây · hiệu chỉnh chuyển tiếp"
+else "Dịch chuyển tự động · $direction $amount giây"
 }

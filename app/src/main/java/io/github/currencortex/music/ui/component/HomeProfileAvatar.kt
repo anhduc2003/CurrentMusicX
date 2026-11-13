@@ -87,8 +87,8 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 launchBounds = Rect(slot.left + inset, slot.top + inset, slot.right - inset, slot.bottom - inset)
                     .takeIf { rect -> rect.width > 0f && rect.height > 0f && rect.top >= 0f && placement?.visible(rect) != false }
             }
-            .semantics { contentDescription = "账号头像，打开我的" }
-            .clickable(role = Role.Button, onClickLabel = "打开我的") {
+            .semantics { contentDescription = "Ảnh đại diện tài khoản, mở trang của tôi" }
+            .clickable(role = Role.Button, onClickLabel = "Mở trang của tôi") {
                 val origin = if (settled && reveal.value > 0f) imageCoordinates?.takeIf { it.isAttached }?.boundsInRoot() ?: bounds else null
                 onOpen(if (failed) null else url, origin)
             },

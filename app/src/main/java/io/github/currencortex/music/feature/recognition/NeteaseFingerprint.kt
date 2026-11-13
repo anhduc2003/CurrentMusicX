@@ -76,7 +76,7 @@ class NeteaseFingerprint(context: Context) {
                         runCatching { active?.destroy() }
                     }
                 }
-                fun complete(result: String? = null, message: String = "无法生成音频指纹，请重新录音", cause: Throwable? = null) {
+                fun complete(result: String? = null, message: String = "Không thể tạo dấu vân tay âm thanh, vui lòng ghi âm lại", cause: Throwable? = null) {
                     if (closed) return
                     close()
                     if (continuation.isActive) {
@@ -106,17 +106,17 @@ class NeteaseFingerprint(context: Context) {
                                 ByteArrayInputStream(if (document) html.toByteArray(Charsets.UTF_8) else ByteArray(0)))
                         }
                         override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
-                            if (request.isForMainFrame) complete(message = "声音处理页面加载失败，请重试")
+                            if (request.isForMainFrame) complete(message = "Không tải được trang xử lý âm thanh, vui lòng thử lại")
                         }
                         override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail): Boolean {
-                            complete(message = "声音处理进程已退出，请重试")
+                            complete(message = "Tiến trình xử lý âm thanh đã thoát, vui lòng thử lại")
                             return true
                         }
                     }
                     active.webChromeClient = object : WebChromeClient() {
                         override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
                             if (consoleMessage.messageLevel() == ConsoleMessage.MessageLevel.ERROR)
-                                complete(message = "声音处理运行失败，请重试")
+                                complete(message = "Chạy xử lý âm thanh thất bại, vui lòng thử lại")
                             return true // Do not forward script content, audio or fingerprints to logs.
                         }
                     }
@@ -125,7 +125,7 @@ class NeteaseFingerprint(context: Context) {
                         active.loadUrl(DOCUMENT_URL)
                     else close()
                 } catch (failure: Exception) {
-                    complete(message = "无法启动声音处理，请检查系统 WebView 后重试", cause = failure)
+                    complete(message = "Không thể khởi chạy xử lý âm thanh, vui lòng kiểm tra WebView hệ thống rồi thử lại", cause = failure)
                 }
             }
         }

@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.random.Random
 
-@Serializable enum class PlaybackMode(val label: String) { LIST("列表循环"), ONE("单曲循环"), SHUFFLE("随机播放"), HEART("心动模式") }
+@Serializable enum class PlaybackMode(val label: String) { LIST("Lặp danh sách"), ONE("Lặp một bài"), SHUFFLE("Phát ngẫu nhiên"), HEART("Chế độ rung động") }
 @Serializable data class QueueSnapshot(val songs: List<Song> = emptyList(), val index: Int = -1,
     val positionMs: Long = 0, val mode: PlaybackMode = PlaybackMode.LIST, val quality: AudioQuality = AudioQuality.AUTO,
     val shuffleHistory: List<Int> = emptyList(), val shuffleHistoryIndex: Int = -1,

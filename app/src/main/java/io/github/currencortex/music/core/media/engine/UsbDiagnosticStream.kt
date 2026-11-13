@@ -10,14 +10,12 @@ internal data class UsbOutputSnapshot(val deviceLabel: String, val requestedWire
     val declaredCapabilities: String)
 
 internal fun usbDiagnostics(previous: AudioDiagnosticsSnapshot, snapshot: UsbOutputSnapshot) = previous.copy(
-    backend = "USB Host / 网易云原生引擎", device = snapshot.deviceLabel,
-    // UsbDevice.deviceId and AudioDeviceInfo.id are different namespaces.
+backend = "USB Host / Nhạc Vân NetEase bộ máy nguyên bản", device = snapshot.deviceLabel,    // UsbDevice.deviceId and AudioDeviceInfo.id are different namespaces.
     deviceId = null, output = AudioPcmFormat(), softwareBufferFrames = null,
     deviceBufferFrames = null, capacityFrames = null, underruns = null, latencyMs = null,
-    latencyEvidence = "驱动未提供可验证的 DAC 时间戳或输出延迟",
+    latencyEvidence = "Trình điều khiển không cung cấp dấu thời gian DAC hoặc độ trễ đầu ra có thể xác minh được",
     usbCapabilities = snapshot.declaredCapabilities,
-    formatEvidence = "引擎请求 ${snapshot.requestedWireFormat.describe()}；实际 DAC 格式/时钟未验证",
-    bitPerfect = BitPerfectEvidence.UNVERIFIED,
+formatEvidence = "Động cơ yêu cầu ${snapshot.requestedWireFormat.describe()}；định dạng/đồng hồ DAC thực tế chưa được xác minh",    bitPerfect = BitPerfectEvidence.UNVERIFIED,
 )
 
 /** Samples metadata on the writer thread; never adds a second PCM buffer, DSP or audio owner. */

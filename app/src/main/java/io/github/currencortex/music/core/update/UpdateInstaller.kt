@@ -26,17 +26,17 @@ class AndroidUpdateInstaller(private val context: Context) : UpdateInstall {
     @Suppress("DEPRECATION")
     override suspend fun request(file: File, release: AppRelease): UpdateInstallResult {
         withContext(Dispatchers.IO) {
-            require(UpdateDownloader.matches(file, release)) { "安装包校验失败，请重新下载" }
+            require(UpdateDownloader.matches(file, release)) { "Kiểm tra gói cài đặt thất bại, vui lòng tải xuống lại" }
             val flags = if (Build.VERSION.SDK_INT >= 28) PackageManager.GET_SIGNING_CERTIFICATES else PackageManager.GET_SIGNATURES
             val archive = context.packageManager.getPackageArchiveInfo(file.absolutePath, flags)
-                ?: error("无法读取安装包")
-            require(archive.packageName == RELEASE_PACKAGE && archive.versionName == release.version) { "安装包与发布版本不匹配" }
-            require(signatures(archive).isNotEmpty()) { "安装包未签名" }
+                ?: error("Không thể đọc gói cài đặt")
+            require(archive.packageName == RELEASE_PACKAGE && archive.versionName == release.version) { "Gói cài đặt không khớp với phiên bản phát hành" }
+            require(signatures(archive).isNotEmpty()) { "Gói cài đặt chưa được ký" }
             if (context.packageName == RELEASE_PACKAGE) {
                 val installed = context.packageManager.getPackageInfo(context.packageName, flags)
-                require(signatures(archive) == signatures(installed)) { "安装包签名与当前应用不同" }
+                require(signatures(archive) == signatures(installed)) { "Chữ ký của gói cài đặt khác với ứng dụng hiện tại" }
                 val code = if (Build.VERSION.SDK_INT >= 28) archive.longVersionCode else archive.versionCode.toLong()
-                require(code > BuildConfig.VERSION_CODE) { "安装包版本代码未递增" }
+                require(code > BuildConfig.VERSION_CODE) { "Mã phiên bản của gói cài đặt chưa tăng" }
             }
         }
         return withContext(Dispatchers.Main) {

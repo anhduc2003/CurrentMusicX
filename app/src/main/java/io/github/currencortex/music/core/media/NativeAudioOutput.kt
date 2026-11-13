@@ -57,14 +57,14 @@ internal class NativeAudioOutput(private val config: AudioOutputProvider.OutputC
     }
     private val channels get() = Integer.bitCount(config.channelMask)
     private fun open(): Long {
-        check(NativeAudioBridge.available) { "原生音频库不可用" }
-        require(config.encoding == C.ENCODING_PCM_16BIT) { "此原生输出仅接收 PCM 16-bit；其他格式必须协商或回退" }
-        require(softwareBufferTargetMs in 20..2000) { "原生输出软件缓冲必须介于 20–2000 ms" }
+        check(NativeAudioBridge.available) { "Thư viện âm thanh gốc không khả dụng" }
+        require(config.encoding == C.ENCODING_PCM_16BIT) { "Đầu ra gốc này chỉ nhận PCM 16-bit; các định dạng khác phải được thương lượng hoặc chuyển về phương án dự phòng" }
+        require(softwareBufferTargetMs in 20..2000) { "Bộ đệm phần mềm của đầu ra gốc phải nằm trong khoảng 20–2000 ms" }
         return NativeAudioBridge.open(api, config.sampleRate, channels, device, exclusive, softwareBufferTargetMs)
-            .also { check(it != 0L) { "设备未接受请求的输出接口、采样率或独占模式" } }
+            .also { check(it != 0L) { "Thiết bị không chấp nhận giao diện đầu ra, tần số lấy mẫu hoặc chế độ độc quyền được yêu cầu" } }
     }
     override fun play() {
-        check(handle != 0L) { "原生输出已释放" }
+        check(handle != 0L) { "Đầu ra gốc đã được giải phóng" }
         if (started) return
         started = true; NativeAudioBridge.play(handle)
     }

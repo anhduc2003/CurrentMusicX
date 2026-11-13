@@ -27,18 +27,18 @@ internal object NeteaseUsbDevices {
     /** Reads descriptors only, without claiming an interface or requesting permission. */
     fun descriptors(context: Context, device: UsbDevice): UsbAudioDescriptorReport {
         val manager = context.getSystemService(UsbManager::class.java)
-        if (!manager.hasPermission(device)) return UsbAudioDescriptorReport(emptyList(), "尚未获得 USB 描述符读取授权")
+        if (!manager.hasPermission(device)) return UsbAudioDescriptorReport(emptyList(), "Chưa được cấp quyền đọc descriptor USB")
         val connection = manager.openDevice(device)
-            ?: return UsbAudioDescriptorReport(emptyList(), "系统未能打开 USB 描述符连接")
+            ?: return UsbAudioDescriptorReport(emptyList(), "Hệ thống không thể mở kết nối descriptor USB")
         return try { UsbAudioDescriptorParser.parse(connection.rawDescriptors) }
-        catch (_: Exception) { UsbAudioDescriptorReport(emptyList(), "系统未提供完整 USB Audio 描述符") }
+        catch (_: Exception) { UsbAudioDescriptorReport(emptyList(), "Hệ thống không cung cấp đầy đủ descriptor USB Audio") }
         finally { connection.close() }
     }
     fun select(devices: List<UsbDevice>, selected: String): UsbDevice {
         if (selected.isNotEmpty()) return devices.singleOrNull { key(it) == selected }
-            ?: error("[USB_MISSING] 所选 USB Host 设备未连接，请重新选择")
-        check(devices.isNotEmpty()) { "[USB_MISSING] 未连接 USB Audio 输出设备" }
-        check(devices.size == 1) { "[USB_AMBIGUOUS] 已连接多个 USB 音频设备，请选择目标 DAC" }
+            ?: error("[USB_MISSING] Thiết bị USB Host đã chọn không được kết nối, vui lòng chọn lại")
+        check(devices.isNotEmpty()) { "[USB_MISSING] Không có thiết bị đầu ra USB Audio nào được kết nối" }
+        check(devices.size == 1) { "[USB_AMBIGUOUS] Có nhiều thiết bị âm thanh USB được kết nối, vui lòng chọn DAC mục tiêu" }
         return devices.single()
     }
     fun requestPermission(context: Context, device: UsbDevice) {

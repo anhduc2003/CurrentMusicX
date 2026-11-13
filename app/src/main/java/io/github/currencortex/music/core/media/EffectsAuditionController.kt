@@ -50,23 +50,23 @@ class EffectsAuditionController internal constructor(private val context: Contex
         OriginalSpeakerEnvironmentObserver(context).state.collect { environment ->
             if (!environment.speaker && state.value.scene != null && state.value.active) {
                 stop(resume = false)
-                mutableState.value = EffectsAuditionState(error = "已离开手机扬声器，外放试听已停止")
+                mutableState.value = EffectsAuditionState(error = "Đã rời khỏi loa điện thoại, phát thử qua loa ngoài đã dừng")
             }
         }
     }
 
     fun speaker(scene: OriginalSpeakerScene) = start(processed = true, scene = scene) {
-        check(OriginalSpeakerEnvironmentObserver(context).snapshot().speaker) { "请使用手机扬声器试听外放音效" }
-        check(NeteaseNativeEngine.available()) { "请先导入兼容的原版音效引擎" }
+        check(OriginalSpeakerEnvironmentObserver(context).snapshot().speaker) { "Vui lòng sử dụng loa điện thoại để nghe thử hiệu ứng loa ngoài" }
+        check(NeteaseNativeEngine.available()) { "Vui lòng nhập engine hiệu ứng gốc tương thích trước" }
         val owner = container.neteaseSessions.snapshot()
         val permission = container.originalSpeakerRepository.entitlement()
         check(permission.userId == owner.credential.profile?.uid && permission.canUse && permission.expiresAt > System.currentTimeMillis()) {
-            "试听外放音效需要当前账号有效的 SVIP 权益"
+            "Nghe thử hiệu ứng loa ngoài yêu cầu tài khoản hiện tại có quyền lợi SVIP còn hiệu lực"
         }
         val env = OriginalSpeakerEnvironmentObserver(context).snapshot()
         val id = originalSpeakerId(scene, env.landscape, env.volume)
         val material = container.originalSpeakerRepository.catalog(scene).firstOrNull { it.id == id }
-            ?: error("网易云未提供此场景的外放音效")
+            ?: error("Nhạc Vân NetEase không cung cấp hiệu ứng loa ngoài cho tình huống này")
         val decoded = container.originalSpeakerRepository.download(material)
         check(decoded.type == 1)
         NeteasePresetParameters.fromJson(decoded.bytes.toString(Charsets.UTF_8), soundType = 9)
@@ -76,15 +76,15 @@ class EffectsAuditionController internal constructor(private val context: Contex
     }
 
     fun master(song: Song?, processed: Boolean, selected: Set<String>) = start(processed, null) {
-        val current = requireNotNull(song) { "请先选择一首网易云歌曲" }
-        check(current.musicSource == io.github.currencortex.music.data.song.MusicSource.NETEASE && !current.video) { "请选择网易云歌曲试听" }
+        val current = requireNotNull(song) { "Vui lòng chọn một bài hát Nhạc Vân NetEase trước" }
+        check(current.musicSource == io.github.currencortex.music.data.song.MusicSource.NETEASE && !current.video) { "Vui lòng chọn bài hát Nhạc Vân NetEase để nghe thử" }
         val owner = container.neteaseSessions.snapshot()
         var deadline = Long.MAX_VALUE
         val effect = if (processed) {
-            check(NeteaseNativeEngine.available()) { "请先导入兼容的原版音效引擎" }
+            check(NeteaseNativeEngine.available()) { "Vui lòng nhập engine hiệu ứng gốc tương thích trước" }
             val permission = container.originalAiMasterRepository.entitlement()
             check(permission.userId == owner.credential.profile?.uid && permission.canUse && permission.expiresAt > System.currentTimeMillis()) {
-                "试听 AI 调音大师需要当前账号有效的 SVIP 权益"
+                "Nghe thử AI Master Tuning yêu cầu tài khoản hiện tại có quyền lợi SVIP còn hiệu lực"
             }
             deadline = permission.expiresAt
             val material = container.originalAiMasterRepository.prepare(current.id)
@@ -103,11 +103,11 @@ class EffectsAuditionController internal constructor(private val context: Contex
 
     private fun start(processed: Boolean, scene: OriginalSpeakerScene?, prepare: suspend () -> Audition) {
         if (container.audioOutput.state.value.mode.bypassProcessing) {
-            mutableState.value = EffectsAuditionState(error = "当前输出已跳过音效，请先在音频输出中切换模式")
+            mutableState.value = EffectsAuditionState(error = "Đầu ra hiện tại đã bỏ qua hiệu ứng, vui lòng chuyển chế độ trong mục đầu ra âm thanh trước")
             return
         }
         if (container.playerController.state.value.mode != PlayerMode.LOCAL) {
-            mutableState.value = EffectsAuditionState(error = "请先退出一起听，再试听音效")
+            mutableState.value = EffectsAuditionState(error = "Vui lòng thoát tính năng nghe cùng trước khi nghe thử hiệu ứng")
             return
         }
         stopInternal(resume = false, forgetSuspension = false)
@@ -129,13 +129,13 @@ class EffectsAuditionController internal constructor(private val context: Contex
                 val prepared = prepare()
                 ensureActive()
                 if (token != generation) return@launch
-                check(prepared.deadline > System.currentTimeMillis()) { "网易云音效权益已到期" }
+                check(prepared.deadline > System.currentTimeMillis()) { "Quyền lợi hiệu ứng Nhạc Vân NetEase đã hết hạn" }
                 preset = prepared.preset
                 val samplePlayer = ExoPlayer.Builder(context, DockRenderersFactory(context, DockAudioLevel(),
                     originalPreset = { preset }, originalProcessing = { _ -> scope.launch {
                         if (token == generation && !state.value.processing) mutableState.value = state.value.copy(processing = true)
                     } }, originalFailure = { _, _ -> scope.launch {
-                        if (token == generation) fail("原版音效试听处理失败，请重新导入兼容引擎")
+                        if (token == generation) fail("Xử lý nghe thử hiệu ứng gốc thất bại, vui lòng nhập lại engine tương thích")
                     } }, outputSampleRate = { container.audioOutput.state.value.sampleRate },
                     outputSettings = { container.audioOutput.state.value },
                     outputStatus = { container.audioOutput.status.value = it }))
@@ -156,7 +156,7 @@ class EffectsAuditionController internal constructor(private val context: Contex
                         if (playbackState == Player.STATE_ENDED) stop()
                     }
                     override fun onPlayerError(error: PlaybackException) {
-                        if (token == generation) fail("试听片段暂时无法播放，请稍后重试")
+                        if (token == generation) fail("Tạm thời không thể phát đoạn nghe thử, vui lòng thử lại sau")
                     }
                 })
                 samplePlayer.setMediaItem(MediaItem.Builder().setUri(prepared.url).setCustomCacheKey(prepared.cacheKey).build(), prepared.position)
@@ -166,7 +166,7 @@ class EffectsAuditionController internal constructor(private val context: Contex
                     if (token == generation) stop()
                 }
             } catch (cancelled: CancellationException) { throw cancelled }
-            catch (failure: Exception) { if (token == generation) fail(failure.message?.take(160) ?: "音效试听失败") }
+            catch (failure: Exception) { if (token == generation) fail(failure.message?.take(160) ?: "Nghe thử hiệu ứng thất bại") }
         }
     }
 

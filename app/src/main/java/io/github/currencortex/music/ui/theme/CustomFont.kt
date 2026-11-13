@@ -52,19 +52,19 @@ fun importCustomFont(context: Context, uri: Uri): String {
     val file = requireNotNull(fontFile(context, name))
     file.parentFile?.mkdirs()
     try {
-        val source = requireNotNull(context.contentResolver.openInputStream(uri)) { "无法读取字体文件" }
+        val source = requireNotNull(context.contentResolver.openInputStream(uri)) { "Không thể đọc tệp phông chữ" }
         source.use { input ->
             file.outputStream().use { output ->
                 val buffer = ByteArray(32 * 1024); var size = 0L
                 while (true) {
                     val n = input.read(buffer); if (n < 0) break
-                    size += n; require(size <= MAX_FONT_BYTES) { "字体文件超过 64 MB" }
+                    size += n; require(size <= MAX_FONT_BYTES) { "Tệp phông chữ vượt quá 64 MB" }
                     output.write(buffer, 0, n)
                 }
-                require(size > 0) { "字体文件为空" }
+                require(size > 0) { "Tệp phông chữ trống" }
             }
         }
-        requireNotNull(Typeface.Builder(file).build()) { "文件不是有效的字体" }
+        requireNotNull(Typeface.Builder(file).build()) { "Tệp không phải là phông chữ hợp lệ" }
         return name
     } catch (e: Exception) { file.delete(); throw e }
 }

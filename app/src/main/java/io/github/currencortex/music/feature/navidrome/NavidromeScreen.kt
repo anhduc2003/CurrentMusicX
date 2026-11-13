@@ -66,7 +66,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             focus.clearFocus(); keyboard?.hide()
             if (!songDetail) vm.search(query)
         }, modifier, onInput = { if (songDetail) filter = it else vm.query.value = it },
-            placeholder = if (songDetail) "搜索此列表中的歌曲" else "搜索歌曲、专辑、艺术家",
+            placeholder = if (songDetail) "Tìm bài hát trong danh sách này" else "Tìm bài hát, album, nghệ sĩ",
             inputTag = if (songDetail) "navidrome_filter_input" else "navidrome_query", submitTag = "navidrome_search")
     }
     fun closeDialog() { if (!busy) { dialog = ""; vm.clearError() } }
@@ -91,25 +91,25 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         val showSearch = !settings && (!songDetail || filterOpen)
         Column(Modifier.widthIn(max = if(settings)760.dp else 840.dp).fillMaxSize()) {
             if (root) Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp).heightIn(min = 56.dp), verticalAlignment = Alignment.CenterVertically) {
-                if (configuration || vm.nested) NavIcon(Icons.AutoMirrored.Filled.ArrowBack, "返回曲库", ::back, "navidrome_back")
+                if (configuration || vm.nested) NavIcon(Icons.AutoMirrored.Filled.ArrowBack, "Quay lại thư viện", ::back, "navidrome_back")
                 Column((if (compact && showSearch) Modifier.widthIn(max = 200.dp) else Modifier.weight(1f)).padding(horizontal = 8.dp)) {
-                    Text(if (settings) "Navidrome 账号" else if (vm.nested) when (state.page.kind) {
-                        "album" -> "专辑"; "artist" -> "艺术家"; "playlist" -> "歌单"; else -> state.page.title
-                    } else "我的曲库", fontSize = if (compact) 20.sp else 24.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(if (settings) "Tài khoản Navidrome" else if (vm.nested) when (state.page.kind) {
+                        "album" -> "Album"; "artist" -> "Nghệ sĩ"; "playlist" -> "Danh sách phát"; else -> state.page.title
+                    } else "Thư viện của tôi", fontSize = if (compact) 20.sp else 24.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     if (!settings && !vm.nested && !compact) NavHint("${account.username} · Navidrome")
                 }
                 if (compact && showSearch) searchBar(Modifier.weight(1f).padding(horizontal = 12.dp))
-                if (!settings && songDetail) NavIcon(Icons.Default.Search, "搜索当前列表", { filterOpen = !filterOpen; if (!filterOpen) filter = "" }, "navidrome_filter")
+                if (!settings && songDetail) NavIcon(Icons.Default.Search, "Tìm trong danh sách hiện tại", { filterOpen = !filterOpen; if (!filterOpen) filter = "" }, "navidrome_filter")
                 if (!settings) {
-                    NavIcon(Icons.Default.Settings, "曲库账号", { configuration = true; vm.clearError() }, "navidrome_account")
-                    NavIcon(Icons.Default.MoreVert, "曲库操作", { dialog = "menu"; vm.clearError() }, "navidrome_menu")
+                    NavIcon(Icons.Default.Settings, "Tài khoản thư viện", { configuration = true; vm.clearError() }, "navidrome_account")
+                    NavIcon(Icons.Default.MoreVert, "Thao tác thư viện", { dialog = "menu"; vm.clearError() }, "navidrome_menu")
                 }
             }
             if (settings) {
                 NavidromeAccountPage(vm, onConnected = { configuration = false }, onDisconnect = { action("disconnect") })
             } else {
                 if (showSearch && (!compact || !root)) searchBar(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-                if (!vm.nested) MusicCategoryTabs(listOf("albums" to "专辑", "artists" to "艺术家", "playlists" to "歌单", "likes" to "我喜欢"),
+                if (!vm.nested) MusicCategoryTabs(listOf("albums" to "Album", "artists" to "Nghệ sĩ", "playlists" to "Danh sách phát", "likes" to "Yêu thích"),
                     state.page.kind, { focus.clearFocus(); keyboard?.hide(); vm.tab(it) }, "navidrome_tab", Modifier.padding(horizontal = 16.dp))
                 val positionKey = "${if (root) "home" else "route"}:${account.revision}:${state.page.key}"
                 val grid = remember(positionKey) { vm.position(positionKey).let { LazyGridState(it.index, it.offset) } }
@@ -131,17 +131,17 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                         horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(if (entriesAsRows) 4.dp else 12.dp)) {
                         if (vm.nested && state.page.kind != "search") item("hero", span = { GridItemSpan(maxLineSpan) }) { NavDetailHero(state) }
                         if (state.page.kind == "playlists") item("create", span = { GridItemSpan(maxLineSpan) }) {
-                            MusicSectionHeader("${state.entries.size} 个歌单", "新建歌单", { action("create") })
+                            MusicSectionHeader("${state.entries.size} danh sách phát", "Tạo danh sách phát", { action("create") })
                         }
                         if (state.error != null || error != null && dialog.isEmpty()) item("error", span = { GridItemSpan(maxLineSpan) }) {
                             Column { Text(state.error ?: error.orEmpty(), color = MiuixTheme.colorScheme.error, fontSize = 13.sp)
-                                MusicTextAction(if (state.error != null) "重试" else "关闭", { if (state.error != null) vm.refresh() else vm.clearError() }) }
+                                MusicTextAction(if (state.error != null) "Thử lại" else "Đóng", { if (state.error != null) vm.refresh() else vm.clearError() }) }
                         }
                         if (shownSongs.isNotEmpty()) item("play", span = { GridItemSpan(maxLineSpan) }) {
                             Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                                MusicTransportButton("播放全部", { play(shownSongs, 0) }, Modifier.testTag("navidrome_play_all"), prominent = true, enabled = canPlay)
-                                Column(Modifier.weight(1f).padding(start = 14.dp)) { Text("播放全部", fontSize = 20.sp, fontWeight = FontWeight.Medium); NavHint(playlistDurationLabel(shownSongs)) }
-                                MusicTextAction("随机播放", { play(shownSongs.shuffled(), 0) }, enabled = canPlay)
+                                MusicTransportButton("Phát tất cả", { play(shownSongs, 0) }, Modifier.testTag("navidrome_play_all"), prominent = true, enabled = canPlay)
+                                Column(Modifier.weight(1f).padding(start = 14.dp)) { Text("Phát tất cả", fontSize = 20.sp, fontWeight = FontWeight.Medium); NavHint(playlistDurationLabel(shownSongs)) }
+                                MusicTextAction("Phát ngẫu nhiên", { play(shownSongs.shuffled(), 0) }, enabled = canPlay)
                             }
                         }
                         itemsIndexed(shownSongs, key = { index, _ -> "song-${songKeys[index]}" }, span = { _, _ -> GridItemSpan(maxLineSpan) }) { index, song ->
@@ -151,7 +151,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                                     LibrarySongActions(library, song, navigate)
                                     if (state.page.kind == "playlist" && state.owned) {
                                         val dismiss = LocalDismissSongMenu.current
-                                        MusicDestinationRow("移出歌单", { dismiss()
+                                        MusicDestinationRow("Xóa khỏi danh sách phát", { dismiss()
                                             // Map the visible occurrence back to the complete, unfiltered playlist.
                                             val occurrence = shownSongs.take(index).count { it.id == song.id }
                                             val rawIndex = state.songs.indices.filter { state.songs[it].id == song.id }.getOrNull(occurrence)
@@ -161,9 +161,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                                 }
                             }
                         }
-                        if (state.artists.isNotEmpty()) item("artists-heading", span = { GridItemSpan(maxLineSpan) }) { MusicSectionHeader("艺术家") }
+                        if (state.artists.isNotEmpty()) item("artists-heading", span = { GridItemSpan(maxLineSpan) }) { MusicSectionHeader("Nghệ sĩ") }
                         items(state.artists, key = { "search-artist-${it.id}" }, span = { GridItemSpan(maxLineSpan) }) { NavEntryRow(it) { vm.open("artist", it) } }
-                        if (state.albums.isNotEmpty()) item("albums-heading", span = { GridItemSpan(maxLineSpan) }) { MusicSectionHeader("专辑") }
+                        if (state.albums.isNotEmpty()) item("albums-heading", span = { GridItemSpan(maxLineSpan) }) { MusicSectionHeader("Album") }
                         items(state.entries, key = { "entry-${it.id}" }, span = { GridItemSpan(if (entriesAsRows) maxLineSpan else 1) }) { entry ->
                             val open = { vm.open(when (state.page.kind) { "artists" -> "artist"; "playlists" -> "playlist"; else -> "album" }, entry) }
                             Box(Modifier.animateItem(fadeInSpec = tween(220), placementSpec = tween(260))) {
@@ -178,14 +178,14 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                         }
                         if (!state.loading && state.error == null && state.entries.isEmpty() && shownSongs.isEmpty() && state.artists.isEmpty() && state.albums.isEmpty()) item("empty", span = { GridItemSpan(maxLineSpan) }) {
                             Column(Modifier.fillMaxWidth().padding(vertical = 40.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                Text(when { filter.isNotBlank() -> "没有匹配的歌曲"; state.page.kind == "search" -> "没有找到相关音乐"; state.page.kind == "likes" -> "还没有喜欢的歌曲"; state.page.kind == "playlists" -> "创建你的第一张歌单"; else -> "这里还没有音乐" }, fontSize = 18.sp)
-                                NavHint(when (state.page.kind) { "likes" -> "歌曲菜单中的喜欢会同步到服务器"; "playlist" -> "从歌曲菜单添加喜欢的音乐"; else -> "试试其他分类，或下拉重新读取" })
-                                if (filter.isNotBlank()) MusicTextAction("清除搜索", { filter = "" })
-                                else if (state.page.kind == "playlists") MusicTextAction("新建歌单", { action("create") })
+                                Text(when { filter.isNotBlank() -> "Không có bài hát phù hợp"; state.page.kind == "search" -> "Không tìm thấy nhạc phù hợp"; state.page.kind == "likes" -> "Bạn chưa thích bài hát nào"; state.page.kind == "playlists" -> "Tạo danh sách phát đầu tiên"; else -> "Chưa có nhạc ở đây" }, fontSize = 18.sp)
+                                NavHint(when (state.page.kind) { "likes" -> "Các bài hát được yêu thích từ menu bài hát sẽ đồng bộ với máy chủ"; "playlist" -> "Thêm nhạc yêu thích từ menu bài hát"; else -> "Thử danh mục khác hoặc kéo xuống để tải lại" })
+                                if (filter.isNotBlank()) MusicTextAction("Xóa tìm kiếm", { filter = "" })
+                                else if (state.page.kind == "playlists") MusicTextAction("Tạo danh sách phát", { action("create") })
                             }
                         }
                         if (state.more) item("more", span = { GridItemSpan(maxLineSpan) }) {
-                            TextButton(if (state.loading) "正在加载更多…" else "加载更多", { vm.refresh(true) }, enabled = !state.loading, modifier = Modifier.fillMaxWidth())
+                            TextButton(if (state.loading) "Đang tải thêm…" else "Tải thêm", { vm.refresh(true) }, enabled = !state.loading, modifier = Modifier.fillMaxWidth())
                         }
                     }
                 }
@@ -194,14 +194,14 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     }
     }
     if (root) browser(0.dp)
-    else MusicSubpage(if (settings) "Navidrome 账号" else if (vm.nested) state.page.title else "我的曲库",
+    else MusicSubpage(if (settings) "Tài khoản Navidrome" else if (vm.nested) state.page.title else "Thư viện của tôi",
         "navidrome_screen", ::back, backTag = "navidrome_back", actions = {
             if (!settings) {
-                if (songDetail) NavIcon(Icons.Default.Search, "搜索当前列表", {
+                if (songDetail) NavIcon(Icons.Default.Search, "Tìm trong danh sách hiện tại", {
                     filterOpen = !filterOpen; if (!filterOpen) filter = ""
                 }, "navidrome_filter")
-                NavIcon(Icons.Default.Settings, "曲库账号", { configuration = true; vm.clearError() }, "navidrome_account")
-                NavIcon(Icons.Default.MoreVert, "曲库操作", { dialog = "menu"; vm.clearError() }, "navidrome_menu")
+                NavIcon(Icons.Default.Settings, "Tài khoản thư viện nhạc", { configuration = true; vm.clearError() }, "navidrome_account")
+                NavIcon(Icons.Default.MoreVert, "Thao tác thư viện nhạc", { dialog = "menu"; vm.clearError() }, "navidrome_menu")
             }
         }) { topInset ->
         if (settings) NavidromeAccountPage(vm, onConnected = { configuration = false },
@@ -209,20 +209,20 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         else browser(topInset)
     }
     SettingsUiScope {
-    if (dialog == "menu") MusicChoiceDialog("曲库操作", { dialog = "" }) {
-        MusicDestinationRow("刷新曲库", { dialog = ""; vm.refresh() }, enabled = !state.loading, chevron = false)
-        if (state.page.kind == "playlists") MusicDestinationRow("新建歌单", { action("create") }, enabled = !busy, chevron = false)
+    if (dialog == "menu") MusicChoiceDialog("Thao tác thư viện nhạc", { dialog = "" }) {
+        MusicDestinationRow("Làm mới thư viện nhạc", { dialog = ""; vm.refresh() }, enabled = !state.loading, chevron = false)
+        if (state.page.kind == "playlists") MusicDestinationRow("Tạo danh sách phát", { action("create") }, enabled = !busy, chevron = false)
         if (state.page.kind == "playlist" && state.owned) {
-            MusicDestinationRow("重命名歌单", { action("rename") }, enabled = !busy, chevron = false)
-            MusicDestinationRow("删除歌单", { action("delete") }, enabled = !busy, chevron = false)
+            MusicDestinationRow("Đổi tên danh sách phát", { action("rename") }, enabled = !busy, chevron = false)
+            MusicDestinationRow("Xóa danh sách phát", { action("delete") }, enabled = !busy, chevron = false)
         }
-    } else if (dialog.isNotEmpty()) MusicDialog(when (dialog) { "disconnect" -> "断开连接"; "delete" -> "删除歌单"; "remove" -> "移出歌单"; "rename" -> "重命名歌单"; else -> "新建歌单" }, ::closeDialog) {
-        if (dialog in setOf("create", "rename")) TextField(name, { name = it }, label = "歌单名称", singleLine = true, enabled = !busy, modifier = Modifier.fillMaxWidth().then(Modifier.testTag("navidrome_playlist_name")))
-        else Text(when (dialog) { "disconnect" -> "断开此服务器账号，保留其他音乐服务与播放队列。"; "remove" -> "将「${removal?.song?.name.orEmpty()}」移出「${removal?.playlist?.title.orEmpty()}」？"; else -> "删除「${target.title}」？服务器中的音乐文件会保留。" })
+    } else if (dialog.isNotEmpty()) MusicDialog(when (dialog) { "disconnect" -> "Ngắt kết nối"; "delete" -> "Xóa danh sách phát"; "remove" -> "Xóa khỏi danh sách phát"; "rename" -> "Đổi tên danh sách phát"; else -> "Tạo danh sách phát" }, ::closeDialog) {
+        if (dialog in setOf("create", "rename")) TextField(name, { name = it }, label = "Tên danh sách phát", singleLine = true, enabled = !busy, modifier = Modifier.fillMaxWidth().then(Modifier.testTag("navidrome_playlist_name")))
+        else Text(when (dialog) { "disconnect" -> "Ngắt kết nối tài khoản máy chủ này, các dịch vụ nhạc khác và hàng đợi phát sẽ được giữ nguyên."; "remove" -> "Xóa「${removal?.song?.name.orEmpty()}」khỏi「${removal?.playlist?.title.orEmpty()}」?"; else -> "Xóa「${target.title}」? Các tệp nhạc trên máy chủ sẽ được giữ nguyên." })
         error?.let { Text(it, color = MiuixTheme.colorScheme.error, fontSize = 13.sp) }
         MusicDialogActions(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MusicDialogButton("取消", ::closeDialog, enabled = !busy, modifier = Modifier.weight(1f))
-            MusicDialogButton(if (busy) "正在处理…" else "确定", {
+            MusicDialogButton("Hủy", ::closeDialog, enabled = !busy, modifier = Modifier.weight(1f))
+            MusicDialogButton(if (busy) "Đang xử lý…" else "Xác nhận", {
                 val done: (Boolean) -> Unit = { if (it) dialog = "" }
                 when (dialog) { "disconnect" -> vm.disconnect { if (it) { configuration = false; dialog = "" } }; "create" -> vm.create(name, done); "rename" -> vm.rename(target, name, done); "delete" -> vm.delete(target, done); "remove" -> removal?.let { vm.remove(it, done) } }
             }, enabled = !busy && (dialog !in setOf("create", "rename") || name.isNotBlank()), modifier = Modifier.weight(1f).testTag("navidrome_confirm"))
@@ -243,7 +243,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         else Box(Modifier.size(52.dp).background(MiuixTheme.colorScheme.surfaceContainer, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) { Text(entry.name.take(1), fontSize = 22.sp, color = MiuixTheme.colorScheme.primary) }
         Column(Modifier.weight(1f).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(entry.name, fontSize = 16.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            val summary = listOf(entry.subtitle, if (entry.count > 0) "${entry.count} 首" else "", if (entry.owned) "我的歌单" else "").filter(String::isNotBlank).joinToString(" · ")
+             val summary = listOf(entry.subtitle, if (entry.count > 0) "${entry.count} bài hát" else "", if (entry.owned) "Danh sách phát của tôi" else "").filter(String::isNotBlank).joinToString(" · ")
             if (summary.isNotEmpty()) NavHint(summary)
         }
         Text("›", fontSize = 22.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .35f))
@@ -260,12 +260,12 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val cover = state.page.cover.ifBlank { state.songs.firstOrNull()?.cover ?: state.entries.firstOrNull()?.cover.orEmpty() }
     val tint = rememberStyleTint(cover)
     Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(styleSurface(tint.value)).padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
-        StyleArtwork(cover, Modifier.size(104.dp).clip(RoundedCornerShape(16.dp)), tint, contentDescription = "${state.page.title}封面")
+         StyleArtwork(cover, Modifier.size(104.dp).clip(RoundedCornerShape(16.dp)), tint, contentDescription = "Ảnh bìa ${state.page.title}")
         Column(Modifier.weight(1f).padding(start = 18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(state.page.title, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, maxLines = 3, overflow = TextOverflow.Ellipsis)
             val summary = state.page.subtitle.ifBlank { state.songs.firstOrNull()?.artists.orEmpty() }
             if (summary.isNotBlank()) NavHint(summary)
-            if (state.loaded) NavHint(if (state.page.kind == "artist") "${state.entries.size} 张专辑" else playlistDurationLabel(state.songs))
+             if (state.loaded) NavHint(if (state.page.kind == "artist") "${state.entries.size} album" else playlistDurationLabel(state.songs))
         }
     }
 }

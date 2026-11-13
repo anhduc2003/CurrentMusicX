@@ -32,11 +32,11 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             Image(painterResource(R.drawable.user_avatar_placeholder), null, Modifier.fillMaxSize(.6f),
                 colorFilter = ColorFilter.tint(MiuixTheme.colorScheme.onSurfaceVariantSummary))
             if (avatarUrl != null) AsyncImage(ImageRequest.Builder(LocalContext.current).data(avatarUrl).size(256).build(),
-                contentDescription = "用户头像", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
+                contentDescription = "Ảnh đại diện người dùng", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
                 onError = { onImageError(it.result.throwable) })
         }
         if (decorationUrl != null) AsyncImage(ImageRequest.Builder(LocalContext.current).data(decorationUrl).size(512).build(),
-            contentDescription = "头像挂件", contentScale = ContentScale.Fit, modifier = Modifier.requiredSize(overlaySize),
+            contentDescription = "Phụ kiện ảnh đại diện", contentScale = ContentScale.Fit, modifier = Modifier.requiredSize(overlaySize),
             onError = { onImageError(it.result.throwable) })
     }
 }

@@ -42,26 +42,26 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         val requested = pending; pending = false
         if (requested && Settings.canDrawOverlays(context)) activation.request(true)
-        else if (requested) error = "尚未授予悬浮窗权限，可以稍后在设置中开启。"
+        else if (requested) error = "Chưa được cấp quyền cửa sổ nổi, bạn có thể bật quyền này sau trong phần cài đặt。"
     }
     fun markSeen() { scope.launch { container.desktopLyrics.markRecommendationSeen() } }
     fun dismiss() { dismissed = true; pending = false; activation.request(false); markSeen() }
     if (eligible && offered && !dismissed && !options.enabled) {
-        MusicDialog("试试桌面歌词灵动岛", onDismiss = ::dismiss) {
-            Text("悬浮在屏幕顶部，离开应用也能看歌词。", Modifier.testTag("desktop_recommendation"), fontSize = 15.sp)
-            Text("应用内默认显示 FPS，点击灵动岛可切换歌词与帧率。", fontSize = 13.sp,
+         MusicDialog("Dùng thử Đảo linh động lời bài hát trên màn hình chính", onDismiss = ::dismiss) {
+             Text("Nổi ở đầu màn hình, bạn vẫn có thể xem lời bài hát khi rời ứng dụng。", Modifier.testTag("desktop_recommendation"), fontSize = 15.sp)
+             Text("Mặc định, ứng dụng hiển thị FPS; nhấn vào Đảo linh động để chuyển đổi giữa lời bài hát và tốc độ khung hình。", fontSize = 13.sp,
                 color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
             (error ?: action.error)?.let { Text(it, fontSize = 13.sp, color = MiuixTheme.colorScheme.error) }
             MusicDialogActions(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MusicDialogButton("暂不开启", onClick = ::dismiss, modifier = Modifier.weight(1f).testTag("desktop_recommendation_skip"))
-            MusicDialogButton(if (action.connecting) "正在开启…" else "快捷开启", onClick = {
+             MusicDialogButton("Để sau", onClick = ::dismiss, modifier = Modifier.weight(1f).testTag("desktop_recommendation_skip"))
+             MusicDialogButton(if (action.connecting) "Đang bật…" else "Bật nhanh", onClick = {
                 error = null; markSeen()
                 if (Settings.canDrawOverlays(context)) activation.request(true)
                 else {
                     pending = true
                     try { permission.launch(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         "package:${context.packageName}".toUri())) }
-                    catch (_: RuntimeException) { pending = false; error = "无法打开授权页，请在系统设置中允许悬浮窗。" }
+                     catch (_: RuntimeException) { pending = false; error = "Không thể mở trang cấp quyền, vui lòng cho phép cửa sổ nổi trong phần cài đặt hệ thống。" }
                 }
             }, enabled = !action.connecting && !pending, modifier = Modifier.weight(1f).testTag("desktop_recommendation_enable"))
             }

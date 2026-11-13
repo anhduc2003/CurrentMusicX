@@ -45,7 +45,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val downloadLabel = if (song != null) {
         val work by remember(song.mv) { container.mvDownloads.observe(song) }.collectAsStateWithLifecycle(emptyList())
         work.lastOrNull().mvLabel()
-    } else "下载 MV"
+    } else "Tải MV"
     MusicPullToRefresh(state.loading || state.refreshing, onRefresh, Modifier.fillMaxSize()) {
         MvDetailContent(state, downloadLabel, onBack, { mv?.let(onPlay) }, { download = true },
             { mv?.artistId?.takeIf { it > 0 }?.let(onArtist) }, onRefresh)
@@ -65,9 +65,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             Row(Modifier.widthIn(max = 1040.dp).fillMaxWidth().padding(bottom = 18.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(44.dp).clip(CircleShape).clickable(role = Role.Button, onClick = onBack)
                     .testTag("mv_detail_back"), contentAlignment = Alignment.Center) {
-                    Icon(MusicIcons.Back, "返回", modifier = Modifier.size(24.dp))
+                    Icon(MusicIcons.Back, "Quay lại", modifier = Modifier.size(24.dp))
                 }
-                Text("音乐视频", Modifier.padding(start = 8.dp), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Text("Video âm nhạc", Modifier.padding(start = 8.dp), fontSize = 16.sp, fontWeight = FontWeight.Medium)
             }
             val mv = state.mv
             if (mv != null) {
@@ -80,12 +80,12 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 }
             } else if (state.loading) {
                 MusicPlaceholder(Modifier.widthIn(max = 640.dp).fillMaxWidth().aspectRatio(16f / 9f).clip(RoundedCornerShape(24.dp)))
-                Text("正在加载 MV…", Modifier.padding(24.dp), fontSize = 14.sp, color = colors.onSurface.copy(alpha = .55f))
+                Text("Đang tải MV…", Modifier.padding(24.dp), fontSize = 14.sp, color = colors.onSurface.copy(alpha = .55f))
             } else Column(Modifier.fillMaxWidth().padding(vertical = 72.dp), horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text("暂时无法打开 MV", fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-                Text(state.error ?: "未找到视频信息", fontSize = 14.sp, color = colors.onSurface.copy(alpha = .6f))
-                TextButton("重新加载", onRetry, Modifier.testTag("mv_detail_retry"))
+                Text("Tạm thời không thể mở MV", fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+                Text(state.error ?: "Không tìm thấy thông tin video", fontSize = 14.sp, color = colors.onSurface.copy(alpha = .6f))
+                TextButton("Tải lại", onRetry, Modifier.testTag("mv_detail_retry"))
             }
         }
     }
@@ -99,7 +99,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         AsyncImage(mv.cover, null, Modifier.matchParentSize(), contentScale = ContentScale.Crop)
         Box(Modifier.matchParentSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = .45f)))))
         Box(Modifier.align(Alignment.Center).size(58.dp).background(Color.Black.copy(alpha = .28f), CircleShape), contentAlignment = Alignment.Center) {
-            Icon(MusicIcons.Play, "播放 MV", Modifier.size(26.dp), tint = Color.White)
+            Icon(MusicIcons.Play, "Phát MV", Modifier.size(26.dp), tint = Color.White)
         }
         Row(Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("MV", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
@@ -117,7 +117,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     var expanded by rememberSaveable(mv.id) { mutableStateOf(false) }
     var overflows by remember(mv.id) { mutableStateOf(false) }
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text(mv.name.ifBlank { "音乐视频" }, fontSize = 28.sp, fontWeight = FontWeight.SemiBold, lineHeight = 35.sp)
+        Text(mv.name.ifBlank { "Video âm nhạc" }, fontSize = 28.sp, fontWeight = FontWeight.SemiBold, lineHeight = 35.sp)
         if (mv.artistName.isNotBlank()) Row(Modifier.heightIn(min = 44.dp).clip(RoundedCornerShape(8.dp))
             .clickable(enabled = mv.artistId > 0, role = Role.Button, onClick = onArtist).testTag("mv_detail_artist"),
             verticalAlignment = Alignment.CenterVertically) {
@@ -125,18 +125,18 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             if (mv.artistId > 0) Text("›", Modifier.padding(start = 8.dp), fontSize = 20.sp, color = colors.onSurface.copy(alpha = .4f))
         }
         Row(Modifier.fillMaxWidth().padding(top = 6.dp, bottom = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            TextButton("播放 MV", onPlay, Modifier.weight(1f).testTag("play_mv"),
+            TextButton("Phát MV", onPlay, Modifier.weight(1f).testTag("play_mv"),
                 colors = ButtonDefaults.textButtonColors(color = colors.primary, textColor = colors.onPrimary))
             TextButton(downloadLabel, onDownload, Modifier.weight(1f).testTag("mv_detail_download"))
         }
         mv.desc?.trim()?.takeIf { it.isNotBlank() }?.let { description ->
             HorizontalDivider(color = colors.onSurface.copy(alpha = .08f))
-            Text("视频简介", Modifier.padding(top = 14.dp, bottom = 4.dp), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Text("Giới thiệu video", Modifier.padding(top = 14.dp, bottom = 4.dp), fontSize = 16.sp, fontWeight = FontWeight.Medium)
             Column(Modifier.animateContentSize()) {
                 Text(description, fontSize = 14.sp, lineHeight = 23.sp, color = colors.onSurface.copy(alpha = .6f),
                     maxLines = if (expanded) Int.MAX_VALUE else 5, overflow = TextOverflow.Ellipsis,
                     onTextLayout = { if (!expanded) overflows = it.hasVisualOverflow }, modifier = Modifier.testTag("mv_detail_description"))
-                if (overflows || expanded) MusicTextAction(if (expanded) "收起简介" else "展开简介", { expanded = !expanded }, Modifier.testTag("mv_detail_expand"))
+                if (overflows || expanded) MusicTextAction(if (expanded) "Thu gọn phần giới thiệu" else "Mở rộng phần giới thiệu", { expanded = !expanded }, Modifier.testTag("mv_detail_expand"))
             }
         }
     }

@@ -24,7 +24,7 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
     private var pendingApplyTarget: OriginalPageApplyTarget? = null
 
     suspend fun request(method: String, params: JsonObject): JsonElement {
-        if (method.length > 160 || params.toString().length > 32_768) fail("页面请求过大", 400)
+        if (method.length > 160 || params.toString().length > 32_768) fail("Yêu cầu trang quá lớn", 400)
         return when (method) {
             "app.info", "getAppInfo" -> buildJsonObject {
                 put("appName", "CurrentMusic"); put("version", BuildConfig.VERSION_NAME)
@@ -47,7 +47,7 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
             }
             "playerPlay", "nm.play.playerPlay" -> playerPlay()
             "playerPause", "nm.play.playerPause" -> withContext(Dispatchers.Main.immediate) {
-                if (!container.playerController.state.value.canControlPlayback) fail("当前播放由房主控制", 409)
+                if (!container.playerController.state.value.canControlPlayback) fail("Phát nhạc hiện do chủ phòng điều khiển", 409)
                 container.playerController.pause(); playerStateJson(container.playerController.state.value)
             }
             "getCurPlayingList", "nm.playingList.getCurPlayingList" -> buildJsonObject {
@@ -61,16 +61,16 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
             "network" -> network(params)
             "getEmotionVisualExtra", "nm.playEffect.getEmotionVisualExtra" -> emotionVisualExtra(null)
             "getEmotionVisualExtraForSong", "nm.playEffect.getEmotionVisualExtraForSong" ->
-                emotionVisualExtra(params.long("songId") ?: fail("缺少有效歌曲 ID", 400))
+                emotionVisualExtra(params.long("songId") ?: fail("Thiếu ID bài hát hợp lệ", 400))
             "systemEffectExist", "nm.playEffect.supportSystemEffect" -> buildJsonObject {
-                put("isSupport", false); put("message", "此原版页面宿主暂未接入系统音效面板")
+                put("isSupport", false); put("message", "Máy chủ trang gốc này chưa tích hợp bảng hiệu ứng âm thanh hệ thống")
             }
             "currentDeviceEffect", "nm.playEffect.currentDeviceEffectV2" -> buildJsonObject {
                 put("id", 0); put("name", ""); put("supported", false)
             }
             "getUsingEQ", "nm.customeq.getUsingEQ" -> buildJsonObject {
                 put("id", 0); put("isUsing", false); put("supported", false)
-                put("message", "未移植网易云个性化听感偏好；本机均衡器通过 type=1 控制")
+                put("message", "Chưa chuyển tính năng tùy chỉnh sở thích nghe nhạc của Nhạc Vân NetEase; bộ cân bằng âm thanh trên thiết bị được điều khiển bằng type=1")
             }
             "getAiDiy", "nm.playEffect.getAiDiy" -> buildJsonObject {
                 put("selected", buildJsonArray {}); put("supported", false)
@@ -86,7 +86,7 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
                 container.errorNotices.showMessage(text)
                 buildJsonObject { put("action", "toast"); put("text", text); put("handled", true) }
             }
-            else -> fail("此原版页面功能尚未移植：${method.take(100)}")
+            else -> fail("Tính năng trang gốc này chưa được chuyển: ${method.take(100)}")
         }
     }
 
@@ -108,11 +108,11 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
         val smart = vm.originalSmart.value
         val single = vm.original.value
         val choice = when {
-            mood.enabled -> Triple(8, 106L, "AI 情绪调音师")
-            smart.enabled -> Triple(65536, 100L, "智能音效")
+            mood.enabled -> Triple(8, 106L, "Chuyên gia điều chỉnh cảm xúc AI")
+            smart.enabled -> Triple(65536, 100L, "Hiệu ứng âm thanh thông minh")
             single.selectedId != null && container.originalSoundEffects.selection.value?.id == single.selectedId ->
                 Triple(256, single.selectedId, single.selectedName.orEmpty())
-            vm.manual.value.enabled && !vm.preferences.value.smartEnabled -> Triple(1, 0L, "均衡器")
+            vm.manual.value.enabled && !vm.preferences.value.smartEnabled -> Triple(1, 0L, "Bộ cân bằng âm thanh")
             else -> Triple(0, 0L, "")
         }
         return buildJsonObject {
@@ -143,7 +143,7 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
 
     private fun invalidateApply() {
         applyGeneration++
-        pendingApply?.cancel(CancellationException("已被新的音效选择或关闭操作替代"))
+         pendingApply?.cancel(CancellationException("Đã được thay thế bởi lựa chọn hiệu ứng âm thanh hoặc thao tác tắt mới"))
         pendingApply = null
         cancelPendingController()
         pendingControllerType = null
@@ -161,11 +161,11 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
     }
 
     private fun ensureCurrentApply(token: Long) {
-        if (token != applyGeneration) throw CancellationException("已被新的音效选择或关闭操作替代")
+        if (token != applyGeneration) throw CancellationException("Đã được thay thế bởi lựa chọn hiệu ứng âm thanh hoặc thao tác tắt mới")
     }
 
     private suspend fun applyEffect(params: JsonObject, token: Long): JsonObject {
-        val type = params.long("type") ?: fail("缺少音效类型", 400)
+        val type = params.long("type") ?: fail("Thiếu loại hiệu ứng âm thanh", 400)
         container.neteaseSessions.ready.await()
         try {
             withTimeout(60_000) {
@@ -174,19 +174,19 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
                         withContext(Dispatchers.Main.immediate) {
                             ensureCurrentApply(token); pendingControllerType = type; vm.originalMoodEnabled(true)
                         }
-                        val result = vm.originalMood.first { !it.loading && it.message != "正在验证网易云 AI 情绪专属权益" }
+                        val result = vm.originalMood.first { !it.loading && it.message != "Đang xác minh quyền sử dụng tính năng cảm xúc AI dành riêng cho Nhạc Vân NetEase" }
                         if (!result.enabled) fail(result.message, 409)
                     }
                     65536L -> {
                         withContext(Dispatchers.Main.immediate) {
                             ensureCurrentApply(token); pendingControllerType = type; vm.originalSmartEnabled(true)
                         }
-                        val result = vm.originalSmart.first { !it.loading && it.message != "正在验证网易云黑胶权益" }
+                        val result = vm.originalSmart.first { !it.loading && it.message != "Đang xác minh quyền sử dụng Nhạc Vân NetEase Vinyl" }
                         if (!result.enabled) fail(result.message, 409)
                     }
                     256L -> {
-                        val material = params["params"] as? JsonObject ?: fail("缺少音效素材", 400)
-                        val id = material.long("id") ?: fail("缺少音效 ID", 400)
+                        val material = params["params"] as? JsonObject ?: fail("Thiếu dữ liệu hiệu ứng âm thanh", 400)
+                        val id = material.long("id") ?: fail("Thiếu ID hiệu ứng âm thanh", 400)
                         val effect = resolveEffect(id, material)
                         vm.originalUnavailableReason(effect)?.let { fail(it, 409) }
                         withContext(Dispatchers.Main.immediate) {
@@ -194,7 +194,7 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
                         }
                         val result = vm.original.first { !it.loading }
                         if (result.selectedId != id || container.originalSoundEffects.selection.value?.id != id || result.error != null)
-                            fail(result.error ?: "原版音效尚未成功启用", 409)
+                            fail(result.error ?: "Chưa bật thành công hiệu ứng âm thanh gốc", 409)
                     }
                     1L -> withContext(Dispatchers.Main.immediate) {
                         ensureCurrentApply(token)
@@ -208,29 +208,29 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
                         ensureCurrentApply(token)
                         container.smartTuning.previewManual(value); container.equalizer.configure(value)
                     }
-                    2L -> fail("AI 调音大师尚未移植；请使用已接入的原版 AI 情绪调音师")
-                    4L -> fail("网易云外放音效尚未移植")
-                    else -> fail("此类型的原版个性化音效尚未移植：$type")
+                    2L -> fail("Tính năng Chuyên gia điều chỉnh âm thanh AI chưa được chuyển; hãy dùng Chuyên gia điều chỉnh cảm xúc AI gốc đã tích hợp")
+                    4L -> fail("Hiệu ứng âm thanh phát qua loa của Nhạc Vân NetEase chưa được chuyển")
+                    else -> fail("Hiệu ứng âm thanh tùy chỉnh gốc thuộc loại này chưa được chuyển: $type")
                 }
             }
         } catch (_: TimeoutCancellationException) {
             withContext(Dispatchers.Main.immediate) { if (token == applyGeneration) cancelPendingController() }
-            fail("原版音效验证仍未完成，请检查网络后重试", 408)
+            fail("Chưa xác minh xong hiệu ứng âm thanh gốc; hãy kiểm tra mạng rồi thử lại", 408)
         }
         return withContext(Dispatchers.Main.immediate) { ensureCurrentApply(token); currentEffect() }
     }
 
     private suspend fun resolveEffect(id: Long, supplied: JsonObject): NeteaseSoundEffect {
         val parsed = originalPageEffect(supplied)
-        if (parsed != null && parsed.id != id) fail("音效素材与所选项目不一致", 400)
+        if (parsed != null && parsed.id != id) fail("Dữ liệu hiệu ứng âm thanh không khớp với mục đã chọn", 400)
         if (parsed == null) container.neteaseSoundEffects.catalog().firstOrNull { it.id == id }?.let { return it }
         // Re-read authoritative material/permission fields; never trust a Web cache on enable.
-        return container.neteaseSoundEffects.resolve(id) ?: fail("此音效尚无可验证的标准原版素材", 409)
+        return container.neteaseSoundEffects.resolve(id) ?: fail("Hiệu ứng âm thanh này chưa có dữ liệu gốc chuẩn để xác minh", 409)
     }
 
     private suspend fun disableEffect(params: JsonObject): JsonObject = withContext(Dispatchers.Main.immediate) {
         invalidateApply()
-        when (params.long("type") ?: fail("缺少音效类型", 400)) {
+         when (params.long("type") ?: fail("Thiếu loại hiệu ứng âm thanh", 400)) {
             8L -> vm.originalMoodEnabled(false)
             65536L -> vm.originalSmartEnabled(false)
             256L -> vm.clearOriginal()
@@ -240,15 +240,15 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
                 container.smartTuning.previewManual(value); container.equalizer.configure(value)
             }
             0L -> vm.turnOff()
-            else -> fail("此原版音效类型尚未移植，未改变其他音效")
+            else -> fail("Loại hiệu ứng âm thanh gốc này chưa được chuyển sang, các hiệu ứng âm thanh khác không bị thay đổi")
         }
         currentEffect()
     }
 
     /** Original Android closeAll only sends auth/stop. This is local DSP control, not that server write. */
     private suspend fun stopEffect(params: JsonObject): JsonObject = withContext(Dispatchers.Main.immediate) {
-        val interestsType = params.long("interestsType") ?: fail("缺少权益类型", 400)
-        val interestsId = params.long("interestsId") ?: fail("缺少权益 ID", 400)
+        val interestsType = params.long("interestsType") ?: fail("Thiếu loại quyền lợi", 400)
+        val interestsId = params.long("interestsId") ?: fail("Thiếu ID quyền lợi", 400)
         val target = originalPageStopTarget(interestsType, interestsId, vm.original.value.selectedId)
         if (target != null) {
             if (originalPageStopMatchesApply(target, interestsId, pendingApplyTarget)) invalidateApply()
@@ -272,27 +272,27 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
             put("vipType", "-1"); put("userId", 0); put("expiresAt", 0)
         }
         val raw = container.requestOriginalEffectsPage("/api/music-vip-membership/client/vip/info", buildJsonObject { put("userId", uid) })
-        if (container.neteaseSessions.state.value != owner) fail("网易云账号已切换，请刷新音效页", 409)
-        if (raw.long("code") != 200L) fail("网易云会员状态查询失败", 502)
-        val member = raw["data"] as? JsonObject ?: fail("网易云会员信息格式无效", 502)
-        if (member.long("userId") != uid) fail("网易云会员账号校验失败", 409)
+        if (container.neteaseSessions.state.value != owner) fail("Tài khoản Nhạc Vân NetEase đã chuyển đổi, vui lòng làm mới trang hiệu ứng âm thanh", 409)
+        if (raw.long("code") != 200L) fail("Không thể truy vấn trạng thái thành viên Nhạc Vân NetEase", 502)
+        val member = raw["data"] as? JsonObject ?: fail("Định dạng thông tin thành viên Nhạc Vân NetEase không hợp lệ", 502)
+        if (member.long("userId") != uid) fail("Xác minh tài khoản thành viên Nhạc Vân NetEase thất bại", 409)
         return originalPageMembership(member, uid)
     }
 
     private suspend fun network(params: JsonObject): JsonObject {
         val path = originalPageReadPath(params.text("url"))
         val verb = params.text("method").ifBlank { "GET" }.uppercase()
-        if (verb !in setOf("GET", "POST")) fail("原版音效页只支持读取接口", 405)
+        if (verb !in setOf("GET", "POST")) fail("Trang hiệu ứng âm thanh gốc chỉ hỗ trợ giao diện đọc dữ liệu", 405)
         fun body(name: String): JsonObject = when (val value = params[name]) {
             null, JsonNull -> buildJsonObject {}
             is JsonObject -> value
-            else -> fail("页面请求 $name 格式无效", 400)
+            else -> fail("Định dạng $name trong yêu cầu trang không hợp lệ", 400)
         }
         val query = body("query")
         val data = body("data")
         val input = JsonObject(query + data)
         if (input.size > 64 || input.keys.any { it.lowercase() in setOf("cookie", "cookies", "header", "authorization", "csrf_token", "__csrf") })
-            fail("页面请求参数无效", 400)
+            fail("Tham số yêu cầu trang không hợp lệ", 400)
         val body = container.requestOriginalEffectsPage(path, input)
         return buildJsonObject { put("status", 200); put("body", body) }
     }
@@ -305,15 +305,15 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
 
     private suspend fun addCache(params: JsonObject): JsonObject = withContext(Dispatchers.IO) {
         val key = cacheKey(params)
-        val value = params["value"] ?: fail("缺少页面偏好值", 400)
-        if (value.toString().length > 8192) fail("页面偏好值过大", 400)
-        if (!container.originalEffectsPageCache.edit().putString(key, value.toString()).commit()) fail("页面偏好保存失败", 500)
+        val value = params["value"] ?: fail("Thiếu giá trị tùy chọn trang", 400)
+        if (value.toString().length > 8192) fail("Giá trị tùy chọn trang quá lớn", 400)
+        if (!container.originalEffectsPageCache.edit().putString(key, value.toString()).commit()) fail("Không thể lưu tùy chọn trang", 500)
         buildJsonObject { put("saved", true) }
     }
 
     private fun cacheKey(params: JsonObject): String = params.text("key").takeIf {
         it.length in 1..160 && it.none { char -> char.code < 32 }
-    } ?: fail("页面偏好键无效", 400)
+    } ?: fail("Khóa tùy chọn trang không hợp lệ", 400)
 
     private fun emotionVisualExtra(songId: Long?): JsonObject {
         val state = vm.originalMood.value
@@ -340,20 +340,20 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
 
     private suspend fun playerPlay(): JsonObject = withContext(Dispatchers.Main.immediate) {
         val player = container.playerController
-        if (!player.state.value.canControlPlayback) fail("当前播放由房主控制", 409)
-        if (player.state.value.song == null) fail("当前没有可播放的歌曲", 409)
+        if (!player.state.value.canControlPlayback) fail("Hiện tại chủ phòng đang điều khiển phát nhạc", 409)
+        if (player.state.value.song == null) fail("Hiện không có bài hát nào có thể phát", 409)
         if (!player.state.value.showPause) player.toggle().join()
         playerStateJson(player.state.value)
     }
 
     private suspend fun playSongs(params: JsonObject): JsonObject {
-        val ids = (params["songIds"] as? JsonArray)?.map { it.jsonPrimitive.longOrNull ?: fail("歌曲 ID 无效", 400) }
-            ?.takeIf { it.size in 1..20 && it.all { id -> id > 0 } } ?: fail("缺少可播放的歌曲 ID", 400)
+        val ids = (params["songIds"] as? JsonArray)?.map { it.jsonPrimitive.longOrNull ?: fail("ID bài hát không hợp lệ", 400) }
+            ?.takeIf { it.size in 1..20 && it.all { id -> id > 0 } } ?: fail("Thiếu ID bài hát có thể phát", 400)
         val requestedIndex = params.long("songIndex") ?: 0
-        if (requestedIndex !in 0 until ids.size.toLong()) fail("歌曲位置无效", 400)
+        if (requestedIndex !in 0 until ids.size.toLong()) fail("Vị trí bài hát không hợp lệ", 400)
         val index = requestedIndex.toInt()
         val player = container.playerController
-        if (!player.state.value.canControlPlayback) fail("当前播放由房主控制", 409)
+        if (!player.state.value.canControlPlayback) fail("Hiện tại chủ phòng đang điều khiển phát nhạc", 409)
         val known = player.queue.state.value.songs.filter { it.musicSource == MusicSource.NETEASE && !it.video }.associateBy { it.id }
         val songs = ids.map { known[it] ?: container.musicRepository.detail(it) }
         withContext(Dispatchers.Main.immediate) { player.playList(songs, index) }
@@ -362,9 +362,9 @@ class OriginalEffectsPageApi(private val container: AppContainer, private val vm
 
     private fun navigationRequest(params: JsonObject): JsonObject {
         val url = params.text("url").ifBlank { params.text("URL") }
-        val parsed = runCatching { java.net.URI(url) }.getOrNull() ?: fail("页面链接无效", 400)
+        val parsed = runCatching { java.net.URI(url) }.getOrNull() ?: fail("Liên kết trang không hợp lệ", 400)
         val allowed = parsed.scheme == "orpheus" || (parsed.scheme == "https" && parsed.host == "music.163.com" && parsed.userInfo == null)
-        if (!allowed || url.length > 4096 || url.any { it.code < 32 }) fail("此页面链接不能由宿主打开", 400)
+        if (!allowed || url.length > 4096 || url.any { it.code < 32 }) fail("Không thể mở liên kết trang này bằng trình duyệt của máy chủ", 400)
         return buildJsonObject { put("action", "navigate"); put("url", url); put("handled", false) }
     }
 
@@ -413,7 +413,7 @@ internal fun playerStateJson(state: PlayerState): JsonObject = buildJsonObject {
 }
 
 internal fun originalPageMembership(member: JsonObject, uid: Long, now: Long = System.currentTimeMillis()): JsonObject {
-    if (uid <= 0 || member.long("userId") != uid) fail("网易云会员账号校验失败", 409)
+    if (uid <= 0 || member.long("userId") != uid) fail("Xác minh tài khoản thành viên Nhạc Vân NetEase thất bại", 409)
     fun deadline(name: String, code: Long): Long {
         val row = member[name] as? JsonObject ?: return 0
         return if (row.long("vipCode") == code) (row.long("expireTime") ?: 0).takeIf { it > now } ?: 0 else 0
@@ -436,7 +436,7 @@ internal fun originalPageReadPath(url: String): String {
         "/api/v6/playlist/detail", "/api/vip-rights/svip/sound/effect/get",
         "/api/vip-rights/emotion/audio/effect/get", "/api/usertool/sound/mobile/all",
         "/api/usertool/sound/personal", "/api/usertool/sound/twinkle/all", "/api/purchased/redvip/vipstatus")
-    if (url !in allowed) fail("原版音效页不允许请求此接口；权益登记与统计写入尚未移植", 403)
+    if (url !in allowed) fail("Trang hiệu ứng âm thanh gốc không cho phép yêu cầu giao diện này; chức năng đăng ký quyền lợi và ghi thống kê chưa được chuyển sang", 403)
     return url
 }
 

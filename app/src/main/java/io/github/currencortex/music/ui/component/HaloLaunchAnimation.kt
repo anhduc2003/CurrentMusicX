@@ -27,7 +27,7 @@ import kotlin.coroutines.coroutineContext
 /** Account storage is restored before the name reveal; never consult a separate online service. */
 internal fun launchUsername(account: Account?): String =
     account?.username?.trim()?.takeIf(String::isNotEmpty)
-        ?: account?.nickname?.trim()?.takeIf(String::isNotEmpty) ?: "欢迎聆听"
+         ?: account?.nickname?.trim()?.takeIf(String::isNotEmpty) ?: "Chào mừng bạn lắng nghe"
 
 /** Consume input while disk settings select the actual animation, before either timeline mounts. */
 @Composable internal fun LaunchPreparationOverlay(dark: Boolean = false) {
@@ -74,7 +74,7 @@ internal const val HALO_INTRO_MS = 8500
     val resources = LocalResources.current
     val customTypeface = io.github.currencortex.music.ui.theme.LocalCustomTypeface.current
     val name = remember(username) {
-        username.replace(Regex("[\\r\\n\\t]+"), " ").trim().ifEmpty { "欢迎聆听" }
+         username.replace(Regex("[\\r\\n\\t]+"), " ").trim().ifEmpty { "Chào mừng bạn lắng nghe" }
     }
     val renderer by produceState<HaloLaunchRenderer?>(null, resources, name, customTypeface) {
         value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {

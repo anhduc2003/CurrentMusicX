@@ -6,12 +6,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 
 enum class DynamicEqCurve(val label: String, val tilt: List<Float>) {
-    WARM("温暖", listOf(2f, 2f, 1.5f, 1f, .5f, 0f, -.5f, -1f, -1.5f, -2f)),
-    V_SHAPE("低高增强", listOf(2f, 2f, 1f, 0f, -1f, -1f, 0f, 1f, 2f, 2f)),
-    VOCAL("人声", listOf(-1f, -1f, 0f, .5f, 1f, 2f, 2f, 1f, 0f, -1f)),
-    BRIGHT("明亮", listOf(-2f, -1.5f, -1f, -.5f, 0f, .5f, 1f, 1.5f, 2f, 2f))
+    WARM("Ấm áp", listOf(2f, 2f, 1.5f, 1f, .5f, 0f, -.5f, -1f, -1.5f, -2f)),
+    V_SHAPE("Tăng cường âm trầm và âm cao", listOf(2f, 2f, 1f, 0f, -1f, -1f, 0f, 1f, 2f, 2f)),
+    VOCAL("Giọng hát", listOf(-1f, -1f, 0f, .5f, 1f, 2f, 2f, 1f, 0f, -1f)),
+    BRIGHT("Sáng", listOf(-2f, -1.5f, -1f, -.5f, 0f, .5f, 1f, 1.5f, 2f, 2f))
 }
-enum class MusicHapticMode(val label: String) { BASS("低频悦动"), FULL("全频能量") }
+enum class MusicHapticMode(val label: String) { BASS("Rung theo âm trầm"), FULL("Năng lượng toàn dải") }
 
 data class AdaptiveAudioSettings(
     val enabled: Boolean = false,

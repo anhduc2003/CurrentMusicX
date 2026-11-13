@@ -26,7 +26,7 @@ class NeteaseRecognitionRepository(client: OkHttpClient = OkHttpClient(),
 
     suspend fun recognize(fingerprint: String, durationSeconds: Double, sessionId: String, times: Int): List<Song> {
         require(durationSeconds in 2.0..15.0 && fingerprint.length in 4..128_000 &&
-            fingerprint.matches(Regex("[A-Za-z0-9+/=]+"))) { "识别片段无效，请重新录音" }
+            fingerprint.matches(Regex("[A-Za-z0-9+/=]+"))) { "Đoạn ghi âm không hợp lệ, vui lòng ghi âm lại" }
         require(sessionId.matches(Regex("[A-Za-z0-9-]{1,64}")) && times in 1..7)
         val body = FormBody.Builder().add("sessionId", sessionId)
             .add("algorithmCode", "shazam_v2").add("duration", durationSeconds.toString())
@@ -52,22 +52,22 @@ class NeteaseRecognitionRepository(client: OkHttpClient = OkHttpClient(),
             call.enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     if (continuation.isActive) continuation.resumeWithException(IOException(
-                        if (e is java.io.InterruptedIOException) "网易云识曲请求超时，请检查网络后重试" else "网易云识曲请求失败，请检查网络后重试", e))
+                        if (e is java.io.InterruptedIOException) "Yêu cầu nhận diện nhạc NetEase đã hết thời gian chờ, vui lòng kiểm tra mạng rồi thử lại" else "Yêu cầu nhận diện nhạc NetEase thất bại, vui lòng kiểm tra mạng rồi thử lại", e))
                 }
                 override fun onResponse(call: Call, response: Response) {
                     try {
                         val songs = response.use {
-                            if (!it.isSuccessful) throw IOException("网易云识曲暂不可用（HTTP ${it.code}）")
-                            val payload = it.body ?: throw IOException("网易云返回了空响应")
-                            if (payload.contentLength() > MAX_BYTES) throw IOException("网易云识曲响应过大")
+                            if (!it.isSuccessful) throw IOException("Hiện chưa thể nhận diện nhạc NetEase (HTTP ${it.code})")
+                            val payload = it.body ?: throw IOException("Nhạc Vân NetEase trả về phản hồi trống")
+                            if (payload.contentLength() > MAX_BYTES) throw IOException("Phản hồi nhận diện nhạc NetEase quá lớn")
                             val source = payload.source()
                             source.request(MAX_BYTES + 1)
-                            if (source.buffer.size > MAX_BYTES) throw IOException("网易云识曲响应过大")
+                            if (source.buffer.size > MAX_BYTES) throw IOException("Phản hồi nhận diện nhạc NetEase quá lớn")
                             parse(Json.parseToJsonElement(source.readUtf8()).jsonObject)
                         }
                         if (continuation.isActive) continuation.resume(songs)
                     } catch (e: Exception) {
-                        if (continuation.isActive) continuation.resumeWithException(if (e is IOException) e else IOException("网易云识曲响应格式无效，请稍后重试", e))
+                        if (continuation.isActive) continuation.resumeWithException(if (e is IOException) e else IOException("Định dạng phản hồi nhận diện nhạc NetEase không hợp lệ, vui lòng thử lại sau", e))
                     }
                 }
             })
@@ -77,11 +77,11 @@ class NeteaseRecognitionRepository(client: OkHttpClient = OkHttpClient(),
     companion object {
         private const val MAX_BYTES = 2L * 1024 * 1024
         internal fun parse(root: JsonObject): List<Song> {
-            val code = root["code"]?.jsonPrimitive?.intOrNull ?: throw IOException("网易云识曲响应格式无效")
-            if (code != 200) throw IOException("网易云识曲暂不可用（$code），请稍后重试")
-            val data = root["data"] as? JsonObject ?: throw IOException("网易云识曲响应缺少结果")
+            val code = root["code"]?.jsonPrimitive?.intOrNull ?: throw IOException("Định dạng phản hồi nhận diện nhạc NetEase không hợp lệ")
+            if (code != 200) throw IOException("Hiện chưa thể nhận diện nhạc NetEase ($code), vui lòng thử lại sau")
+            val data = root["data"] as? JsonObject ?: throw IOException("Phản hồi nhận diện nhạc NetEase thiếu kết quả")
             val rows = data["result"] as? JsonArray ?: if (data["result"] == JsonNull) JsonArray(emptyList())
-                else throw IOException("网易云识曲结果格式无效")
+                else throw IOException("Định dạng kết quả nhận diện nhạc NetEase không hợp lệ")
             fun JsonObject.text(key: String) = (get(key) as? JsonPrimitive)?.contentOrNull.orEmpty()
             fun JsonObject.number(key: String) = (get(key) as? JsonPrimitive)?.longOrNull ?: 0L
             return rows.take(10).mapNotNull { row ->

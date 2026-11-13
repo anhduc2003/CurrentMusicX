@@ -47,7 +47,7 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
     private val role get() = state.value.detail?.role(userId())
     val active get() = activeId != null
     fun requireCanJoin() {
-        check(!active && player.state.value.mode == PlayerMode.LOCAL) { "请先退出一起听" }
+        check(!active && player.state.value.mode == PlayerMode.LOCAL) { "Vui lòng thoát khỏi phòng nghe cùng trước" }
     }
     suspend fun join(info: RoomInfo, password: String = "", created: Boolean = false, expected: RequestSession = repo.session()) {
         requireCanJoin()
@@ -56,10 +56,10 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
         try {
             if (expected != repo.session()) throw ApiException(ErrorKind.Unauthorized)
             val detail = repo.detail(info.id, expected)
-            check(detail.role(userId()) != null) { "房间成员信息尚未更新，请重新进入" }
+            check(detail.role(userId()) != null) { "Thông tin thành viên phòng chưa được cập nhật, vui lòng vào lại" }
             activeId = info.id; session = expected; seq = detail.latestSeq; lastId = null; loaded = null; advanced = null; lastRenew = Long.MIN_VALUE; clock.reset()
             state.value = RoomSessionState(detail, connecting = true)
-            check(player.beginExternal(PlayerMode.ROOM, this)) { "无法切换播放器模式" }
+            check(player.beginExternal(PlayerMode.ROOM, this)) { "Không thể chuyển chế độ trình phát" }
             player.roomTrack(null, null, 0, false)
             publishPermission()
             job = scope.launch {
@@ -68,9 +68,9 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
                     calibrate(info.id, expected)
                     applyTimeline()
                     launch { while (isActive) { delay(15_000); val result = appResult { repo.action(info.id, "heartbeat", expected = expected) }
-                        if (result is AppResult.Failure) state.update { it.copy(error = "房间心跳失败：${result.kind.message}") } } }
+                        if (result is AppResult.Failure) state.update { it.copy(error = "Nhịp tim phòng thất bại：${result.kind.message}") } } }
                     launch { while (isActive) { delay(state.value.detail?.timeline?.let { clock.startsIn(it, monotonic()).takeIf { wait -> wait > 0 }?.coerceAtMost(1000) } ?: 1000); when(val result = appResult { align() }) {
-                        is AppResult.Failure -> state.update { it.copy(error = "同步播放失败：${result.kind.message}") }; else -> Unit } } }
+                        is AppResult.Failure -> state.update { it.copy(error = "Đồng bộ phát thất bại：${result.kind.message}") }; else -> Unit } } }
                     launch { while (isActive) { delay(60_000); calibrate(info.id, expected) } }
                     var backoff = 1000L
                     while (isActive && expected == repo.session()) {
@@ -96,7 +96,7 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
                                         lastId = next?.toString() ?: signal.id ?: lastId
                                         backoff = 1000
                                         if (signal.type == "close" || signal.type == "kick" && payload["userId"]?.jsonPrimitive?.longOrNull == userId()) {
-                                            disconnect("已离开房间"); return@collect
+                                            disconnect("Đã rời khỏi phòng"); return@collect
                                         }
                                         timeline?.let { updated ->
                                             state.update { it.copy(detail = it.detail?.copy(timeline = updated, latestSeq = seq)) }; applyTimeline()
@@ -109,15 +109,15 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
                         catch (e: Exception) {
                             if (e is ApiException && e.status in setOf(401, 403, 404)) {
                                 if (e.status == 401) expire(expected)
-                                disconnect("房间不可访问：${e.kind.message}"); return@coroutineScope
+                                disconnect("Không thể truy cập phòng：${e.kind.message}"); return@coroutineScope
                             }
-                            state.update { it.copy(connected = false, connecting = true, error = "连接中断，正在重连…") }
+                            state.update { it.copy(connected = false, connecting = true, error = "Kết nối bị gián đoạn, đang kết nối lại…") }
                             delay(backoff); backoff = (backoff * 2).coerceAtMost(30_000)
                         }
                     }
                 }
                 } catch (e: CancellationException) { throw e }
-                catch (_: Exception) { disconnect("房间同步失败，请重新加入") }
+                catch (_: Exception) { disconnect("Đồng bộ phòng thất bại, vui lòng tham gia lại") }
             }
         } catch (e: Exception) {
             withContext(NonCancellable) { appResult { repo.action(info.id, "leave", expected = expected) } }
@@ -145,8 +145,8 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
             }
             return@withLock
         }
-        if (detail.room.archived) { disconnect("房间已归档，可从我的房间恢复"); return@withLock }
-        if (detail.role(userId()) == null) { disconnect("你已不在此房间"); return@withLock }
+        if (detail.room.archived) { disconnect("Phòng đã được lưu trữ, bạn có thể khôi phục từ phòng của tôi"); return@withLock }
+        if (detail.role(userId()) == null) { disconnect("Bạn không còn ở trong phòng này"); return@withLock }
         seq = detail.latestSeq
         lastId = seq.toString()
         if (reloadTrack != null && detail.timeline?.recoveryIdentity() == reloadTrack) loaded = null
@@ -161,7 +161,7 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
             try {
                 when (val result = appResult { refresh() }) {
                     is AppResult.Success -> if (epoch == generation) dismissError()
-                    is AppResult.Failure -> if (epoch == generation) state.update { it.copy(error = "房间刷新失败：${result.kind.message}") }
+                    is AppResult.Failure -> if (epoch == generation) state.update { it.copy(error = "Làm mới phòng thất bại：${result.kind.message}") }
                 }
             } finally { if (epoch == generation) state.update { it.copy(refreshing = false) } }
         }
@@ -179,7 +179,7 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
         val key = if (timeline != null && timeline.trackNcmId > 0 && url != null) Triple(timeline.trackNcmId, url, timeline.trackRevision) else null
         if (key != loaded) {
             loaded = key
-            player.roomTrack(key?.let { timeline!!.trackMeta?.song(it.first) ?: Song(it.first, "房间歌曲") }, key?.second,
+            player.roomTrack(key?.let { timeline!!.trackMeta?.song(it.first) ?: Song(it.first, "Bài hát trong phòng") }, key?.second,
                 timeline?.let { target(it) } ?: 0, timeline?.let { clock.shouldPlay(it, monotonic()) } == true)
             publishPermission()
         }
@@ -191,7 +191,7 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
                 delay(wait)
                 if (epoch == generation && state.value.detail?.timeline == timeline) {
                     when (val result = appResult { align() }) {
-                        is AppResult.Failure -> if (epoch == generation) state.update { it.copy(error = "同步播放失败：${result.kind.message}") }
+                        is AppResult.Failure -> if (epoch == generation) state.update { it.copy(error = "Đồng bộ phát thất bại：${result.kind.message}") }
                         else -> Unit
                     }
                 }
@@ -215,17 +215,17 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
     }
     fun action(action: String, fields: JsonObject = buildJsonObject {}, permission: (RoomRole?) -> Boolean = { it?.controls == true }) {
         val id = activeId ?: return; val expected = session ?: return
-        if (!permission(role)) { state.update { it.copy(error = "没有操作权限") }; return }
+        if (!permission(role)) { state.update { it.copy(error = "Không có quyền thao tác") }; return }
         if (action in setOf("play", "pause", "seek")) cancelAdvanceRetry()
         command(action, id, expected, { permission(role) }) {
             repo.action(id, action, fields, expected)
-            if (action == "close") disconnect("房间已归档，可从我的房间恢复")
+            if (action == "close") disconnect("Phòng đã được lưu trữ, bạn có thể khôi phục từ phòng của tôi")
         }
     }
     fun queueAction(item: RoomQueueItem, action: String) {
         val id = activeId ?: return; val expected = session ?: return
         if (if (action == "remove") !RoomPermissions.remove(role, item) else role?.controls != true) {
-            state.update { it.copy(error = "没有操作权限") }; return
+            state.update { it.copy(error = "Không có quyền thao tác") }; return
         }
         command("queue:${item.id}", id, expected,
             { if (action == "remove") RoomPermissions.remove(role, item) else role?.controls == true }) {
@@ -259,7 +259,7 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
                     onFailure?.invoke()
                 }
                 else if (appResult { refresh() } is AppResult.Failure && valid())
-                    state.update { it.copy(error = "操作已提交，房间刷新失败，请刷新查看") }
+                    state.update { it.copy(error = "Đã gửi thao tác, nhưng làm mới phòng thất bại; vui lòng làm mới để xem") }
             } finally { if (valid()) state.update { it.copy(pendingActions = it.pendingActions - key) } }
         }
     }
@@ -273,7 +273,7 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
             scope.launch {
                 val updated = appResult { refresh() }
                 if (updated is AppResult.Failure && activeId == id && expected == session)
-                    state.update { it.copy(error = "点歌已提交，队列刷新失败：${updated.kind.message}") }
+                    state.update { it.copy(error = "Đã gửi yêu cầu bài hát, nhưng làm mới hàng đợi thất bại：${updated.kind.message}") }
             }
         }
         return result
@@ -288,7 +288,7 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
     private fun changeTrack(action: String, automatic: Boolean = false) {
         val id = activeId ?: return; val expected = session ?: return
         val timeline = state.value.detail?.timeline
-        if (role?.controls != true) { state.update { it.copy(error = "没有操作权限") }; return }
+        if (role?.controls != true) { state.update { it.copy(error = "Không có quyền thao tác") }; return }
         val revision = timeline?.trackRevision
         val identity = timeline?.advanceState()
         if (!automatic) cancelAdvanceRetry()
@@ -363,7 +363,7 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
                             return@launch
                         }
                         is AppResult.Failure -> if (valid()) {
-                            state.update { it.copy(error = "房间音频恢复失败：${result.kind.message}") }
+                            state.update { it.copy(error = "Khôi phục âm thanh phòng thất bại：${result.kind.message}") }
                             if (result.kind in setOf(ErrorKind.Unauthorized, ErrorKind.Forbidden, ErrorKind.NotFound)) return@launch
                         }
                     }
@@ -386,7 +386,7 @@ class RoomSession(private val repo: RoomRepository, private val sse: RoomSseClie
         val id = activeId ?: return; val expected = session ?: return
         disconnect()
         when (val result = appResult { repo.action(id, "leave", expected = expected) }) {
-            is AppResult.Failure -> state.update { it.copy(error = "本地已退出，服务器退出失败：${result.kind.message}") }; else -> Unit }
+            is AppResult.Failure -> state.update { it.copy(error = "Đã thoát trên thiết bị này, nhưng thoát khỏi máy chủ thất bại：${result.kind.message}") }; else -> Unit }
     }
     fun disconnect(message: String? = null) {
         generation++

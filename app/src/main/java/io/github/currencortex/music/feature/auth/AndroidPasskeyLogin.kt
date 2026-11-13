@@ -17,7 +17,7 @@ import java.security.MessageDigest
 internal object AndroidPasskeyLogin {
     fun origin(context: Context): String {
         if (Build.VERSION.SDK_INT < 28) throw ApiException(ErrorKind.Forbidden,
-            userMessage = "通行密钥需要 Android 9 或更高版本")
+            userMessage = "Khóa truy cập cần Android 9 trở lên")
         @Suppress("DEPRECATION")
         val signatures = context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_SIGNING_CERTIFICATES)
             .signingInfo?.apkContentsSigners.orEmpty()
@@ -31,17 +31,17 @@ internal object AndroidPasskeyLogin {
             val request = GetCredentialRequest(listOf(GetPublicKeyCredentialOption(requestJson)))
             val result = CredentialManager.create(context).getCredential(context, request).credential
             return (result as? PublicKeyCredential)?.authenticationResponseJson
-                ?: throw ApiException(ErrorKind.Parse, userMessage = "系统未返回通行密钥，请重试")
+                ?: throw ApiException(ErrorKind.Parse, userMessage = "Hệ thống không trả về khóa truy cập, vui lòng thử lại")
         } catch (e: GetCredentialCancellationException) {
             throw CancellationException("Passkey selection cancelled")
         } catch (e: NoCredentialException) {
-            throw ApiException(ErrorKind.NotFound, userMessage = "未找到可用的通行密钥，请检查凭据管理器或使用其他登录方式")
+            throw ApiException(ErrorKind.NotFound, userMessage = "Không tìm thấy khóa truy cập khả dụng, vui lòng kiểm tra trình quản lý thông tin xác thực hoặc dùng cách đăng nhập khác")
         } catch (e: GetCredentialProviderConfigurationException) {
-            throw ApiException(ErrorKind.Forbidden, userMessage = "此设备未配置可用的凭据管理器，请使用其他登录方式")
+            throw ApiException(ErrorKind.Forbidden, userMessage = "Thiết bị này chưa cấu hình trình quản lý thông tin xác thực khả dụng, vui lòng dùng cách đăng nhập khác")
         } catch (e: GetCredentialUnsupportedException) {
-            throw ApiException(ErrorKind.Forbidden, userMessage = "此设备暂不支持通行密钥，请使用其他登录方式")
+            throw ApiException(ErrorKind.Forbidden, userMessage = "Thiết bị này hiện chưa hỗ trợ khóa truy cập, vui lòng dùng cách đăng nhập khác")
         } catch (e: GetCredentialException) {
-            throw ApiException(ErrorKind.Unknown, userMessage = "无法使用通行密钥，请确认服务器已完成 App 关联，或使用其他登录方式")
+            throw ApiException(ErrorKind.Unknown, userMessage = "Không thể dùng khóa truy cập, vui lòng xác nhận máy chủ đã hoàn tất liên kết ứng dụng hoặc dùng cách đăng nhập khác")
         }
     }
 }

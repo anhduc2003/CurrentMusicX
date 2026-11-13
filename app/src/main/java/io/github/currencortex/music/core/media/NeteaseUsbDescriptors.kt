@@ -25,7 +25,7 @@ internal object UsbAudioDescriptorParser {
         val endpoints: MutableList<Triple<Int, Int, Int>> = mutableListOf())
 
     fun parse(raw: ByteArray): UsbAudioDescriptorReport {
-        if (raw.isEmpty() || raw.size > 1024 * 1024) return UsbAudioDescriptorReport(emptyList(), "描述符为空或超过读取上限")
+        if (raw.isEmpty() || raw.size > 1024 * 1024) return UsbAudioDescriptorReport(emptyList(), "Bộ mô tả trống hoặc vượt quá giới hạn đọc")
         val formats = mutableListOf<UsbDeclaredPcmFormat>()
         var current: Alternate? = null
         var configurationEnd: Int? = null
@@ -40,7 +40,7 @@ internal object UsbAudioDescriptorParser {
         fun byte(offset: Int) = raw[offset].toInt() and 255
         fun word(offset: Int) = byte(offset) or (byte(offset + 1) shl 8)
         fun rate(offset: Int) = word(offset) or (byte(offset + 2) shl 16)
-        fun invalid() = UsbAudioDescriptorReport(emptyList(), "USB Audio 描述符结构不完整或字段无效")
+        fun invalid() = UsbAudioDescriptorReport(emptyList(), "Cấu trúc bộ mô tả USB Audio không đầy đủ hoặc có trường không hợp lệ")
         var offset = 0
         while (offset < raw.size) {
             if (offset == configurationEnd) { finish(); current = null; configurationEnd = null }

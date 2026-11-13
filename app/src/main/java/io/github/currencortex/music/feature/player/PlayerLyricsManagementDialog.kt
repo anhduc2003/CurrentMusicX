@@ -94,7 +94,7 @@ private enum class LyricExportFormat(val extension: String) { FIA("fia"), LRC("l
                 if (epoch == requested) {
                     results = OnlineLyricsMatcher.rankCandidates(song, found)
                     hasSearched = true
-                    if (found.isEmpty()) notify("这个来源没有找到候选，可修改关键词或切换来源")
+                    if (found.isEmpty()) notify("Nguồn này không tìm thấy ứng viên nào, bạn có thể sửa từ khóa hoặc chuyển nguồn")
                 }
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (failure: Exception) { if (epoch == requested) notify(lyricManagementError(failure), true) }
@@ -133,8 +133,8 @@ private enum class LyricExportFormat(val extension: String) { FIA("fia"), LRC("l
                     preview = found?.saved
                     selectedCandidate = found?.candidate
                     assessment = found?.assessment
-                    notify(if (found == null) "没有找到身份信息足够吻合的歌词，请手动搜索选择"
-                        else "已找到候选，请预览并确认应用")
+                    notify(if (found == null) "Không tìm thấy lời bài hát có thông tin nhận dạng đủ khớp, vui lòng tìm kiếm và chọn thủ công"
+                        else "Đã tìm thấy ứng viên, vui lòng xem trước và xác nhận áp dụng")
                 }
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (failure: Exception) { if (epoch == requested) notify(lyricManagementError(failure), true) }
@@ -155,12 +155,12 @@ private enum class LyricExportFormat(val extension: String) { FIA("fia"), LRC("l
         mutationJob = scope.launch {
             try {
                 val saved = container.songLyrics.active(song) ?: capturedPlayback?.let {
-                    SavedLyrics(it.sourceDocument ?: it.document, it.origin ?: LyricsOrigin("默认歌词"), it.timingAlignment)
+                    SavedLyrics(it.sourceDocument ?: it.document, it.origin ?: LyricsOrigin("Lời mặc định"), it.timingAlignment)
                 } ?: container.lyricsRepository.load(song).let {
-                    SavedLyrics(it.sourceDocument ?: it.document, it.origin ?: LyricsOrigin("默认歌词"), it.timingAlignment)
+                    SavedLyrics(it.sourceDocument ?: it.document, it.origin ?: LyricsOrigin("Lời mặc định"), it.timingAlignment)
                 }
                 require(format == LyricExportFormat.FIA || saved.document.lines.any { it.text.isNotBlank() || it.backgroundVocals.isNotEmpty() }) {
-                    "这首歌没有可导出的 LRC 歌词；FIA 可以保留纯音乐的空歌词选择"
+                    "Bài hát này không có lời LRC để xuất; FIA có thể giữ lựa chọn lời trống cho nhạc không lời"
                 }
                 val bytes = withContext(Dispatchers.Default) {
                     (if (format == LyricExportFormat.FIA) LyricsFileCodec.encodeFia(song, saved.document, saved.origin,
@@ -170,7 +170,7 @@ private enum class LyricExportFormat(val extension: String) { FIA("fia"), LRC("l
                 currentCoroutineContext().ensureActive()
                 val name = lyricExportName(song, format.extension)
                 documents.exportBytes(bytes, name, if (format == LyricExportFormat.FIA) "application/json" else "text/plain")
-                notify("请选择保存位置")
+                notify("Vui lòng chọn vị trí lưu")
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (failure: Exception) { notify(lyricManagementError(failure), true) }
             finally { busy = false }
@@ -182,7 +182,7 @@ private enum class LyricExportFormat(val extension: String) { FIA("fia"), LRC("l
 
     val automatic = musicSettings.lyricsSource == LyricsSource.AUTO
     val defaultLabel = if (!automatic && song.privateLibrary) (if (song.emby != null) "Emby" else "Navidrome") else musicSettings.lyricsSource.label
-    val restoredMessage = if (automatic) "已恢复自动择优，按来源顺序查找，逐字优先、逐行兜底；单曲偏移保留" else "已恢复默认歌词来源，单曲偏移保留"
+     val restoredMessage = if (automatic) "Đã khôi phục chế độ tự động chọn tốt nhất, tìm theo thứ tự nguồn, ưu tiên khớp từng từ, dự phòng khớp từng dòng; giữ nguyên độ lệch riêng của bài hát" else "Đã khôi phục nguồn lời mặc định, giữ nguyên độ lệch riêng của bài hát"
     val chosenLabel = options.activeOrigin?.label ?: defaultLabel
     val displayedLabel = if (playback.matches(song) && !playback.loading) playback.origin?.label ?: chosenLabel else chosenLabel
     val canExport = options.activeOrigin != null || (playback.matches(song) && !playback.loading && playback.error == null)
@@ -195,9 +195,9 @@ private enum class LyricExportFormat(val extension: String) { FIA("fia"), LRC("l
                 onQuery = { value -> if (!blocked && value.length <= OnlineLyricsMatcher.MAX_QUERY_LENGTH) {
                     cancelMatching(); query = value; message = null
                 } }, onSearch = ::runSearch, onAutomatic = ::findAutomatically, onCandidate = ::loadPreview,
-                onCancelLoading = { cancelMatching(clearResults = false); message = "已停止匹配" },
+                 onCancelLoading = { cancelMatching(clearResults = false); message = "Đã dừng khớp lời" },
                 onBack = ::leaveMatching,
-                onApply = { preview?.let { saved -> operation("匹配歌词已应用") {
+                 onApply = { preview?.let { saved -> operation("Đã áp dụng lời đã khớp") {
                     container.songLyrics.saveMatched(song, saved)
                     currentCoroutineContext().ensureActive()
                     matching = false
@@ -214,26 +214,26 @@ private enum class LyricExportFormat(val extension: String) { FIA("fia"), LRC("l
                 onOffsetInput = { if (!blocked && it.matches(Regex("[+-]?[0-9]{0,6}"))) offsetInput = it },
                 onOffsetStep = { delta ->
                     val value = ((offsetInput.toLongOrNull() ?: options.offsetMs) + delta).coerceIn(-60_000, 60_000)
-                    operation("偏移已保存") {
+                     operation("Đã lưu độ lệch") {
                         container.songLyrics.setOffset(song, value)
                         currentCoroutineContext().ensureActive()
                         offsetInput = value.toString()
                     }
                 }, onOffsetApply = { offsetInput.toLongOrNull()?.takeIf { it in -60_000..60_000 }?.let { value ->
-                    operation("偏移已保存") { container.songLyrics.setOffset(song, value) }
-                } }, onOffsetReset = { operation("偏移已归零") { container.songLyrics.setOffset(song, 0) } },
+                     operation("Đã lưu độ lệch") { container.songLyrics.setOffset(song, value) }
+                 } }, onOffsetReset = { operation("Đã đặt lại độ lệch về 0") { container.songLyrics.setOffset(song, 0) } },
                 onDefault = { operation(restoredMessage) {
                     if (options.matchedOrigin != null) container.songLyrics.reset(song)
                     else container.songLyrics.selectImported(song, false)
-                } }, onMatched = { operation("已切换到匹配歌词") { container.songLyrics.selectImported(song, false) } },
-                onImported = { operation("已切换到导入歌词") { container.songLyrics.selectImported(song, true) } },
+                 } }, onMatched = { operation("Đã chuyển sang lời đã khớp") { container.songLyrics.selectImported(song, false) } },
+                 onImported = { operation("Đã chuyển sang lời đã nhập") { container.songLyrics.selectImported(song, true) } },
                 onReset = { operation(restoredMessage) { container.songLyrics.reset(song) } },
                 onMatch = { matching = true; message = null },
                 onImport = {
                     if (!blocked) {
                         cancelMatching()
                         try { documents.importLyrics(song) }
-                        catch (failure: Exception) { notify("无法打开文件选择器", true) }
+                         catch (failure: Exception) { notify("Không thể mở trình chọn tệp", true) }
                     }
                 }, onExportFia = { startExport(LyricExportFormat.FIA) },
                 onExportLrc = { startExport(LyricExportFormat.LRC) }, onClose = ::close,
@@ -258,13 +258,13 @@ private suspend fun readLyricImport(resolver: ContentResolver, uri: Uri): Pair<S
     val name = resolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE), null, null, null)?.use { cursor ->
         if (!cursor.moveToFirst()) null else {
             val sizeColumn = cursor.getColumnIndex(OpenableColumns.SIZE)
-            if (sizeColumn >= 0 && !cursor.isNull(sizeColumn)) require(cursor.getLong(sizeColumn) <= LyricsFileCodec.MAX_BYTES) { "歌词文件过大，最多支持 2 MB" }
+             if (sizeColumn >= 0 && !cursor.isNull(sizeColumn)) require(cursor.getLong(sizeColumn) <= LyricsFileCodec.MAX_BYTES) { "Tệp lời bài hát quá lớn, chỉ hỗ trợ tối đa 2 MB" }
             val column = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
             if (column >= 0) cursor.getString(column)?.take(512) else null
         }
     }?.takeIf(String::isNotBlank) ?: "lyrics.lrc"
     currentCoroutineContext().ensureActive()
-    val input = resolver.openInputStream(uri) ?: error("无法打开歌词文件")
+     val input = resolver.openInputStream(uri) ?: error("Không thể mở tệp lời bài hát")
     val bytes = input.use {
         val output = ByteArrayOutputStream()
         val buffer = ByteArray(8192)
@@ -272,7 +272,7 @@ private suspend fun readLyricImport(resolver: ContentResolver, uri: Uri): Pair<S
             currentCoroutineContext().ensureActive()
             val count = it.read(buffer)
             if (count < 0) break
-            require(output.size() + count <= LyricsFileCodec.MAX_BYTES) { "歌词文件过大，最多支持 2 MB" }
+             require(output.size() + count <= LyricsFileCodec.MAX_BYTES) { "Tệp lời bài hát quá lớn, chỉ hỗ trợ tối đa 2 MB" }
             output.write(buffer, 0, count)
         }
         output.toByteArray()
@@ -286,13 +286,13 @@ private fun lyricExportName(song: Song, extension: String): String = listOf(song
 
 internal fun lyricManagementError(failure: Exception): String = when (failure) {
     is LyricsException -> when (failure.code) {
-        LyricsErrorCode.NO_LYRICS -> "此来源没有提供可识别的歌词"
-        LyricsErrorCode.NETWORK_ERROR -> "歌词网络请求失败，请稍后重试"
-        LyricsErrorCode.PARSE_ERROR -> "歌词文件格式有误，无法解析"
-        LyricsErrorCode.UNSUPPORTED_FORMAT -> "暂不支持此歌词文件格式"
-        LyricsErrorCode.INVALID_TIMELINE -> "歌词时间轴有误，请选择其他候选"
+         LyricsErrorCode.NO_LYRICS -> "Nguồn này không cung cấp lời bài hát có thể nhận dạng"
+         LyricsErrorCode.NETWORK_ERROR -> "Yêu cầu lời bài hát qua mạng thất bại, vui lòng thử lại sau"
+         LyricsErrorCode.PARSE_ERROR -> "Định dạng tệp lời bài hát không hợp lệ, không thể phân tích"
+         LyricsErrorCode.UNSUPPORTED_FORMAT -> "Hiện chưa hỗ trợ định dạng tệp lời bài hát này"
+         LyricsErrorCode.INVALID_TIMELINE -> "Mốc thời gian lời bài hát không hợp lệ, vui lòng chọn ứng viên khác"
     }
-    is LyricsMatchException, is IllegalArgumentException, is IllegalStateException -> failure.message?.take(180) ?: "歌词处理失败，请重试"
-    is SecurityException -> "没有文件访问权限，请重新选择文件或保存位置"
-    else -> "无法读取或保存歌词，请重试"
+    is LyricsMatchException, is IllegalArgumentException, is IllegalStateException -> failure.message?.take(180) ?: "Xử lý lời bài hát thất bại, vui lòng thử lại"
+    is SecurityException -> "Không có quyền truy cập tệp, vui lòng chọn lại tệp hoặc vị trí lưu"
+    else -> "Không thể đọc hoặc lưu lời bài hát, vui lòng thử lại"
 }

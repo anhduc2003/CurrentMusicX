@@ -27,7 +27,7 @@ class AnnouncementArchiveViewModel(repository: AnnouncementRepository, servers: 
                     mutableState.value = AnnouncementArchiveState(repository.fetchAll(server), loading = false)
                 } catch (cancelled: CancellationException) { throw cancelled }
                 catch (_: Exception) {
-                    mutableState.value = mutableState.value.copy(loading = false, error = "公告暂时无法加载，请重试")
+                    mutableState.value = mutableState.value.copy(loading = false, error = "Hiện chưa thể tải thông báo, vui lòng thử lại")
                 }
             }
         }

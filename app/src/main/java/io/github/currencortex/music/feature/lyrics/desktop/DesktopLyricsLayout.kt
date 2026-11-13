@@ -4,8 +4,7 @@ import androidx.compose.ui.unit.dp
 
 // Treat the source's explicit instrumental message as a status, never infer it from missing lyrics.
 internal fun desktopIslandStatusLine(line: io.github.currencortex.music.feature.lyrics.model.LyricLine?): Boolean =
-    line != null && line.words.isEmpty() && line.text.trim().trimEnd('。', '.', '!', '！').replace('，', ',') == "纯音乐,请欣赏"
-
+line != null && line.words.isEmpty() && line.text.trim().trimEnd('。', '.', '!', '！').replace('，', ',') == "Nhạc không lời, xin thưởng thức"
 internal fun desktopEffectPadding() = 10.dp
 internal val desktopIslandTranslationBottomPadding = 2.dp
 // Reserve transparent room outside the pill so optical centering never clips its halo.
@@ -27,7 +26,7 @@ internal fun desktopIslandLineIndex(document: io.github.currencortex.music.featu
 }
 private fun desktopIslandRealLine(line: io.github.currencortex.music.feature.lyrics.model.LyricLine) =
     line.text.isNotBlank() && !desktopIslandStatusLine(line) && line.text.trim() !in islandPlaceholderText
-private val islandPlaceholderText = setOf("♪", "♫", "♬", "前奏", "间奏", "尾奏")
+private val islandPlaceholderText = setOf("♪", "♫", "♬", "Dạo đầu", "Đoạn nhạc", "Kết thúc")
 
 internal fun desktopIslandHasLyrics(document: io.github.currencortex.music.feature.lyrics.model.LyricsDocument) =
     document.lines.any(::desktopIslandRealLine)

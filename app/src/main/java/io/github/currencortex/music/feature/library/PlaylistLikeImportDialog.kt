@@ -20,37 +20,37 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable internal fun PlaylistLikeImportDialog(state: PlaylistLikeImportState,
     onClose: () -> Unit, onStop: () -> Unit, onRetry: () -> Unit) {
-    MusicDialog(if (state.running) "正在导入网易云我喜欢" else "网易云导入结果", onDismiss = onClose) {
+    MusicDialog(if (state.running) "Đang nhập bài hát yêu thích từ Nhạc Vân NetEase" else "Kết quả nhập từ Nhạc Vân NetEase", onDismiss = onClose) {
         Column(Modifier.testTag("playlist_like_import").heightIn(max = 340.dp).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(state.name, fontSize = 18.sp)
-            Text(if (state.running && state.total == 0) "正在读取歌单与网易云账号…"
-                else "${state.processed} / ${state.total} 首", fontSize = 14.sp)
+            Text(if (state.running && state.total == 0) "Đang đọc danh sách phát và tài khoản Nhạc Vân NetEase…"
+                else "${state.processed} / ${state.total} bài", fontSize = 14.sp)
             if (state.running) Box(Modifier.fillMaxWidth().height(6.dp)
                 .background(MiuixTheme.colorScheme.onSurface.copy(alpha = .08f), RoundedCornerShape(3.dp))) {
                 val progress = if (state.total > 0) state.processed.toFloat() / state.total else 0f
                 Box(Modifier.fillMaxWidth(progress.coerceIn(0f, 1f)).fillMaxHeight()
                     .background(MiuixTheme.colorScheme.primary, RoundedCornerShape(3.dp)))
             }
-            Text("成功 ${state.imported} · 跳过 ${state.skipped} · 失败 ${state.failed}", fontSize = 15.sp)
-            Text("跳过已喜欢、重复及非网易云歌曲。", fontSize = 13.sp,
+            Text("Thành công ${state.imported} · Đã bỏ qua ${state.skipped} · Thất bại ${state.failed}", fontSize = 15.sp)
+            Text("Bỏ qua bài đã yêu thích, bài trùng lặp và bài không thuộc Nhạc Vân NetEase.", fontSize = 13.sp,
                 color = MiuixTheme.colorScheme.onSurface.copy(alpha = .6f))
             state.error?.let { Text(it, fontSize = 14.sp) }
             if (state.processed < state.total && !state.running)
-                Text("还有 ${state.total - state.processed} 首未处理，可重试补齐。", fontSize = 13.sp)
+                Text("Còn ${state.total - state.processed} bài chưa xử lý, có thể thử lại để nhập bổ sung.", fontSize = 13.sp)
             state.failures.forEach { Text(it, fontSize = 13.sp) }
         }
         if (state.running) {
-            Text("关闭面板后仍会继续导入；请保持应用运行。", fontSize = 13.sp)
+            Text("Quá trình nhập vẫn tiếp tục sau khi đóng bảng; vui lòng giữ ứng dụng đang chạy.", fontSize = 13.sp)
             MusicDialogActions(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                MusicDialogButton("后台导入", onClick = onClose, modifier = Modifier.weight(1f).testTag("playlist_import_background"))
-                MusicDialogButton("停止导入", onClick = onStop, modifier = Modifier.weight(1f).testTag("playlist_import_stop"))
+                MusicDialogButton("Nhập trong nền", onClick = onClose, modifier = Modifier.weight(1f).testTag("playlist_import_background"))
+                MusicDialogButton("Dừng nhập", onClick = onStop, modifier = Modifier.weight(1f).testTag("playlist_import_stop"))
             }
         } else {
             MusicDialogActions(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                MusicDialogButton("关闭", onClick = onClose, modifier = Modifier.weight(1f))
+                MusicDialogButton("Đóng", onClick = onClose, modifier = Modifier.weight(1f))
                 if (state.error != null || state.failed > 0)
-                    MusicDialogButton("重试补齐", onClick = onRetry, modifier = Modifier.weight(1f).testTag("playlist_import_retry"))
+                    MusicDialogButton("Thử lại để nhập bổ sung", onClick = onRetry, modifier = Modifier.weight(1f).testTag("playlist_import_retry"))
             }
         }
     }

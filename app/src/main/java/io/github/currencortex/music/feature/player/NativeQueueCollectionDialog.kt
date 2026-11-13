@@ -38,25 +38,25 @@ import top.yukonga.miuix.kmp.basic.TextButton
         }
         busy = false
     }
-    MusicOverlayDialog(show = show, title = "收藏 ${songs.size} 首到歌单", onDismissRequest = { if (!busy) onDismiss() }) {
+    MusicOverlayDialog(show = show, title = "Lưu ${songs.size} bài vào danh sách phát", onDismissRequest = { if (!busy) onDismiss() }) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            if (busy) Text("正在处理…")
-            error?.let { Text(it); MusicDialogButton("重试", { retry++ }, enabled = !busy) }
-            if (!busy && lists.isEmpty() && error == null) Text("没有可编辑的网易云歌单，请先创建歌单")
+            if (busy) Text("Đang xử lý…")
+            error?.let { Text(it); MusicDialogButton("Thử lại", { retry++ }, enabled = !busy) }
+            if (!busy && lists.isEmpty() && error == null) Text("Không có danh sách phát Nhạc Vân NetEase nào có thể chỉnh sửa, hãy tạo danh sách phát trước")
             LazyColumn(Modifier.heightIn(max = 360.dp)) {
                 items(lists, key = { it.id }) { playlist ->
                     MusicDestinationRow(playlist.name, {
                         if (!busy) { busy = true; error = null; scope.launch {
                             when (val result = appResult { collect(playlist.id, songs) }) {
-                                is AppResult.Success -> { context.showMusicMessage("已收藏到${playlist.name}"); onDismiss() }
+                                is AppResult.Success -> { context.showMusicMessage("Đã lưu vào ${playlist.name}"); onDismiss() }
                                 is AppResult.Failure -> error = result.kind.message
                             }
                             busy = false
                         } }
-                    }, Modifier.testTag("queue_collect_playlist_${playlist.id}"), summary = "网易云音乐", enabled = !busy, chevron = false)
+                    }, Modifier.testTag("queue_collect_playlist_${playlist.id}"), summary = "Nhạc Vân NetEase", enabled = !busy, chevron = false)
                 }
             }
-            MusicDialogButton("取消", onDismiss, enabled = !busy)
+            MusicDialogButton("Hủy", onDismiss, enabled = !busy)
         }
     }
 }

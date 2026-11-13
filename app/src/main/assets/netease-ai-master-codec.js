@@ -438,7 +438,7 @@ var NeteaseAiMaster = (function() {
           mergedJson.aev2.cmp = {
             attack: 0,
             on: false,
-            // 最后会根据 pregain 值调整
+            // Cuối cùng sẽ điều chỉnh dựa trên giá trị pregain
             pregain: 0,
             release: 0,
             range: 0,
@@ -469,7 +469,7 @@ var NeteaseAiMaster = (function() {
           mergedJson.effect.cmp = {
             attack: 0,
             on: false,
-            // 最后会根据 pregain 值调整
+            // Cuối cùng sẽ điều chỉnh dựa trên giá trị pregain
             pregain: 0,
             release: 0,
             range: 0,

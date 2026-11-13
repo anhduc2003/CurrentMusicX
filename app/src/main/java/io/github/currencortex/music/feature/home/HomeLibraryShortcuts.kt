@@ -24,10 +24,10 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     Column(Modifier.fillMaxWidth().testTag("home_shortcuts")) {
         SettingsGroup {
         Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp)) {
-            HomeShortcut("我喜欢", MusicIcons.Heart, "open_likes", { navigate("lib/likes") }, Modifier.weight(1f))
-            HomeShortcut("歌单", MusicIcons.List, "open_playlists", { navigate("lib/playlists") }, Modifier.weight(1f))
-            HomeShortcut("听歌识曲", MusicIcons.Microphone, "open_recognition", { navigate("lib/recognition") }, Modifier.weight(1f))
-            HomeShortcut(if (inRoom) "回到房间" else "一起听", MusicIcons.Headphones, "open_rooms",
+            HomeShortcut("Bài hát yêu thích", MusicIcons.Heart, "open_likes", { navigate("lib/likes") }, Modifier.weight(1f))
+            HomeShortcut("Danh sách phát", MusicIcons.List, "open_playlists", { navigate("lib/playlists") }, Modifier.weight(1f))
+            HomeShortcut("Nhận diện bài hát", MusicIcons.Microphone, "open_recognition", { navigate("lib/recognition") }, Modifier.weight(1f))
+            HomeShortcut(if (inRoom) "Quay lại phòng" else "Nghe cùng nhau", MusicIcons.Headphones, "open_rooms",
                 { navigate("room/list") }, Modifier.weight(1f))
         }
         }

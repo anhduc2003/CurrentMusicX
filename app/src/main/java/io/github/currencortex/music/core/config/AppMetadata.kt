@@ -6,7 +6,7 @@ package io.github.currencortex.music.core.config
  */
 object AppMetadata {
     const val APP_NAME = "CurrentMusic"
-    const val APP_DESCRIPTION = "原生 Android 音乐客户端"
+    const val APP_DESCRIPTION = "Ứng dụng nghe nhạc Android nguyên bản"
     const val AUTHOR = "CurrentMusic"
     const val GITHUB_OWNER = "backrooms-yrc"
     const val GITHUB_REPO = "CurrentMusic"

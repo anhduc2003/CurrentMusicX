@@ -138,10 +138,10 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         .testTag("mv_player"), horizontalAlignment = Alignment.CenterHorizontally) {
         if (!immersive) Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(44.dp).clip(CircleShape).clickable(role = Role.Button, onClick = onBack).testTag("mv_back"), contentAlignment = Alignment.Center) {
-                Icon(MusicIcons.Back, "返回", modifier = Modifier.size(24.dp), tint = MiuixTheme.colorScheme.onSurface)
+                Icon(MusicIcons.Back, "Quay lại", modifier = Modifier.size(24.dp), tint = MiuixTheme.colorScheme.onSurface)
             }
             Spacer(Modifier.weight(1f))
-            Text("音乐视频", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f), modifier = Modifier.padding(end = 16.dp))
+             Text("Video âm nhạc", fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f), modifier = Modifier.padding(end = 16.dp))
         }
         Box((if (immersive) Modifier.fillMaxWidth().weight(1f) else Modifier.padding(horizontal = 16.dp).widthIn(max = 840.dp)
             .fillMaxWidth().aspectRatio(16f / 9f).clip(RoundedCornerShape(20.dp)))
@@ -149,20 +149,20 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             surface(Modifier.fillMaxSize())
             Box(Modifier.matchParentSize().pointerInput(Unit) {
                 detectTapGestures(onTap = { controls = !controls; interaction++ }, onDoubleTap = { currentToggle(); controls = true; interaction++ })
-            }.semantics { contentDescription = "MV 画面"; onClick("显示播放控制") { controls = true; interaction++; true } }.testTag("mv_gestures"))
+             }.semantics { contentDescription = "Khung hình MV"; onClick("Hiển thị điều khiển phát") { controls = true; interaction++; true } }.testTag("mv_gestures"))
             androidx.compose.animation.AnimatedVisibility(visible, enter = fadeIn(tween(180)), exit = fadeOut(tween(220)), modifier = Modifier.matchParentSize()) {
                 Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = .45f), Color.Transparent, Color.Black.copy(alpha = .8f))))
                     .then(if (immersive) Modifier.windowInsetsPadding(WindowInsets.displayCutout.union(WindowInsets.systemBars).only(WindowInsetsSides.Horizontal)) else Modifier)) {
                     if (immersive) Row(Modifier.fillMaxWidth().align(Alignment.TopCenter).padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                        MvTextAction("‹", if (fullscreen) "退出全屏" else "返回", "mv_back", onBack)
+                         MvTextAction("‹", if (fullscreen) "Thoát toàn màn hình" else "Quay lại", "mv_back", onBack)
                         Text(state.song?.name.orEmpty(), Modifier.weight(1f), color = Color.White, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        MvTextAction(downloadLabel, "下载 MV", "mv_download", onDownload)
+                         MvTextAction(downloadLabel, "Tải MV xuống", "mv_download", onDownload)
                     }
                     if (state.error == null) Row(Modifier.align(Alignment.Center), horizontalArrangement = Arrangement.spacedBy(24.dp), verticalAlignment = Alignment.CenterVertically) {
-                        MvTextAction("−10s", "后退 10 秒", "mv_back_10", { interact { onSeek((state.positionMs - 10000).coerceAtLeast(0)) } }, canSeek)
-                        PlayerTransportButton(if (state.showPause) "暂停" else "播放", { interact(onToggle) },
+                         MvTextAction("−10s", "Lùi 10 giây", "mv_back_10", { interact { onSeek((state.positionMs - 10000).coerceAtLeast(0)) } }, canSeek)
+                         PlayerTransportButton(if (state.showPause) "Tạm dừng" else "Phát", { interact(onToggle) },
                             Modifier.background(Color.Black.copy(alpha = .2f), CircleShape).testTag("mv_toggle"), playing = state.showPause, compact = true)
-                        MvTextAction("+10s", "前进 10 秒", "mv_forward_10", { interact { onSeek((state.positionMs + 10000).coerceAtMost(duration)) } }, canSeek)
+                         MvTextAction("+10s", "Tiến 10 giây", "mv_forward_10", { interact { onSeek((state.positionMs + 10000).coerceAtMost(duration)) } }, canSeek)
                     }
                     Column(Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = 14.dp, vertical = 4.dp)) {
                         PlayerSeekBar(drag ?: if (duration > 0) (state.positionMs.toFloat() / duration).coerceIn(0f, 1f) else 0f,
@@ -172,18 +172,18 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                             Text("${mvTime(drag?.let { (it * duration).toLong() } ?: state.positionMs)} / ${mvTime(duration)}",
                                 color = Color.White.copy(alpha = .8f), fontSize = 11.sp, modifier = Modifier.weight(1f).testTag("mv_time"))
-                            MvTextAction("${state.song?.videoQuality ?: 1080}P", "选择清晰度", "mv_quality", { interact(onQuality) })
+                             MvTextAction("${state.song?.videoQuality ?: 1080}P", "Chọn chất lượng", "mv_quality", { interact(onQuality) })
                             Box(Modifier.size(44.dp).clickable(role = Role.Button, onClick = onFullscreen).testTag("mv_fullscreen"), contentAlignment = Alignment.Center) {
-                                Icon(MusicIcons.Scale, if (fullscreen) "退出全屏" else "全屏", tint = Color.White, modifier = Modifier.size(20.dp))
+                                 Icon(MusicIcons.Scale, if (fullscreen) "Thoát toàn màn hình" else "Toàn màn hình", tint = Color.White, modifier = Modifier.size(20.dp))
                             }
                         }
                     }
                 }
             }
-            if (state.loading && state.error == null) Text("正在缓冲…", Modifier.align(Alignment.TopCenter).padding(top = if (immersive) 60.dp else 12.dp),
+             if (state.loading && state.error == null) Text("Đang tải…", Modifier.align(Alignment.TopCenter).padding(top = if (immersive) 60.dp else 12.dp),
                 color = Color.White.copy(alpha = .8f), fontSize = 12.sp)
             if (state.error != null) Column(Modifier.align(Alignment.Center).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                TextButton("重新加载", { interact(onRetry) }, Modifier.testTag("mv_retry"))
+                 TextButton("Tải lại", { interact(onRetry) }, Modifier.testTag("mv_retry"))
             }
         }
         if (!immersive) Column(Modifier.widthIn(max = 840.dp).fillMaxWidth().padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -192,9 +192,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 TextButton(downloadLabel, onDownload, Modifier.weight(1f).testTag("mv_download"),
                     colors = ButtonDefaults.textButtonColors(color = MiuixTheme.colorScheme.primary, textColor = MiuixTheme.colorScheme.onPrimary))
-                TextButton("全屏观看", onFullscreen, Modifier.weight(1f))
+                 TextButton("Xem toàn màn hình", onFullscreen, Modifier.weight(1f))
             }
-            Text("点按画面显示控制 · 双击播放或暂停", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .4f))
+             Text("Chạm vào khung hình để hiển thị điều khiển · Chạm đúp để phát hoặc tạm dừng", fontSize = 12.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .4f))
         }
     }
 }

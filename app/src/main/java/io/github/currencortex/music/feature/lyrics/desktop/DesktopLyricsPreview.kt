@@ -59,8 +59,8 @@ import androidx.compose.ui.graphics.Color
     Card(Modifier.fillMaxWidth().testTag("desktop_preview")) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(Modifier.fillMaxWidth()) {
-                Text("实时预览", Modifier.weight(1f), fontSize = 15.sp, fontWeight = FontWeight.Medium)
-                Text(if (fpsMode) "帧率" else if (playback.playing) "跟随播放" else "已暂停", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+                Text("Xem trước trực tiếp", Modifier.weight(1f), fontSize = 15.sp, fontWeight = FontWeight.Medium)
+                Text(if (fpsMode) "Tốc độ khung hình" else if (playback.playing) "Theo phát" else "Đã tạm dừng", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
             }
             Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp))
                 .background(Brush.linearGradient(listOf(Color(0xFF303646), Color(0xFF161A25)))).padding(12.dp), contentAlignment = Alignment.Center) {
@@ -87,7 +87,7 @@ import androidx.compose.ui.graphics.Color
                 }
                 }
             }
-            Text("可先调整样式，再开启悬浮窗。", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
+            Text("Bạn có thể điều chỉnh kiểu trước, rồi bật cửa sổ nổi.", fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
         }
     }
 }

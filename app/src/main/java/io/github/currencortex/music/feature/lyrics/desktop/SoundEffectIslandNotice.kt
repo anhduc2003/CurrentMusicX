@@ -127,15 +127,13 @@ import kotlin.math.roundToInt
 
 private fun soundEffectPhaseLabel(phase: SoundEffectNoticePhase) = when (phase) {
     SoundEffectNoticePhase.APPLYING, SoundEffectNoticePhase.READY -> ""
-    SoundEffectNoticePhase.WAITING -> "待生效"; SoundEffectNoticePhase.FAILED -> "未启用"
+    SoundEffectNoticePhase.WAITING -> "Đang chờ áp dụng"; SoundEffectNoticePhase.FAILED -> "Chưa bật"
 }
 
 /** The two master wordmarks are the exact local artwork used by their main cards. */
 @Composable private fun SoundEffectIslandTitle(name: String, accent: Color, font: Float, modifier: Modifier) {
     val asset = when (name) {
-        "AI 调音大师" -> "ai_model_title_icon_url.png"
-        "AI 情绪调音师" -> "emotion_title_icon_dark_url.png"
-        else -> null
+"Chuyên gia tinh chỉnh âm thanh AI" -> "ai_model_title_icon_url.png""AI điều chỉnh cảm xúc" -> "emotion_title_icon_dark_url.png"        else -> null
     }
     if (asset == null) BasicText(name, modifier.testTag("sound_effect_island_title"),
         style = TextStyle(fontFamily = currentLyricsFontFamily(), color = accent, fontSize = font.sp,
@@ -161,8 +159,7 @@ private fun soundEffectPhaseLabel(phase: SoundEffectNoticePhase) = when (phase) 
         val bitmap = assets.open("netease-effects-ui/assets/$name").use { BitmapFactory.decodeStream(it) }.asImageBitmap()
         BitmapPainter(bitmap, srcSize = IntSize(bitmap.height, bitmap.height))
     }
-    Image(painter, "${tier.name} 唱片", modifier.clip(CircleShape))
-}
+Image(painter, "${tier.name} đĩa nhạc", modifier.clip(CircleShape))}
 
 private fun soundEffectNoticeAccent(notice: SoundEffectNotice?) = when {
     notice == null -> Color.White

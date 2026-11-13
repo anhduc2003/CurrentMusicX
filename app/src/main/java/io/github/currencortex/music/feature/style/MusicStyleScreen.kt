@@ -83,13 +83,13 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     loadCover: (Long) -> Unit, listHeader: Boolean = false) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.fillMaxWidth().testTag("style_categories"), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        if (listHeader) io.github.currencortex.music.ui.component.nativeui.SettingsListHeader("曲风分类") {
-            if (state.styles.size > 6) StyleAction(if (expanded) "收起" else "全部 ${state.styles.size}",
+        if (listHeader) io.github.currencortex.music.ui.component.nativeui.SettingsListHeader("Phân loại phong cách nhạc") {
+            if (state.styles.size > 6) StyleAction(if (expanded) "Thu gọn" else "Tất cả ${state.styles.size}",
                 { expanded = !expanded }, Modifier.testTag("style_catalog_expand"))
         }
         else Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text("曲风分类", Modifier.weight(1f), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-            if (state.styles.size > 6) StyleAction(if (expanded) "收起" else "全部 ${state.styles.size}",
+            Text("Phân loại phong cách nhạc", Modifier.weight(1f), fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+            if (state.styles.size > 6) StyleAction(if (expanded) "Thu gọn" else "Tất cả ${state.styles.size}",
                 { expanded = !expanded }, Modifier.testTag("style_catalog_expand"))
         }
         if (state.loading && state.styles.isEmpty()) repeat(2) {
@@ -111,9 +111,9 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         }
         state.error?.let {
             Text(it, fontSize = 13.sp, color = MiuixTheme.colorScheme.onSurface.copy(alpha = .6f))
-            StyleAction("重试曲风分类", retry, Modifier.testTag("style_catalog_retry"), enabled = !state.loading)
+             StyleAction("Thử lại danh mục phong cách nhạc", retry, Modifier.testTag("style_catalog_retry"), enabled = !state.loading)
         }
-        if (!state.loading && state.styles.isEmpty() && state.error == null) Text("暂无曲风分类")
+         if (!state.loading && state.styles.isEmpty() && state.error == null) Text("Chưa có phong cách nhạc nào")
     }
 }
 
@@ -131,7 +131,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             Text(state.title, fontSize = 30.sp, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
             if (english.isNotBlank()) Text(english, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis,
                 color = MiuixTheme.colorScheme.onSurface.copy(alpha = .6f))
-            if (state.total > 0) Text("${state.total} 首歌曲", fontSize = 12.sp,
+             if (state.total > 0) Text("${state.total} bài hát", fontSize = 12.sp,
                 color = MiuixTheme.colorScheme.onSurface.copy(alpha = .5f))
         }
     }
@@ -163,7 +163,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             item {
                 Row(Modifier.clickable(role = Role.Button, onClick = onBack).heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, modifier = Modifier.size(22.dp), tint = colors.onSurface)
-                    Text("返回", Modifier.padding(horizontal = 10.dp), fontSize = 14.sp)
+                     Text("Quay lại", Modifier.padding(horizontal = 10.dp), fontSize = 14.sp)
                 }
                 Spacer(Modifier.height(8.dp))
                 StyleHero(state)
@@ -172,18 +172,18 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(description, Modifier.weight(1f), fontSize = 14.sp, lineHeight = 22.sp, maxLines = if (fullDescription) Int.MAX_VALUE else 2,
                         overflow = TextOverflow.Ellipsis, color = colors.onSurface.copy(alpha = .65f))
-                    StyleAction(if (fullDescription) "收起介绍" else "展开介绍", { fullDescription = !fullDescription })
+                     StyleAction(if (fullDescription) "Thu gọn phần giới thiệu" else "Mở rộng phần giới thiệu", { fullDescription = !fullDescription })
                 }
             } }
             state.detailError?.let { error -> item {
-                Text("曲风介绍：$error", fontSize = 13.sp)
-                StyleAction("重试介绍", { vm.reload(fresh = true) })
+                 Text("Giới thiệu phong cách nhạc: $error", fontSize = 13.sp)
+                 StyleAction("Thử lại phần giới thiệu", { vm.reload(fresh = true) })
             } }
             if (children.isNotEmpty()) item {
                 Column {
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Text("细分曲风", Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                        if (children.size > 3) StyleAction(if (allChildren) "收起分类" else "全部 ${children.size}", { allChildren = !allChildren })
+                         Text("Phong cách nhạc phụ", Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                         if (children.size > 3) StyleAction(if (allChildren) "Thu gọn danh mục" else "Tất cả ${children.size}", { allChildren = !allChildren })
                     }
                     StyleSubcategories(if (allChildren) children else children.take(3), navigate)
                 }
@@ -195,21 +195,21 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                         vm.container.playerController.setMode(PlaybackMode.LIST); play(state.songs, 0)
                     }.testTag("style_play_all"), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(28.dp), tint = colors.primary.copy(alpha = if (enabled) 1f else .35f))
-                        Text("播放全部", Modifier.padding(start = 4.dp), fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
+                         Text("Phát tất cả", Modifier.padding(start = 4.dp), fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
                             color = colors.onSurface.copy(alpha = if (enabled) 1f else .4f))
                     }
-                    StyleAction("热门", { vm.sort(0) }, Modifier.testTag("style_sort_hot"), active = state.sort == 0)
-                    StyleAction("最新", { vm.sort(1) }, Modifier.testTag("style_sort_new"), active = state.sort == 1)
+                     StyleAction("Phổ biến", { vm.sort(0) }, Modifier.testTag("style_sort_hot"), active = state.sort == 0)
+                     StyleAction("Mới nhất", { vm.sort(1) }, Modifier.testTag("style_sort_new"), active = state.sort == 1)
                 }
             }
-            if (room != null) item { Text("点击歌曲，为当前房间点歌", fontSize = 13.sp) }
+             if (room != null) item { Text("Nhấn vào bài hát để yêu cầu phát trong phòng hiện tại", fontSize = 13.sp) }
             if (state.loading && state.songs.isEmpty()) item { LoadingSongList(5) }
             state.error?.let { error -> item {
                 Text(error, fontSize = 14.sp)
-                StyleAction("重试歌曲", { vm.reload(more = state.songs.isNotEmpty() && state.more, fresh = true) },
+                 StyleAction("Thử tải lại bài hát", { vm.reload(more = state.songs.isNotEmpty() && state.more, fresh = true) },
                     Modifier.testTag("style_songs_retry"), enabled = !state.loading)
             } }
-            if (!state.loading && state.songs.isEmpty() && state.error == null) item { Text("这个曲风暂时没有歌曲") }
+             if (!state.loading && state.songs.isEmpty() && state.error == null) item { Text("Phong cách nhạc này hiện chưa có bài hát") }
             itemsIndexed(state.songs, key = { _, song -> song.id }) { index, song ->
                 Box(Modifier.testTag("style_song_${song.id}")) {
                     SongRow(SongRowUi(song), { play(state.songs, index) }, { vm.container.playerController.add(song, true) },
@@ -218,7 +218,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             }
             if (state.loading && state.songs.isNotEmpty()) item { LoadingSongList(2) }
             if (state.more && state.error == null) item {
-                StyleAction("加载更多歌曲", { vm.reload(more = true) }, Modifier.fillMaxWidth().testTag("style_load_more"), enabled = !state.loading)
+                 StyleAction("Tải thêm bài hát", { vm.reload(more = true) }, Modifier.fillMaxWidth().testTag("style_load_more"), enabled = !state.loading)
             }
         }
     }

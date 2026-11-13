@@ -14,12 +14,12 @@ class OriginalMoodModel(model: File) : Closeable {
 
     init {
         loadLibraries()
-        require(model.isFile && model.length() in 1..2_097_152) { "原版情绪模型文件无效" }
+        require(model.isFile && model.length() in 1..2_097_152) { "Tệp mô hình cảm xúc gốc không hợp lệ" }
         try {
             net = MNNNetNative.nativeCreateNetFromFile(model.absolutePath)
-            check(net != 0L) { "原版情绪模型加载失败" }
+            check(net != 0L) { "Tải mô hình cảm xúc gốc thất bại" }
             session = MNNNetNative.nativeCreateSession(net, 0, 1, emptyArray(), emptyArray())
-            check(session != 0L) { "原版情绪模型初始化失败" }
+            check(session != 0L) { "Khởi tạo mô hình cảm xúc gốc thất bại" }
             inputs = MNNNetNative.nativeGetSessionInputAll(net, session).map(::metadata)
             outputs = MNNNetNative.nativeGetSessionOutputAll(net, session).map(::metadata)
             check(inputs.map { it.name }.toSet() == setOf("emotion_idx", "genre_idx", "features", "base_extra_flat"))
@@ -33,11 +33,11 @@ class OriginalMoodModel(model: File) : Closeable {
     }
 
     @Synchronized fun infer(emotion: Int, genre: Int, features: FloatArray, extra: FloatArray): FloatArray {
-        check(session != 0L && net != 0L) { "原版情绪模型已关闭" }
+        check(session != 0L && net != 0L) { "Mô hình cảm xúc gốc đã đóng" }
         require(features.size == 64 && extra.size == 32 && features.all(Float::isFinite) && extra.all(Float::isFinite))
         inputs.forEach { info ->
             val tensor = MNNNetNative.nativeGetSessionInput(net, session, info.name)
-            check(tensor != 0L) { "原版情绪模型输入不存在" }
+            check(tensor != 0L) { "Đầu vào mô hình cảm xúc gốc không tồn tại" }
             when (info.name) {
                 "emotion_idx", "genre_idx" -> {
                     val value = if (info.name == "emotion_idx") emotion else genre
@@ -45,22 +45,22 @@ class OriginalMoodModel(model: File) : Closeable {
                         MNNNetNative.nativeSetInputIntData(net, tensor, intArrayOf(value))
                     else if (info.typeCode == 2 && info.typeBits == 32)
                         MNNNetNative.nativeSetInputFloatData(net, tensor, floatArrayOf(value.toFloat()))
-                    else error("原版情绪模型索引类型不兼容")
+                    else error("Kiểu chỉ mục mô hình cảm xúc gốc không tương thích")
                 }
                 else -> {
-                    check(info.typeCode == 2 && info.typeBits == 32) { "原版情绪模型特征类型不兼容" }
+                    check(info.typeCode == 2 && info.typeBits == 32) { "Kiểu đặc trưng mô hình cảm xúc gốc không tương thích" }
                     MNNNetNative.nativeSetInputFloatData(net, tensor, if (info.name == "features") features else extra)
                 }
             }
         }
-        check(MNNNetNative.nativeRunSession(net, session) == 0) { "原版情绪模型计算失败" }
+        check(MNNNetNative.nativeRunSession(net, session) == 0) { "Tính toán mô hình cảm xúc gốc thất bại" }
         val tensor = MNNNetNative.nativeGetSessionOutput(net, session, "aev2")
         check(tensor != 0L && MNNNetNative.nativeTensorGetDimensions(tensor).fold(1, Int::times) == 32)
         check(MNNNetNative.nativeTensorGetData(tensor, null) == 32)
         return FloatArray(32) { Float.NaN }.also {
             MNNNetNative.nativeTensorGetData(tensor, it)
             check(it.all(Float::isFinite)) {
-                "原版情绪模型返回无效结果"
+                "Mô hình cảm xúc gốc trả về kết quả không hợp lệ"
             }
         }
     }

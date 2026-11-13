@@ -55,7 +55,7 @@ class AuthViewModel(private val container: AppContainer) : ViewModel() {
                         is LoginOutcome.SignedIn -> {
                             loginChallenge.value = null
                             container.playerController.pause()
-                            state.value = AuthUiState(message = "登录成功")
+                            state.value = AuthUiState(message = "Đăng nhập thành công")
                         }
                     }
                     is AppResult.Failure -> state.value = AuthUiState(message = result.message, failed = true)
@@ -108,7 +108,7 @@ class AuthViewModel(private val container: AppContainer) : ViewModel() {
     }
     fun loginEmailCode(email: String) {
         if (SystemClock.elapsedRealtime() < loginEmailCodeUntil.value) return
-        action("登录验证码已发送") {
+        action("Đã gửi mã xác minh đăng nhập") {
             container.authRepository.sendLoginEmailCode(email).also {
                 if (it is AppResult.Success) loginEmailCodeUntil.value = SystemClock.elapsedRealtime() + 60_000
             }
@@ -118,28 +118,28 @@ class AuthViewModel(private val container: AppContainer) : ViewModel() {
         loginChallenge.value?.let(container.authRepository::discardLoginChallenge)
         super.onCleared()
     }
-    fun register(input: RegistrationInput) = action("注册成功") { container.authRepository.register(input).also { if (it is AppResult.Success) container.playerController.pause() } }
+    fun register(input: RegistrationInput) = action("Đăng ký thành công") { container.authRepository.register(input).also { if (it is AppResult.Success) container.playerController.pause() } }
     fun code(contact: String, phone: Boolean) {
         if (SystemClock.elapsedRealtime() < codeUntil.value) return
-        action("验证码已发送") { container.authRepository.sendRegistrationCode(contact.trim(), phone).also {
+        action("Đã gửi mã xác minh") { container.authRepository.sendRegistrationCode(contact.trim(), phone).also {
             if (it is AppResult.Success) codeUntil.value = SystemClock.elapsedRealtime() + 60_000
         } }
     }
-    fun switch(key: String) = action("账号已切换") {
+    fun switch(key: String) = action("Đã chuyển tài khoản") {
         if (container.roomSession.active) container.roomSession.leave()
         if (container.playerController.state.value.mode == io.github.currencortex.music.core.media.PlayerMode.LOCAL) container.playerController.pause()
         container.authRepository.switchAccount(key)
     }
     fun passwordCode(email: String) {
         if (SystemClock.elapsedRealtime() < resetCodeUntil.value) return
-        action("验证码已发送，5 分钟内有效") { container.authRepository.sendPasswordResetCode(email).also {
+        action("Đã gửi mã xác minh, có hiệu lực trong 5 phút") { container.authRepository.sendPasswordResetCode(email).also {
             if (it is AppResult.Success) resetCodeUntil.value = SystemClock.elapsedRealtime() + 60_000
         } }
     }
-    fun resetPassword(email: String, code: String, newPassword: String) = action("密码已重置，请使用新密码登录") {
+    fun resetPassword(email: String, code: String, newPassword: String) = action("Đã đặt lại mật khẩu, hãy đăng nhập bằng mật khẩu mới") {
         container.authRepository.resetPassword(email, code, newPassword)
     }
-    fun removeSaved(key: String) = action("已移除本机保存的账号") { appResult { container.accountRepository.removeSaved(key) } }
+    fun removeSaved(key: String) = action("Đã xóa tài khoản đã lưu trên thiết bị này") { appResult { container.accountRepository.removeSaved(key) } }
     fun retry() = viewModelScope.launch {
         state.value = AuthUiState(loading = true)
         val result = container.authRepository.restore(container.accountRepository.server)

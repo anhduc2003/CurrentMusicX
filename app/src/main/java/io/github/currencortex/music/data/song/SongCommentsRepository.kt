@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
 enum class CommentSort(val value: String, val label: String) {
-    RECOMMENDED("recommended", "推荐"), HOT("hot", "最热"), LATEST("latest", "最新")
+    RECOMMENDED("recommended", "Đề xuất"), HOT("hot", "Nổi bật nhất"), LATEST("latest", "Mới nhất")
 }
 
 @Serializable internal data class CommentDto(val id: String, val userId: Long = 0, val nickname: String = "",

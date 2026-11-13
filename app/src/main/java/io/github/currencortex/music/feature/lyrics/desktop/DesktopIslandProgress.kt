@@ -31,7 +31,7 @@ internal val desktopIslandLyricInset = desktopEffectPadding() - desktopIslandPro
     val text = measurer.measure(label, TextStyle(color = Color.White.copy(.9f), fontSize = 7.5.sp,
         fontFamily = FontFamily.Monospace), softWrap = false, maxLines = 1)
     Canvas(modifier.testTag("desktop_island_progress").semantics {
-        contentDescription = "已播放 $label"
+        contentDescription = "Đã phát $label"
         if (durationMs > 0) progressBarRangeInfo = ProgressBarRangeInfo(
             ((position?.value ?: 0L).coerceAtLeast(0).toDouble() / durationMs).coerceIn(0.0, 1.0).toFloat(), 0f..1f)
     }) {

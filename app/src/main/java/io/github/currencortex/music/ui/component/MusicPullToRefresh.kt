@@ -73,7 +73,7 @@ fun MusicPullToRefresh(loading: Boolean, onRefresh: () -> Unit, modifier: Modifi
     PullToRefresh(isRefreshing = loading && pull.refreshState != RefreshState.Idle,
         onRefresh = onRefresh, modifier = modifier, pullToRefreshState = pull,
         color = indicatorColor, circleSize = 18.dp,
-        refreshTexts = listOf("下拉刷新", "松开刷新", "正在刷新", "刷新结束"),
+        refreshTexts = listOf("Kéo xuống để làm mới", "Thả ra để làm mới", "Đang làm mới", "Đã làm mới xong"),
         refreshTextStyle = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = indicatorColor),
         content = content)
 }

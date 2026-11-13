@@ -60,8 +60,8 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 Row(Modifier.fillMaxWidth().padding(horizontal = if (choiceLayout) 16.dp else 0.dp)
                     .padding(top = if (choiceLayout) 20.dp else 24.dp).height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    if (actions != null) actions() else UpdateDialogAction("完成", onDismiss,
-                        Modifier.weight(1f).semantics { contentDescription = "关闭$title" })
+                    if (actions != null) actions() else UpdateDialogAction("Hoàn tất", onDismiss,
+                        Modifier.weight(1f).semantics { contentDescription = "Đóng $title" })
                 }
             }
             }
@@ -93,7 +93,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         .musicDialogRowPress(press)
         .toggleable(checked, role = Role.Switch, interactionSource = clickInteractions, indication = null, onValueChange = onCheckedChange)
         .heightIn(min = 48.dp).padding(horizontal = 24.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text("启动时自动检查", color = MiuixTheme.colorScheme.onBackground, fontSize = 15.sp, modifier = Modifier.weight(1f))
+         Text("Tự động kiểm tra khi khởi động", color = MiuixTheme.colorScheme.onBackground, fontSize = 15.sp, modifier = Modifier.weight(1f))
         Spacer(Modifier.width(12.dp))
         GlassSwitch(checked, null, pressed = press.amount.value > .1f)
     }

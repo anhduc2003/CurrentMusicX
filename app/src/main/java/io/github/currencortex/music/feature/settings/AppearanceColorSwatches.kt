@@ -60,7 +60,7 @@ import kotlin.math.floor
                 val interactions = remember { MutableInteractionSource() }
                 val focused by interactions.collectIsFocusedAsState()
                 val ring by animateFloatAsState(if (selected || focused) 1f else 0f, tween(200), label = "swatch ring")
-                val label = color?.let { "#%06X".format(it and 0xFFFFFF) } ?: "跟随系统"
+                 val label = color?.let { "#%06X".format(it and 0xFFFFFF) } ?: "Theo hệ thống"
                 Box(Modifier.size(44.dp).clip(CircleShape)
                     .combinedClickable(enabled = color != null || Build.VERSION.SDK_INT >= 31, role = Role.RadioButton,
                         interactionSource = interactions, indication = null, onClick = { onSelect(color) },
@@ -88,7 +88,7 @@ import kotlin.math.floor
             Box(Modifier.size(44.dp).clip(CircleShape)
                 .clickable(enabled = config.primaryColors.size < 32, interactionSource = addInteractions, indication = null, onClick = onAdd)
                 .settingsPressFeedback(addInteractions, ink)
-                .semantics { contentDescription = "添加主题色" }.testTag("appearance_color_add"), contentAlignment = Alignment.Center) {
+                 .semantics { contentDescription = "Thêm màu chủ đề" }.testTag("appearance_color_add"), contentAlignment = Alignment.Center) {
                 Box(Modifier.size(32.dp).clip(CircleShape).background(colors.surfaceContainerHigh), contentAlignment = Alignment.Center) {
                     Icon(MusicIcons.PaletteAdd, null, Modifier.size(20.dp), tint = colors.onSurfaceVariantSummary)
                 }

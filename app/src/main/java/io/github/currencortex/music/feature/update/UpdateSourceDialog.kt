@@ -63,7 +63,7 @@ internal val UpdateSource.menuLabel:String get()=when(this) {
         } catch (cancelled: CancellationException) { throw cancelled
         } catch (_: Exception) { null }
         if (target == null) {
-            sources.forEach { health[it] = UpdateSourceHealth(UpdateSourceStatus.UNKNOWN, detail = "无法取得安装包信息，请稍后重新打开检测") }
+            sources.forEach { health[it] = UpdateSourceHealth(UpdateSourceStatus.UNKNOWN, detail = "Không thể lấy thông tin gói cài đặt, vui lòng mở lại để kiểm tra sau") }
         } else coroutineScope {
             sources.forEach { candidate -> launch { health[candidate] = sourceCheck.check(target, candidate) } }
         }
@@ -80,10 +80,10 @@ internal val UpdateSource.menuLabel:String get()=when(this) {
     val sources = UpdateSource.forChannel(channel)
     val health = rememberUpdateSourceHealth(release, channel, true, sourceCheck)
     val orderedSources = sources.sortedByHealth(health)
-    UpdateOptionsDialog("下载来源", summary =
-        (if (downloading) "切换来源后，将从头重新下载。\n" else "") + (if (channel == UpdateChannel.CI) "CI 构建使用对应版本的下载地址，可用来源按响应速度排序。" else "CurrentMusic 固定置顶，其他可用来源按响应速度排序。"),
+    UpdateOptionsDialog("Nguồn tải xuống", summary =
+        (if (downloading) "Sau khi chuyển nguồn, quá trình tải xuống sẽ bắt đầu lại từ đầu.\n" else "") + (if (channel == UpdateChannel.CI) "Bản dựng CI sử dụng địa chỉ tải xuống tương ứng với phiên bản, các nguồn khả dụng được sắp xếp theo tốc độ phản hồi." else "CurrentMusic luôn được ghim lên đầu, các nguồn khả dụng khác được sắp xếp theo tốc độ phản hồi."),
         onDismiss = onDismiss, backdrop = backdrop, choiceLayout = true, actions = {
-            UpdateDialogAction("取消", onDismiss, Modifier.weight(1f).testTag("update_source_cancel"), compact = true)
+            UpdateDialogAction("Hủy", onDismiss, Modifier.weight(1f).testTag("update_source_cancel"), compact = true)
         }) {
         // Scope follows the scrolling content, so only reordering animates, never scrolling.
         LookaheadScope { UpdateOptionGroup {
@@ -102,12 +102,12 @@ internal val UpdateSource.menuLabel:String get()=when(this) {
 
 @Composable internal fun UpdateSourceBadge(source: UpdateSource, health: UpdateSourceHealth) {
     val label = when (health.status) {
-        UpdateSourceStatus.CHECKING -> "检测中"
-        UpdateSourceStatus.AVAILABLE -> "可用"
-        UpdateSourceStatus.LIMITED -> "限流"
-        UpdateSourceStatus.TIMEOUT -> "超时"
-        UpdateSourceStatus.UNAVAILABLE -> "不可用"
-        UpdateSourceStatus.UNKNOWN -> "未检测"
+        UpdateSourceStatus.CHECKING -> "Đang kiểm tra"
+        UpdateSourceStatus.AVAILABLE -> "Khả dụng"
+        UpdateSourceStatus.LIMITED -> "Bị giới hạn tốc độ"
+        UpdateSourceStatus.TIMEOUT -> "Quá thời gian chờ"
+        UpdateSourceStatus.UNAVAILABLE -> "Không khả dụng"
+        UpdateSourceStatus.UNKNOWN -> "Chưa kiểm tra"
     }
     val dark = MiuixTheme.colorScheme.onBackground.luminance() > .5f
     val color = when (health.status) {

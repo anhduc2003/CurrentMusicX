@@ -35,7 +35,7 @@ internal class NeteaseListenTogetherRepository(private val transport: NeteaseTra
             put("roomId", invitation.roomId); put("inviterId", invitation.inviterId.toString())
             if (refer.isNotEmpty()) put("refer", refer)
         }, expected)).also { room ->
-            check(room.roomId == invitation.roomId) { "邀请房间与返回房间不一致，请检查已有会话" }
+            check(room.roomId == invitation.roomId) { "Phòng được mời và phòng trả về không khớp, vui lòng kiểm tra phiên hiện có" }
         }
 
     override suspend fun status(expected: NeteaseSession): ListenTogetherStatus {
@@ -55,7 +55,7 @@ internal class NeteaseListenTogetherRepository(private val transport: NeteaseTra
         requireRoom(roomId)
         val info = request("restore/reconnect/info", buildJsonObject {}, expected).obj("data") ?: parseError()
         val returnedRoom = info.text("roomId")
-        check(returnedRoom == roomId) { "一起听会话已变更，请重新检查" }
+        check(returnedRoom == roomId) { "Phiên Nghe cùng nhau đã thay đổi, vui lòng kiểm tra lại" }
         trace("restore mainDevice=${info.bool("mainDevice")} canReconnect=${info.bool("canReconnect")}")
         if (info.bool("mainDevice") == true) return
         if (info.bool("canReconnect") == false) throw ApiException(ErrorKind.Forbidden)
@@ -164,7 +164,7 @@ internal class NeteaseListenTogetherRepository(private val transport: NeteaseTra
 
     private fun roomResult(body: JsonObject): ListenTogetherRoom {
         val data = body.obj("data") ?: parseError()
-        check(data.text("type") != "ALREADY_IN_ROOM") { "网易云已有一起听会话，请选择“恢复一起听”" }
+        check(data.text("type") != "ALREADY_IN_ROOM") { "Nhạc Vân NetEase đã có phiên Nghe cùng nhau, vui lòng chọn “Tiếp tục nghe cùng nhau”" }
         if (data.text("type") == "UNKNOWN") throw ApiException(ErrorKind.Server)
         return data.obj("roomInfo")?.let(::parseRoom) ?: parseError()
     }

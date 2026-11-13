@@ -9,12 +9,12 @@ data class AudioFormatDecision(val accepted: Boolean, val reason: String? = null
 object AudioFormatNegotiator {
     fun negotiate(format: AudioPcmFormat, mode: AudioOutputMode, device: AudioDeviceCapabilities): AudioFormatDecision {
         if ((format.sampleRate ?: 0) <= 0 || (format.channels ?: 0) <= 0 || format.bitDepth == null)
-            return AudioFormatDecision(false, "解码器未报告有效 PCM 格式")
-        if (mode == AudioOutputMode.BIT_PERFECT && !device.usb) return AudioFormatDecision(false, "未找到 USB 输出设备")
-        if (mode == AudioOutputMode.DIRECT && format.encoding != 2) return AudioFormatDecision(false, "当前 Direct 后端仅支持 PCM 16 bit")
-        if (device.rates.isNotEmpty() && format.sampleRate !in device.rates) return AudioFormatDecision(false, "设备未声明此采样率")
-        if (device.encodings.isNotEmpty() && format.encoding !in device.encodings) return AudioFormatDecision(false, "设备未声明此 PCM 位深")
-        if (device.channels.isNotEmpty() && format.channels !in device.channels) return AudioFormatDecision(false, "设备未声明此声道数")
+            return AudioFormatDecision(false, "Bộ giải mã không báo cáo định dạng PCM hợp lệ")
+        if (mode == AudioOutputMode.BIT_PERFECT && !device.usb) return AudioFormatDecision(false, "Không tìm thấy thiết bị đầu ra USB")
+        if (mode == AudioOutputMode.DIRECT && format.encoding != 2) return AudioFormatDecision(false, "Backend Direct hiện chỉ hỗ trợ PCM 16 bit")
+        if (device.rates.isNotEmpty() && format.sampleRate !in device.rates) return AudioFormatDecision(false, "Thiết bị không khai báo tần số lấy mẫu này")
+        if (device.encodings.isNotEmpty() && format.encoding !in device.encodings) return AudioFormatDecision(false, "Thiết bị không khai báo độ sâu bit PCM này")
+        if (device.channels.isNotEmpty() && format.channels !in device.channels) return AudioFormatDecision(false, "Thiết bị không khai báo số kênh này")
         return AudioFormatDecision(true)
     }
 }

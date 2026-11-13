@@ -44,12 +44,12 @@ internal suspend fun scanLocalFolder(context: Context, tree: Uri): List<Song> {
                 currentCoroutineContext().ensureActive()
                 documents += LocalDocument(cursor.getString(0), cursor.getString(1).orEmpty(), cursor.getString(2).orEmpty())
             }
-            check(!cursor.extras.getBoolean(DocumentsContract.EXTRA_LOADING, false)) { "文件夹仍在加载，请重试" }
+            check(!cursor.extras.getBoolean(DocumentsContract.EXTRA_LOADING, false)) { "Thư mục vẫn đang tải, vui lòng thử lại" }
             documents
-        } ?: error("无法读取所选文件夹")
+        } ?: error("Không thể đọc thư mục đã chọn")
     }, onAudio = { document ->
         val uri = DocumentsContract.buildDocumentUriUsingTree(tree, document.id)
-        var title = document.name.substringBeforeLast('.').ifBlank { "未知歌曲" }
+         var title = document.name.substringBeforeLast('.').ifBlank { "Bài hát không xác định" }
         var artist = ""
         var album = ""
         var duration = 0L

@@ -28,22 +28,21 @@ data class MusicSettings(val server: String = ServerDefaults.URL, val quality: A
                          val listeningSource: ListeningSource = ListeningSource.LOCAL)
 
 enum class ListeningSource(val label: String) {
-    LOCAL("CurrentMusicX"), NETEASE("网易云");
+    LOCAL("CurrentMusicX"), NETEASE("Nhạc Vân NetEase");
     companion object { fun from(value: String?) = entries.firstOrNull { it.name == value } ?: LOCAL }
 }
 
 enum class LyricsFont(val label: String) {
-    SYSTEM("系统字体"), WENKAI("霞鹜文楷"), IMPORTED("导入字体");
-    companion object { fun from(value: String?) = entries.firstOrNull { it.name == value } ?: SYSTEM }
+SYSTEM("Phông chữ hệ thống"), WENKAI("Văn Khải Hạ Vụ"), IMPORTED("Nhập phông chữ");    companion object { fun from(value: String?) = entries.firstOrNull { it.name == value } ?: SYSTEM }
 }
 
 enum class LyricsSource(val label: String) {
-    AUTO("自动择优 · 逐字优先"), CURRENT_MUSIC("CurrentMusic 歌词"), NETEASE("网易云歌词"), LOCAL("本地内嵌歌词");
+    AUTO("Tự động lựa chọn tối ưu · Ưu tiên từng chữ"), CURRENT_MUSIC("Lời bài hát CurrentMusic"), NETEASE("Lời bài hát Nhạc Vân NetEase"), LOCAL("Lời bài hát nhúng cục bộ");
     companion object { fun from(value: String?) = entries.firstOrNull { it.name == value } ?: AUTO }
 }
 
 enum class LikeMode(val label: String) {
-    AUTO("自动"), NETEASE("网易云 · 我喜欢"), CURRENT_MUSIC("CurrentMusic · 我喜欢");
+    AUTO("Tự động"), NETEASE("Nhạc Vân NetEase · Tôi thích"), CURRENT_MUSIC("CurrentMusic · Tôi thích");
     fun useNetease(bound: Boolean) = bound && this != CURRENT_MUSIC
     companion object { fun from(value: String?) = entries.firstOrNull { it.name == value } ?: AUTO }
 }
@@ -53,12 +52,12 @@ enum class MusicTransitionMode { OFF, SMART, CROSSFADE;
 }
 
 enum class KaraokeScope(val label: String) {
-    CURRENT("仅当前行"), ALL("拓展全部行"), ALWAYS("总是");
+    CURRENT("Chỉ dòng hiện tại"), ALL("Mở rộng tất cả các dòng"), ALWAYS("Luôn luôn");
     companion object { fun from(value: String?) = entries.firstOrNull { it.name == value } ?: ALL }
 }
 
 enum class LyricsStyle(val label: String) {
-    CLASSIC("经典"), APPLE_MUSIC("Apple Music");
+    CLASSIC("Cổ điển"), APPLE_MUSIC("Apple Music");
     companion object { fun from(value: String?) = entries.firstOrNull { it.name == value } ?: CLASSIC }
 }
 
@@ -87,7 +86,7 @@ data class LyricsDisplayOptions(
 }
 
 enum class LyricsWeight(val label: String) {
-    NORMAL("常规"), ALL("全部粗体"), CURRENT("仅当前行粗体");
+    NORMAL("Thông thường"), ALL("Tất cả in đậm"), CURRENT("Chỉ dòng hiện tại in đậm");
     fun isBold(current: Boolean) = this == ALL || (this == CURRENT && current)
     companion object {
         fun from(value: String?) = entries.firstOrNull { it.name == value } ?: CURRENT

@@ -39,27 +39,27 @@ import java.util.Locale
     val accent = MiuixTheme.colorScheme.primary
     var preview by remember(settings.gains) { mutableStateOf(settings.gains) }
     val status = when {
-        !runtime.supported -> "此设备未提供均衡器"
+        !runtime.supported -> "Thiết bị này không hỗ trợ bộ cân bằng âm thanh"
         runtime.error != null -> runtime.error!!
-        soundPreferences.smartEnabled -> "智能调音正在使用；以下为手动参数，调整后切回手动"
-        !settings.enabled -> "已关闭，保留你的调节参数"
-        runtime.active -> "已连接本机播放器"
-        else -> "开始本机播放后自动生效"
+        soundPreferences.smartEnabled -> "Đang dùng điều chỉnh âm thanh thông minh; bên dưới là các thông số thủ công, hãy chuyển về thủ công sau khi điều chỉnh"
+        !settings.enabled -> "Đã tắt, giữ nguyên các thông số bạn đã điều chỉnh"
+        runtime.active -> "Đã kết nối với trình phát nhạc trên thiết bị này"
+        else -> "Tự động có hiệu lực khi bắt đầu phát nhạc trên thiết bị này"
     }
     SettingsUiScope {
-        SettingsPage("均衡器","equalizer_screen", onBack = onBack) {
+         SettingsPage("Bộ cân bằng âm thanh","equalizer_screen", onBack = onBack) {
             item { Card {
-                SettingsSwitch("开启均衡器", settings.enabled, vm::enabled, summary = status,
+                SettingsSwitch("Bật bộ cân bằng âm thanh", settings.enabled, vm::enabled, summary = status,
                     enabled = runtime.supported, modifier = Modifier.testTag("equalizer_enabled"))
             } }
-            item { SettingsSection("预设与曲线", MusicIcons.Headphones) {
-                SettingsOptionsRow("预设", settings.preset.label,
+            item { SettingsSection("Cài đặt sẵn và đường cong", MusicIcons.Headphones) {
+                SettingsOptionsRow("Cài đặt sẵn", settings.preset.label,
                     EqualizerPreset.entries.filter { it != EqualizerPreset.CUSTOM }.map { preset ->
                         SettingsOption("equalizer_preset_${preset.name.lowercase()}", preset.label, settings.preset == preset,
                             onSelect = { vm.preset(preset) })
                     }, Modifier.testTag("equalizer_selected"))
                 SettingsDivider()
-                SettingsPreference("恢复平直", "将各频段恢复为 0 dB", Modifier.testTag("equalizer_reset"),
+                SettingsPreference("Khôi phục mức phẳng", "Đưa các dải tần về 0 dB", Modifier.testTag("equalizer_reset"),
                     onClick = { vm.preset(EqualizerPreset.FLAT) }, enabled = settings.preset != EqualizerPreset.FLAT)
                 Box(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                 Canvas(Modifier.fillMaxWidth().height(96.dp).testTag("equalizer_curve")) {
@@ -80,7 +80,7 @@ import java.util.Locale
                 }
                 }
             } }
-            item { SettingsSection("频段调节", MusicIcons.Scale) { Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+            item { SettingsSection("Điều chỉnh dải tần", MusicIcons.Scale) { Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                 EqualizerSettings.FREQUENCIES.forEachIndexed { index, frequency ->
                     Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                         Text(if (frequency >= 1000) String.format(Locale.ROOT, "%.1f kHz", frequency / 1000f) else "$frequency Hz",
@@ -96,7 +96,7 @@ import java.util.Locale
                         },
                         onValueChangeFinished = { vm.saveBand(index, preview[index]) },
                         modifier = Modifier.fillMaxWidth().testTag("equalizer_band_$index").semantics {
-                            contentDescription = "$frequency Hz 均衡器"
+                            contentDescription = "$frequency Hz bộ cân bằng âm thanh"
                             setProgress { value ->
                                 if (!settings.enabled || !runtime.supported) false else {
                                     val gain = value.coerceIn(-12f, 12f).roundToInt() * 100

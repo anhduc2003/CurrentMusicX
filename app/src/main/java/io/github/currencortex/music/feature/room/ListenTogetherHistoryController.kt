@@ -135,7 +135,7 @@ internal class ListenTogetherHistoryController(
                 valid(expected, generation)
                 if (attempt != collectionEpoch) throw CancellationException("Collection dismissed")
                 if (ids.isEmpty()) {
-                    mutable.update { it.copy(collectionSongs = emptyList(), collectionError = "本次没有可收藏的歌曲") }
+                    mutable.update { it.copy(collectionSongs = emptyList(), collectionError = "Không có bài hát nào có thể thêm vào bộ sưu tập lần này") }
                     return@launch
                 }
                 // Server order is authoritative; CurrentMusic's resolver supplies song metadata only.
@@ -143,8 +143,8 @@ internal class ListenTogetherHistoryController(
                 valid(expected, generation)
                 if (attempt != collectionEpoch) throw CancellationException("Collection dismissed")
                 val songs = ids.mapNotNull(resolved::get)
-                check(songs.size == ids.size) { "部分歌曲信息暂不可用，请重试" }
-                mutable.update { it.copy(collectionSongs = songs, collectionError = if (songs.isEmpty()) "本次没有可收藏的歌曲" else null) }
+                check(songs.size == ids.size) { "Thông tin một số bài hát tạm thời chưa khả dụng, vui lòng thử lại" }
+                mutable.update { it.copy(collectionSongs = songs, collectionError = if (songs.isEmpty()) "Không có bài hát nào có thể thêm vào bộ sưu tập lần này" else null) }
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (failure: Exception) { if (generation == epoch && attempt == collectionEpoch) mutable.update { it.copy(collectionError = message(failure)) } }
             finally { if (generation == epoch && attempt == collectionEpoch) mutable.update { it.copy(collecting = false) } }
@@ -172,7 +172,7 @@ internal class ListenTogetherHistoryController(
     fun close() { ++epoch; pages.clear(); request?.cancel(); collection?.cancel(); mutable.value = ListenTogetherArchiveState() }
     private fun message(failure: Exception): String = when (failure) {
         is ApiException -> failure.kind.message
-        is IllegalStateException -> failure.message ?: "暂时无法读取一起听记录"
-        else -> "暂时无法读取一起听记录，请重试"
+        is IllegalStateException -> failure.message ?: "Tạm thời không thể đọc lịch sử nghe cùng nhau"
+        else -> "Tạm thời không thể đọc lịch sử nghe cùng nhau, vui lòng thử lại"
     }
 }

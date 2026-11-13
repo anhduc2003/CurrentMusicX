@@ -69,14 +69,14 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 8.dp),
                 verticalAlignment = Alignment.CenterVertically) {
                 if (matching) Box(Modifier.size(44.dp).clip(RoundedCornerShape(12.dp))
-                    .clickable(onClick = back).semantics { contentDescription = "返回歌词管理"; role = Role.Button }
+                    .clickable(onClick = back).semantics { contentDescription = "Quay lại quản lý lời bài hát"; role = Role.Button }
                     .testTag("lyrics_match_header_back"), contentAlignment = Alignment.Center) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, null, Modifier.size(20.dp), tint = colors.onBackground)
                 }
-                Text(if (matching) "匹配歌词" else "歌词管理", Modifier.weight(1f), fontSize = 20.sp,
+                Text(if (matching) "Khớp lời bài hát" else "Quản lý lời bài hát", Modifier.weight(1f), fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold)
                 Box(Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)).clickable(onClick = close)
-                    .semantics { contentDescription = "关闭歌词管理"; role = Role.Button }
+                    .semantics { contentDescription = "Đóng quản lý lời bài hát"; role = Role.Button }
                     .testTag("lyrics_management_close"), contentAlignment = Alignment.Center) {
                     Icon(Icons.Default.Close, null, Modifier.size(20.dp), tint = colors.onSurfaceVariantSummary)
                 }
@@ -114,22 +114,22 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             .padding(horizontal = 16.dp, vertical = 16.dp).testTag("lyrics_management"),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("歌词来源", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                Text(if (loading) "读取中…" else "当前 · $currentSource", Modifier.weight(1f).padding(start = 12.dp).testTag("lyrics_source_current"),
+                Text("Nguồn lời bài hát", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text(if (loading) "Đang đọc…" else "Hiện tại · $currentSource", Modifier.weight(1f).padding(start = 12.dp).testTag("lyrics_source_current"),
                     fontSize = 12.sp, color = hint, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.End)
             }
             recoveryMessage?.let { Text(it, Modifier.testTag("lyrics_storage_recovery"), fontSize = 12.sp, color = colors.error) }
             loadError?.let { Text(it, Modifier.testTag("lyrics_management_load_error"), fontSize = 12.sp, color = colors.error) }
             Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(colors.onBackground.copy(alpha = .035f))) {
-                LyricsSourceChoice(if (automatic) "自动择优" else "默认来源 · $defaultSource",
-                    if (automatic) "按来源顺序 · 逐字优先 · 逐行兜底" else "使用默认歌词服务", options.matchedOrigin == null && !options.useImported,
+                LyricsSourceChoice(if (automatic) "Tự động chọn tốt nhất" else "Nguồn mặc định · $defaultSource",
+                    if (automatic) "Theo thứ tự nguồn · Ưu tiên từng từ · Dự phòng từng dòng" else "Dùng dịch vụ lời bài hát mặc định", options.matchedOrigin == null && !options.useImported,
                     !blocked, onDefault, Modifier.testTag("lyrics_source_default"))
-                options.matchedOrigin?.let { LyricsSourceChoice("匹配歌词", it.label, !options.useImported, !blocked,
+                options.matchedOrigin?.let { LyricsSourceChoice("Khớp lời bài hát", it.label, !options.useImported, !blocked,
                     onMatched, Modifier.testTag("lyrics_source_matched")) }
-                options.importedOrigin?.let { LyricsSourceChoice("导入文件", it.label, options.useImported, !blocked,
+                options.importedOrigin?.let { LyricsSourceChoice("Tệp đã nhập", it.label, options.useImported, !blocked,
                     onImported, Modifier.testTag("lyrics_source_imported")) }
                 if (options.matchedOrigin != null || options.importedOrigin != null) {
-                    Text(if (automatic) "恢复自动择优" else "清除单曲覆盖",
+                    Text(if (automatic) "Khôi phục tự động chọn tốt nhất" else "Xóa ghi đè cho bài hát này",
                         Modifier.fillMaxWidth().clickable(enabled = !blocked, role = Role.Button, onClick = onReset)
                             .heightIn(min = 44.dp).padding(horizontal = 14.dp, vertical = 12.dp).testTag("lyrics_source_reset"),
                         fontSize = 12.sp, color = colors.primary.copy(alpha = if (blocked) .4f else 1f))
@@ -137,54 +137,54 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             }
             LyricsManagementDivider()
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Text("时间偏移", Modifier.weight(1f), fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
-                Text("毫秒 · 仅此歌曲", fontSize = 11.sp, color = hint)
+                Text("Độ lệch thời gian", Modifier.weight(1f), fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text("Mili giây · Chỉ bài hát này", fontSize = 11.sp, color = hint)
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 LyricsActionButton("−250", { onOffsetStep(-250) }, Modifier.width(68.dp).height(44.dp).testTag("lyrics_offset_minus"), enabled = !blocked)
-                TextField(value = offsetInput, onValueChange = onOffsetInput, label = "毫秒", singleLine = true,
+                TextField(value = offsetInput, onValueChange = onOffsetInput, label = "Mili giây", singleLine = true,
                     enabled = !blocked, insideMargin = DpSize(8.dp, 8.dp), cornerRadius = 12.dp, useLabelAsPlaceholder = true,
                     textStyle = MiuixTheme.textStyles.main.copy(fontFamily = FontFamily.Monospace, fontSize = 16.sp, textAlign = TextAlign.Center),
                     modifier = Modifier.weight(1f).height(44.dp).testTag("lyrics_offset_input"))
                 LyricsActionButton("+250", { onOffsetStep(250) }, Modifier.width(68.dp).height(44.dp).testTag("lyrics_offset_plus"), enabled = !blocked)
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(if (!validOffset && offsetInput.isNotEmpty()) "范围 −60000 至 60000 ms" else "正值延后 · 负值提前",
+                Text(if (!validOffset && offsetInput.isNotEmpty()) "Phạm vi −60000 đến 60000 ms" else "Giá trị dương làm trễ · Giá trị âm làm sớm",
                     Modifier.weight(1f), fontSize = 11.sp, color = if (!validOffset && offsetInput.isNotEmpty()) colors.error else hint)
-                LyricsActionButton("归零", onOffsetReset, Modifier.testTag("lyrics_offset_reset"),
+                LyricsActionButton("Đặt về 0", onOffsetReset, Modifier.testTag("lyrics_offset_reset"),
                     enabled = !blocked && options.offsetMs != 0L)
-                LyricsActionButton("保存", onOffsetApply, Modifier.testTag("lyrics_offset_apply"),
+                LyricsActionButton("Lưu", onOffsetApply, Modifier.testTag("lyrics_offset_apply"),
                     enabled = !blocked && validOffset && parsedOffset != options.offsetMs, primary = true)
             }
             alignmentLabel?.let {
-                Text("$it · 手动偏移额外叠加", Modifier.testTag("lyrics_adaptive_alignment"), fontSize = 11.sp, color = hint)
+                Text("$it · Cộng thêm độ lệch thủ công", Modifier.testTag("lyrics_adaptive_alignment"), fontSize = 11.sp, color = hint)
             }
             LyricsManagementDivider()
             Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(colors.primary.copy(alpha = .09f))
                 .clickable(enabled = !blocked, role = Role.Button, onClick = onMatch).padding(14.dp)
                 .testTag("lyrics_match_open"), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("在线匹配歌词", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.primary)
-                    Text("比较来源、查看匹配度与歌词预览", fontSize = 11.sp, color = hint)
+                    Text("Khớp lời bài hát trực tuyến", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = colors.primary)
+                    Text("So sánh nguồn, xem mức độ khớp và bản xem trước lời bài hát", fontSize = 11.sp, color = hint)
                 }
                 Text("›", fontSize = 24.sp, color = colors.primary)
             }
-            Text("歌词文件", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+            Text("Tệp lời bài hát", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                LyricsActionButton("导入", onImport, Modifier.weight(1f).testTag("lyrics_import"), enabled = !blocked)
-                LyricsActionButton("导出 FIA", onExportFia, Modifier.weight(1f).testTag("lyrics_export_fia"), enabled = !blocked && canExport)
-                LyricsActionButton("导出 LRC", onExportLrc, Modifier.weight(1f).testTag("lyrics_export_lrc"), enabled = !blocked && canExport)
+                LyricsActionButton("Nhập", onImport, Modifier.weight(1f).testTag("lyrics_import"), enabled = !blocked)
+                LyricsActionButton("Xuất FIA", onExportFia, Modifier.weight(1f).testTag("lyrics_export_fia"), enabled = !blocked && canExport)
+                LyricsActionButton("Xuất LRC", onExportLrc, Modifier.weight(1f).testTag("lyrics_export_lrc"), enabled = !blocked && canExport)
             }
-            Text(if (fileHelp) "收起格式说明" else "支持的格式与导出说明", Modifier.clip(RoundedCornerShape(8.dp))
+            Text(if (fileHelp) "Thu gọn hướng dẫn định dạng" else "Định dạng được hỗ trợ và hướng dẫn xuất", Modifier.clip(RoundedCornerShape(8.dp))
                 .clickable { fileHelp = !fileHelp }.padding(vertical = 8.dp), fontSize = 12.sp, color = hint)
-            if (fileHelp) Text("支持 LRC、TTML、FIA、VTT、YRC、明文 QRC 和 KRC，最大 2 MB。FIA 保留翻译、和声与单曲偏移；LRC 导出原文和真实逐字时间。",
+            if (fileHelp) Text("Hỗ trợ LRC, TTML, FIA, VTT, YRC, QRC văn bản thuần và KRC, tối đa 2 MB. FIA giữ nguyên bản dịch, bè và độ lệch của từng bài hát; LRC xuất bản gốc và thời gian thực của từng từ.",
                 fontSize = 11.sp, lineHeight = 17.sp, color = hint)
-            if (blocked) Text("正在处理…", fontSize = 12.sp, color = hint)
+             if (blocked) Text("Đang xử lý…", fontSize = 12.sp, color = hint)
             message?.let { Text(it, Modifier.testTag("lyrics_management_message"), fontSize = 12.sp,
                 color = if (messageError) colors.error else colors.primary) }
         }
         LyricsManagementDivider()
-        LyricsActionButton("完成", onClose, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), enabled = !blocked)
+         LyricsActionButton("Hoàn tất", onClose, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), enabled = !blocked)
     }
 }
 

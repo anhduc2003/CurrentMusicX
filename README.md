@@ -1,243 +1,218 @@
 <div align="center">
 
-<img src=".github/img/icon.svg" width="88" height="88" alt="CurrentMusicX 蓝色圆润音符图标">
+<img src=".github/img/icon.svg" width="88" height="88" alt="Biểu tượng nốt nhạc bo tròn màu xanh CurrentMusicX">
 
 # CurrentMusicX
 
-**简体中文** · [English](README-en.md)
+**Tiếng Trung giản thể** · [Tiếng Anh](README-en.md)
 
-**让封面、歌词与音乐一起流动**
+**Để bìa album, lời bài hát và âm nhạc cùng hòa quyện**
 
-网易云音乐库 · Navidrome / Emby 自建曲库 · 双人一起听
+Thư viện Nhạc Vân NetEase · Thư viện nhạc tự lưu trữ Navidrome / Emby · Cùng nghe nhạc đôi
 
-Kotlin / Jetpack Compose / Miuix 原生 Android 客户端
+Kotlin / Jetpack Compose / Ứng dụng Android gốc Miuix
 
 <p>
-  <a href="https://github.com/bileizhen/CurrentMusicX/releases/latest"><img src="https://img.shields.io/github/v/release/bileizhen/CurrentMusicX?style=flat-square&color=1677FF" alt="最新版本"></a>
-  <a href="#兼容性"><img src="https://img.shields.io/badge/Android-8.0%2B-1677FF?style=flat-square" alt="Android 8.0 及以上"></a>
-  <a href="#开源与致谢"><img src="https://img.shields.io/badge/License-GPL--3.0_%2B_AGPL--3.0-555555?style=flat-square" alt="GPL-3.0 与 AGPL-3.0 组件"></a>
-</p>
+  <a href="https://github.com/bileizhen/CurrentMusicX/releases/latest"><img src="https://img.shields.io/github/v/release/bileizhen/CurrentMusicX?style=flat-square&color=1677FF" alt="Phiên bản mới nhất"></a>
+<a href="#Tính tương thích"><img src="https://img.shields.io/badge/Android-8.0%2B-1677FF?style=flat-square" alt="Android 8.0 trở lên"></a><a href="#Mã nguồn mở và ghi nhận"><img src="https://img.shields.io/badge/License-GPL--3.0_%2B_AGPL--3.0-555555?style=flat-square" alt="Các thành phần GPL-3.0 và AGPL-3.0"></a></p>
 
-**[下载应用](https://github.com/bileizhen/CurrentMusicX/releases/latest)** · [开始使用](#开始使用) · [更新记录](https://github.com/bileizhen/CurrentMusicX/releases) · [反馈问题](https://github.com/bileizhen/CurrentMusicX/issues)
-
+**[Tải ứng dụng](https://github.com/bileizhen/CurrentMusicX/releases/latest)** · [Bắt đầu sử dụng](#Bắt đầu sử dụng) · [Lịch sử cập nhật](https://github.com/bileizhen/CurrentMusicX/releases) · [Báo cáo sự cố](https://github.com/bileizhen/CurrentMusicX/issues)
 </div>
 
-CurrentMusicX 是 [CurrentMusic](https://github.com/backrooms-yrc/CurrentMusic) 的原生 Android 客户端。圆形封面、动态取色、逐字歌词与悬浮播放器，让音乐库、发现和播放自然衔接，适配竖屏、横屏与宽屏布局。
+CurrentMusicX là ứng dụng Android gốc của [CurrentMusic](https://github.com/backrooms-yrc/CurrentMusic). Bìa album hình tròn, màu sắc động, lời bài hát tô sáng từng chữ và trình phát nổi giúp thư viện nhạc, khám phá và phát nhạc kết nối liền mạch, đồng thời hỗ trợ bố cục dọc, ngang và màn hình rộng.
 
-## 界面预览
-
-<p align="center">
-  <img src=".github/img/home.jpg" width="320" alt="首页：每日推荐、音乐库入口与悬浮播放器">
-  <img src=".github/img/player.jpg" width="320" alt="播放器：沉浸式封面、动态取色背景与歌词">
-</p>
-
-<p align="center"><sub>RMX5060 真机 · 正式版 1.3.1 · 2026-11-03 拍摄。界面以实际安装版本为准；点击图片可查看原图。</sub></p>
-
-<details>
-<summary>更多界面：歌词、搜索、艺人主页与发现</summary>
+## Xem trước giao diện
 
 <p align="center">
-  <img src=".github/img/lyrics.jpg" width="280" alt="歌词：莫奈动画、逐字高亮与翻译">
-  <img src=".github/img/search.jpg" width="280" alt="搜索：歌曲、歌手与专辑结果">
+  <img src=".github/img/home.jpg" width="320" alt="Trang chủ: gợi ý hằng ngày, lối vào thư viện nhạc và trình phát nổi">
+  <img src=".github/img/player.jpg" width="320" alt="Trình phát: bìa album đắm chìm, nền đổi màu động và lời bài hát">
+</p>
+
+<p align="center"><sub>Thiết bị thật RMX5060 · Bản chính thức 1.3.1 · Chụp ngày 2026-11-03. Giao diện có thể khác tùy phiên bản cài đặt thực tế; nhấp vào ảnh để xem ảnh gốc.</sub></p>
+
+<details>
+<summary>Thêm giao diện: lời bài hát, tìm kiếm, trang nghệ sĩ và khám phá</summary>
+
+<p align="center">
+  <img src=".github/img/lyrics.jpg" width="280" alt="Lời bài hát: hoạt ảnh Monet, tô sáng từng chữ và bản dịch">
+  <img src=".github/img/search.jpg" width="280" alt="Tìm kiếm: kết quả bài hát, ca sĩ và album">
 </p>
 <p align="center">
-  <img src=".github/img/artist.jpg" width="280" alt="艺人主页：作品与歌手信息">
-  <img src=".github/img/discover.jpg" width="280" alt="发现：音乐风格与推荐入口">
+  <img src=".github/img/artist.jpg" width="280" alt="Trang nghệ sĩ: tác phẩm và thông tin ca sĩ">
+  <img src=".github/img/discover.jpg" width="280" alt="Khám phá: thể loại nhạc và lối vào mục gợi ý">
 </p>
 
 </details>
 
-## 开始使用
+## Bắt đầu sử dụng
 
-1. **下载安装。** 前往 [Releases](https://github.com/bileizhen/CurrentMusicX/releases/latest) 下载 `CurrentMusic-Android-v版本号.apk`，按系统提示安装。同签名正式版可覆盖升级。
-2. **选择来源。** 在「设置 → 音源与网络」分别选择音乐音源和歌词来源。歌词默认**自动择优：逐字优先，逐行兜底**。
-3. **连接音乐库。** 按需登录 CurrentMusic、绑定网易云，或在「设置 → 音源与网络 → 自建曲库」连接 Navidrome / Emby，即可搜索、收藏和播放。连接后的曲库入口会显示在「我的 → 音乐服务」，退出账号后隐藏。
+1. **Tải xuống và cài đặt.** Truy cập [Releases](https://github.com/bileizhen/CurrentMusicX/releases/latest), tải `CurrentMusic-Android-vsố phiên bản.apk` rồi cài đặt theo hướng dẫn của hệ thống. Bản chính thức cùng chữ ký có thể cài đè để nâng cấp.2. **Chọn nguồn.** Trong「Cài đặt → Nguồn nhạc và mạng」, chọn riêng nguồn nhạc và nguồn lời bài hát. Mặc định, lời bài hát được **tự động chọn nguồn phù hợp nhất: ưu tiên từng chữ, dự phòng từng dòng**.
+3. **Kết nối thư viện nhạc.** Tùy nhu cầu, đăng nhập CurrentMusic, liên kết với Nhạc Vân NetEase hoặc kết nối Navidrome / Emby trong「Cài đặt → Nguồn nhạc và mạng → Thư viện nhạc tự lưu trữ」để tìm kiếm, lưu vào danh sách yêu thích và phát nhạc. Sau khi kết nối, lối vào thư viện nhạc sẽ xuất hiện trong「Của tôi → Dịch vụ âm nhạc」và bị ẩn sau khi đăng xuất.
 
-歌曲、音质、会员音效及推荐的可用性，以对应服务和账号权限为准。本页介绍当前 `main` 源码；已发布版本的变化与验收范围见 [GitHub Releases](https://github.com/bileizhen/CurrentMusicX/releases)。
+Tính khả dụng của bài hát, chất lượng âm thanh, hiệu ứng âm thanh dành cho thành viên và nội dung gợi ý tùy thuộc vào dịch vụ tương ứng và quyền của tài khoản. Trang này giới thiệu mã nguồn `main` hiện tại; xem các thay đổi và phạm vi nghiệm thu của những phiên bản đã phát hành tại [GitHub Releases](https://github.com/bileizhen/CurrentMusicX/releases).
 
-[功能一览](#功能一览) · [音源与歌词](#音源与歌词) · [项目实现原理](#项目实现原理) · [兼容性](#兼容性) · [常见问题](#常见问题) · [构建与测试](#从源码构建与设备测试) · [参与贡献](#issuespr-与版本发布)
+[Tổng quan tính năng](#Tổng quan tính năng) · [Nguồn nhạc và lời bài hát](#Nguồn nhạc và lời bài hát) · [Nguyên lý hoạt động của dự án](#Nguyên lý hoạt động của dự án) · [Tính tương thích](#Tính tương thích) · [Câu hỏi thường gặp](#Câu hỏi thường gặp) · [Build và kiểm thử](#Build từ mã nguồn và kiểm thử trên thiết bị) · [Đóng góp](#issues, PR và phát hành phiên bản)
+## Tổng quan tính năng
 
-## 功能一览
+### Trải nghiệm nghe nhạc mở rộng theo từng giai điệu
 
-### 随音乐展开的播放体验
+- **Phát nhạc và điều khiển**：Điều khiển trong nền, thanh thông báo, màn hình khóa và qua Bluetooth; hàng đợi, lặp, phát ngẫu nhiên, chế độ rung động trái tim, hẹn giờ tắt và MV; nhấn giữ trình phát thu nhỏ để xác định vị trí bài đang phát trong danh sách hiện tại.
+- **Lời bài hát và hiệu ứng động**：Tự động khớp từ sáu nguồn, tô sáng từng chữ, bản dịch và phiên âm; hiệu ứng động Monet, khói cuộn, bụi sao và phối cảnh; chỉnh độ lệch riêng cho từng bài, nhập nhiều định dạng và xuất FIA / LRC.
+- **Hiệu ứng âm thanh và chuyển tiếp**：Bộ cân bằng âm thanh trên thiết bị, hiệu ứng âm thanh tiêu chuẩn nguyên bản và thông minh, AI điều chỉnh âm thanh theo cảm xúc, AI chuyên gia tinh chỉnh âm thanh và chế độ phát loa ngoài; chuyển tiếp thông minh hoặc mờ dần.
+- **Tải xuống và chia sẻ**：Chọn chất lượng âm thanh và thư mục, theo dõi tiến trình nền, hủy và thử lại; ghi thẻ âm thanh, ảnh bìa và lời bài hát; tạo poster, liên kết phát nhạc và mã QR.
+- **Mức chất lượng âm thanh**：Hi-Res (`hires`), âm thanh độ nét cao tinh tuyển (`jyeffect`) và âm thanh vòm tinh tuyển (`vivid`) được hiển thị riêng; có thể chọn mức cao hơn và Dolby Atmos. Mức đã chọn là chất lượng yêu cầu từ nguồn nhạc, không có nghĩa tệp cuối cùng hoặc âm thanh đầu ra của thiết bị đã đạt chất lượng đó; khả năng sử dụng thực tế phụ thuộc vào nguồn nhạc, bài hát và quyền của tài khoản.
 
-- **播放与控制**：后台、通知栏、锁屏和蓝牙控制；队列、循环、随机、心动模式、定时关闭及 MV；长按迷你播放器可在当前歌单中定位正在播放的歌曲。
-- **歌词与动效**：六源自动匹配，逐字高亮、翻译与罗马音；莫奈动画、流烟、星尘与透视效果；单曲偏移、多格式导入及 FIA / LRC 导出。
-- **音效与衔接**：本机均衡器、原版标准及智能音效、AI 情绪调音师、AI 调音大师与外放场景；智能过渡或淡入淡出。
-- **下载与分享**：音质与目录选择、后台进度、取消与重试；写入音频标签、封面和歌词；生成海报、播放链接与二维码。
-- **音质档位**：Hi-Res（`hires`）、高清臻音（`jyeffect`）和臻音全景声（`vivid`）分别显示；可选较高及杜比全景声。所选档位是向音源请求的质量，不代表最终文件或设备输出已达到该质量，实际可用性取决于音源、歌曲与账号权限。
+### Thư viện nhạc của riêng bạn, cùng nhau thưởng thức
 
-### 自己的音乐库，也能一起听
+- **Thư viện nhạc**：Quản lý mục Nhạc yêu thích và danh sách phát của Nhạc Vân NetEase (bao gồm lưu danh sách phát của người khác), danh sách phát tự tạo bằng CurrentMusic, album và nghệ sĩ từ Navidrome / Emby; hỗ trợ yêu thích, tìm kiếm và phát nhạc ở chất lượng gốc.
+- **Nhạc trên thiết bị**：Mở「Nhạc trên thiết bị → Phạm vi quét → Chọn thư mục」để chỉ quét thư mục đã chọn và các thư mục con, đồng thời ghi nhớ vị trí đã chọn; thông báo chọn lại khi quyền truy cập hết hiệu lực. Muốn quét nhạc trên toàn thiết bị, cần chủ động chọn và cấp quyền âm thanh; thay đổi phạm vi quét không thay thế hàng đợi phát hiện tại.
+- **Khám phá âm nhạc**：Tìm kiếm theo danh mục, tìm bài hát bằng lời, từ khóa gợi ý, đề xuất hằng ngày, tìm kiếm thịnh hành và phong cách âm nhạc; chế độ khám phá riêng tư hỗ trợ các chế độ mặc định, quen thuộc, khám phá, ghép hình và bối cảnh động; có thể khôi phục hàng đợi ban đầu sau khi kết thúc.
+- **Cùng nghe nhạc**：Lời mời gốc và liên kết ngắn của Nhạc Vân NetEase, hàng đợi chia sẻ, đồng bộ chuyển bài và khôi phục khi mất kết nối; lịch sử nghe cùng nhau, bảng xếp hạng, báo cáo kết thúc và báo cáo duyên phận.
+- **Tài khoản và giao lưu**：Nhiều tài khoản, cấp độ và quá trình phát triển tài khoản (bao gồm thử thách cấp độ), quản lý hồ sơ, đổi mật khẩu và khôi phục qua email; đăng nhập còn hỗ trợ mã xác minh email, câu hỏi bảo mật và khóa truy cập (Android 9 trở lên), đồng thời có thể quản lý ứng dụng xác thực và bảo vệ bằng câu hỏi bảo mật;「Của tôi → Thời lượng nghe nhạc」tổng hợp lịch sử nghe nhạc từ thiết bị này và Nhạc Vân NetEase, cung cấp báo cáo tuần / tháng / năm và xuất tường đĩa nhạc; thông báo, bài đăng, trò chuyện công khai và hội thoại AI; có thể bật trung tâm nhiệm vụ Nhạc Vân NetEase và tự động điểm danh khi ứng dụng ở foreground, mặc định tắt.
 
-- **音乐库**：网易云我喜欢与歌单管理（含收藏他人歌单）、CurrentMusic 自建歌单、Navidrome / Emby 专辑与艺术家；支持收藏、搜索和原音质播放。
-- **本地音乐**：进入「本地音乐 → 扫描范围 → 选择文件夹」，只扫描所选目录及子目录，记住所选位置；授权失效时提示重新选择。扫描全机音乐需要显式选择并授予音频权限，修改扫描范围不替换当前播放队列。
-- **发现音乐**：分类搜索、歌词搜歌、候选词、每日推荐、热搜与音乐风格；私人漫游支持默认、熟悉、探索、拼图及动态场景，结束后可恢复原队列。
-- **双人一起听**：网易云原生邀请与短链接、共享队列、同步切歌与断线恢复；一起听记录、排行、结束报告和缘分报告。
-- **账号与交流**：多账号、账号等级与成长（含等级试炼）、资料管理、密码修改与邮箱找回，登录另支持邮箱验证码、安全问题与通行密钥（Android 9 及以上），并可管理验证器与安全问题保护；「我的 → 听歌时长」汇总本机与网易云双来源听歌足迹，提供周 / 月 / 年度报告和唱片墙导出；公告、帖子、公共聊天和 AI 对话；可选网易云任务中心与前台自动签到，默认关闭。
+### Tùy chỉnh theo sở thích
 
-### 调成喜欢的样子
-
-深浅主题、纯黑模式与 Monet 取色；圆形或沉浸式封面、自定义播放背景、液态玻璃、悬浮底栏与桌面歌词。外观页可实时预览主题，调整颜色、字体、文字缩放、开屏动画和歌单样式。
+Giao diện sáng và tối, chế độ đen tuyền và chọn màu Monet; ảnh bìa hình tròn hoặc đắm chìm, hình nền phát nhạc tùy chỉnh, kính lỏng, thanh điều hướng nổi và lời bài hát trên màn hình chính. Trang giao diện cho phép xem trước chủ đề theo thời gian thực và điều chỉnh màu sắc, phông chữ, tỷ lệ chữ, hoạt ảnh khởi chạy và kiểu danh sách phát.
 
 <details>
-<summary>外观与交互细节</summary>
+<summary>Chi tiết về giao diện và tương tác</summary>
 
-- **主题与字体**：预览首页、发现、我的、设置和迷你播放器；支持色板、网格 / 光谱 / HSV 取色、系统字体搜索及导入 TTF / OTF / TTC，导入字体复制到应用内保存。
-- **玻璃材质**：「设置 → 外观 → 液态玻璃」可选标准或液态；液态样式参考 FlClash 的透光、折射边缘与柔和阴影，模糊开关独立控制磨砂程度。Android 13 以下或无法采样背景时使用普通面板。
-- **开屏动画**：经典（默认）、光环、签名与无动画，可在设置中预览。签名样式离线书写当前用户名，空用户名显示「欢迎聆听」；长名字自动换行缩放，未覆盖字形渐显，系统关闭动画时直接进入完成态。
-- **导航与布局**：固定渐隐顶栏、悬浮底栏、分组圆角设置列表与容器变换返回；Chat 使用多行输入区和添加菜单，保留失败草稿与显式重试，进入后隐藏底栏。
-- **横屏播放器**：遵循外观页的封面选择；沉浸式封面铺满播放页，右侧歌词与控制区使用渐暗背景，左右滑动仍在歌词和播放控制之间切换。
-- **歌单浏览**：Depth Ribbon 立体缎带或 CD 唱片架；唱片架支持随机挑歌、高潮片段或整首试听、循环及自动下一首，取消喜欢后可撤销。
+- **Chủ đề và phông chữ**：Xem trước trang chủ, khám phá, của tôi, cài đặt và trình phát thu nhỏ; hỗ trợ bảng màu, chọn màu dạng lưới / quang phổ / HSV, tìm kiếm phông chữ hệ thống và nhập TTF / OTF / TTC; phông chữ nhập vào được sao chép và lưu trong ứng dụng.
+- **Chất liệu kính**：「Cài đặt → Giao diện → Kính lỏng」cho phép chọn kiểu tiêu chuẩn hoặc kính lỏng; kiểu kính lỏng lấy cảm hứng từ hiệu ứng truyền sáng, viền khúc xạ và bóng mềm của FlClash; công tắc làm mờ điều khiển riêng mức độ kính mờ. Trên Android dưới phiên bản 13 hoặc khi không thể lấy mẫu nền, ứng dụng sẽ dùng bảng thông thường.
+- **Hoạt ảnh khởi chạy**：Cổ điển (mặc định), quầng sáng, chữ ký và không hoạt ảnh; có thể xem trước trong cài đặt. Kiểu chữ ký viết tên người dùng hiện tại khi ngoại tuyến; nếu tên người dùng trống, hiển thị「Chào mừng bạn lắng nghe」; tên dài sẽ tự động xuống dòng và thu nhỏ, các nét chữ chưa được vẽ sẽ dần hiện ra; khi hệ thống tắt hoạt ảnh, ứng dụng chuyển thẳng sang trạng thái hoàn tất.
+- **Điều hướng và bố cục**：Thanh trên cố định với hiệu ứng mờ dần, thanh điều hướng nổi, danh sách cài đặt bo góc theo nhóm và chuyển đổi vùng chứa khi quay lại; Chat dùng vùng nhập nhiều dòng và menu thêm, giữ lại bản nháp khi gửi thất bại và cho phép thử lại rõ ràng; thanh điều hướng dưới được ẩn khi mở.
+- **Trình phát ngang**：Tuân theo lựa chọn ảnh bìa trên trang giao diện; ảnh bìa đắm chìm phủ kín trang phát, khu vực lời bài hát và điều khiển bên phải dùng nền tối dần; vuốt trái hoặc phải vẫn chuyển đổi giữa lời bài hát và điều khiển phát nhạc.
+- **Duyệt danh sách phát**：Dải ruy-băng 3D Depth Ribbon hoặc giá đĩa CD; giá đĩa hỗ trợ chọn bài ngẫu nhiên, nghe thử đoạn cao trào hoặc toàn bộ bài, phát lặp và tự động phát bài tiếp theo; có thể hoàn tác sau khi bỏ yêu thích.
 
 </details>
 
 <details>
-<summary>播放、歌词与音效说明</summary>
+<summary>Hướng dẫn về phát nhạc, lời bài hát và hiệu ứng âm thanh</summary>
 
-- 搜索结果点击单曲只插入并播放该曲，保留原队列；歌单和专辑支持整列表播放。
-- 自动切歌的智能过渡与淡入淡出择一开启，默认关闭；淡入淡出可调 1–12 秒。允许与其他应用同时播放可单独设置。
-- 「播放器右上角菜单 → 播放背景」可从系统选择图片，预览并调整 0–100% 模糊度；图片仅保存在本机，重启保留，可恢复默认封面取色背景。
-- 「我的 → 网易云账号 → 网易云任务」开启后，“我的”页会在网易云账号下方显示任务入口。需要本机网易云登录；自动签到另行开启，仅在 App 前台进行日常与云贝签到。任务进度和奖励由网易云确认，听歌使用实际播放记录。
-- 歌词优先使用真实逐字时间，过滤服务端估算轴。卡拉 OK 兼容策略选「总是」时，可为普通逐行歌词生成近似高亮，属于本地显示效果。「歌词页自动隐藏控制面板」默认关闭，开启后歌词页 3 秒无操作即隐藏控制区，点击底部按钮恢复。
-- 音效页面使用原生 Compose；已内置适配的 ARM64 引擎，无需另装网易云。会员权益由服务端核验，未接入的算法会明确提示；外放场景仅在当前运行期间保留。
-- 应用内不常驻显示歌词 / FPS 灵动岛，仅临时显示音效、下载与错误反馈；桌面悬浮歌词需系统授权，窗口始终锁定，支持在设置中调整高度、字号和翻译，并保留点击切换与左右滑动切歌。
+- Khi nhấn vào một bài hát trong kết quả tìm kiếm, chỉ bài đó được thêm vào và phát, hàng đợi hiện tại được giữ nguyên; danh sách phát và album hỗ trợ phát toàn bộ danh sách.
+- Chỉ bật một trong hai tùy chọn: chuyển tiếp thông minh khi tự động chuyển bài hoặc hiệu ứng mờ dần; mặc định cả hai đều tắt. Có thể điều chỉnh hiệu ứng mờ dần từ 1–12 giây. Tùy chọn cho phép phát đồng thời với ứng dụng khác được cài đặt riêng.
+- Chọn 「Menu → Nền phát」 ở góc trên bên phải trình phát để chọn ảnh từ hệ thống, xem trước và điều chỉnh độ mờ từ 0–100%; ảnh chỉ được lưu trên thiết bị và vẫn được giữ sau khi khởi động lại. Có thể khôi phục nền mặc định lấy màu từ ảnh bìa.- Sau khi bật 「Của tôi → Tài khoản NetEase Cloud Music → Nhiệm vụ NetEase Cloud Music」, trang “Của tôi” sẽ hiển thị lối vào nhiệm vụ bên dưới tài khoản NetEase Cloud Music. Cần đăng nhập NetEase Cloud Music trên thiết bị; phải bật riêng tính năng tự động điểm danh, chỉ thực hiện điểm danh hằng ngày và điểm danh Yunbei khi ứng dụng đang ở tiền cảnh. Tiến độ nhiệm vụ và phần thưởng do NetEase Cloud Music xác nhận; việc nghe nhạc được ghi nhận dựa trên lịch sử phát thực tế.- Ưu tiên dùng mốc thời gian từng chữ thực tế cho lời bài hát và lọc bỏ trục thời gian ước tính từ máy chủ. Khi chọn chiến lược tương thích karaoke là 「Luôn luôn」, có thể tạo hiệu ứng tô sáng gần đúng cho lời bài hát thông thường hiển thị theo từng dòng; đây chỉ là hiệu ứng hiển thị trên thiết bị. Tùy chọn 「Tự động ẩn bảng điều khiển trên trang lời bài hát」 mặc định tắt; khi bật, khu vực điều khiển trên trang lời bài hát sẽ ẩn sau 3 giây không thao tác. Nhấn nút ở dưới cùng để hiện lại.- Trang hiệu ứng âm thanh sử dụng Compose gốc; đã tích hợp sẵn engine tương thích ARM64, không cần cài thêm NetEase. Quyền lợi thành viên được máy chủ xác minh; các thuật toán chưa được tích hợp sẽ hiển thị thông báo rõ ràng. Trong trường hợp phát qua loa ngoài, thiết lập chỉ được giữ trong phiên chạy hiện tại.- Ứng dụng không hiển thị thường trực lời bài hát / FPS trên đảo động, mà chỉ hiển thị tạm thời hiệu ứng âm thanh, nội dung tải xuống và phản hồi lỗi. Lời bài hát nổi trên màn hình chính cần được hệ thống cấp quyền; cửa sổ luôn được khóa. Có thể điều chỉnh chiều cao, cỡ chữ và bản dịch trong phần cài đặt; vẫn hỗ trợ nhấn để chuyển bài và vuốt trái/phải để đổi bài.
 
 </details>
 
 <details>
-<summary>音乐库、搜索与一起听说明</summary>
+<summary>Hướng dẫn về thư viện nhạc, tìm kiếm và nghe cùng nhau</summary>
 
-- CurrentMusic 账号支持密码、邮箱验证码、安全问题与通行密钥登录，通行密钥的服务器适配见 [README-ANDROID-PASSKEYS.md](README-ANDROID-PASSKEYS.md)。网易云登录需先注册并登录 CurrentMusic 账号，再使用扫码或手机验证码。本机登录后仍直连网易云搜索、歌单、收藏、推荐与评论。没有本机登录时，部分服务可复用 CurrentMusic 账号的云端绑定，云端凭据不下载到本机。
-- 「网易云作为主音乐库」决定默认音乐库入口；「设置 → 播放 → 默认红心位置」独立控制收藏目标。Navidrome 歌曲使用自己的服务器收藏。
-- 歌单支持搜索、排序、创建与管理，歌单与「我喜欢」页可多选歌曲批量收藏或取消收藏，网易云他人歌单支持收藏订阅；可选 Depth Ribbon 立体缎带或 CD 唱片架浏览；唱片架支持搜索收拢、随机挑歌、高潮片段或整首试听、循环与自动下一首，取消喜欢后可在灵动岛撤销。CurrentMusic 自建歌单可导入网易云「我喜欢」。切换音乐库不会删除原有歌单。
-- 搜索首页支持收起历史、双列推荐词和可横滑的网易云搜索热榜（含 ACG、日语等分类）；输入片段显示候选词，点选直接搜索；「歌词」分类支持输入记得的歌词搜歌，并展示命中的歌词片段。
-- 搜索页「歌单」分类展示网易云歌单封面、创建者和歌曲数，支持分页与失败重试；点击沿用原有歌单详情，切换分类及返回后保留结果与滚动位置。
-- 在聊天或浏览器中点击网易云歌曲、歌单、专辑、歌手、MV、`163cn.tv` 短链接、一起听邀请或 CurrentMusic 站点 `/app/` 链接可在应用内打开：歌曲读取信息后播放并展开播放器，其余进入对应详情页，一起听邀请仅预填、确认后才加入。CurrentMusic 域名依赖站点应用关联验证，网易云域名需在系统「默认打开链接」中允许；未支持的路由显示提示。
-- 网易云一起听复用原有搜索与播放队列，支持双方口味推荐、移除、清空、整队列下载和收藏；推荐、历史、排行与报告受服务端权限限制。
-- 冷启动检查并恢复中断的网易云会话；启动时主动开始其他播放会取消本次自动恢复。结束会话后，确认远端结束才展示报告，可收藏歌曲并导出分享海报。
-- CurrentMusic 服务器房间另支持密码、点歌审批和成员权限。Navidrome / Emby 私有曲库当前仅在本机播放，不参与 CurrentMusic 房间。
+- Tài khoản CurrentMusic hỗ trợ đăng nhập bằng mật khẩu, mã xác minh email, câu hỏi bảo mật và khóa truy cập. Xem [README-ANDROID-PASSKEYS.md](README-ANDROID-PASSKEYS.md) để biết thông tin về khả năng tương thích khóa truy cập trên máy chủ. Để đăng nhập NetEase Cloud Music, trước tiên hãy đăng ký và đăng nhập tài khoản CurrentMusic, sau đó dùng mã QR hoặc mã xác minh điện thoại. Sau khi đăng nhập trên thiết bị, ứng dụng vẫn kết nối trực tiếp với NetEase Cloud Music để tìm kiếm, truy cập danh sách phát, mục yêu thích, nội dung đề xuất và bình luận. Khi chưa đăng nhập trên thiết bị, một số dịch vụ có thể dùng lại liên kết đám mây của tài khoản CurrentMusic; thông tin xác thực trên đám mây sẽ không được tải xuống thiết bị.- 「NetEase Cloud làm thư viện nhạc chính」 quyết định lối vào thư viện nhạc mặc định; 「Cài đặt → Phát → Vị trí mặc định của bài hát yêu thích」 điều khiển riêng nơi lưu bài hát yêu thích. Bài hát trên Navidrome sử dụng mục yêu thích riêng của máy chủ đó.- Danh sách phát hỗ trợ tìm kiếm, sắp xếp, tạo và quản lý. Trong danh sách phát và trang 「Bài hát yêu thích」, có thể chọn nhiều bài hát để thêm hoặc xóa khỏi mục yêu thích hàng loạt; danh sách phát của người khác trên NetEase Cloud Music hỗ trợ lưu để theo dõi. Có thể chọn duyệt bằng dải ruy-băng 3D Depth Ribbon hoặc giá đĩa CD. Giá đĩa hỗ trợ tìm kiếm và thu gọn, chọn bài ngẫu nhiên, nghe thử đoạn cao trào hoặc toàn bộ bài, phát lặp và tự động phát bài tiếp theo; có thể hoàn tác việc bỏ thích trên đảo động. Danh sách phát tự tạo trên CurrentMusic có thể nhập từ 「Bài hát yêu thích」 của NetEase Cloud Music. Chuyển thư viện nhạc sẽ không xóa các danh sách phát hiện có.- Trang chủ tìm kiếm hỗ trợ thu gọn lịch sử, hiển thị từ khóa đề xuất thành hai cột và bảng xếp hạng tìm kiếm nóng của NetEase Cloud Music có thể vuốt ngang (bao gồm các danh mục như ACG, tiếng Nhật). Khi nhập một phần từ khóa, các từ khóa gợi ý sẽ hiện ra; nhấn để tìm kiếm ngay. Danh mục 「lời bài hát」 hỗ trợ tìm bài hát bằng lời bạn nhớ và hiển thị đoạn lời khớp.- Danh mục 「danh sách phát」 trên trang tìm kiếm hiển thị ảnh bìa, người tạo và số bài hát trong danh sách phát trên NetEase Cloud Music; hỗ trợ phân trang và thử lại khi có lỗi. Nhấn vào danh sách để mở trang chi tiết như trước; kết quả và vị trí cuộn được giữ nguyên khi chuyển danh mục hoặc quay lại.- Nhấn vào bài hát, danh sách phát, album, ca sĩ, MV, liên kết rút gọn `163cn.tv`, lời mời nghe cùng nhau hoặc liên kết `/app/` trên trang CurrentMusic trong ứng dụng trò chuyện hay trình duyệt để mở trong ứng dụng: sau khi tải thông tin, bài hát sẽ được phát và trình phát mở rộng; các nội dung khác sẽ mở trang chi tiết tương ứng. Lời mời nghe cùng nhau chỉ điền sẵn thông tin; bạn cần xác nhận mới tham gia. Tên miền CurrentMusic cần được xác minh liên kết ứng dụng của trang web; với tên miền NetEase, cần cho phép trong mục hệ thống 「Mở liên kết mặc định」. Các đường dẫn chưa được hỗ trợ sẽ hiển thị thông báo.- Tính năng nghe cùng nhau trên NetEase Cloud Music dùng chung chức năng tìm kiếm và hàng đợi phát hiện có, hỗ trợ đề xuất theo sở thích của cả hai bên, xóa bài, xóa toàn bộ, tải xuống toàn bộ hàng đợi và thêm vào mục yêu thích; các mục đề xuất, lịch sử, bảng xếp hạng và báo cáo phụ thuộc vào quyền do máy chủ cấp.- Khi khởi động nguội, ứng dụng kiểm tra và khôi phục phiên NetEase Cloud Music bị gián đoạn. Nếu chủ động bắt đầu phát nội dung khác khi khởi động, lần khôi phục tự động này sẽ bị hủy. Sau khi kết thúc phiên, báo cáo chỉ được hiển thị khi đã xác nhận phiên từ xa kết thúc; bạn có thể lưu bài hát yêu thích và xuất áp phích để chia sẻ.- Phòng trên máy chủ CurrentMusic còn hỗ trợ mật khẩu, phê duyệt yêu cầu bài hát và quyền thành viên. Thư viện nhạc riêng trên Navidrome / Emby hiện chỉ phát trên thiết bị này, không tham gia phòng CurrentMusic.
 
 </details>
 
-## 音源与歌词
+## Nguồn nhạc và lời bài hát
 
-音乐音源与歌词来源**独立设置**，在「设置 → 音源与网络」调整。切换歌词来源会重新加载当前歌词，缓存按来源隔离。
+**Cài đặt riêng** nguồn nhạc và nguồn lời bài hát tại 「Cài đặt → 音源与网络」. Thay đổi nguồn lời bài hát sẽ tải lại lời bài hát hiện tại; bộ nhớ đệm được phân tách theo nguồn.
+### Nhạc đến từ đâu
 
-### 音乐从哪里来
-
-| 音源 | 使用方式 |
+| Nguồn nhạc | Cách sử dụng |
 | --- | --- |
-| **CurrentMusic（默认）** | 通过配置的 CurrentMusic 服务器取流，需站内账号 |
-| 网易云原生 | 手机直连，使用本机网易云账号权限；不自动回退到服务器取流 |
-| LeiZ API | 配置 API Key 后使用对应服务，密钥加密保存在本机 |
-| 落雪音源 | 从 `.js` 文件或链接导入脚本，可导入多个并开启「多音源智能切换」：优先使用取链更快的脚本，失败时自动尝试其他已导入音源；目前仅解析带有效网易云 ID 的歌曲，搜索与歌单保持原有来源 |
+| **CurrentMusic（Mặc định）** | Phát nhạc trực tuyến từ máy chủ CurrentMusic đã cấu hình; cần tài khoản trên trang web || NetEase Cloud nguyên bản | Kết nối trực tiếp bằng điện thoại, sử dụng quyền của tài khoản NetEase Cloud trên thiết bị; không tự động chuyển sang phát nhạc trực tuyến từ máy chủ || LeiZ API | Sử dụng dịch vụ tương ứng sau khi cấu hình API Key; khóa được mã hóa và lưu trên thiết bị |
+| Nguồn nhạc Lạc Tuyết | Nhập tập lệnh từ tệp `.js` hoặc liên kết; có thể nhập nhiều tập lệnh và bật「Tự động chuyển đổi thông minh giữa các nguồn」: ưu tiên tập lệnh lấy URL nhanh hơn, khi thất bại sẽ tự động thử các nguồn đã nhập khác; hiện chỉ phân tích bài hát có ID NetEase Cloud Music hợp lệ, tìm kiếm và danh sách phát vẫn dùng nguồn hiện tại |
+Tập lệnh Lạc Tuyết sẽ gửi thông tin bài hát đến nhà cung cấp dịch vụ của tập lệnh; chỉ nhập từ nguồn đáng tin cậy. Khi thử lại sau lỗi trong chế độ chuyển đổi thông minh, thông tin bài hát tương tự cũng sẽ được gửi đến nhà cung cấp dịch vụ của các tập lệnh đã nhập khác. Kết nối Navidrome tại「Cài đặt → Nguồn nhạc và mạng → Thư viện nhạc tự quản」; âm thanh được phát trực tiếp từ máy chủ của bạn.
 
-落雪脚本会向其服务方发送歌曲信息，请仅导入可信来源；智能切换的失败重试会向其他已导入脚本的服务方发送同样的歌曲信息。Navidrome 在「设置 → 音源与网络 → 自建曲库」连接，音频直接从自己的服务器播放。
-
-Emby 可从「设置 → 音源与网络 → 自建曲库 → Emby」连接，连接后在「我的 → 音乐服务」显示「Emby 曲库」。默认进入歌曲，底栏使用与主页相同的交互，切换歌曲、艺术家、歌单和我喜欢；专辑从艺术家页面进入。顶部搜索与刷新合为一组图标，搜索沿用歌单页的展开方式。填写服务器地址（支持反向代理子路径）、用户名与密码；登录后仅加密保存令牌，不保存密码。专辑、歌曲、艺术家、歌单及我喜欢均按 40 条分页读取，支持歌曲搜索、服务器收藏、队列播放、原音质缓存和预加载。歌单当前只读，下载遵循服务器账号权限；不提供转码、一起听或服务器播放记录上报。歌词沿用应用的自动匹配、手动匹配及本地导入，暂不读取 Emby 服务端歌词。
+Có thể kết nối Emby tại「Cài đặt → Nguồn nhạc và mạng → Thư viện nhạc tự quản → Emby」. Sau khi kết nối,「Thư viện nhạc Emby」sẽ hiển thị trong「Của tôi → Dịch vụ âm nhạc」. Mặc định mở mục bài hát; thanh dưới cùng có cách tương tác giống trang chủ, cho phép chuyển giữa bài hát, nghệ sĩ, danh sách phát và mục yêu thích; album được mở từ trang nghệ sĩ. Tìm kiếm và làm mới được gộp thành một nhóm biểu tượng ở trên cùng; cách mở rộng tìm kiếm giống trang danh sách phát. Nhập địa chỉ máy chủ (hỗ trợ đường dẫn con của reverse proxy), tên người dùng và mật khẩu; sau khi đăng nhập, chỉ mã thông báo được lưu dưới dạng mã hóa, không lưu mật khẩu. Album, bài hát, nghệ sĩ, danh sách phát và mục yêu thích được tải theo từng trang, mỗi trang 40 mục; hỗ trợ tìm kiếm bài hát, mục yêu thích trên máy chủ, phát theo hàng đợi, lưu bộ nhớ đệm với chất lượng âm thanh gốc và tải trước. Danh sách phát hiện chỉ đọc; tải xuống tuân theo quyền của tài khoản máy chủ. Không hỗ trợ chuyển mã, nghe cùng nhau hoặc báo cáo lịch sử phát lên máy chủ. Lời bài hát tiếp tục sử dụng tính năng tự động khớp, khớp thủ công và nhập từ thiết bị; hiện chưa đọc lời bài hát từ máy chủ Emby.
 
 
-### 歌词如何选择
+### Cách chọn lời bài hát
 
-- **自动择优（默认）**：按 QQ → 网易云 → AMLL → 酷狗 → 汽水 → CurrentMusic 顺序查找；歌曲信息匹配 ≥75% 时参与选择，遇到真实逐字即采用，否则保留首份可用逐行歌词。
-- **指定来源**：可选 CurrentMusic（含服务端 LDDC 数据）、手机直连网易云 YRC / LRC，或本地内嵌歌词。
-- **指定单曲**：在播放页「歌词管理」中搜索、预览、保存或导入；手动保存与导入的单曲歌词、本地内嵌歌词优先于自动选择。
+- **Tự động chọn phù hợp nhất (mặc định)**: tìm theo thứ tự QQ → Nhạc Vân NetEase → AMLL → KuGou → Soda Music → CurrentMusic; kết quả tham gia lựa chọn khi thông tin bài hát khớp ≥75%. Nếu tìm thấy lời bài hát từng chữ thực sự thì dùng lời đó; nếu không, giữ lại lời bài hát từng dòng khả dụng đầu tiên.
+- **Chọn nguồn**: có thể chọn CurrentMusic (bao gồm dữ liệu LDDC từ máy chủ), YRC / LRC từ Nhạc Vân NetEase kết nối trực tiếp bằng điện thoại, hoặc lời bài hát nhúng trong tệp cục bộ.
+- **Chọn bài hát cụ thể**: tìm kiếm, xem trước, lưu hoặc nhập trong「Quản lý lời bài hát」ở trang phát nhạc; lời bài hát được lưu hoặc nhập thủ công cho từng bài, cùng lời bài hát nhúng trong tệp cục bộ, được ưu tiên hơn lựa chọn tự động.
 
-**希望歌曲和歌词都直连网易云？同时选择「网易云原生」音源和「网易云歌词」。** 本机网易云音乐库与原生双人一起听也独立直连网易云。
+**Muốn kết nối trực tiếp Nhạc Vân NetEase cho cả bài hát lẫn lời bài hát? Hãy chọn đồng thời nguồn nhạc「Nhạc Vân NetEase nguyên bản」và「Lời bài hát Nhạc Vân NetEase」.** Thư viện Nhạc Vân NetEase trên thiết bị và tính năng nghe cùng nhau hai người nguyên bản cũng kết nối trực tiếp độc lập với Nhạc Vân NetEase.
 
 <details>
-<summary>歌词匹配、偏移与导入导出</summary>
+<summary>Khớp lời bài hát, độ lệch và nhập/xuất</summary>
 
-- 支持导入 LRC、TTML、FIA、VTT、YRC、明文 QRC 和 KRC。
-- 沿用 Folia 歌曲信息评分：歌名 45、歌手 25、专辑 30，再按时长差折扣；每个来源从前十个结果中取最匹配的可靠候选，自动门槛为 75 分。不以歌词正文或时间轴相似度自动选择。
-- AMLL 使用匹配到的网易云歌曲 ID 查询，不要求网易云基准歌词可用；慢来源超时跳过，手动预览保留自适应对齐。
-- 原始逐字时间保留；显示层校正由播放页、迷你播放器与桌面歌词共用。单曲偏移正值延后、负值提前，可在已有对齐后叠加或独立归零。
-- FIA / LRC 导出保留原时间轴，不将估算高亮写成真实逐字数据；FIA 另行保存并恢复自适应对齐信息。
+- Hỗ trợ nhập LRC, TTML, FIA, VTT, YRC, QRC dạng văn bản thuần và KRC.
+- Tiếp tục sử dụng cách chấm điểm thông tin bài hát của Folia: tên bài hát 45, ca sĩ 25, album 30, sau đó giảm điểm theo chênh lệch thời lượng; mỗi nguồn lấy ứng viên đáng tin cậy khớp nhất trong 10 kết quả đầu tiên, ngưỡng tự động là 75 điểm. Không tự động chọn dựa trên độ tương đồng của nội dung lời bài hát hoặc dòng thời gian.
+- AMLL sử dụng ID bài hát Nhạc Vân NetEase đã khớp để truy vấn, không yêu cầu lời bài hát chuẩn của Nhạc Vân NetEase phải khả dụng; bỏ qua nguồn chậm khi hết thời gian chờ, còn xem trước thủ công vẫn giữ căn chỉnh thích ứng.
+- Giữ nguyên thời gian gốc của lời bài hát từng chữ; hiệu chỉnh ở lớp hiển thị được dùng chung cho trang phát nhạc, trình phát mini và lời bài hát trên màn hình máy tính. Độ lệch dương cho từng bài làm lời xuất hiện muộn hơn, độ lệch âm làm lời xuất hiện sớm hơn; có thể cộng thêm sau khi đã căn chỉnh hoặc đặt riêng về 0.
+- Xuất FIA / LRC giữ nguyên dòng thời gian gốc, không ghi phần tô sáng ước tính thành dữ liệu từng chữ thực; FIA lưu riêng và khôi phục thông tin căn chỉnh thích ứng.
 
 </details>
 
 <details>
-<summary>CurrentMusic 服务器与更新下载线路</summary>
+<summary>Máy chủ CurrentMusic và tuyến tải bản cập nhật</summary>
 
-「设置 → 音源与网络 → CurrentMusic 服务器」提供固定顺序的自动、`music.20110208.xyz` 主站、`cm.bileizhen.top` CDN、`currentmusic.geekertao.com` CDN、`music.ctcehs.com` CDN 和自定义选项，并显示公告接口的响应延迟，不按延迟排序。新安装默认自动，启动时测速选择较快的可用预设线路，也可手动重新检测；已有服务器配置保留原选择。主站和 CDN 切换保留登录，自定义地址独立保存，切换到其他服务器需重新登录。完整接口路径为 `/cm/`。更新下载中的 CurrentMusic 专用源同步跟随自动或手动选择的内置 CDN，探测与后台下载使用同一路由，安装包继续按 GitHub 发布信息校验大小和 SHA-256。
+「Cài đặt → Nguồn nhạc và mạng → Máy chủ CurrentMusic」cung cấp các tùy chọn theo thứ tự cố định: tự động, máy chủ chính `music.20110208.xyz`, CDN `cm.bileizhen.top`, CDN `currentmusic.geekertao.com`, CDN `music.ctcehs.com` và tùy chỉnh; đồng thời hiển thị độ trễ phản hồi của API thông báo, không sắp xếp theo độ trễ. Cài đặt mới mặc định là tự động; khi khởi động, ứng dụng đo tốc độ và chọn tuyến có sẵn nhanh hơn trong các tuyến đặt trước. Bạn cũng có thể kiểm tra lại thủ công; cấu hình máy chủ hiện có giữ nguyên lựa chọn trước đó. Chuyển đổi giữa máy chủ chính và CDN vẫn giữ đăng nhập; địa chỉ tùy chỉnh được lưu riêng, chuyển sang máy chủ khác cần đăng nhập lại. Đường dẫn API đầy đủ là `/cm/`. Nguồn chuyên dụng CurrentMusic trong mục tải bản cập nhật tự đồng bộ theo CDN tích hợp được chọn tự động hoặc thủ công; dò tìm và tải nền sử dụng cùng một tuyến. Gói cài đặt vẫn được kiểm tra kích thước và SHA-256 theo thông tin phát hành GitHub.
 
-此地址用于站内账号、CurrentMusic 音源与歌词、云端绑定、个人资料、社区及服务器房间。网易云原生、LeiZ API、外部音频及歌词来源继续使用各自的地址；Navidrome 音频直接从自己的服务器播放。
+Địa chỉ này được dùng cho tài khoản trong ứng dụng, nguồn nhạc và lời bài hát CurrentMusic, liên kết đám mây, hồ sơ cá nhân, cộng đồng và phòng máy chủ. Nhạc Vân NetEase nguyên bản, LeiZ API, âm thanh bên ngoài và các nguồn lời bài hát tiếp tục sử dụng địa chỉ riêng; âm thanh Navidrome được phát trực tiếp từ máy chủ của bạn.
 
 </details>
 
-## 项目实现原理
+## Nguyên lý hoạt động của dự án
 
-[![CurrentMusic 实现原理图](.github/img/architecture.png)](.github/img/architecture.png)
+[![Sơ đồ nguyên lý hoạt động của CurrentMusic](.github/img/architecture.png)](.github/img/architecture.png)
 
-### 客户端怎样分流
+### Ứng dụng khách định tuyến như thế nào
 
-- **Web 流声屿**默认把搜索、歌曲详情、歌词、播放取址、账号和社区等业务 API 统一发往流声引擎的 `/cm/`。可选 LeiZ 音源会直接请求 LeiZ。云盘分步上传由引擎申请令牌和登记文件，中间的文件数据可直传对象存储。
-- **CurrentMusicX** 由客户端按功能、音源设置和登录态选择路径。默认音源的播放取址、站内账号和歌单、社区、站内房间以及云端绑定走引擎。搜索、评论和网易云原生双人一起听可直连网易云，已在手机登录网易云时，个人歌单、收藏和推荐通常也走直连。没有本机网易云会话时，部分账号功能可走引擎复用云端绑定。选择「网易云原生」音源后，播放取址也由手机直连，歌词来源可另选。
+- **Web Đảo Thanh Âm** mặc định gửi thống nhất các API nghiệp vụ như tìm kiếm, chi tiết bài hát, lời bài hát, lấy URL phát, tài khoản và cộng đồng đến `/cm/` của Động cơ Thanh Âm. Nguồn nhạc LeiZ tùy chọn sẽ gửi yêu cầu trực tiếp đến LeiZ. Với tải lên theo từng bước lên ổ đĩa đám mây, công cụ sẽ yêu cầu mã thông báo và đăng ký tệp; dữ liệu tệp trung gian có thể được truyền trực tiếp đến bộ lưu trữ đối tượng.- **CurrentMusicX** chọn tuyến theo chức năng, cài đặt nguồn nhạc và trạng thái đăng nhập trên ứng dụng khách. Với nguồn nhạc mặc định, lấy URL phát, tài khoản và danh sách phát trong ứng dụng, cộng đồng, phòng trong ứng dụng và liên kết đám mây đều đi qua công cụ. Tìm kiếm, bình luận và tính năng nghe cùng nhau hai người nguyên bản của Nhạc Vân NetEase có thể kết nối trực tiếp với Nhạc Vân NetEase. Khi đã đăng nhập Nhạc Vân NetEase trên điện thoại, danh sách phát cá nhân, mục yêu thích và đề xuất thường cũng kết nối trực tiếp. Nếu không có phiên Nhạc Vân NetEase trên thiết bị, một số chức năng tài khoản có thể đi qua công cụ để dùng lại liên kết đám mây. Khi chọn nguồn「Nhạc Vân NetEase nguyên bản」, việc lấy URL phát cũng được thực hiện trực tiếp trên điện thoại; có thể chọn riêng nguồn lời bài hát.
 
-### 流声引擎怎样处理请求
+### Cách bộ máy âm thanh luồng xử lý yêu cầu
+1. Reverse proxy HTTPS chuyển tiếp `/cm/` đến backend Python và ghi lại IP đáng tin cậy của ứng dụng khách. Backend xử lý xác thực đăng nhập, giới hạn tốc độ và bộ nhớ đệm theo từng tuyến. Khách có thể tra cứu công khai nội dung tìm kiếm, chi tiết và lời bài hát; để lấy URL phương tiện, cần đăng nhập CurrentMusic. Khi tìm kiếm và lấy URL phát, IP ứng dụng khách đáng tin cậy có thể được gửi đến dịch vụ nguồn và dùng để phân tách bộ nhớ đệm.
+2. Tài khoản trong ứng dụng, danh sách phát, cộng đồng và phòng do backend xử lý; phiên đăng nhập và dữ liệu nghiệp vụ được lưu trong SQLite. Phòng trò chuyện và phòng nghe nhạc có thể nhận cập nhật qua Server-Sent Events (SSE). Khi cần truy cập Nhạc Vân NetEase, backend gọi NCM API được triển khai độc lập (Node.js / api-enhanced) thông qua `CM_NCM_BASE`; API này gửi yêu cầu giao thức đến Nhạc Vân NetEase và trả về kết quả.
+3. Các thao tác cá nhân trên Nhạc Vân NetEase sử dụng một luồng xác thực riêng. Engine xác thực phiên CurrentMusic, sau đó đọc Cookie Nhạc Vân NetEase được liên kết với người dùng đó để truy cập danh sách phát, mục yêu thích và các dữ liệu khác của họ. Sau khi đăng nhập Nhạc Vân NetEase trên thiết bị, ứng dụng X có thể đồng bộ thông tin xác thực với engine qua `/cm/ncmbind/import`; máy chủ sẽ xác minh quyền sở hữu tài khoản. Cookie được engine lưu chỉ dùng cho các yêu cầu từ máy chủ.
 
-1. HTTPS 反向代理将 `/cm/` 转发给 Python 后端，并写入可信客户端 IP。后端按路由处理登录校验、限流和缓存。公开搜索、详情和歌词可供访客查询，媒体取址要求 CurrentMusic 登录。搜索和播放取址可将可信客户端 IP 传给上游，并据此隔离缓存。
-2. 站内账号、歌单、社区和房间由后端处理，会话和业务数据保存在 SQLite。聊天室和听歌房可用服务器发送事件（SSE）接收更新。需要访问网易云时，后端通过 `CM_NCM_BASE` 调用独立部署的 NCM API（Node.js / api-enhanced），由它向网易云发起协议请求并返回结果。
-3. 网易云个人操作走单独的鉴权路径。引擎校验 CurrentMusic 会话，再读取该用户绑定的网易云 Cookie 来访问其歌单、收藏等数据。X 端完成本机网易云登录后，可通过 `/cm/ncmbind/import` 将凭据同步给引擎，由服务端验证账号归属。引擎保存的 Cookie 只用于服务端请求。
+### Cách lấy URL bằng SVIP ẩn danh
 
-### 匿名 SVIP 怎样取址
+1. Sau khi đăng nhập **CurrentMusic**, người dùng dùng mã thông báo trong ứng dụng để yêu cầu `GET /cm/ncm/song/url`, gửi ID bài hát và mức chất lượng âm thanh. Ở đây, “ẩn danh” nghĩa là có thể lấy URL mà không cần liên kết tài khoản Nhạc Vân NetEase cá nhân.
+2. Backend đọc tệp được chỉ định bởi `CM_NCM_COOKIE`, chèn Cookie SVIP Nhạc Vân NetEase do máy chủ cấu hình vào yêu cầu lấy URL chính thức `/song/url/v1` gửi đến NCM API. Nhạc Vân NetEase trả kết quả dựa trên quyền lợi của tài khoản máy chủ, giới hạn của bài hát và mức chất lượng được yêu cầu. Mã thông báo trong ứng dụng dùng để xác thực với engine; Cookie máy chủ dùng để xác thực với dịch vụ thượng nguồn.
+3. Engine chọn chất lượng âm thanh khả dụng và kiểm tra phần đầu âm thanh của URL chính thức cuối cùng. Nếu lấy URL chính thức thất bại hoặc chỉ trả về bản nghe thử, engine có thể tìm các nguồn âm thanh ứng viên thông qua bộ đối sánh đã triển khai, rồi xác minh âm thanh và thời lượng. Yêu cầu đối sánh sử dụng thông tin bài hát công khai; yêu cầu gửi đến bộ đối sánh không kèm hai loại Cookie Nhạc Vân NetEase này.
+4. Backend trả về địa chỉ phát và thông tin âm thanh có thể xác minh. Khi phát thông thường, Web và X đọc âm thanh trực tiếp từ địa chỉ CDN hoặc nguồn âm thanh đối sánh được trả về. Lời bài hát sử dụng API riêng. Engine ưu tiên YRC chính thức; nếu thiếu dữ liệu từng chữ, LDDC có thể bổ sung; cuối cùng chuyển về LRC và đánh dấu thời gian từng chữ là ước tính. X có thể chọn riêng kết nối trực tiếp trên thiết bị hoặc tự động đối sánh nhiều nguồn.
 
-1. 用户登录 **CurrentMusic** 后，以站内令牌请求 `GET /cm/ncm/song/url`，提交歌曲 ID 和音质档位。这里的「匿名」指取址可以省略个人网易云绑定。
-2. 后端读取 `CM_NCM_COOKIE` 指向的文件，将服务器配置的网易云 SVIP Cookie 注入发往 NCM API 的官方取址请求 `/song/url/v1`。网易云按该服务端账号的权益、曲目限制和请求档位返回结果。站内令牌用于引擎鉴权，服务端 Cookie 用于上游鉴权。
-3. 引擎选择可用音质，探测最终官方地址的音频头。官方取址失败或只返回试听时，可经部署好的匹配器查找候选音源，并校验音频和时长。匹配请求使用公开歌曲资料，发往匹配器的请求不携带这两类网易云 Cookie。
-4. 后端返回播放地址和可验证的音频信息。常规播放时，Web 和 X 直接从返回的 CDN 或匹配音源地址读取音频。歌词走独立接口。引擎优先使用官方 YRC，缺少逐字数据时可由 LDDC 补全，最后回退到 LRC 并标记估算的逐字时间。X 可独立选择本机直连或自动多源匹配。
+Ghi chép triển khai cũng đề cập đến một điểm truy cập `ncm-inject` độc lập. Điểm này bổ sung Cookie SVIP của máy chủ cho các yêu cầu phù hợp với quy tắc chèn mà bên gọi không gửi kèm Cookie, rồi chuyển tiếp đến NCM API. Luồng yêu cầu mặc định của Web và X trong sơ đồ trên sử dụng `/cm/`.
 
-部署记录还记载了一个独立的 `ncm-inject` 入口。它对符合注入规则且调用方未带 Cookie 的请求补上服务端 SVIP Cookie，再交给 NCM API。上图的 Web 与 X 默认请求链使用的是 `/cm/`。
+[Định tuyến yêu cầu của ứng dụng X](app/src/main/java/io/github/currencortex/music/core/network/ApiClient.kt) · [Backend của engine](https://github.com/backrooms-yrc/CurrentMusic/tree/main/backend) · [Lấy URL phát](https://github.com/backrooms-yrc/CurrentMusic/blob/main/docs/playback-sources.md) · [Liên kết tài khoản](https://github.com/backrooms-yrc/CurrentMusic/blob/main/docs/third-party-ncm-sync.md) · [Ghi chép triển khai](https://github.com/backrooms-yrc/CurrentMusic/blob/main/docs/api-5-phase-plan.md#1-sơ đồ thực tế)
+## Khả năng tương thích
 
-[X 端请求路由](app/src/main/java/io/github/currencortex/music/core/network/ApiClient.kt) · [引擎后端](https://github.com/backrooms-yrc/CurrentMusic/tree/main/backend) · [播放取址](https://github.com/backrooms-yrc/CurrentMusic/blob/main/docs/playback-sources.md) · [账号绑定](https://github.com/backrooms-yrc/CurrentMusic/blob/main/docs/third-party-ncm-sync.md) · [部署记录](https://github.com/backrooms-yrc/CurrentMusic/blob/main/docs/api-5-phase-plan.md#1-实测拓扑)
-
-## 兼容性
-
-| 项目 | 要求 |
+| Hạng mục | Yêu cầu |
 | --- | --- |
-| 系统 | Android 8.0 / API 26 及以上；目标 Android 16 / API 36 |
-| 架构 | 正式安装包面向 ARM64（arm64-v8a），包含适配的原版音效引擎 |
-| 布局 | 竖屏、横屏与宽屏导航 |
-| 动态颜色 | Monet 需要 Android 12 / API 31 及以上 |
-| 实时模糊 | Android 13 / API 33 及以上；低版本或关闭时使用普通材质 |
-| 下载目录 | 系统文件夹选择器 / SAF；Android 10 及以上默认 `Download/CurrentMusic` |
+| Hệ điều hành | Android 8.0 / API 26 trở lên; mục tiêu Android 16 / API 36 |
+| Kiến trúc | Gói cài đặt chính thức dành cho ARM64 (arm64-v8a), bao gồm engine hiệu ứng âm thanh nguyên bản đã được điều chỉnh |
+| Bố cục | Điều hướng dọc, ngang và màn hình rộng |
+| Màu động | Monet yêu cầu Android 12 / API 31 trở lên |
+| Làm mờ thời gian thực | Android 13 / API 33 trở lên; trên phiên bản thấp hơn hoặc khi tắt, sử dụng chất liệu thông thường |
+| Thư mục tải xuống | Bộ chọn thư mục hệ thống / SAF; từ Android 10 trở lên, mặc định là `Download/CurrentMusic` |
 
-部分供应商原生库仍不满足 16 KiB 页要求，不能视为已完成该类设备兼容验证。
+Một số thư viện gốc của nhà cung cấp vẫn chưa đáp ứng yêu cầu về trang 16 KiB; không thể xem là đã hoàn tất xác minh khả năng tương thích với loại thiết bị này.
 
-## 常见问题
+## Câu hỏi thường gặp
 
 <details>
-<summary>下载的歌曲、封面和歌词保存在哪里？</summary>
+<summary>Tệp bài hát, ảnh bìa và lời bài hát đã tải xuống được lưu ở đâu?</summary>
 
-下载时可指定目录，并授予该目录访问权限。歌曲信息、封面与歌词写入音频文件，同时保存配套 LRC 和封面。支持 MP3、FLAC、M4A、Vorbis OGG、WAV，裸 AAC 无损封装为 M4A。其他播放器的内嵌歌词与逐字显示能力取决于格式及其自身支持。
+Khi tải xuống, bạn có thể chọn thư mục và cấp quyền truy cập thư mục đó. Thông tin bài hát, ảnh bìa và lời bài hát được ghi vào tệp âm thanh; đồng thời lưu kèm tệp LRC và ảnh bìa. Hỗ trợ MP3, FLAC, M4A, Vorbis OGG, WAV; AAC thô được đóng gói không mất dữ liệu thành M4A. Khả năng đọc lời bài hát nhúng và hiển thị từng chữ trong các trình phát khác tùy thuộc vào định dạng và mức hỗ trợ riêng của trình phát.
 
 </details>
 
 <details>
-<summary>如何更新？自行构建的包能覆盖官方版吗？</summary>
+<summary>Cập nhật như thế nào? Bản tự dựng có thể ghi đè bản chính thức không?</summary>
 
-在「设置 → 检查更新」查看新版本，可调整启动检查、更新渠道和下载来源。启动发现新版本时可先忽略或查看详情；来源列表显示状态与延迟，专用镜像置顶，其余可用来源按延迟排序。后台下载支持取消、重试和换源；默认镜像失败或文件大小、SHA-256 不符时尝试备用源。校验包名与签名后，由 Android 系统确认安装；首次可能需要允许安装未知来源应用。
+Vào “Cài đặt → Kiểm tra cập nhật” để xem phiên bản mới; bạn có thể điều chỉnh việc kiểm tra khi khởi động, kênh cập nhật và nguồn tải xuống. Khi phát hiện phiên bản mới lúc khởi động, bạn có thể bỏ qua trước hoặc xem chi tiết; danh sách nguồn hiển thị trạng thái và độ trễ, mirror chuyên dụng được ghim lên đầu, các nguồn khả dụng còn lại được sắp xếp theo độ trễ. Tải xuống nền hỗ trợ hủy, thử lại và đổi nguồn; nếu mirror mặc định thất bại hoặc kích thước tệp, SHA-256 không khớp, ứng dụng sẽ thử nguồn dự phòng. Sau khi xác minh tên gói và chữ ký, Android sẽ yêu cầu xác nhận cài đặt; lần đầu có thể cần cho phép cài ứng dụng không rõ nguồn gốc.
 
-自行构建的包若与官方签名不同，无法直接覆盖。开发与设备测试请使用[独立测试包](#从源码构建与设备测试)，与日常安装分开。
-
+Nếu chữ ký của bản tự dựng khác với bản chính thức, bạn không thể cài đè trực tiếp. Khi phát triển và kiểm thử trên thiết bị, hãy dùng [bản kiểm thử riêng](#Build từ mã nguồn và kiểm thử trên thiết bị), tách biệt với bản cài đặt sử dụng hằng ngày.
 </details>
 
 <details>
-<summary>如何反馈问题？</summary>
+<summary>Cách phản hồi sự cố?</summary>
 
-请在 [Issues](https://github.com/bileizhen/CurrentMusicX/issues) 提供应用版本、手机型号、Android 版本、复现步骤与现象。可从设置中导出诊断日志，分享前检查并遮挡个人信息。
+Vui lòng cung cấp phiên bản ứng dụng, mẫu điện thoại, phiên bản Android, các bước tái hiện và hiện tượng tại [Issues](https://github.com/bileizhen/CurrentMusicX/issues). Bạn có thể xuất nhật ký chẩn đoán trong phần cài đặt; hãy kiểm tra và che thông tin cá nhân trước khi chia sẻ.
 
 </details>
 
-## 隐私与开发
+## Quyền riêng tư và phát triển
 
-本机账号凭据加密保存，服务分别请求网易云、CurrentMusic、Navidrome 或 Emby 接口；音频、MV 与图片从对应服务返回的地址加载，下载文件保存在用户选择的目录。数据用途及保存方式见[隐私说明](PRIVACY.md)。
+Thông tin đăng nhập tài khoản trên thiết bị được mã hóa khi lưu trữ. Các dịch vụ lần lượt gửi yêu cầu đến API của Nhạc Vân NetEase, CurrentMusic, Navidrome hoặc Emby; âm thanh, MV và hình ảnh được tải từ địa chỉ do dịch vụ tương ứng trả về, còn tệp tải xuống được lưu trong thư mục do người dùng chọn. Xem [Thông tin quyền riêng tư](PRIVACY.md) để biết mục đích sử dụng và cách lưu trữ dữ liệu.
 
-欢迎提交 Issue 或 Pull Request。请说明解决的问题与实际验证结果，按独立功能或修复拆分提交。
+Hoan nghênh gửi Issue hoặc Pull Request. Vui lòng nêu rõ vấn đề được giải quyết và kết quả xác minh thực tế; hãy chia nhỏ các thay đổi thành từng tính năng hoặc bản sửa lỗi riêng biệt.
 
-## 从源码构建与设备测试
+## Xây dựng từ mã nguồn và kiểm thử trên thiết bị
 
-准备 JDK 17 及以上、Android SDK Platform 37.0 和 Build Tools 35.0.0。通过 `ANDROID_HOME` 或本机 `local.properties` 的 `sdk.dir` 指定 SDK 路径。
+Chuẩn bị JDK 17 trở lên, Android SDK Platform 37.0 và Build Tools 35.0.0. Chỉ định đường dẫn SDK qua `ANDROID_HOME` hoặc `sdk.dir` trong `local.properties` trên máy.
 
 Windows / PowerShell：
 
@@ -245,78 +220,74 @@ Windows / PowerShell：
 .\gradlew.bat :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
 ```
 
-Linux / macOS 使用 `./gradlew` 执行相同任务。Debug APK 位于 `app/build/outputs/apk/debug/app-debug.apk`。
+Trên Linux / macOS, dùng `./gradlew` để thực hiện các tác vụ tương tự. APK Debug nằm tại `app/build/outputs/apk/debug/app-debug.apk`.
 
-连接设备后，可使用独立测试包，与日常安装的数据隔离：
+Sau khi kết nối thiết bị, bạn có thể dùng gói kiểm thử độc lập, với dữ liệu được tách biệt khỏi bản cài đặt dùng hằng ngày:
 
 ```powershell
 .\gradlew.bat -PisolatedDebug=true :app:assembleDebug :app:connectedDebugAndroidTest
 ```
 
-独立 Debug 包名为 `com.bileizhen.currentmusic.verification`。设备测试可能需要登录、网络、系统权限或指定素材；构建和单元测试通过不代表实际接口与界面已经验证。
+Tên gói Debug độc lập là `com.bileizhen.currentmusic.verification`. Việc kiểm thử trên thiết bị có thể cần đăng nhập, mạng, quyền hệ thống hoặc tài nguyên cụ thể; xây dựng và kiểm thử đơn vị thành công không có nghĩa là API và giao diện thực tế đã được xác minh.
 
-正式包使用 `:app:assembleRelease` 构建。签名从本机未入库的 `keystore.properties` 读取 `storeFile`、`storePassword`、`keyAlias` 和 `keyPassword`；未配置时生成未签名包。密钥、账号配置与验证产物不入库。
+Bản phát hành chính thức được xây dựng bằng `:app:assembleRelease`. Thông tin ký được đọc từ `storeFile`, `storePassword`, `keyAlias` và `keyPassword` trong `keystore.properties` trên máy, tệp này không được đưa vào kho mã; nếu chưa cấu hình, gói chưa được ký sẽ được tạo. Khóa, cấu hình tài khoản và sản phẩm xác minh không được đưa vào kho mã.
 
 <details>
-<summary>Release 体积、Baseline Profile 与性能回归</summary>
+<summary>Dung lượng bản Release, Baseline Profile và hồi quy hiệu năng</summary>
 
-Release 启用 R8 与资源压缩，仍发布一个包含现有 ABI 的通用 APK；保留网易云原版音效、MNN 和对应 JNI 名称。可复现体积报告：`python scripts/apk_size_report.py app/build/outputs/apk/release/app-release.apk --json output/apk-size.json`。报告区分 ZIP 压缩大小、各 ABI 解压占用与 ELF 页对齐，不将体积变化当作运行速度改善。部分既有供应商原生库仍不满足 16 KiB 页要求。
+Bản Release bật R8 và nén tài nguyên, nhưng vẫn phát hành một APK chung chứa các ABI hiện có; giữ lại hiệu ứng âm thanh nguyên bản của Nhạc Vân NetEase, MNN và tên JNI tương ứng. Có thể tạo báo cáo dung lượng có thể tái lập bằng lệnh: `python scripts/apk_size_report.py app/build/outputs/apk/release/app-release.apk --json output/apk-size.json`. Báo cáo phân biệt dung lượng nén ZIP, dung lượng giải nén của từng ABI và căn chỉnh trang ELF; không coi thay đổi dung lượng là cải thiện tốc độ chạy. Một số thư viện gốc hiện có từ nhà cung cấp vẫn chưa đáp ứng yêu cầu trang 16 KiB.
 
-性能测试使用独立的 `com.bileizhen.currentmusic.benchmark` 应用，不访问用户账号或在线服务。`baselineprofile` 与 `benchmark` 模块覆盖冷启动、首页、播放器、播放、歌词、歌单、设置和输出模式；执行 `:app:generateBaselineProfile` 显式采集，再用 `:benchmark:connectedPerformanceAndroidTest` 比较 `compilation=none` 与 `compilation=baseline`。未实际生成 Profile 时，后者应失败，不把框架或依赖自带 Profile 视为本项目已完成采集。设备需支持 AndroidX Macrobenchmark（测试模块最低 Android 9，不改变正式应用 Android 8 的最低版本）。
+Kiểm thử hiệu năng sử dụng ứng dụng riêng `com.bileizhen.currentmusic.benchmark`, không truy cập tài khoản người dùng hoặc dịch vụ trực tuyến. Các mô-đun `baselineprofile` và `benchmark` bao phủ khởi động nguội, trang chủ, trình phát, phát nhạc, lời bài hát, danh sách phát, cài đặt và chế độ đầu ra; chạy `:app:generateBaselineProfile` để chủ động thu thập, sau đó dùng `:benchmark:connectedPerformanceAndroidTest` so sánh `compilation=none` với `compilation=baseline`. Nếu chưa thực sự tạo Profile, trường hợp sau phải thất bại; không coi Profile có sẵn trong framework hoặc phần phụ thuộc là đã hoàn tất việc thu thập của dự án này. Thiết bị cần hỗ trợ AndroidX Macrobenchmark (mô-đun kiểm thử yêu cầu Android 9 trở lên; không thay đổi phiên bản Android 8 tối thiểu của ứng dụng chính thức).
 
-压缩运行时回归可用 `:benchmark:connectedPerformanceAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=io.github.currencortex.music.benchmark.MinifiedRuntimeSmokeTest` 单独执行，验证脚本、序列化、Room、JNI 加载和本地音频标签读写；它不证明真实 USB DAC、蓝牙或最终硬件 Bit-perfect。测试 APK 的静音前台服务仅用于防止厂商冻结测试进程，不进入正式 APK。性能数据、录屏与诊断日志保存在本机，不入库。
+Có thể chạy riêng kiểm thử hồi quy runtime đã nén bằng `:benchmark:connectedPerformanceAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=io.github.currencortex.music.benchmark.MinifiedRuntimeSmokeTest` để xác minh script, tuần tự hóa, Room, tải JNI và đọc/ghi thẻ âm thanh cục bộ; kiểm thử này không chứng minh Bit-perfect trên USB DAC, Bluetooth hoặc phần cứng cuối cùng thực tế. Dịch vụ chạy nền tiền cảnh im lặng của APK kiểm thử chỉ nhằm ngăn nhà sản xuất đóng băng tiến trình kiểm thử, không có trong APK chính thức. Dữ liệu hiệu năng, bản ghi màn hình và nhật ký chẩn đoán được lưu trên máy, không đưa vào kho mã.
 
 </details>
 
-## Issues、PR 与版本发布
+## Issues, PR và phát hành phiên bản
 
-使用 [Issue 表单](https://github.com/bileizhen/CurrentMusicX/issues/new/choose)报告问题或提出建议；PR 按[仓库模板](.github/pull_request_template.md)说明变化与验证。完整解决问题时用 `Fixes #编号`，仅关联讨论时用 `Refs #编号`。
-
-开发流程：**独立功能分支 → PR → CI → 合并 `main`**。一个 PR 对应一个明确改动，功能分支使用 `bileizhen/` 前缀、推送到 `releases`，目标为 `bileizhen/CurrentMusicX:main`。保留原子提交，版本号等发布准备另开最后一个 PR。
+Dùng [biểu mẫu Issue](https://github.com/bileizhen/CurrentMusicX/issues/new/choose) để báo cáo sự cố hoặc đề xuất ý tưởng; với PR, hãy mô tả thay đổi và cách xác minh theo [mẫu của kho mã](.github/pull_request_template.md). Khi giải quyết triệt để một sự cố, dùng `Fixes #số`; khi chỉ liên kết thảo luận, dùng `Refs #số`.
+Quy trình phát triển: **nhánh tính năng riêng → PR → CI → hợp nhất vào `main`**. Mỗi PR ứng với một thay đổi cụ thể; nhánh tính năng dùng tiền tố `bileizhen/`, đẩy lên `releases`, với đích là `bileizhen/CurrentMusicX:main`. Giữ các commit nguyên tử; việc chuẩn bị phát hành như cập nhật số phiên bản được thực hiện trong một PR cuối cùng riêng.
 
 <details>
-<summary>Issue 分流、过期处理与 PR 检查</summary>
+<summary>Phân loại Issue, xử lý quá hạn và kiểm tra PR</summary>
 
-- Issues 提供「报告问题」「功能建议」表单。Bug 请填写版本、设备与 Android 版本、复现步骤和预期结果；日志、截图必须脱敏。新建 Issue 不代表问题已经确认或承诺实现。
-- 自动分流根据表单选择设置 `module: *` 标签，缺少必要信息时使用 `needs-info` 并更新同一条追问评论。自由格式问题保留人工判断，不使用 AI 猜测重复问题或自动关闭。仓库变量 `TRIAGE_MODE` 支持 `live`（默认）、`dry-run`、`off`。
-- 每天北京时间 03:00 检查过期条目。`STALE_MODE` 默认 `dry-run`，维护者检查 Actions 日志后可设为 `live`：缺信息 14 天、无活动 60 天标记 stale，再等待 30 天；每次最多关闭两个符合条件的 Bug／问题。功能建议、PR、已分配负责人、有里程碑、重开过的条目受保护；`bot: skip`、`needs follow-up` 等标签可豁免。关闭理由是暂不计划处理，不代表修复完成。作者回复会转为待跟进，普通讨论会解除 stale。
-- 开发使用独立功能分支 → PR → CI → 合并 `main`。PR 标题使用 `feat:`、`fix:`、`perf:`、`docs:`、`deps:` 或 `chore:` 等前缀，机器人映射到已有发布分类标签；维护者手工添加的标签不被自动撤销。一个 PR 对应一个明确改动，完整解决问题时用 `Fixes #编号`，仅关联讨论时用 `Refs #编号`，不为制造发布条目而创建空 PR。
-- 每个 PR 独立运行两个快速检查。`build` 用 Python 校验原生源码约束、随包法律文件及 APK 分析脚本，`test` 运行协作脚本测试和 actionlint。PR 检查不启动 Gradle，也不生成 APK。PR 元数据自动化仅使用默认分支的可信脚本。
-- 所有面向 `main` 的开放 PR 处理完毕后，Android CI 按累计改动决定是否打包。有应用改动时构建 Release APK，执行 Release 单元测试与 Lint，再交给签名发布流程。
-- 仓库允许对已审查的具体 PR 启用 Auto-merge，仅使用 Merge commit 保留原子提交。合并前需通过 `build` 和 `test`，并满足现有的分支同步与审查要求。
-- PR 合并后由 GitHub 自动删除远端功能分支，PR 记录和提交历史保留。本地分支及 worktree 不自动删除，清理前确认没有未提交或未合并的工作。
-- `Update PR branches` 在主线推进、PR 打开或更新时自动把 `main` 合入落后的非草稿 PR。仅处理无冲突且允许维护者更新的分支，使用精确 head SHA 防止并发覆盖；已同步的分支不重复更新，`bot: skip` 可退出自动处理。工作流只运行主线可信脚本，不检出 PR 代码、不强推、不代替审查或自动批准 CI。使用内置 `GITHUB_TOKEN` 更新后，GitHub 可能要求维护者批准新检查；fork 权限不足、冲突或分支保护阻止更新时会在日志提示，需人工处理。
-- 更新设置提供「正式版 / CI 版」。旧「预发布版」选择自动迁移为 CI；CI 只接收 `vX.Y.Z-ci.N` 的完整签名构建，不接收普通 beta/rc 或 PR Debug 产物。CI 渠道隐藏只返回正式包的 CurrentMusic 专用源，保留 GitHub 和其他代理源，并沿用 SHA-256、大小、包名、版本及签名校验。
-- `Publish CI build` 只下载 **main 的 Android CI 实际构建、验证并上传**的 `ci-unsigned` 产物，严格绑定上游运行 ID，不再次调用 Gradle 或编译 APK。通过 `ci-signing` GitHub Environment 中的 `SIGNING_KEYSTORE_BASE64`、`SIGNING_STORE_PASSWORD`、`SIGNING_KEY_ALIAS`、`SIGNING_KEY_PASSWORD` 使用现有正式签名。该 Environment 限制 main；签名 job 不向 PR 开放，密钥不入库、不作为产物上传。纯文档或轻量 CI 调整跳过安装包分发；缺少签名则失败，不发布未签名包。
-- CI 通过公开的 GitHub prerelease 附件分发，无需用户提供 Token。版本为 `X.Y.Z-ci.N`，N 来自主线 Android CI 的运行编号；每次使用独立 tag，不覆盖已有附件，不修改最新正式 Release。分发时若主线已前进则跳过过时构建。自动说明标注检查范围，不代替真机验收。
-- Android 安装版本码使用 `基础 versionCode × 100000 + N`，正式版的 N 为 0；后续正式发布必须递增基础 versionCode 和版本号，使它高于上一版本所有 CI。CI 可保留数据覆盖原正式版，但切回正式版须等待后续更高版本，不通过卸载或绕过系统降级检查处理。单个 CI 编号范围 1–99999，超出时构建失败并由维护者迁移编号规则。
+- Issues cung cấp các biểu mẫu «Báo cáo sự cố» và «Đề xuất tính năng». Với lỗi, vui lòng điền phiên bản, thiết bị và phiên bản Android, các bước tái hiện và kết quả mong đợi; nhật ký và ảnh chụp màn hình phải được ẩn thông tin nhạy cảm. Việc tạo Issue mới không có nghĩa là sự cố đã được xác nhận hoặc việc triển khai đã được cam kết.
+- Tự động phân loại sẽ đặt nhãn `module: *` dựa trên lựa chọn trong biểu mẫu; nếu thiếu thông tin bắt buộc, hệ thống dùng `needs-info` và cập nhật cùng một bình luận hỏi thêm. Các vấn đề ở định dạng tự do được giữ lại để con người đánh giá; không dùng AI để phỏng đoán vấn đề trùng lặp hoặc tự động đóng Issue. Biến kho mã `TRIAGE_MODE` hỗ trợ `live` (mặc định), `dry-run`, `off`.
+- Hằng ngày lúc 03:00 giờ Bắc Kinh, hệ thống kiểm tra các mục quá hạn. `STALE_MODE` mặc định là `dry-run`; sau khi xem nhật ký Actions, người bảo trì có thể đặt thành `live`: các mục thiếu thông tin sau 14 ngày và không có hoạt động sau 60 ngày sẽ được đánh dấu stale, rồi chờ thêm 30 ngày; mỗi lần chỉ đóng tối đa hai Bug/sự cố đủ điều kiện. Đề xuất tính năng, PR, mục đã có người phụ trách, có mốc thời gian hoặc từng được mở lại sẽ được bảo vệ; các nhãn như `bot: skip`, `needs follow-up` có thể miễn trừ. Lý do đóng là hiện chưa có kế hoạch xử lý, không có nghĩa là đã sửa xong. Tác giả phản hồi sẽ chuyển mục sang trạng thái chờ theo dõi; thảo luận thông thường sẽ gỡ trạng thái stale.
+- Phát triển theo quy trình nhánh tính năng riêng → PR → CI → hợp nhất vào `main`. Tiêu đề PR dùng các tiền tố như `feat:`, `fix:`, `perf:`, `docs:`, `deps:` hoặc `chore:`; bot ánh xạ chúng sang các nhãn phân loại phát hành hiện có. Nhãn do người bảo trì thêm thủ công sẽ không bị tự động gỡ. Mỗi PR ứng với một thay đổi cụ thể; khi giải quyết triệt để một sự cố, dùng `Fixes #số`; khi chỉ liên kết thảo luận, dùng `Refs #số`. Không tạo PR trống chỉ để tạo mục phát hành.- Mỗi PR chạy riêng hai bước kiểm tra nhanh. `build` dùng Python để kiểm tra các ràng buộc của mã nguồn gốc, tệp pháp lý đi kèm gói và tập lệnh phân tích APK; `test` chạy kiểm thử tập lệnh cộng tác và actionlint. Kiểm tra PR không khởi chạy Gradle hoặc tạo APK. Tự động hóa siêu dữ liệu PR chỉ sử dụng các tập lệnh đáng tin cậy từ nhánh mặc định.
+- Sau khi xử lý xong tất cả PR công khai hướng đến `main`, Android CI sẽ quyết định có đóng gói hay không dựa trên các thay đổi tích lũy. Nếu có thay đổi ứng dụng, CI sẽ xây dựng Release APK, chạy kiểm thử đơn vị và Lint cho Release, sau đó chuyển sang quy trình phát hành có ký.
+- Kho lưu trữ cho phép bật Auto-merge đối với PR cụ thể đã được xem xét; chỉ sử dụng Merge commit để giữ nguyên tính nguyên tử của các commit. Trước khi hợp nhất, PR phải vượt qua `build` và `test`, đồng thời đáp ứng các yêu cầu hiện có về đồng bộ nhánh và xem xét.
+- Sau khi hợp nhất PR, GitHub sẽ tự động xóa nhánh tính năng từ xa; bản ghi PR và lịch sử commit vẫn được giữ lại. Nhánh cục bộ và worktree không tự động bị xóa; trước khi dọn dẹp, hãy xác nhận không có công việc nào chưa commit hoặc chưa hợp nhất.
+- `Update PR branches` tự động hợp nhất `main` vào các PR không phải bản nháp bị tụt sau khi nhánh chính có tiến triển, PR được mở hoặc cập nhật. Chỉ xử lý các nhánh không có xung đột và cho phép người bảo trì cập nhật; sử dụng head SHA chính xác để tránh ghi đè đồng thời; nhánh đã đồng bộ sẽ không được cập nhật lại, còn `bot: skip` sẽ bỏ qua xử lý tự động. Workflow chỉ chạy các tập lệnh đáng tin cậy trên nhánh chính, không checkout mã PR, không force-push, không thay thế việc xem xét hoặc tự động phê duyệt CI. Sau khi cập nhật bằng `GITHUB_TOKEN` tích hợp, GitHub có thể yêu cầu người bảo trì phê duyệt các kiểm tra mới; khi quyền của fork không đủ, có xung đột hoặc quy tắc bảo vệ nhánh ngăn cập nhật, nhật ký sẽ hiển thị thông báo và cần xử lý thủ công.
+- Cài đặt cập nhật cung cấp lựa chọn “Bản chính thức / Bản CI”. Lựa chọn “Bản xem trước” cũ sẽ tự động được chuyển thành CI; CI chỉ nhận các bản dựng đã ký đầy đủ có dạng `vX.Y.Z-ci.N`, không nhận beta/rc thông thường hoặc sản phẩm PR Debug. Khi ẩn kênh CI, nguồn chuyên dụng CurrentMusic chỉ trả về gói chính thức; GitHub và các nguồn proxy khác vẫn được giữ lại, đồng thời tiếp tục kiểm tra SHA-256, kích thước, tên gói, phiên bản và chữ ký.
+- `Publish CI build` chỉ tải xuống sản phẩm `ci-unsigned` mà **Android CI của main thực sự đã xây dựng, xác minh và tải lên**, được ràng buộc nghiêm ngặt với ID lần chạy ở bước trước; không gọi Gradle hoặc biên dịch APK lần nữa. Sử dụng chữ ký chính thức hiện có thông qua `SIGNING_KEYSTORE_BASE64`, `SIGNING_STORE_PASSWORD`, `SIGNING_KEY_ALIAS`, `SIGNING_KEY_PASSWORD` trong GitHub Environment `ci-signing`. Environment này giới hạn ở main; job ký không mở cho PR, khóa không được đưa vào kho lưu trữ hoặc tải lên dưới dạng sản phẩm. Các điều chỉnh chỉ liên quan đến tài liệu hoặc CI nhẹ sẽ bỏ qua việc phân phối gói cài đặt; nếu thiếu chữ ký thì quy trình thất bại, không phát hành gói chưa ký.
+- CI được phân phối qua tệp đính kèm prerelease công khai của GitHub, không cần người dùng cung cấp Token. Phiên bản có dạng `X.Y.Z-ci.N`, trong đó N lấy từ số lần chạy Android CI trên nhánh chính; mỗi lần sử dụng một tag riêng, không ghi đè tệp đính kèm đã có và không sửa đổi Release chính thức mới nhất. Nếu nhánh chính đã tiến lên khi phân phối, bản dựng lỗi thời sẽ bị bỏ qua. Ghi chú tự động nêu phạm vi kiểm tra, không thay thế việc nghiệm thu trên thiết bị thật.
+- Mã phiên bản cài đặt Android sử dụng `versionCode cơ sở × 100000 + N`; N của bản chính thức là 0. Các bản phát hành chính thức sau đó phải tăng versionCode cơ sở và số phiên bản để cao hơn tất cả CI của phiên bản trước. CI có thể giữ lại dữ liệu và ghi đè bản chính thức hiện tại, nhưng khi quay lại bản chính thức phải chờ phiên bản cao hơn tiếp theo; không xử lý bằng cách gỡ cài đặt hoặc bỏ qua kiểm tra hạ cấp của hệ thống. Phạm vi số thứ tự CI là 1–99999; nếu vượt quá, quá trình xây dựng sẽ thất bại và người bảo trì sẽ chuyển đổi quy tắc đánh số.
 
 </details>
 
 <details>
-<summary>版本草稿、签名附件与发布说明</summary>
+<summary>Bản nháp phát hành, tệp đính kèm đã ký và ghi chú phát hành</summary>
 
-- 版本号单独提交并通过 PR 合并后，为验证过的主线提交打 `vX.Y.Z` tag。运行 **Prepare release draft**，填写本次 tag、上次正式版 tag 和中文摘要。流程验证版本号、提交祖先关系、已有 Release 和 main 的 Android CI，再使用 GitHub 原生 API 按 `.github/release.yml` 生成分类清单，保留 `by @作者 in #PR`、新贡献者与 `Full Changelog` 链接；Release 构建、单元测试和 Lint 通过后创建草稿。
-- 发布仍使用一个通用 APK，不按 ABI 分包。正式版草稿工作流仅验证 Release 构建，不发布未签名 APK；维护者上传同一提交的正式签名 APK 和 SHA-256 文件、补齐真实设备验收与下载验证后再发布正式版。CI 签名使用上述受保护 Environment，密钥不进入源码或构建产物。已有 Release 不会被覆盖，不自动发布正式版。
-- 发布头图上传为对应 Release 的附件，并在 Release notes 顶部嵌入，不提交到源码仓库。迁移旧头图时先核对附件完整性、更新发布说明中的图片链接，再移除仓库文件；应用图标和 README 功能截图不受影响。
-- 历史直接提交而无关联 PR 的变化如实补充到中文摘要，不伪造作者与 PR 编号。完整更新说明仅维护在 GitHub Releases，不新增本地 CHANGELOG。
+- Sau khi commit riêng số phiên bản và hợp nhất qua PR, gắn tag `vX.Y.Z` cho commit trên nhánh chính đã được xác minh. Chạy **Prepare release draft**, điền tag hiện tại, tag của bản chính thức trước đó và phần tóm tắt bằng tiếng Trung. Quy trình xác minh số phiên bản, quan hệ tổ tiên của commit, Release hiện có và Android CI của main, sau đó dùng API gốc của GitHub để tạo danh sách phân loại theo `.github/release.yml`, giữ lại `by @tác giả in #PR`, người đóng góp mới và liên kết `Full Changelog`; bản nháp chỉ được tạo sau khi bản dựng Release, kiểm thử đơn vị và Lint đều đạt.- Việc phát hành vẫn sử dụng một APK chung, không chia gói theo ABI. Workflow bản nháp chính thức chỉ xác minh bản dựng Release, không phát hành APK chưa ký; người bảo trì tải lên APK chính thức đã ký và tệp SHA-256 từ cùng một commit, bổ sung nghiệm thu trên thiết bị thật và xác minh tải xuống đầy đủ rồi mới phát hành bản chính thức. CI sử dụng Environment được bảo vệ nêu trên để ký; khóa không được đưa vào mã nguồn hoặc sản phẩm bản dựng. Release hiện có sẽ không bị ghi đè và bản chính thức không được tự động phát hành.
+- Ảnh đầu trang phát hành được tải lên làm tệp đính kèm của Release tương ứng và nhúng ở đầu ghi chú phát hành, không commit vào kho mã nguồn. Khi di chuyển ảnh đầu trang cũ, trước tiên hãy kiểm tra tính toàn vẹn của tệp đính kèm, cập nhật liên kết ảnh trong ghi chú phát hành rồi mới xóa tệp khỏi kho lưu trữ; biểu tượng ứng dụng và ảnh chụp tính năng trong README không bị ảnh hưởng.
+- Các thay đổi được commit trực tiếp trong quá khứ mà không có PR liên quan sẽ được bổ sung trung thực vào phần tóm tắt tiếng Trung; không bịa tên tác giả hoặc số PR. Chỉ duy trì ghi chú cập nhật đầy đủ trên GitHub Releases, không tạo CHANGELOG cục bộ mới.
 
 </details>
 
-## 开源与致谢
+## Mã nguồn mở và lời cảm ơn
 
-[![由 流声引擎 强力驱动](https://music.20110208.xyz/cm/badges/powered-by.svg?v=3)](https://music.20110208.xyz/home/engine/)
+[![Được vận hành mạnh mẽ bởi Động cơ Âm thanh Dòng chảy](https://music.20110208.xyz/cm/badges/powered-by.svg?v=3)](https://music.20110208.xyz/home/engine/)
+Mã hiện có được phân phối theo [GPL-3.0-only](LICENSE); các thành phần hoạt ảnh lời bài hát Folia Monet và hiệu ứng chuyển sắc khi phát/tạm dừng được chuyển thể theo [AGPL-3.0-only](app/src/main/assets/legal/AGPL-3.0.txt); việc kết hợp tuân theo Mục 13 của cả hai giấy phép. Mỗi thành phần từ dự án thượng nguồn giữ nguyên bản quyền và giấy phép riêng; xem [Thông báo bên thứ ba](THIRD_PARTY_NOTICES.md) để biết đầy đủ.
 
-既有代码按 [GPL-3.0-only](LICENSE) 分发；Folia 莫奈歌词动画与播放暂停渐变移植组件按 [AGPL-3.0-only](app/src/main/assets/legal/AGPL-3.0.txt) 分发，组合遵循两份许可证第 13 节。各上游组件保留自己的版权与许可，完整说明见[第三方声明](THIRD_PARTY_NOTICES.md)。
-
-感谢 [CurrentMusic](https://github.com/backrooms-yrc/CurrentMusic)、[Folia](https://github.com/chthollyphile/folia-major)、[Miuix](https://github.com/compose-miuix-ui/miuix)、[SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra)、[AndroidLiquidGlass](https://github.com/Kyant0/AndroidLiquidGlass)、[LeiFetch](https://github.com/bileizhen/LeiFetch)、[123PanX](https://github.com/bileizhen/123PanX)、[XBlocker](https://github.com/bileizhen/XBlocker)、[AMLL TTML DB](https://github.com/amll-dev/amll-ttml-db)、[LXGW WenKai](https://github.com/lxgw/LxgwWenKai)，以及 AndroidX、Media3、Coil、Jaudiotagger、ZXing 等开源项目。
+Cảm ơn [CurrentMusic](https://github.com/backrooms-yrc/CurrentMusic), [Folia](https://github.com/chthollyphile/folia-major), [Miuix](https://github.com/compose-miuix-ui/miuix), [SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra), [AndroidLiquidGlass](https://github.com/Kyant0/AndroidLiquidGlass), [LeiFetch](https://github.com/bileizhen/LeiFetch), [123PanX](https://github.com/bileizhen/123PanX), [XBlocker](https://github.com/bileizhen/XBlocker), [AMLL TTML DB](https://github.com/amll-dev/amll-ttml-db), [LXGW WenKai](https://github.com/lxgw/LxgwWenKai), cùng các dự án mã nguồn mở như AndroidX, Media3, Coil, Jaudiotagger và ZXing.
 
 <details>
-<summary>浏览量</summary>
+<summary>Lượt xem</summary>
 
 <div align="center">
 
-![访问统计](https://count.getloli.com/@bileizhen_CurrentMusicX?name=bileizhen_CurrentMusicX&theme=original-new&padding=7&offset=0&align=center&scale=1&pixelated=1&darkmode=auto)
+![Thống kê lượt truy cập](https://count.getloli.com/@bileizhen_CurrentMusicX?name=bileizhen_CurrentMusicX&theme=original-new&padding=7&offset=0&align=center&scale=1&pixelated=1&darkmode=auto)
 
 </div>
 

@@ -49,7 +49,7 @@ class LevelsRepository(private val api: ApiClient) : LevelsApi {
                 throw ApiException(ErrorKind.Parse)
         }
     override suspend fun submit(owner: RequestSession, trial: LevelTrial, answers: List<Int>): LevelTrialResult {
-        require(trial.validAnswers(answers)) { "请完成所有题目" }
+        require(trial.validAnswers(answers)) { "Vui lòng hoàn thành tất cả câu hỏi" }
         return api.decode(api.request("POST", "levels/trial", body = buildJsonObject {
             put("answers", JsonArray(answers.map(::JsonPrimitive)))
         }, authenticated = true, expectedSession = owner, projectOnly = true, retryConnection = false))

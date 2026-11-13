@@ -5,10 +5,10 @@ import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
 
 internal typealias ListeningSource = io.github.currencortex.music.data.settings.ListeningSource
-internal enum class ListeningPeriod(val label: String) { WEEK("周"), MONTH("月"), YEAR("年") }
+internal enum class ListeningPeriod(val label: String) { WEEK("Tuần"), MONTH("Tháng"), YEAR("Năm") }
 internal data class ListeningRange(val start: LocalDate, val end: LocalDate) {
     val dates: List<LocalDate> get() = generateSequence(start) { it.plusDays(1) }.takeWhile { it <= end }.toList()
-    val label: String get() = if (start.year == end.year) "${start.year} 年 ${start.monthValue}.${start.dayOfMonth} – ${end.monthValue}.${end.dayOfMonth}"
+    val label: String get() = if (start.year == end.year) "${start.year} năm ${start.monthValue}.${start.dayOfMonth} – ${end.monthValue}.${end.dayOfMonth}"
         else "$start – $end"
 }
 internal fun listeningRange(period: ListeningPeriod, anchor: LocalDate): ListeningRange {

@@ -64,13 +64,13 @@ internal object SongShareFiles {
             putExtra(Intent.EXTRA_STREAM, uri)
             putExtra(Intent.EXTRA_TEXT, poster.content.text)
             putExtra(Intent.EXTRA_TITLE, poster.content.title)
-            clipData = ClipData.newUri(context.contentResolver, "歌曲分享海报", uri)
+            clipData = ClipData.newUri(context.contentResolver, "Áp phích chia sẻ bài hát", uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
     }
 
     suspend fun save(context: Context, poster: SongShareFile, uri: Uri) = withContext(Dispatchers.IO) {
-        checkNotNull(context.contentResolver.openOutputStream(uri, "w")) { "无法打开保存位置" }.use { target ->
+        checkNotNull(context.contentResolver.openOutputStream(uri, "w")) { "Không thể mở vị trí lưu" }.use { target ->
             poster.file.inputStream().use { it.copyTo(target) }
         }
     }

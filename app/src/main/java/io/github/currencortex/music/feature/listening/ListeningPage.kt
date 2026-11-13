@@ -127,9 +127,9 @@ private val MiSansSmall = FontFamily(Font(R.font.listening_misans_semibold, Font
         GlassMenu(durationInfo, { durationInfo=it }, emptyList(), durationInfoAnchor, headerBackdrop,
             tags=GlassMenuTags("listening_duration_info_popup","listening_duration_info_dismiss"),
             menuWidth=280.dp, bottomInset=LocalMusicBottomInset.current,
-            description=GlassPopupText("收听时长", if(source==ListeningSource.NETEASE)
-                "记录你收听歌曲、播客和有声书的总时长，包含多端播放数据，每日记录上限为24小时，颜色越深代表收听时长越长。"
-                else "记录你在本机实际播放音乐的时长，暂停、缓冲和拖动进度不计入。颜色越深代表收听时长越长。"),
+             description=GlassPopupText("Thời lượng nghe", if(source==ListeningSource.NETEASE)
+                 "Ghi lại tổng thời gian bạn nghe bài hát, podcast và sách nói, bao gồm dữ liệu phát trên nhiều thiết bị. Giới hạn ghi nhận mỗi ngày là 24 giờ; màu càng đậm, thời lượng nghe càng dài."
+                 else "Ghi lại thời gian phát nhạc thực tế trên thiết bị này; thời gian tạm dừng, tải đệm và tua không được tính. Màu càng đậm, thời lượng nghe càng dài."),
             content={
         BoxWithConstraints(Modifier.widthIn(max = 600.dp).fillMaxSize().align(Alignment.TopCenter).navigationBarsPadding()) {
             val s = maxWidth.value / 375f
@@ -155,20 +155,19 @@ private val MiSansSmall = FontFamily(Font(R.font.listening_misans_semibold, Font
                     }
                     if (source == ListeningSource.NETEASE && !signedIn) item("login") { FootprintCard {
                         Column(Modifier.padding((24*s).dp), verticalArrangement = Arrangement.spacedBy((16*s).dp)) {
-                            FootprintText("绑定网易云账号，查看你的听歌足迹", size=16f)
-                            FootprintAction("绑定网易云", onLogin, Modifier.testTag("listening_login"))
+                             FootprintText("Liên kết tài khoản Nhạc Vân NetEase để xem dấu chân nghe nhạc", size=16f)
+                             FootprintAction("Liên kết Nhạc Vân NetEase", onLogin, Modifier.testTag("listening_login"))
                         }
                     } } else {
                         if (error != null) item("error") { FootprintCard { Column(Modifier.padding((20*s).dp)) {
                             FootprintText(error, color=FootprintMuted)
-                            FootprintAction("重试", onRetry, Modifier.testTag("listening_retry"))
+                             FootprintAction("Thử lại", onRetry, Modifier.testTag("listening_retry"))
                         } } }
-                        if (loading && report == null) item("loading") { FootprintCard { FootprintText("正在收集听歌足迹…", Modifier.padding((28*s).dp), color=FootprintMuted) } }
+                         if (loading && report == null) item("loading") { FootprintCard { FootprintText("Đang thu thập dấu chân nghe nhạc…", Modifier.padding((28*s).dp), color=FootprintMuted) } }
                         if (report != null) {
                             if (period == ListeningPeriod.YEAR) item("years") { ListeningYearCards(report, range.start.year, source == ListeningSource.NETEASE) }
                             else {
-                                val badge = report.facts.firstOrNull { it.title == "听歌印记" }
-                                if (badge != null && (source == ListeningSource.LOCAL || range.end < today)) item("badge") {
+val badge = report.facts.firstOrNull { it.title == "Dấu ấn nghe nhạc" }                                if (badge != null && (source == ListeningSource.LOCAL || range.end < today)) item("badge") {
                                     Box(Modifier.layout { measurable,constraints ->
                                         val child=measurable.measure(constraints)
                                         val overlap=(20*s).dp.roundToPx()
@@ -177,15 +176,15 @@ private val MiSansSmall = FontFamily(Font(R.font.listening_misans_semibold, Font
                                 }
                                 item("summary") { ListeningSummaryPager(report,period,range,selectedDay,today,onDay) { FootprintCard {
                                     Box(Modifier.fillMaxWidth().padding(start=(16*s).dp, top=(16*s).dp, end=(16*s).dp)) {
-                                        FootprintText(if (period == ListeningPeriod.WEEK) "本周收听时长"
-                                            else "${chineseMonth(range.start.monthValue)}月收听时长", size=34f, color=FootprintPale, weight=FontWeight.SemiBold)
+                                         FootprintText(if (period == ListeningPeriod.WEEK) "Thời lượng nghe tuần này"
+                                             else "${chineseMonth(range.start.monthValue)} tháng — thời lượng nghe", size=34f, color=FootprintPale, weight=FontWeight.SemiBold)
                                         ListeningDurationInfo({ durationInfo=true }, { durationInfoAnchor=it }, Modifier.align(Alignment.TopEnd))
                                     }
                                     Column(Modifier.fillMaxWidth().padding(top=(18*s).dp,end=(24*s).dp), horizontalAlignment=Alignment.End,
                                         verticalArrangement=Arrangement.spacedBy((4*s).dp)) {
-                                        if (report.totalMs == null) FootprintText("报告尚未生成", Modifier.testTag("listening_total"), size=25f, weight=FontWeight.Bold)
+                                         if (report.totalMs == null) FootprintText("Báo cáo chưa được tạo", Modifier.testTag("listening_total"), size=25f, weight=FontWeight.Bold)
                                         else FootprintDuration(report.totalMs, Modifier.testTag("listening_total"))
-                                        report.listenedDays?.let { FootprintText("已听 $it/${range.dates.size} 天",size=14f) }
+                                         report.listenedDays?.let { FootprintText("Đã nghe $it/${range.dates.size} ngày",size=14f) }
                                     }
                                     if (period == ListeningPeriod.WEEK) {
                                         Spacer(Modifier.height((50*s).dp))
@@ -196,21 +195,21 @@ private val MiSansSmall = FontFamily(Font(R.font.listening_misans_semibold, Font
                                             exit=androidx.compose.animation.shrinkVertically(tween(160,easing=LinearEasing))) {
                                             val shownDay = if(source==ListeningSource.NETEASE) cloudListeningDay(report,today,today) else day
                                         Column(Modifier.padding(start=(20*s).dp,end=(20*s).dp,top=(24*s).dp,bottom=0.dp), verticalArrangement=Arrangement.spacedBy((10*s).dp)) {
-                                            if (source==ListeningSource.NETEASE || selectedDay==today) Image(painterResource(R.drawable.listening_today_title),"今日收听",Modifier.size((65*s).dp,(15*s).dp),colorFilter=androidx.compose.ui.graphics.ColorFilter.tint(FootprintInk))
+                                             if (source==ListeningSource.NETEASE || selectedDay==today) Image(painterResource(R.drawable.listening_today_title),"Nghe hôm nay",Modifier.size((65*s).dp,(15*s).dp),colorFilter=androidx.compose.ui.graphics.ColorFilter.tint(FootprintInk))
                                             else Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy((3*s).dp)) {
                                                 Canvas(Modifier.size((12*s).dp)) {
                                                     drawArc(ink,180f,180f,false,topLeft=Offset(size.width*.16f,size.height*.1f),size=androidx.compose.ui.geometry.Size(size.width*.68f,size.height*.8f),style=androidx.compose.ui.graphics.drawscope.Stroke(size.width*.12f))
                                                     drawLine(ink,Offset(size.width*.15f,size.height*.5f),Offset(size.width*.15f,size.height*.9f),size.width*.2f,androidx.compose.ui.graphics.StrokeCap.Round)
                                                     drawLine(ink,Offset(size.width*.85f,size.height*.5f),Offset(size.width*.85f,size.height*.9f),size.width*.2f,androidx.compose.ui.graphics.StrokeCap.Round)
                                                 }
-                                                FootprintText(if (selectedDay == today) "今日收听" else "${selectedDay.monthValue}.${selectedDay.dayOfMonth} 收听",size=13f,weight=FontWeight.SemiBold)
+                                                 FootprintText(if (selectedDay == today) "Nghe hôm nay" else "${selectedDay.monthValue}.${selectedDay.dayOfMonth} Nghe",size=13f,weight=FontWeight.SemiBold)
                                             }
                                             if (dayError != null) FootprintText(dayError,size=12f,color=FootprintMuted)
-                                            else if (dayLoading && shownDay == null) FootprintText("正在读取…",size=12f,color=FootprintMuted)
+                                             else if (dayLoading && shownDay == null) FootprintText("Đang đọc…",size=12f,color=FootprintMuted)
                                             else if (shownDay?.songCount != null) Row(Modifier.clickable(enabled=source==ListeningSource.NETEASE && shownDay.songCount>0) { onOpenCloudSongs(true) },verticalAlignment=Alignment.Bottom) {
                                                 FootprintText("${shownDay.songCount}",size=30f,numeric=true,weight=FontWeight.Bold)
-                                                FootprintText("首歌曲",Modifier.padding(bottom=(3*s).dp),size=16f)
-                                            } else FootprintText("暂无歌曲明细",size=16f,color=FootprintMuted)
+                                                 FootprintText("Bài hát đầu tiên",Modifier.padding(bottom=(3*s).dp),size=16f)
+                                             } else FootprintText("Chưa có thông tin bài hát",size=16f,color=FootprintMuted)
                                             if (shownDay?.tracks?.isNotEmpty() == true) Row(Modifier.fillMaxWidth().clickable(enabled=source==ListeningSource.NETEASE) { onOpenCloudSongs(true) },horizontalArrangement=Arrangement.spacedBy((5*s).dp)) {
                                                 shownDay.tracks.take(5).forEach { FootprintCover(it.cover,it.title,Modifier.weight(1f).aspectRatio(1f).clip(RoundedCornerShape((5*s).dp))) }
                                                 Box(Modifier.weight(1f).aspectRatio(1f).clip(RoundedCornerShape((5*s).dp)).background(FootprintInset).clickable { if(source==ListeningSource.NETEASE) onOpenCloudSongs(true) else songs=true },contentAlignment=Alignment.Center) { FootprintText("•••",color=FootprintMuted,size=15f) }
@@ -223,8 +222,7 @@ private val MiSansSmall = FontFamily(Font(R.font.listening_misans_semibold, Font
                                     } else {
                                         Spacer(Modifier.height((22*s).dp))
                                         ListeningMonthCalendar(range,report.days,selectedDay,today,onDay,report.dayBreakdowns)
-                                        val facts = report.facts.filterNot { it.title.startsWith("听歌年代") || it.title.startsWith("听歌语言") || it.title == "听歌印记" }
-                                        if(source == ListeningSource.NETEASE) Box(Modifier.padding(top=((if(report.summarySections.size>=2) 24 else 0)*s).dp,bottom=(24*s).dp)) { ListeningSummarySections(report.summarySections) }
+val facts = report.facts.filterNot { it.title.startsWith("Thập niên nghe nhạc") || it.title.startsWith("Ngôn ngữ nghe nhạc") || it.title == "Dấu ấn nghe nhạc" }                                        if(source == ListeningSource.NETEASE) Box(Modifier.padding(top=((if(report.summarySections.size>=2) 24 else 0)*s).dp,bottom=(24*s).dp)) { ListeningSummarySections(report.summarySections) }
                                         else if (facts.isNotEmpty()) Row(Modifier.fillMaxWidth().padding(top=(24*s).dp,bottom=(24*s).dp),horizontalArrangement=Arrangement.SpaceEvenly) {
                                             facts.take(2).forEach { fact -> Column(Modifier.weight(1f),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy((5*s).dp)) {
                                                 FootprintText(fact.value,size=25f,numeric=true,weight=FontWeight.Bold)
@@ -235,12 +233,11 @@ private val MiSansSmall = FontFamily(Font(R.font.listening_misans_semibold, Font
                                 } } }
                                 if(period == ListeningPeriod.MONTH && report.monthly != null) item("details") { ListeningMonthlyCards(report,range,onMonthlyAction,onRank={onOpenCloudSongs(false)}) }
                                 else if(period == ListeningPeriod.WEEK && report.weekly != null) item("details") { ListeningWeeklyCards(report,range,onMonthlyAction,onRank={onOpenCloudSongs(false)}) }
-                                else if (report.coverUrls.isNotEmpty() || report.tracks.any { it.cover.isNotBlank() } || report.facts.any { it.title.startsWith("听歌年代") || it.title.startsWith("听歌语言") }) item("details") { ListeningDetailCards(report,period,range,onMonthlyAction) }
-                                if(report.monthly == null && report.weekly == null) item("note") { Column(Modifier.fillMaxWidth(),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy((8*s).dp)) {
-                                    FootprintText(if (today in range.start..range.end) "完整数据收集中..." else "这一段音乐时光",size=16f,weight=FontWeight.Bold,fontFamily=FontFamily.SansSerif)
+else if (report.coverUrls.isNotEmpty() || report.tracks.any { it.cover.isNotBlank() } || report.facts.any { it.title.startsWith("Thời đại nghe nhạc") || it.title.startsWith("Ngôn ngữ nghe nhạc") }) item("details") { ListeningDetailCards(report,period,range,onMonthlyAction) }                                if(report.monthly == null && report.weekly == null) item("note") { Column(Modifier.fillMaxWidth(),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy((8*s).dp)) {
+                                     FootprintText(if (today in range.start..range.end) "Đang thu thập dữ liệu đầy đủ..." else "Khoảnh khắc âm nhạc trong khoảng thời gian này",size=16f,weight=FontWeight.Bold,fontFamily=FontFamily.SansSerif)
                                     FootprintText(if (source == ListeningSource.NETEASE && today in range.start..range.end)
-                                        (if(period==ListeningPeriod.WEEK) "周日下午3点更新" else "每月1日更新") else "已记录的收听足迹",size=12f,color=FootprintMuted)
-                                    if(source==ListeningSource.LOCAL) FootprintText("本机记录 · ${report.note}",Modifier.padding(top=(20*s).dp),size=11f,color=FootprintMuted)
+                                         (if(period==ListeningPeriod.WEEK) "Cập nhật lúc 3 giờ chiều Chủ nhật" else "Cập nhật vào ngày 1 hằng tháng") else "Dấu chân nghe nhạc đã ghi lại",size=12f,color=FootprintMuted)
+                                     if(source==ListeningSource.LOCAL) FootprintText("Dữ liệu trên thiết bị · ${report.note}",Modifier.padding(top=(20*s).dp),size=11f,color=FootprintMuted)
                                 } }
                             }
                         }
@@ -250,15 +247,15 @@ private val MiSansSmall = FontFamily(Font(R.font.listening_misans_semibold, Font
                 CompositionLocalProvider(LocalGlassBackdrop provides headerBackdrop) {
                 SettingsFloatingHeader(background=FootprintBackground, toolbarHeight=(54*s).dp) {
                 Box(Modifier.fillMaxWidth().statusBarsPadding().height((54*s).dp)) {
-                    GlassIconButton(onBack, "返回", Modifier.align(Alignment.CenterStart)
+                     GlassIconButton(onBack, "Quay lại", Modifier.align(Alignment.CenterStart)
                         .padding(start=12.dp).testTag("navigate_back")) {
                         Icon(MusicIcons.Back, null, tint=MiuixTheme.colorScheme.onBackground)
                     }
                     Column(Modifier.align(Alignment.Center).alpha(1f-collapsed).testTag("listening_title"),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy((4*s).dp)) {
-                        FootprintText(if(source==ListeningSource.NETEASE) "云村听歌足迹" else "本机听歌足迹",size=17f,weight=FontWeight.Bold)
-                        FootprintText(report?.takeIf { source==ListeningSource.LOCAL || signedIn }?.cumulativeMs?.let { "总时长${compactDuration(it)}" } ?: source.label,size=11f,color=FootprintMuted)
+                         FootprintText(if(source==ListeningSource.NETEASE) "Dấu chân nghe nhạc trên Nhạc Vân" else "Dấu chân nghe nhạc trên thiết bị",size=17f,weight=FontWeight.Bold)
+                        FootprintText(report?.takeIf { source==ListeningSource.LOCAL || signedIn }?.cumulativeMs?.let { "Tổng thời lượng${compactDuration(it)}" } ?: source.label,size=11f,color=FootprintMuted)
                     }
-                    GlassIconButton({ rules=true }, "听歌足迹规则", Modifier.align(Alignment.CenterEnd)
+                    GlassIconButton({ rules=true }, "Quy tắc dấu chân nghe nhạc", Modifier.align(Alignment.CenterEnd)
                         .padding(end=12.dp).testTag("listening_rules")) {
                         Icon(MusicIcons.File, null, tint=MiuixTheme.colorScheme.onBackground)
                     }
@@ -266,19 +263,21 @@ private val MiSansSmall = FontFamily(Font(R.font.listening_misans_semibold, Font
                 }
                 FootprintTabs(period,onPeriod,Modifier.align(Alignment.TopCenter).padding(top=statusInset + (70*s).dp*(1f-collapsed) + (((54*s).dp-44.dp)/2)*collapsed).width(((335f-175f*collapsed)*s).dp))
                 }
-                MusicOverlayDialog(show=rules, title="听歌足迹规则", onDismissRequest={rules=false},
+                MusicOverlayDialog(show=rules, title="Quy tắc dấu chân nghe nhạc", onDismissRequest={rules=false},
                     summary=if(source==ListeningSource.LOCAL)
-                        "统计本机实际音乐播放时间，暂停、缓冲、拖动进度与 MV 不计入。旧版本保留的每日时长会迁移，歌曲与时段明细从升级后记录；本机足迹不随账号切换。"
-                    else "按北京时间、周日为一周起点统计。云端时长包含音乐、播客和有声书。完整周报通常于周日下午3点更新，月报于每月1日更新，年度数据随年度报告发布。历史可用范围与账号权限以网易云为准。") {
-                    Column(verticalArrangement=Arrangement.spacedBy(10.dp)) {
-                        if(source==ListeningSource.NETEASE) MusicDialogButton("查看网易云完整规则", {
+                        "Thống kê thời gian phát nhạc thực tế trên thiết bị này; không tính thời gian tạm dừng, tải đệm, tua tiến độ và MV. Thời lượng hằng ngày được lưu từ phiên bản cũ sẽ được chuyển đổi; thông tin chi tiết về bài hát và khung giờ chỉ được ghi lại từ sau khi nâng cấp. Dấu chân nghe nhạc trên thiết bị này không thay đổi khi chuyển đổi tài khoản."
+
+                    else "Thống kê theo giờ Bắc Kinh, tuần bắt đầu từ Chủ nhật. Thời lượng trên đám mây bao gồm nhạc, podcast và sách nói. Báo cáo tuần đầy đủ thường được cập nhật vào 3 giờ chiều Chủ nhật, báo cáo tháng vào ngày 1 hằng tháng; dữ liệu năm được phát hành cùng báo cáo thường niên. Phạm vi lịch sử có thể xem và quyền hạn của tài khoản căn cứ theo Nhạc Vân NetEase.") {
+                    else "Thống kê theo giờ Bắc Kinh, tuần bắt đầu từ Chủ nhật. Thời lượng trên đám mây bao gồm nhạc, podcast và sách nói. Báo cáo tuần đầy đủ thường được cập nhật vào 3 giờ chiều Chủ nhật, báo cáo tháng vào ngày 1 hằng tháng; dữ liệu năm được phát hành cùng báo cáo thường niên. Phạm vi lịch sử có thể xem và quyền hạn của tài khoản căn cứ theo Nhạc Vân NetEase.") {
+                        if(source==ListeningSource.NETEASE) MusicDialogButton("Xem đầy đủ quy tắc của Nhạc Vân NetEase", {
+                        if(source==ListeningSource.NETEASE) MusicDialogButton("Xem đầy đủ quy tắc của Nhạc Vân NetEase", {
                             rules=false
                             onMonthlyAction(ListeningMonthlyAction.Url("https://y.music.163.com/g/yida/2aa33ff7660a4fb9967250ecafa34535"))
-                        })
-                        MusicDialogButton("知道了", { rules=false }, Modifier.testTag("listening_rules_dismiss"))
+                        MusicDialogButton("Đã hiểu", { rules=false }, Modifier.testTag("listening_rules_dismiss"))
+                        MusicDialogButton("Đã hiểu", { rules=false }, Modifier.testTag("listening_rules_dismiss"))
                     }
-                }
-                if(songs) FootprintDialog("收听歌曲",{songs=false}) { day?.tracks.orEmpty().forEach { FootprintText(it.title.ifBlank{"歌曲"},Modifier.padding(vertical=6.dp),size=14f) } }
+                if(songs) FootprintDialog("Bài hát đã nghe",{songs=false}) { day?.tracks.orEmpty().forEach { FootprintText(it.title.ifBlank{"Bài hát"},Modifier.padding(vertical=6.dp),size=14f) } }
+                if(songs) FootprintDialog("Bài hát đã nghe",{songs=false}) { day?.tracks.orEmpty().forEach { FootprintText(it.title.ifBlank{"Bài hát"},Modifier.padding(vertical=6.dp),size=14f) } }
 
             }
         }
@@ -292,16 +291,16 @@ private val MiSansSmall = FontFamily(Font(R.font.listening_misans_semibold, Font
         tag="listening_period", role=Role.Tab)
 }
 
-@Composable private fun ListeningDurationInfo(open: () -> Unit, onBounds: (Rect) -> Unit, modifier: Modifier = Modifier) {
-    GlassIconButton(open, "收听时长说明", modifier.testTag("listening_duration_info"), size=32.dp,
+    GlassIconButton(open, "Thông tin về thời lượng nghe", modifier.testTag("listening_duration_info"), size=32.dp,
+    GlassIconButton(open, "Thông tin về thời lượng nghe", modifier.testTag("listening_duration_info"), size=32.dp,
         opensMenu=true, onBoundsChanged=onBounds) {
         Icon(MusicIcons.Info, null, Modifier.size(20.dp), tint=MiuixTheme.colorScheme.onBackground)
     }
 }
 
 @Composable private fun PeriodArrow(next:Boolean,enabled:Boolean,click:()->Unit,modifier:Modifier) {
-    Box(Modifier.width((49.667f*LocalFootprintScale.current).dp).height(44.dp), contentAlignment=Alignment.Center) {
-        GlassIconButton(click, if(next) "下一周期" else "上一周期", modifier=modifier, enabled=enabled) {
+        GlassIconButton(click, if(next) "Kỳ tiếp theo" else "Kỳ trước", modifier=modifier, enabled=enabled) {
+        GlassIconButton(click, if(next) "Kỳ tiếp theo" else "Kỳ trước", modifier=modifier, enabled=enabled) {
             Icon(MusicIcons.Forward, null, Modifier.size(20.dp).rotate(if(next) 0f else 180f),
                 tint=MiuixTheme.colorScheme.onBackground.copy(alpha=if(enabled) 1f else .38f))
         }
@@ -310,16 +309,16 @@ private val MiSansSmall = FontFamily(Font(R.font.listening_misans_semibold, Font
 
 @Composable internal fun FootprintDuration(ms:Long,modifier:Modifier=Modifier,numberSize:Float=51f,unitSize:Float=30f) {
     val minutes=ms.coerceAtLeast(0)/60000
-    Row(modifier.semantics(mergeDescendants=true){contentDescription=compactDuration(ms)},verticalAlignment=Alignment.Bottom) {
-        if(minutes>=60){ FootprintText("${minutes/60}",size=numberSize,weight=FontWeight.Bold,numeric=true);FootprintText("小时",Modifier.padding(start=((unitSize/10)*LocalFootprintScale.current).dp, end=((unitSize/10)*LocalFootprintScale.current).dp, bottom=((unitSize/6)*LocalFootprintScale.current).dp),size=unitSize,weight=FontWeight.SemiBold) }
+        if(minutes>=60){ FootprintText("${minutes/60}",size=numberSize,weight=FontWeight.Bold,numeric=true);FootprintText("giờ",Modifier.padding(start=((unitSize/10)*LocalFootprintScale.current).dp, end=((unitSize/10)*LocalFootprintScale.current).dp, bottom=((unitSize/6)*LocalFootprintScale.current).dp),size=unitSize,weight=FontWeight.SemiBold) }
+        if(minutes>=60){ FootprintText("${minutes/60}",size=numberSize,weight=FontWeight.Bold,numeric=true);FootprintText("giờ",Modifier.padding(start=((unitSize/10)*LocalFootprintScale.current).dp, end=((unitSize/10)*LocalFootprintScale.current).dp, bottom=((unitSize/6)*LocalFootprintScale.current).dp),size=unitSize,weight=FontWeight.SemiBold) }
         if (minutes < 60 || minutes % 60 != 0L) {
-            FootprintText("${minutes%60}",size=numberSize,weight=FontWeight.Bold,numeric=true)
-            FootprintText(if(minutes==0L)"分钟" else "分",Modifier.padding(start=((unitSize/10)*LocalFootprintScale.current).dp, end=((unitSize/10)*LocalFootprintScale.current).dp, bottom=((unitSize/6)*LocalFootprintScale.current).dp),size=unitSize,weight=FontWeight.SemiBold)
+            FootprintText(if(minutes==0L)"phút" else "phút",Modifier.padding(start=((unitSize/10)*LocalFootprintScale.current).dp, end=((unitSize/10)*LocalFootprintScale.current).dp, bottom=((unitSize/6)*LocalFootprintScale.current).dp),size=unitSize,weight=FontWeight.SemiBold)
+            FootprintText(if(minutes==0L)"phút" else "phút",Modifier.padding(start=((unitSize/10)*LocalFootprintScale.current).dp, end=((unitSize/10)*LocalFootprintScale.current).dp, bottom=((unitSize/6)*LocalFootprintScale.current).dp),size=unitSize,weight=FontWeight.SemiBold)
         }
     }
-}
-internal fun compactDuration(ms:Long):String { val m=ms.coerceAtLeast(0)/60000;return if(m>=60)"${m/60}小时${m%60}分" else "${m}分" }
-internal fun chineseMonth(month:Int)=listOf("一","二","三","四","五","六","七","八","九","十","十一","十二")[month-1]
+internal fun compactDuration(ms:Long):String { val m=ms.coerceAtLeast(0)/60000;return if(m>=60)"${m/60}giờ${m%60}phút" else "${m}phút" }
+internal fun chineseMonth(month:Int)=listOf("Một","Hai","Ba","Bốn","Năm","Sáu","Bảy","Tám","Chín","Mười","Mười một","Mười hai")[month-1]
+internal fun chineseMonth(month:Int)=listOf("Một","Hai","Ba","Bốn","Năm","Sáu","Bảy","Tám","Chín","Mười","Mười một","Mười hai")[month-1]
 
 @Composable private fun FootprintAction(label:String,click:()->Unit,modifier:Modifier=Modifier) {
     Box(modifier.padding(vertical=8.dp).clip(CircleShape).background(FootprintRed).clickable(onClick=click).padding(horizontal=20.dp,vertical=10.dp),contentAlignment=Alignment.Center){FootprintText(label,color=Color.White,weight=FontWeight.SemiBold)}
@@ -331,8 +330,8 @@ internal fun chineseMonth(month:Int)=listOf("一","二","三","四","五","六",
                 Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     FootprintText(title, size = 20f, weight = FontWeight.Bold)
                     Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())
-                        .testTag("listening_dialog_content"), verticalArrangement = Arrangement.spacedBy(16.dp), content = content)
-                    FootprintAction("知道了", dismiss, Modifier.testTag("listening_dialog_dismiss"))
+                    FootprintAction("Đã hiểu", dismiss, Modifier.testTag("listening_dialog_dismiss"))
+                    FootprintAction("Đã hiểu", dismiss, Modifier.testTag("listening_dialog_dismiss"))
                 }
             }
         }

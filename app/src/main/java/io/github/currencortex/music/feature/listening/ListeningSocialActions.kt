@@ -138,7 +138,7 @@ private class ListeningSocialActions(
     }
 
     private fun showError(failure: Exception) {
-        error((failure as? ApiException)?.kind?.message ?: "操作失败，请稍后重试")
+        error((failure as? ApiException)?.kind?.message ?: "Thao tác thất bại, vui lòng thử lại sau")
     }
 }
 
@@ -160,7 +160,7 @@ private class ListeningSocialActions(
         .clickable(enabled = !busy, role = Role.Button) {
             when (followed) { true -> onArtist(); false -> actions.follow(id); null -> actions.retryArtist(id) }
         }.testTag("listening_artist_follow_$id"), contentAlignment = Alignment.Center) {
-        FootprintText(if (busy) "…" else when (followed) { true -> "已关注"; false -> "+ 关注"; null -> "重试" },
+         FootprintText(if (busy) "…" else when (followed) { true -> "Đã theo dõi"; false -> "+ Theo dõi"; null -> "Thử lại" },
             size = 13f, weight = FontWeight.SemiBold, color = color, maxLines = 1)
     }
 }
@@ -174,7 +174,7 @@ private class ListeningSocialActions(
     val busy = actions.busy["song:${action.id}"] == true
     if (liked == null) return
     AsyncImage(if (liked) ListeningCollectedHeart else ListeningEmptyHeart,
-        if (liked) "取消红心" else "收藏歌曲",
+         if (liked) "Bỏ thả tim" else "Lưu bài hát",
         Modifier.size((24 * s).dp).padding((2 * s).dp)
             .clickable(enabled = !busy, role = Role.Button) { actions.like(action, liked) }
             .testTag("listening_friend_like_${action.id}"))

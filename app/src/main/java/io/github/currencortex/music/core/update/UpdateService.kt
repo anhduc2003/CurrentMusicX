@@ -106,8 +106,8 @@ class UpdateService(
         } catch (error: Exception) {
             if (prompt != null) {
                 if (mutablePrompt.value?.release == release && mutablePrompt.value?.channel == channel)
-                    mutablePrompt.value = prompt.copy(error = "无法保存忽略设置，请重试")
-            } else mutableState.value = UpdateState.Failed("无法保存忽略设置：${error.message.orEmpty()}")
+                     mutablePrompt.value = prompt.copy(error = "Không thể lưu cài đặt bỏ qua, vui lòng thử lại")
+             } else mutableState.value = UpdateState.Failed("Không thể lưu cài đặt bỏ qua: ${error.message.orEmpty()}")
             logger.warn("Update", "Unable to save ignored release", error)
         }
     }

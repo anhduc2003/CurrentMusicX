@@ -48,6 +48,6 @@ jobs:
               await github.rest.issues.updateLabel({...context.repo,name:item.name,color:item.after});
               core.info(`Label ${item.name}: ${item.before} -> ${item.after}`);
             }
-            await core.summary.addHeading('CurrentMusicX · 标签配色已同步')
-              .addRaw(`已创建 ${missing.length} 个处理状态标签，更新 ${changes.length} 个已有标签的颜色。`)
+            await core.summary.addHeading('CurrentMusicX · Đã đồng bộ màu nhãn')
+              .addRaw(`Đã tạo ${missing.length} nhãn trạng thái xử lý, cập nhật màu của ${changes.length} nhãn hiện có.`)
               .write();

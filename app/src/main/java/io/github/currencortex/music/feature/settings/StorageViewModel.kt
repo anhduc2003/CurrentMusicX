@@ -20,9 +20,9 @@ class StorageViewModel(private val container: AppContainer) : ViewModel() {
         state.update { it.copy(usage = usage) }
     }
 
-    fun clearData() = action("已清理数据缓存") { container.storage.clearDataCache() }
+    fun clearData() = action("Đã xóa bộ nhớ đệm dữ liệu") { container.storage.clearDataCache() }
 
-    fun clearAudio() = action("已清理音乐缓存") { container.storage.clearAudioCache() }
+    fun clearAudio() = action("Đã xóa bộ nhớ đệm nhạc") { container.storage.clearAudioCache() }
 
     private fun action(done: String, block: suspend () -> Unit) = viewModelScope.launch {
         if (state.value.busy) return@launch

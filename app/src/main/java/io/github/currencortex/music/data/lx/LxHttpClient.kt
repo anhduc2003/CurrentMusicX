@@ -19,20 +19,20 @@ class LxHttpClient(private val allowPrivateForTests: Boolean = false) {
         .followRedirects(false).followSslRedirects(false).retryOnConnectionFailure(false)
         .dns(object : Dns {
             override fun lookup(hostname: String): List<InetAddress> = Dns.SYSTEM.lookup(hostname).also { addresses ->
-                if (!allowPrivateForTests && addresses.any(::isPrivate)) throw IOException("音源不能访问本机或局域网地址")
+                if (!allowPrivateForTests && addresses.any(::isPrivate)) throw IOException("Nguồn nhạc không thể truy cập địa chỉ máy cục bộ hoặc mạng LAN")
             }
         }).build()
     internal fun url(value: String): HttpUrl {
-        val url = value.toHttpUrlOrNull() ?: throw LxSourceException("音源地址必须是 HTTP 或 HTTPS 链接")
+        val url = value.toHttpUrlOrNull() ?: throw LxSourceException("Địa chỉ nguồn nhạc phải là liên kết HTTP hoặc HTTPS")
         if (url.username.isNotEmpty() || url.password.isNotEmpty() || url.toString().length > 8192)
-            throw LxSourceException("音源地址无效")
+            throw LxSourceException("Địa chỉ nguồn nhạc không hợp lệ")
         if (!allowPrivateForTests && (url.host.equals("localhost", true) || url.host.endsWith(".localhost", true) ||
-                url.host.endsWith(".local", true) || isNumericPrivate(url.host))) throw LxSourceException("音源不能访问本机或局域网地址")
+                url.host.endsWith(".local", true) || isNumericPrivate(url.host))) throw LxSourceException("Nguồn nhạc không thể truy cập địa chỉ máy cục bộ hoặc mạng LAN")
         return url
     }
     suspend fun download(value: String): String {
         val response = exchange(Request.Builder().url(url(value)).header("Accept", "text/javascript,text/plain,*/*").build(), LX_MAX_SCRIPT_BYTES)
-        if (response.code !in 200..299) throw LxSourceException("下载音源失败（HTTP ${response.code}）")
+        if (response.code !in 200..299) throw LxSourceException("Tải nguồn nhạc thất bại (HTTP ${response.code})")
         return response.text.removePrefix("\uFEFF")
     }
     internal suspend fun probeAudio(value: String): io.github.currencortex.music.core.network.SourceAvailabilityStatus {
@@ -49,12 +49,12 @@ class LxHttpClient(private val allowPrivateForTests: Boolean = false) {
         val options = input["options"] as? JsonObject ?: buildJsonObject {}
         val builder = Request.Builder().url(url(input["url"]!!.jsonPrimitive.content))
         val headers = options["headers"] as? JsonObject
-        require((headers?.size ?: 0) <= 64) { "音源请求头过多" }
+        require((headers?.size ?: 0) <= 64) { "Quá nhiều tiêu đề yêu cầu nguồn nhạc" }
         headers?.forEach { (key, value) -> builder.header(key, value.jsonPrimitive.content) }
         builder.header("User-Agent", headers?.entries?.firstOrNull { it.key.equals("User-Agent", true) }?.value?.jsonPrimitive?.content
             ?: "CurrentMusic-LX/2.0.0")
         val method = options["method"]?.jsonPrimitive?.contentOrNull?.uppercase(java.util.Locale.ROOT) ?: "GET"
-        require(method in setOf("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")) { "不支持的音源请求方法" }
+        require(method in setOf("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")) { "Phương thức yêu cầu nguồn nhạc không được hỗ trợ" }
         val raw = options["body"]
         val form = options["form"] as? JsonObject
         val formData = options["formData"] as? JsonObject
@@ -72,7 +72,7 @@ class LxHttpClient(private val allowPrivateForTests: Boolean = false) {
             method in setOf("POST", "PUT", "PATCH") -> ByteArray(0).toRequestBody()
             else -> null
         }
-        require(body == null || method !in setOf("GET", "HEAD")) { "GET 请求不能携带请求体" }
+        require(body == null || method !in setOf("GET", "HEAD")) { "Yêu cầu GET không thể có phần thân" }
         builder.method(method, body)
         val requestedTimeout = options["timeout"]?.jsonPrimitive?.longOrNull?.takeIf { it > 0 }?.coerceIn(100, 20000) ?: 20000
         val response = exchange(builder.build(), LX_MAX_RESPONSE_BYTES, requestedTimeout)
@@ -100,7 +100,7 @@ class LxHttpClient(private val allowPrivateForTests: Boolean = false) {
                                 val redirect = response.code in setOf(301, 302, 303, 307, 308) && response.header("Location") != null
                                 val body = response.body
                                 val bytes = if (redirect || body == null) byteArrayOf() else {
-                                    if (!prefixOnly && body.contentLength() > limit) throw LxSourceException("音源响应过大")
+                                    if (!prefixOnly && body.contentLength() > limit) throw LxSourceException("Phản hồi nguồn nhạc quá lớn")
                                     body.byteStream().use { stream ->
                                         if (!prefixOnly) lxReadBounded(stream, limit) else {
                                             val buffer = ByteArray(limit)
@@ -126,8 +126,8 @@ class LxHttpClient(private val allowPrivateForTests: Boolean = false) {
             run {
                 val target = response.headers["Location"]
                 if (response.code in setOf(301, 302, 303, 307, 308) && target != null) {
-                    if (hop == 5) throw LxSourceException("音源重定向次数过多")
-                    val next = url(request.url.resolve(target)?.toString() ?: throw LxSourceException("音源重定向地址无效"))
+                    if (hop == 5) throw LxSourceException("Quá nhiều lần chuyển hướng nguồn nhạc")
+                    val next = url(request.url.resolve(target)?.toString() ?: throw LxSourceException("Địa chỉ chuyển hướng nguồn nhạc không hợp lệ"))
                     val builder = request.newBuilder().url(next)
                     if (next.host != request.url.host || next.scheme != request.url.scheme || next.port != request.url.port) {
                         builder.removeHeader("Authorization"); builder.removeHeader("Cookie"); builder.removeHeader("Proxy-Authorization")
@@ -139,7 +139,7 @@ class LxHttpClient(private val allowPrivateForTests: Boolean = false) {
                 }
             }
         }
-        throw LxSourceException("音源请求失败")
+        throw LxSourceException("Yêu cầu nguồn nhạc thất bại")
     }
     private fun isNumericPrivate(host: String): Boolean {
         if (!host.contains(':') && !host.all { it.isDigit() || it == '.' }) return false
@@ -159,6 +159,6 @@ internal fun lxReadBounded(stream: java.io.InputStream, limit: Int): ByteArray {
         val size = stream.read(buffer, 0, minOf(buffer.size, limit + 1 - output.size()))
         if (size < 0) return output.toByteArray()
         output.write(buffer, 0, size)
-        if (output.size() > limit) throw LxSourceException("文件或响应超过大小限制")
+        if (output.size() > limit) throw LxSourceException("Tệp hoặc phản hồi vượt quá giới hạn kích thước")
     }
 }

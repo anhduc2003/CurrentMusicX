@@ -61,15 +61,15 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     val currentDeleted by rememberUpdatedState(onDeleted)
     fun pick(color: Color) { draft = color; hex = hexDigits(color) }
     fun dismiss() { focus.clearFocus(); keyboard?.hide(); visible = false }
-    OverlayBottomSheet(show = visible, title = "自定义颜色", modifier = Modifier.height(height).layerBackdrop(backdrop).testTag("appearance_color_sheet"),
+    OverlayBottomSheet(show = visible, title = "Màu tùy chỉnh", modifier = Modifier.height(height).layerBackdrop(backdrop).testTag("appearance_color_sheet"),
         backgroundColor = colors.surfaceContainer, cornerRadius = 32.dp,
         insideMargin = DpSize(16.dp, 0.dp), outsideMargin = DpSize(0.dp, 0.dp),
         startAction = {
-            GlassIconButton(::dismiss, "取消", Modifier.testTag("appearance_color_cancel"), backdrop = backdrop) {
+            GlassIconButton(::dismiss, "Hủy", Modifier.testTag("appearance_color_cancel"), backdrop = backdrop) {
                 Icon(MusicIcons.Close, null, Modifier.size(24.dp), tint = colors.onSurface)
             }
         }, endAction = {
-            GlassIconButton({ confirmed = draft.toArgb().toLong() and 0xFFFFFFFF; dismiss() }, "确认颜色",
+            GlassIconButton({ confirmed = draft.toArgb().toLong() and 0xFFFFFFFF; dismiss() }, "Xác nhận màu",
                 Modifier.testTag("appearance_color_save"), enabled = hex.length == 6, backdrop = backdrop) {
                 Icon(MusicIcons.Check, null, Modifier.size(24.dp), tint = colors.onSurface.copy(alpha = if (hex.length == 6) 1f else .35f))
             }
@@ -100,7 +100,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                         hex = text.removePrefix("#").filter { it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F' }.take(6).uppercase()
                         if (hex.length == 6) draft = Color(0xFF000000 or hex.toLong(16))
                     }, Modifier.weight(1f).clip(CircleShape).background(colors.surfaceContainerHighest)
-                        .testTag("appearance_color_hex").semantics { contentDescription = "HEX 颜色" },
+                        .testTag("appearance_color_hex").semantics { contentDescription = "Màu HEX" },
                         singleLine = true, textStyle = TextStyle(color = colors.onSurface, fontSize = 17.sp, lineHeight = 22.sp,
                             fontFeatureSettings = "tnum"), cursorBrush = SolidColor(colors.primary),
                         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters, autoCorrectEnabled = false,
@@ -118,7 +118,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
             MiuixTheme(colors = colors.copy(surfaceContainer = colors.surfaceContainerHigh)) {
                 ColorPalette(draft, ::pick)
             }
-            if (onDeleted != null) GlassActionButton("删除颜色", { deleted = true; dismiss() },
+            if (onDeleted != null) GlassActionButton("Xóa màu", { deleted = true; dismiss() },
                 Modifier.testTag("appearance_color_delete"), destructive = true, backdrop = null)
         }
     }

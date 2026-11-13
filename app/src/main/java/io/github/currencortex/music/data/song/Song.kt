@@ -12,7 +12,7 @@ import kotlinx.serialization.SerialName
                              val albumId: Long = 0) {
     val privateLibrary get() = musicSource == MusicSource.NAVIDROME || musicSource == MusicSource.EMBY
     val privateIdentity get() = emby?.identity ?: navidrome?.identity
-    val originalQualityLabel get() = if (musicSource == MusicSource.EMBY) "Emby 原音质" else "Navidrome 原音质"
+    val originalQualityLabel get() = if (musicSource == MusicSource.EMBY) "Chất lượng âm thanh gốc của Emby" else "Chất lượng âm thanh gốc của Navidrome"
 }
 @Serializable enum class MusicSource { NETEASE, QQ_MUSIC, APPLE_MUSIC, SPOTIFY, NAVIDROME, LOCAL, EMBY }
 @Serializable data class NavidromeTrackRef(val id: String, val identity: String, val format: String = "",
@@ -52,8 +52,8 @@ data class SearchPage(val songs: List<Song>, val total: Int, val hasMore: Boolea
     val matchSource: String = "", val bitrate: Long = 0, val bits: Int = 0, val size: Long = 0,
     val durationMs: Long = 0, val expectedDurationMs: Long = 0) {
     val matched get() = level == "matched" || source == "netease-match"
-    val qualityLabel get() = if (matched) "匹配音源" else
-        io.github.currencortex.music.core.media.AudioQuality.entries.firstOrNull { it.value == level }?.label ?: "未知音质"
+    val qualityLabel get() = if (matched) "Nguồn nhạc phù hợp" else
+        io.github.currencortex.music.core.media.AudioQuality.entries.firstOrNull { it.value == level }?.label ?: "Chất lượng âm thanh không xác định"
     // Without a file digest, two signed URLs may point to different recordings.
     val cacheIdentity: String get() = if (!matched && !source.startsWith("lx:")) "" else md5.takeIf { it.matches(Regex("[a-fA-F0-9]{32}")) }
         ?.lowercase() ?: java.security.MessageDigest.getInstance("SHA-256").digest(url.toByteArray(Charsets.UTF_8))

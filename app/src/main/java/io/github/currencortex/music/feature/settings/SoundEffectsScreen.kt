@@ -102,10 +102,10 @@ import kotlinx.serialization.json.*
     BackHandler(enabled = LocalMusicPageActive.current && expandedCatalog) { expandedCatalog = false }
     val canApply = runtime.supported
     val status = when {
-        !runtime.supported -> "此设备暂不支持本机均衡器"
+        !runtime.supported -> "Thiết bị này hiện chưa hỗ trợ bộ cân bằng âm thanh tích hợp"
         runtime.error != null -> runtime.error!!
         options.smartEnabled -> tuning.message
-        else -> "根据歌曲的声音特征，自动调整本机均衡器"
+        else -> "Tự động điều chỉnh bộ cân bằng âm thanh tích hợp dựa trên đặc điểm âm thanh của bài hát"
     }
     val masterChosen = originalMaster.requestedEnabled
     val speakerChosen = originalSpeaker.requestedEnabled
@@ -116,32 +116,32 @@ import kotlinx.serialization.json.*
     val singleChosen = original.requestedId != null || original.selectedId != null
     val anyEnabled = masterChosen || speakerChosen || moodChosen || smartChosen || singleChosen || options.smartEnabled || manual.enabled
     val activeStatus = when {
-        !anyEnabled -> "保留你的调节，下次随时开启"
+        !anyEnabled -> "Giữ lại các điều chỉnh của bạn, có thể bật bất cứ lúc nào vào lần sau"
         masterChosen -> originalMaster.message
         speakerChosen -> originalSpeaker.message
         moodChosen -> if (originalMood.enabled && !originalMood.loading && !playback.playing)
-            "已开启，播放网易云歌曲后自动匹配" else originalMood.message
+            "Đã bật, tự động khớp sau khi phát bài hát trên Nhạc Vân NetEase" else originalMood.message
         smartChosen -> if (originalSmart.enabled && !originalSmart.loading && !playback.playing)
-            "已开启，播放网易云歌曲后自动匹配" else originalSmart.message
+            "Đã bật, tự động khớp sau khi phát bài hát trên Nhạc Vân NetEase" else originalSmart.message
         singleChosen -> when {
-            original.loading -> "正在加载，可随时取消"
+            original.loading -> "Đang tải, có thể hủy bất cứ lúc nào"
             original.error != null -> original.error!!
-            !playback.playing -> "已就绪，播放后生效"
-            original.processing -> "正在处理音频"
-            else -> "等待音频处理"
+            !playback.playing -> "Đã sẵn sàng, có hiệu lực sau khi phát"
+            original.processing -> "Đang xử lý âm thanh"
+            else -> "Đang chờ xử lý âm thanh"
         }
         options.smartEnabled -> status
         runtime.error != null -> runtime.error!!
-        !runtime.supported -> "此设备暂不支持本机均衡器"
-        !playback.playing -> "已就绪，播放后生效"
-        runtime.active -> "正在使用本机均衡器"
-        else -> "等待连接播放器"
+        !runtime.supported -> "Thiết bị này hiện chưa hỗ trợ bộ cân bằng âm thanh tích hợp"
+        !playback.playing -> "Đã sẵn sàng, có hiệu lực sau khi phát"
+        runtime.active -> "Đang sử dụng bộ cân bằng âm thanh tích hợp"
+        else -> "Đang chờ kết nối với trình phát"
     }
     SettingsUiScope {
     Box(Modifier.fillMaxSize().background(background), contentAlignment = Alignment.TopCenter) {
     io.github.currencortex.music.ui.component.nativeui.SettingsScrollLayout(
         Modifier.widthIn(max = 680.dp).fillMaxSize().testTag("native_sound_effects_page"),background=background,topBar={
-        SettingsTopBar(if (expandedCatalog) "官方精选音效" else "音效",
+        SettingsTopBar(if (expandedCatalog) "Tuyển chọn hiệu ứng âm thanh chính thức" else "Hiệu ứng âm thanh",
             onBack = { if (expandedCatalog) expandedCatalog = false else onBack() }, backTag = "sound_effects_back")
         }) {topInset->
         LazyColumn(Modifier.fillMaxSize().testTag("sound_effects_screen"), state = if (expandedCatalog) catalogListState else listState,
@@ -150,24 +150,24 @@ import kotlinx.serialization.json.*
             if (!expandedCatalog) {
             item {
                 Card(Modifier.padding(horizontal = 16.dp)) {
-                    SettingsPreference("音频处理系统", if (adaptive.enabled) "已开启 · 动态 EQ / 虚拟低频 / 马达驱动" else "动态 EQ · 虚拟低频 · 马达驱动",
+                    SettingsPreference("Hệ thống xử lý âm thanh", if (adaptive.enabled) "Đã bật · EQ động / âm trầm ảo / điều khiển động cơ" else "EQ động · âm trầm ảo · điều khiển động cơ",
                         Modifier.testTag("open_adaptive_audio"), onClick = onAdaptive)
                 }
             }
-            item { SettingsInfoHeader("大师音效", MusicIcons.Headphones) }
+            item { SettingsInfoHeader("Hiệu ứng âm thanh bậc thầy", MusicIcons.Headphones) }
             item(key = "masters") {
                 val visible by remember { derivedStateOf { listState.layoutInfo.visibleItemsInfo.any { it.key == "masters" } } }
                 NativeMasterPager(dark, moodChosen, originalMood.loading,
                     if (moodChosen) ((originalMood.visualExtra?.get("copywriting") as? JsonObject)
-                        ?.get("description") as? JsonPrimitive)?.contentOrNull ?: activeStatus else "按歌曲情绪智能调音，读懂每首歌背后的情感温度",
+                        ?.get("description") as? JsonPrimitive)?.contentOrNull ?: activeStatus else "Điều chỉnh âm thanh thông minh theo cảm xúc của bài hát, thấu hiểu sắc thái cảm xúc ẩn sau mỗi ca khúc",
                     currentSong?.name, visible && animationsActive && selectedEffect == null && tileDetails == null && !showEngine,
                     true,
                     onMood = { if (moodChosen) vm.turnOff() else vm.originalMoodEnabled(true) },
                     masterChosen = masterChosen, masterReady = originalMaster.enabled && !originalMaster.loading, masterLoading = originalMaster.loading, masterStatus = if (masterChosen) originalMaster.description ?: originalMaster.message
-                        else "AI 大模型分析歌曲内容，为每一首歌定制专属音效",
+                        else "AI phân tích nội dung bài hát và tùy chỉnh hiệu ứng âm thanh riêng cho từng bài",
                     onMaster = { if (masterChosen) vm.turnOff() else vm.originalAiMasterEnabled(true) },
                     speakerChosen = speakerChosen, speakerReady = originalSpeaker.enabled && !originalSpeaker.loading, speakerLoading = originalSpeaker.loading, speakerStatus = if (speakerChosen) originalSpeaker.message
-                        else "开启外放沉浸式体验，多场景自由调节",
+                        else "Bật trải nghiệm đắm chìm qua loa ngoài, tùy chỉnh linh hoạt cho nhiều tình huống",
                     onSpeaker = { if (speakerChosen) vm.turnOff() else vm.originalSpeakerEnabled(true) },
                     moodEmotion = originalMood.emotion, songCover = currentSong?.cover, playing = playback.playing,
                     speakerScene = originalSpeaker.scene, onDetails = onDetails)
@@ -179,8 +179,8 @@ import kotlinx.serialization.json.*
                 Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(originalMaster.message, Modifier.weight(1f).testTag("sound_master_status"), fontSize = 12.sp,
                         color = colors.onSurfaceVariantSummary)
-                    if (!originalMaster.loading) MusicTextAction("重试", { vm.originalAiMasterEnabled(true) })
-                    if (!originalMaster.available) MusicTextAction("导入引擎", { showEngine = true })
+                    if (!originalMaster.loading) MusicTextAction("Thử lại", { vm.originalAiMasterEnabled(true) })
+                    if (!originalMaster.available) MusicTextAction("Nhập công cụ", { showEngine = true })
                 }
             }
             if (!originalSpeaker.loading && !originalSpeaker.enabled &&
@@ -188,23 +188,23 @@ import kotlinx.serialization.json.*
                 Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(originalSpeaker.message, Modifier.weight(1f).testTag("sound_speaker_status"), fontSize = 12.sp,
                         color = colors.onSurfaceVariantSummary)
-                    if (!originalSpeaker.loading) MusicTextAction("重试", { vm.originalSpeakerEnabled(true) })
-                    if (!originalSpeaker.available) MusicTextAction("导入引擎", { showEngine = true })
+                    if (!originalSpeaker.loading) MusicTextAction("Thử lại", { vm.originalSpeakerEnabled(true) })
+                    if (!originalSpeaker.available) MusicTextAction("Nhập công cụ", { showEngine = true })
                 }
             }
             if (moodFailed || moodChosen && !originalMood.loading && !originalMood.enabled) item {
                 Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(originalMood.message, Modifier.weight(1f).testTag("sound_original_mood_status"), fontSize = 12.sp,
                         color = colors.onSurfaceVariantSummary)
-                    MusicTextAction("重试", vm::retryOriginalMood, Modifier.testTag("sound_original_mood_retry"))
-                    if (!originalMood.available) MusicTextAction("导入引擎", { showEngine = true })
+                    MusicTextAction("Thử lại", vm::retryOriginalMood, Modifier.testTag("sound_original_mood_retry"))
+                    if (!originalMood.available) MusicTextAction("Nhập engine", { showEngine = true })
                 }
             }
             item {
                 Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 12.dp).height(28.dp),
                     verticalAlignment = Alignment.CenterVertically) {
-                    Text("官方精选音效", Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    Text(if (expandedCatalog) "收起" else "更多 ›",
+                     Text("Hiệu ứng âm thanh tuyển chọn chính thức", Modifier.weight(1f), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                     Text(if (expandedCatalog) "Thu gọn" else "Thêm ›",
                         Modifier.testTag("sound_catalog_expand").clip(RoundedCornerShape(8.dp))
                             .clickable(role = Role.Button) { expandedCatalog = !expandedCatalog }
                             .padding(start = 12.dp, top = 4.dp, bottom = 4.dp),
@@ -214,8 +214,8 @@ import kotlinx.serialization.json.*
             if (smartFailed) item {
                 Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(originalSmart.message, Modifier.weight(1f), fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
-                    MusicTextAction("重试", vm::retryOriginalSmart, Modifier.testTag("sound_original_smart_retry"))
-                    if (!originalSmart.available) MusicTextAction("导入引擎", { showEngine = true })
+                     MusicTextAction("Thử lại", vm::retryOriginalSmart, Modifier.testTag("sound_original_smart_retry"))
+                     if (!originalSmart.available) MusicTextAction("Nhập engine", { showEngine = true })
                 }
             }
             item(key = "smart") {
@@ -239,23 +239,23 @@ import kotlinx.serialization.json.*
             if (page.error != null && !expandedCatalog) item {
                 Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(page.error!!, Modifier.weight(1f), fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
-                    MusicTextAction("重试", vm::refreshPage, Modifier.testTag("sound_page_retry"))
+                     MusicTextAction("Thử lại", vm::refreshPage, Modifier.testTag("sound_page_retry"))
                 }
             }
             if (actionError != null) item {
                 Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(actionError!!, Modifier.weight(1f).testTag("sound_tile_error"), fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
-                    MusicTextAction("关闭", { vm.actionError.value = null })
+                     MusicTextAction("Đóng", { vm.actionError.value = null })
                 }
             }
-            if (!expandedCatalog && catalog.loading) item { Text("正在获取网易云音效…", Modifier.padding(horizontal = 16.dp)
+             if (!expandedCatalog && catalog.loading) item { Text("Đang tải hiệu ứng âm thanh Nhạc Vân NetEase…", Modifier.padding(horizontal = 16.dp)
                 .testTag("sound_catalog_loading"), fontSize = 13.sp, color = colors.onSurfaceVariantSummary) }
             if (!expandedCatalog && catalog.error != null) item { Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(catalog.error!!, Modifier.weight(1f), fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
-                MusicTextAction("重试", vm::refreshCatalog, Modifier.testTag("sound_catalog_retry"))
+                 MusicTextAction("Thử lại", vm::refreshCatalog, Modifier.testTag("sound_catalog_retry"))
             } }
             if (!expandedCatalog && !catalog.loading && catalog.error == null && catalog.items.isEmpty()) item {
-                Text("网易云暂未返回可用音效", Modifier.padding(horizontal = 16.dp), fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+                 Text("Nhạc Vân NetEase chưa có hiệu ứng âm thanh khả dụng", Modifier.padding(horizontal = 16.dp), fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
             }
             if (!expandedCatalog) item {
                 BoxWithConstraints(Modifier.fillMaxWidth().testTag("sound_official_effects")) {
@@ -267,11 +267,11 @@ import kotlinx.serialization.json.*
                             val chosen = tileLoading == effect.id || (original.requestedId ?: original.selectedId) == effect.id
                             OfficialSoundCard(effect, Modifier.width(cardWidth), chosen,
                                 when {
-                                    tileLoading == effect.id || original.loading && chosen -> "加载中…"
-                                    original.error != null && chosen -> "加载失败"
-                                    chosen -> if (original.processing && playback.playing) "使用中" else "已选择"
+                                     tileLoading == effect.id || original.loading && chosen -> "Đang tải…"
+                                     original.error != null && chosen -> "Tải thất bại"
+                                     chosen -> if (original.processing && playback.playing) "Đang sử dụng" else "Đã chọn"
                                     effect.legacyMemberOriginal -> if (effect.memberType == 4) "SVIP" else "VIP"
-                                    else -> "免费"
+                                     else -> "Miễn phí"
                                 }, enabled = true,
                                 tile = page.featured.firstOrNull { it.id == effect.id }, dark = dark,
                                 onDetails = {
@@ -289,14 +289,14 @@ import kotlinx.serialization.json.*
                     }
                 }
             } else {
-                if (more.loading) item { Text("正在获取官方精选音效…", Modifier.padding(16.dp), fontSize = 13.sp,
+                 if (more.loading) item { Text("Đang tải hiệu ứng âm thanh tuyển chọn chính thức…", Modifier.padding(16.dp), fontSize = 13.sp,
                     color = colors.onSurfaceVariantSummary) }
                 if (more.error != null) item { Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(more.error!!, Modifier.weight(1f), fontSize = 12.sp, color = colors.onSurfaceVariantSummary)
-                    MusicTextAction("重试", vm::refreshMore, Modifier.testTag("sound_more_retry"))
+                     MusicTextAction("Thử lại", vm::refreshMore, Modifier.testTag("sound_more_retry"))
                 } }
                 if (!more.loading && more.error == null && more.featured.isEmpty()) item {
-                    Text("暂无官方精选音效", Modifier.padding(16.dp), fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
+                     Text("Chưa có hiệu ứng âm thanh tuyển chọn chính thức", Modifier.padding(16.dp), fontSize = 13.sp, color = colors.onSurfaceVariantSummary)
                 }
                 items(more.featured, key = { "more_${it.id}" }) { tile ->
                     val chosen = tileLoading == tile.id || (if (tile.smart) smartChosen else (original.requestedId ?: original.selectedId) == tile.id)
@@ -308,40 +308,40 @@ import kotlinx.serialization.json.*
             if (!expandedCatalog) {
             if (original.error != null) item {
                 Card(Modifier.padding(horizontal = 16.dp)) { Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("原版音效 · ${original.requestedName ?: original.selectedName.orEmpty()}",
+                     Text("Hiệu ứng âm thanh gốc · ${original.requestedName ?: original.selectedName.orEmpty()}",
                         Modifier.testTag("sound_original_selected"), fontSize = 17.sp)
                     if (original.loading) {
                         Text(when {
-                        original.permissionPending -> "正在向网易云核验黑胶会员权益…"
-                        original.restoring -> "正在重新校验并恢复 ${original.requestedName.orEmpty()}…"
-                        else -> "正在下载并校验 ${original.requestedName.orEmpty()}…"
+                         original.permissionPending -> "Đang xác minh quyền lợi hội viên Black Vinyl với Nhạc Vân NetEase…"
+                         original.restoring -> "Đang kiểm tra lại và khôi phục ${original.requestedName.orEmpty()}…"
+                         else -> "Đang tải xuống và xác minh ${original.requestedName.orEmpty()}…"
                         }, Modifier.testTag("sound_original_loading"), fontSize = 13.sp)
                     }
                     original.error?.let { Text(it, Modifier.testTag("sound_original_error"), color = colors.onSurfaceVariantSummary, fontSize = 13.sp) }
                     if (original.selectedId != null) {
                         Text(when {
                             original.requestedId != null && original.requestedId != original.selectedId ->
-                                "当前仍使用 ${original.selectedName.orEmpty()}，新音效就绪后切换"
-                            !playback.playing -> "预设已就绪，开始本机播放后处理"
-                            original.processing -> "正在使用原版引擎处理音频"
-                            else -> "等待原版引擎处理音频…"
+                                 "Hiện vẫn đang sử dụng ${original.selectedName.orEmpty()}, sẽ chuyển đổi khi hiệu ứng âm thanh mới sẵn sàng"
+                             !playback.playing -> "Cài đặt sẵn đã sẵn sàng, hãy bắt đầu phát trên thiết bị để xử lý"
+                             original.processing -> "Đang xử lý âm thanh bằng engine gốc"
+                            else -> "Đang chờ engine gốc xử lý âm thanh…"
                         }, Modifier.testTag("sound_original_processing"), color = colors.onSurfaceVariantSummary, fontSize = 13.sp)
-                        Text("均衡器参数已保留，可随时切回", color = colors.onSurfaceVariantSummary, fontSize = 12.sp)
+                        Text("Đã giữ lại thông số bộ chỉnh âm, bạn có thể chuyển lại bất cứ lúc nào", color = colors.onSurfaceVariantSummary, fontSize = 12.sp)
                     }
                     if (original.error != null && original.available && original.requestedId != null &&
                         original.requestedId !in original.unsupported && !original.loading)
-                        MusicTextAction("重试加载", vm::retryOriginal, Modifier.testTag("sound_original_retry"))
+                         MusicTextAction("Thử tải lại", vm::retryOriginal, Modifier.testTag("sound_original_retry"))
                     if (original.selectedId != null || original.requestedId != null)
-                        MusicTextAction("关闭音效", vm::turnOff, Modifier.testTag("sound_original_clear"))
+                         MusicTextAction("Tắt hiệu ứng âm thanh", vm::turnOff, Modifier.testTag("sound_original_clear"))
                 } }
             }
 
             if (options.smartEnabled) item {
                 Card(Modifier.padding(horizontal = 16.dp)) { Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(playback.song?.name ?: "等待播放", fontSize = 17.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                     Text(playback.song?.name ?: "Đang chờ phát", fontSize = 17.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     val analysis = tuning.analysis
                     when {
-                        tuning.loading -> Text("正在读取歌曲的声音特征…", color = colors.onSurfaceVariantSummary, fontSize = 13.sp)
+                         tuning.loading -> Text("Đang đọc đặc trưng âm thanh của bài hát…", color = colors.onSurfaceVariantSummary, fontSize = 13.sp)
                         analysis != null -> {
                             val metadata = buildList {
                                 analysis.bpm?.let { add("${it.roundToInt()} BPM") }
@@ -354,7 +354,7 @@ import kotlinx.serialization.json.*
                         else -> Text(tuning.message, color = colors.onSurfaceVariantSummary, fontSize = 13.sp)
                     }
                     tuning.gains?.let { gains ->
-                        Text(if (canApply && runtime.active && tuning.active) "当前歌曲调音已生效" else "开始本机播放后生效",
+                         Text(if (canApply && runtime.active && tuning.active) "Đã áp dụng chỉnh âm cho bài hát hiện tại" else "Có hiệu lực sau khi bắt đầu phát nhạc trên thiết bị này",
                             Modifier.testTag("sound_tuning_applied"), fontSize = 13.sp, color = colors.primary)
                         TuningCurve(gains)
                     }
@@ -367,45 +367,45 @@ import kotlinx.serialization.json.*
     }
     tileDetails?.let { tile -> MusicDialog(tile.name, onDismiss = { tileDetails = null }) {
         Text(tile.description, fontSize = 14.sp)
-        MusicTextAction("使用", { vm.useTile(tile); tileDetails = null })
-        MusicTextAction("返回音效页", { tileDetails = null })
+         MusicTextAction("Sử dụng", { vm.useTile(tile); tileDetails = null })
+         MusicTextAction("Quay lại trang hiệu ứng âm thanh", { tileDetails = null })
     } }
-    if (showEngine) MusicDialog("原版音效引擎", onDismiss = { showEngine = false }) {
-        Text(if (original.available && originalMood.available) "引擎已就绪，支持原版音效和 AI 情绪调音师，无需额外导入。"
-            else "从本机网易云音乐或安装包导入兼容引擎。会员音效使用时会核验当前账号权益。",
+     if (showEngine) MusicDialog("Engine hiệu ứng âm thanh gốc", onDismiss = { showEngine = false }) {
+         Text(if (original.available && originalMood.available) "Engine đã sẵn sàng, hỗ trợ hiệu ứng âm thanh gốc và AI điều chỉnh theo cảm xúc, không cần nhập thêm."
+             else "Nhập engine tương thích từ Nhạc Vân NetEase trên thiết bị này hoặc từ gói cài đặt. Khi sử dụng hiệu ứng dành cho hội viên, hệ thống sẽ xác minh quyền lợi của tài khoản hiện tại.",
             fontSize = 14.sp, color = colors.onSurfaceVariantSummary)
         engineImport.message?.let { Text(it, Modifier.testTag("sound_engine_import_status"), fontSize = 13.sp,
             color = if (engineImport.failed) colors.onSurfaceVariantSummary else colors.primary) }
         if (!original.available || !originalMood.available) {
-            MusicTextAction("从已安装的网易云导入", vm::importInstalledOriginal,
+             MusicTextAction("Nhập từ Nhạc Vân NetEase đã cài đặt", vm::importInstalledOriginal,
                 Modifier.testTag("sound_import_installed"), enabled = !engineImport.loading)
-            MusicTextAction("选择网易云安装包", {
+             MusicTextAction("Chọn gói cài đặt Nhạc Vân NetEase", {
                 selectNeteaseApk.launch(arrayOf("application/vnd.android.package-archive", "application/octet-stream"))
             }, Modifier.testTag("sound_import_apk"), enabled = !engineImport.loading)
         }
-        MusicTextAction("完成", { showEngine = false })
+         MusicTextAction("Hoàn tất", { showEngine = false })
     }
     selectedEffect?.let { effect ->
         val unavailable = vm.originalUnavailableReason(effect)
         MusicDialog(effect.name, onDismiss = { selectedEffect = null }) {
             Text(effect.description, fontSize = 15.sp)
             Text(unavailable ?: if (effect.legacyMemberOriginal)
-                "此音效需要有效的网易云${if (effect.memberType == 4) "SVIP" else "黑胶会员"}。使用前会向网易云核验当前账号权益，到期自动关闭；可在“我的 → 网易云账号”登录。选择会保存，重启后重新核验。"
-                else "使用网易云公开的原版预设与原生音效引擎。选择会保存，重启后重新下载并校验；启用后暂时替代本机智能调音和均衡器。",
+                 "Hiệu ứng này yêu cầu tài khoản Nhạc Vân NetEase ${if (effect.memberType == 4) "SVIP" else "hội viên vinyl"} còn hiệu lực. Trước khi sử dụng, quyền lợi của tài khoản hiện tại sẽ được xác minh với Nhạc Vân NetEase và hiệu ứng sẽ tự động tắt khi hết hạn; bạn có thể đăng nhập tại “Của tôi → Tài khoản Nhạc Vân NetEase”. Lựa chọn sẽ được lưu và xác minh lại sau khi khởi động lại."
+                 else "Sử dụng preset gốc do Nhạc Vân NetEase công khai cùng engine hiệu ứng âm thanh nguyên bản. Lựa chọn sẽ được lưu, tải xuống và xác minh lại sau khi khởi động lại; khi bật, tạm thời thay thế tính năng chỉnh âm thông minh và bộ chỉnh âm trên thiết bị này.",
                 color = colors.onSurfaceVariantSummary, fontSize = 13.sp)
-            MusicTextAction(if (unavailable != null) "重新检查并使用" else if (effect.legacyMemberOriginal) "核验权益并使用" else if (original.selectedId == effect.id) "重新载入原版音效" else "使用原版音效", {
+             MusicTextAction(if (unavailable != null) "Kiểm tra lại và sử dụng" else if (effect.legacyMemberOriginal) "Xác minh quyền lợi và sử dụng" else if (original.selectedId == effect.id) "Tải lại hiệu ứng âm thanh gốc" else "Sử dụng hiệu ứng âm thanh gốc", {
                 vm.useOriginal(effect)
                 selectedEffect = null
             }, Modifier.testTag("sound_use_original"))
             launchError?.let { Text(it, color = colors.onSurfaceVariantSummary, fontSize = 13.sp) }
-            MusicTextAction("前往网易云音效", {
+             MusicTextAction("Đi đến hiệu ứng âm thanh Nhạc Vân NetEase", {
                 try {
                     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("orpheus://effect")).setPackage("com.netease.cloudmusic"))
                     launchError = null
-                } catch (_: ActivityNotFoundException) { launchError = "请先安装网易云音乐客户端" }
-                catch (_: SecurityException) { launchError = "暂时无法打开网易云音乐" }
+                 } catch (_: ActivityNotFoundException) { launchError = "Vui lòng cài đặt ứng dụng Nhạc Vân NetEase trước" }
+                 catch (_: SecurityException) { launchError = "Hiện không thể mở Nhạc Vân NetEase" }
             }, Modifier.testTag("sound_open_netease"))
-            MusicTextAction("返回音效页", { selectedEffect = null }, Modifier.testTag("sound_official_close"))
+             MusicTextAction("Quay lại trang hiệu ứng âm thanh", { selectedEffect = null }, Modifier.testTag("sound_official_close"))
         }
     }
     }
@@ -432,7 +432,7 @@ import kotlinx.serialization.json.*
                     color = MiuixTheme.colorScheme.onSurfaceVariantSummary, fontSize = 10.sp,
                     maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
-            SoundAction(if (chosen) (if (status == "加载中…") "加载中…" else "取消") else "使用", onApply,
+             SoundAction(if (chosen) (if (status == "Đang tải…") "Đang tải…" else "Hủy") else "Sử dụng", onApply,
                 Modifier.padding(top = 10.dp, bottom = 12.dp).width(60.dp).testTag("sound_apply_${effect.id}"), enabled)
         }
     }

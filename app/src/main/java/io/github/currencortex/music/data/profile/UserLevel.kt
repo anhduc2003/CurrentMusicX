@@ -5,5 +5,5 @@ fun userLevelLabel(level: Int?): String? = when (level) {
     null -> null
     in 1..6 -> "Lv.$level"
     7 -> "Lv.6 Plus"
-    else -> "等级 $level"
+    else -> "Cấp độ $level"
 }

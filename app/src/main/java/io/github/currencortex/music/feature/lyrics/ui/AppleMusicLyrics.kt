@@ -96,8 +96,8 @@ import kotlin.math.sin
                                 cornerRadius = CornerRadius(10.dp.toPx()))
                         }
                         .combinedClickable(interactionSource = interaction, indication = null,
-                            role = Role.Button, onClickLabel = if (canSeek) "跳到此句" else "歌词操作",
-                            onLongClickLabel = "复制或分享歌词", onLongClick = { actionLine = index }, onClick = {
+                            role = Role.Button, onClickLabel = if (canSeek) "Chuyển đến câu này" else "Thao tác với lời bài hát",
+                            onLongClickLabel = "Sao chép hoặc chia sẻ lời bài hát", onLongClick = { actionLine = index }, onClick = {
                                 if (canSeek) LyricsSynchronizer.seekPositionOrNull(line.startTimeMs, lyricsOffsetMs, mediaDurationMs)?.let {
                                     onSeek(it); followRequest++
                                 } else actionLine = index
@@ -112,7 +112,7 @@ import kotlin.math.sin
                 Modifier.offset(y = maxHeight * .35f).padding(horizontal = 24.dp).fillMaxWidth().height(44.dp),
                 right = document.lines.getOrNull(gapTarget)?.isDuet == true && !display.centered,
                 speed = display.appleMusic.normalized().animationSpeed)
-            if (browsing) BasicText("回到当前歌词", Modifier.align(Alignment.BottomCenter).padding(bottom = 10.dp)
+            if (browsing) BasicText("Quay lại lời bài hát hiện tại", Modifier.align(Alignment.BottomCenter).padding(bottom = 10.dp)
                 .testTag("lyrics_follow").background(Color.White.copy(alpha = .17f), RoundedCornerShape(24.dp))
                 .clickable(role = Role.Button) { followRequest++ }.padding(horizontal = 20.dp, vertical = 13.dp),
                 style = TextStyle(color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold,
@@ -153,7 +153,7 @@ import kotlin.math.sin
     fun selectedText() = selected.sorted().joinToString("\n") { index ->
         document.lines[index].let { if (translation && it.translation.isNotBlank()) "${it.text}\n${it.translation}" else it.text }
     }
-    MusicDialog("选择歌词", dismiss) {
+     MusicDialog("Chọn lời bài hát", dismiss) {
         Column(Modifier.testTag("apple_lyrics_actions")) {
             LazyColumn(Modifier.fillMaxWidth().heightIn(max = 260.dp), state = list) {
                 itemsIndexed(document.lines) { index, line ->
@@ -162,15 +162,15 @@ import kotlin.math.sin
                     })
                 }
             }
-            MusicDialogButton("复制歌词", {
+             MusicDialogButton("Sao chép lời bài hát", {
                 (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
-                    .setPrimaryClip(ClipData.newPlainText("歌词", selectedText()))
+                     .setPrimaryClip(ClipData.newPlainText("Lời bài hát", selectedText()))
                 dismiss()
             }, Modifier.fillMaxWidth())
-            MusicDialogButton("分享歌词", {
+             MusicDialogButton("Chia sẻ lời bài hát", {
                 context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"; putExtra(Intent.EXTRA_TEXT, selectedText())
-                }, "分享歌词"))
+                 }, "Chia sẻ lời bài hát"))
                 dismiss()
             }, Modifier.fillMaxWidth())
         }

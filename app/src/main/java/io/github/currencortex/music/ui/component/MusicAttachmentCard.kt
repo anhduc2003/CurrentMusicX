@@ -20,7 +20,7 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
         MusicCover(card.pic, Modifier.size(42.dp))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
             Text(card.name, fontSize = 14.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            Text(card.sub.ifBlank { when (card.type) { "song" -> "歌曲"; "album" -> "专辑"; "artist" -> "歌手"; else -> "歌单" } },
+            Text(card.sub.ifBlank { when (card.type) { "song" -> "Bài hát"; "album" -> "Album"; "artist" -> "Nghệ sĩ"; else -> "Danh sách phát" } },
                 fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, color = MiuixTheme.colorScheme.onSurfaceVariantSummary)
         }
     }

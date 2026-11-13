@@ -47,7 +47,7 @@ class PlaybackLyrics(requests: Flow<LyricsRequest>, private val load: suspend (S
                         issues = result.issues, songId = song.id, songKey = key, origin = result.origin,
                         sourceDocument = result.sourceDocument, timingAlignment = result.timingAlignment)
                 } catch (e: CancellationException) { throw e }
-                catch (_: Exception) { if (epoch == current) mutable.value = PlaybackLyricsState(error = "歌词暂时无法读取", songId = song.id, songKey = key) }
+                catch (_: Exception) { if (epoch == current) mutable.value = PlaybackLyricsState(error = "Tạm thời không thể đọc lời bài hát", songId = song.id, songKey = key) }
             }
         } } finally { pending?.cancel() }
     } }

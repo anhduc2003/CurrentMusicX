@@ -59,7 +59,7 @@ class PlaybackEqualizer(private val log: (String) -> Unit = {}) : java.io.Closea
     }
     private fun unavailable(e: Exception) {
         releaseEffect()
-        state.value = EqualizerRuntime(supported, sessionId, error = "均衡器暂不可用，请关闭后重新开启")
+        state.value = EqualizerRuntime(supported, sessionId, error = "Bộ chỉnh âm hiện không khả dụng, vui lòng tắt rồi bật lại")
         log("Equalizer unavailable: ${e.javaClass.simpleName}")
     }
     private fun releaseEffect() { runCatching { effect?.release() }; effect = null; applied = emptyList() }

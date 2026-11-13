@@ -38,7 +38,7 @@ internal class PlaylistPreviewPlayback(val enabled: Boolean, val play: (Playlist
         if (!loading && allowed) {
             val expected = vm.container.musicSession()
             loading = true
-            vm.message.value = "正在加载歌单…"
+             vm.message.value = "Đang tải danh sách phát…"
             job = scope.launch {
                 try {
                     val result = appResult {
@@ -51,7 +51,7 @@ internal class PlaylistPreviewPlayback(val enabled: Boolean, val play: (Playlist
                         is AppResult.Failure -> vm.container.errorNotices.show(result.message)
                         is AppResult.Success -> {
                             val songs = result.value
-                            if (songs.isEmpty()) vm.message.value = "歌单暂无歌曲"
+                             if (songs.isEmpty()) vm.message.value = "Danh sách phát chưa có bài hát"
                             else {
                                 vm.container.playerController.setMode(if (shuffle) PlaybackMode.SHUFFLE else PlaybackMode.LIST)
                                 currentPlay(songs, if (shuffle) songs.indices.random() else 0)

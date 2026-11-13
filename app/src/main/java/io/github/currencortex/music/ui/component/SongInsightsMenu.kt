@@ -15,7 +15,7 @@ internal fun qualityFileSummary(br: Long, size: Long, sr: Long): String = buildL
     if (br > 0) add(String.format(Locale.ROOT, "%.0f kbps", br / 1000.0))
     if (sr > 0) add(String.format(Locale.ROOT, "%.1f kHz", sr / 1000.0))
     if (size > 0) add(String.format(Locale.ROOT, "%.1f MiB", size / 1048576.0))
-}.joinToString(" · ").ifEmpty { "暂无文件参数" }
+}.joinToString(" · ").ifEmpty { "Chưa có thông tin tệp" }
 
 /** Fetch only after entering a branch; leaving it cancels the request and permits a clean retry. */
 @Composable private fun <T> rememberInsightBranch(id: String, title: String, owner: Any,
@@ -38,11 +38,11 @@ internal fun qualityFileSummary(br: Long, size: Long, sr: Long): String = buildL
     DisposableEffect(owner) { onDispose { stop() } }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { stop() }
     val children = when (val value = result) {
-        null -> listOf(GlassMenuItem("${id}_loading", "正在加载…", enabled = false))
-        is AppResult.Failure -> listOf(GlassMenuItem("${id}_retry", "加载失败，点击重试",
-            subtitle = if (value.status == 404) "当前服务器暂不支持" else value.message,
+        null -> listOf(GlassMenuItem("${id}_loading", "Đang tải…", enabled = false))
+        is AppResult.Failure -> listOf(GlassMenuItem("${id}_retry", "Tải thất bại, nhấn để thử lại",
+            subtitle = if (value.status == 404) "Máy chủ hiện chưa hỗ trợ" else value.message,
             keepOpen = true, onClick = { start() }))
-        is AppResult.Success -> if (value.value.isEmpty()) listOf(GlassMenuItem("${id}_empty", "暂无资料", enabled = false))
+        is AppResult.Success -> if (value.value.isEmpty()) listOf(GlassMenuItem("${id}_empty", "Chưa có thông tin", enabled = false))
             else rows(value.value)
     }
     return GlassMenuItem(id, title, children = children, subMenuMinWidth = 260.dp,
@@ -54,21 +54,21 @@ internal fun qualityFileSummary(br: Long, size: Long, sr: Long): String = buildL
     if (NeteaseSongActionsRepository.songId(song) == null) return emptyList()
     val owner = song to repository.session()
     val play by rememberUpdatedState(onPlay)
-    val qualities = rememberInsightBranch("song_file_info", "音质文件资料", owner,
+    val qualities = rememberInsightBranch("song_file_info", "Thông tin tệp và chất lượng âm thanh", owner,
         load = { repository.qualities(song) }) { files ->
         buildList {
-            add(GlassMenuItem("song_file_note", "歌曲文件资料", subtitle = "实际音质以播放结果为准", enabled = false))
+            add(GlassMenuItem("song_file_note", "Thông tin tệp bài hát", subtitle = "Chất lượng âm thanh thực tế tùy thuộc vào kết quả phát", enabled = false))
             files.forEach { file ->
                 add(GlassMenuItem("song_file_${file.level}", file.label.ifBlank { file.level },
                     subtitle = qualityFileSummary(file.br, file.size, file.sr), enabled = false))
                 file.variants.forEachIndexed { index, variant ->
-                    add(GlassMenuItem("song_file_${file.level}_$index", variant.immerseType.ifBlank { "音质变体 ${index + 1}" },
+                    add(GlassMenuItem("song_file_${file.level}_$index", variant.immerseType.ifBlank { "Biến thể chất lượng âm thanh ${index + 1}" },
                         subtitle = qualityFileSummary(variant.br, variant.size, variant.sr), enabled = false))
                 }
             }
         }
     }
-    val versions = rememberInsightBranch("song_versions", "其他版本", owner,
+    val versions = rememberInsightBranch("song_versions", "Các phiên bản khác", owner,
         load = { repository.versions(song) }) { songs ->
         songs.map { version -> GlassMenuItem("song_version_${version.id}", version.name,
             subtitle = listOf(version.artists, version.album).filter(String::isNotBlank).joinToString(" · "),

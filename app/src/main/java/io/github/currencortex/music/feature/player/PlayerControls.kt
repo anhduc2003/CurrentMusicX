@@ -99,10 +99,10 @@ internal val PlayerSeekVisuals = SemanticsPropertyKey<PlayerSeekVisual>("PlayerS
             verticalAlignment = Alignment.CenterVertically) {
             leadingAction?.invoke()
             val transportSlot = if (leadingAction != null || trailingAction != null) Modifier.weight(1f) else Modifier
-            PlayerTransportButton("上一首", { vm.player.previous() }, transportSlot, enabled = enabled, direction = -1, compact = compact)
-            PlayerTransportButton(if (state.showPause) "暂停" else "播放", onToggle,
+             PlayerTransportButton("Bài trước", { vm.player.previous() }, transportSlot, enabled = enabled, direction = -1, compact = compact)
+             PlayerTransportButton(if (state.showPause) "Tạm dừng" else "Phát", onToggle,
                 transportSlot.testTag("player_toggle"), enabled, state.showPause, compact = compact)
-            PlayerTransportButton("下一首", { vm.player.next() }, transportSlot, enabled = enabled, direction = 1, compact = compact)
+             PlayerTransportButton("Bài tiếp theo", { vm.player.next() }, transportSlot, enabled = enabled, direction = 1, compact = compact)
             trailingAction?.invoke()
         }
     }
@@ -113,9 +113,9 @@ internal val PlayerSeekVisuals = SemanticsPropertyKey<PlayerSeekVisual>("PlayerS
             val message = when {
                 state.error != null -> state.error
                 actions.error != null -> actions.error
-                !state.canControlPlayback -> "播放由房主或管理员控制"
-                state.resolving -> "正在加载音源…"
-                state.loading -> "正在准备播放…"
+                 !state.canControlPlayback -> "Phát lại do chủ phòng hoặc quản trị viên kiểm soát"
+                 state.resolving -> "Đang tải nguồn âm thanh…"
+                 state.loading -> "Đang chuẩn bị phát…"
                 else -> null
             }
             message?.let { Text(it, fontSize = 11.sp, color = Color.White.copy(alpha = .55f), maxLines = 1) }
@@ -128,7 +128,7 @@ internal val PlayerSeekVisuals = SemanticsPropertyKey<PlayerSeekVisual>("PlayerS
     chorusSegments: List<ChorusSegment> = emptyList(), durationMs: Long = 0, tint: Color = Color.White) {
     val chorus = remember(chorusSegments, durationMs) { playerChorusSegments(chorusSegments, durationMs) }
     val chorusDescription = remember(chorus) {
-        chorus.joinToString("；") { "高潮 ${formatPlayerTime(it.startMs)}–${formatPlayerTime(it.endMs)}" }
+         chorus.joinToString("；") { "Điệp khúc ${formatPlayerTime(it.startMs)}–${formatPlayerTime(it.endMs)}" }
     }
     val preview by rememberUpdatedState(onPreview)
     val seek by rememberUpdatedState(onSeek)
@@ -156,10 +156,10 @@ internal val PlayerSeekVisuals = SemanticsPropertyKey<PlayerSeekVisual>("PlayerS
     val buffered = animateFloatAsState(buffer, tween(180), label = "audio buffer progress")
     Canvas(modifier.fillMaxWidth().height(34.dp).onSizeChanged { bounds = it }.testTag("player_seek").semantics {
         progressBarRangeInfo = ProgressBarRangeInfo(if (pressed) target else progress, 0f..1f)
-        contentDescription = "播放进度"
+         contentDescription = "Tiến trình phát"
         this[PlayerBufferedProgress] = buffer
         this[PlayerSeekVisuals] = PlayerSeekVisual(pressed, dragging, thickness.value)
-        stateDescription = "已加载 ${(buffer * 100).toInt()}%" + if (chorus.isEmpty()) "" else "；$chorusDescription"
+         stateDescription = "Đã tải ${(buffer * 100).toInt()}%" + if (chorus.isEmpty()) "" else "；$chorusDescription"
         if (enabled) setProgress {
             if (!it.isFinite()) false else { seek(it.coerceIn(0f, 1f)); true }
         } else disabled()
@@ -267,7 +267,7 @@ internal enum class PlayerIcon { COLLAPSE, MORE, SHARE, EFFECTS, LYRICS, QUEUE, 
 @Composable internal fun PlayerIconButton(icon: PlayerIcon, label: String, onClick: () -> Unit,
     modifier: Modifier = Modifier, selected: Boolean = false, count: Long? = null, showCount: Boolean = false,
     enabled: Boolean = true, loading: Boolean = false, onLongClick: (() -> Unit)? = null,
-    onLongClickLabel: String = "选择其他歌单") {
+     onLongClickLabel: String = "Chọn danh sách phát khác") {
     val interactions = remember { MutableInteractionSource() }
     val pressed by interactions.collectIsPressedAsState()
     val scale = animateFloatAsState(if (pressed && enabled) .88f else 1f,
@@ -278,7 +278,7 @@ internal enum class PlayerIcon { COLLAPSE, MORE, SHARE, EFFECTS, LYRICS, QUEUE, 
     Box(modifier.size(48.dp).combinedClickable(enabled = enabled, role = Role.Button, interactionSource = interactions,
         indication = null, onClick = onClick, onLongClick = onLongClick,
         onLongClickLabel = if (onLongClick != null) onLongClickLabel else null).semantics {
-            contentDescription = label + if (count != null) "，网易云数量 $count" else ""; this.selected = selected
+             contentDescription = label + if (count != null) "，Số lượng Nhạc Vân NetEase $count" else ""; this.selected = selected
             if (!enabled) disabled()
             this[PlayerButtonVisuals] = PlayerButtonVisual(pressed, scale.value, 0f, opacity.value)
         }, contentAlignment = Alignment.Center) {

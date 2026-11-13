@@ -35,13 +35,13 @@ import coil3.compose.AsyncImage
     val week = report.weekly
     val covers = report.coverUrls.filter(String::isNotBlank).ifEmpty { report.tracks.map { it.cover }.filter(String::isNotBlank) }
     if (week == null) {
-        if (covers.isNotEmpty() || report.songCount != null) FootprintRecordWall(covers, "本周", report.songCount, onRank)
+        if (covers.isNotEmpty() || report.songCount != null) FootprintRecordWall(covers, "Tuần này", report.songCount, onRank)
         return
     }
     key(range.start) {
         Column(Modifier.fillMaxWidth().testTag("listening_week_details"), verticalArrangement = Arrangement.spacedBy((24 * scale).dp)) {
             if (week.complete) {
-                if (!week.wallpaperBottom) FootprintRecordWall(covers, "本周", report.songCount, onRank)
+                if (!week.wallpaperBottom) FootprintRecordWall(covers, "Tuần này", report.songCount, onRank)
                 if (week.songs.isNotEmpty()) WeeklyEditorialColumns(week.songs, artist = false, onAction)
                 if (week.friendSongs.size > 2) WeeklyFriendFavorites(week.friendSongs.take(3), onAction)
                 if (week.friendKeywords.size > 1) MonthlyFriendKeywords(week.friendKeywords, onAction)
@@ -51,13 +51,13 @@ import coil3.compose.AsyncImage
                 if (week.genres.isNotEmpty()) WeeklyGenres(week.genres, onAction)
                 if (week.eras.isNotEmpty()) WeeklyEras(week.eras, onAction)
                 if (week.languages.isNotEmpty()) WeeklyLanguages(week.languages)
-                if (week.wallpaperBottom) FootprintRecordWall(covers, "本周", report.songCount, onRank)
+                if (week.wallpaperBottom) FootprintRecordWall(covers, "Tuần này", report.songCount, onRank)
             } else {
                 if (week.currentFriends.isNotEmpty()) WeeklyCurrentFriends(week.currentFriends, onAction)
                 Column(Modifier.fillMaxWidth().testTag("listening_week_pending"),
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy((8 * scale).dp)) {
-                    FootprintText("完整数据收集中...", size = 16f, color = FootprintInk,weight=FontWeight.Bold,fontFamily=androidx.compose.ui.text.font.FontFamily.SansSerif)
-                    FootprintText("周日下午3点更新", size = 12f, color = FootprintMuted)
+                    FootprintText("Đang thu thập dữ liệu đầy đủ...", size = 16f, color = FootprintInk,weight=FontWeight.Bold,fontFamily=androidx.compose.ui.text.font.FontFamily.SansSerif)
+                    FootprintText("Cập nhật lúc 3 giờ chiều Chủ nhật", size = 12f, color = FootprintMuted)
                 }
             }
         }
@@ -66,7 +66,7 @@ import coil3.compose.AsyncImage
 
 @Composable private fun WeeklyEditorialColumns(items: List<ListeningWeeklyColumn>, artist: Boolean, onAction: (ListeningMonthlyAction) -> Unit) {
     val scale = LocalFootprintScale.current
-    WeeklyCard(if (artist) "本周音乐人" else "本周单曲", if (artist) "artists" else "songs") {
+    WeeklyCard(if (artist) "Nghệ sĩ tuần này" else "Bài hát tuần này", if (artist) "artists" else "songs") {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             items.forEachIndexed { index, item ->
                 Column(Modifier.width((76 * scale).dp).weeklyAction(item.action, onAction)
@@ -95,7 +95,7 @@ import coil3.compose.AsyncImage
     Box(Modifier.fillMaxWidth().height((147 * scale).dp).clip(RoundedCornerShape((20 * scale).dp))
         .testTag("listening_week_vip")) {
         AsyncImage(WeeklyMedia + if (superVip) "svip_privilege_week.16b0e4b3.png" else "vip_privilege_week.ae1582bc.png",
-            if (superVip) "本周SVIP专享" else "本周黑胶VIP专享", Modifier.matchParentSize(), contentScale = ContentScale.FillBounds)
+            if (superVip) "Dành riêng cho SVIP tuần này" else "Dành riêng cho VIP Vinyl tuần này", Modifier.matchParentSize(), contentScale = ContentScale.FillBounds)
         Box(Modifier.align(Alignment.TopCenter).offset(y=(74*scale).dp).height((40*scale).dp)
             .width((.667f*scale).dp).background(Color.White.copy(alpha=.3f)))
         Row(Modifier.fillMaxWidth().padding(top = (69 * scale).dp), horizontalArrangement=Arrangement.SpaceEvenly) {
@@ -114,7 +114,7 @@ import coil3.compose.AsyncImage
     val scale = LocalFootprintScale.current
     val first = items.firstOrNull()?.percent?.takeIf { it > 0 }
     val second = items.getOrNull(1)?.percent
-    WeeklyCard("本周曲风", "genres") {
+    WeeklyCard("Thể loại nhạc tuần này", "genres") {
         Column(Modifier.padding(horizontal = (20 * scale).dp), verticalArrangement = Arrangement.spacedBy((8 * scale).dp)) {
             items.take(3).forEachIndexed { index, item ->
                 val width = if (first != null && item.percent != null) {
@@ -140,7 +140,7 @@ import coil3.compose.AsyncImage
 
 @Composable private fun WeeklyEras(items: List<ListeningWeeklyEra>, onAction: (ListeningMonthlyAction) -> Unit) {
     val scale = LocalFootprintScale.current
-    WeeklyCard("本周听歌年代", "eras") {
+    WeeklyCard("Thập niên nghe nhạc tuần này", "eras") {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             items.take(3).forEachIndexed { index, item ->
                 Column(Modifier.width((76 * scale).dp).weeklyAction(item.action, onAction).testTag("listening_week_era_$index")) {
@@ -171,7 +171,7 @@ import coil3.compose.AsyncImage
 @Composable private fun WeeklyLanguages(items: List<ListeningWeeklyLanguage>) {
     val scale = LocalFootprintScale.current
     val first = items.firstOrNull()?.percent?.takeIf { it > 0 }
-    WeeklyCard("本周听歌语言", "languages") {
+    WeeklyCard("Ngôn ngữ nhạc tuần này", "languages") {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
             items.forEachIndexed { index, item ->
                 val proportional = if (items.size >= 3 && first != null && item.percent != null) (100 * item.percent / first).toFloat().coerceIn(0f, 100f) else 0f
@@ -194,7 +194,7 @@ import coil3.compose.AsyncImage
 
 @Composable private fun WeeklyFriendFavorites(items: List<ListeningMonthlyFriendSong>, onAction: (ListeningMonthlyAction) -> Unit) {
     val scale = LocalFootprintScale.current
-    WeeklyCard("本周好友挚爱", "friends") {
+    WeeklyCard("Bài hát bạn bè yêu thích tuần này", "friends") {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             items.take(3).forEach { song ->
                 Column(Modifier.width((88 * scale).dp).weeklyAction(song.action, onAction), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -202,7 +202,7 @@ import coil3.compose.AsyncImage
                         FootprintCover(song.friend.avatar, song.friend.name, Modifier.size((16.667f * scale).dp).clip(CircleShape))
                         FootprintText(song.friend.name, Modifier.padding(start = (4 * scale).dp), size = 12f, maxLines = 1)
                     }
-                    song.playCount?.let { WeeklyNumberText("${it}次收听", 29.333f, 15.333f,
+                    song.playCount?.let { WeeklyNumberText("${it} lượt nghe", 29.333f, 15.333f,
                         modifier = Modifier.padding(top = (2 * scale).dp, bottom = (14.667f * scale).dp).wrapContentWidth(Alignment.CenterHorizontally, unbounded = true)) }
                     FootprintCover(song.cover, song.name, Modifier.size((76 * scale).dp).clip(RoundedCornerShape((10 * scale).dp)))
                     FootprintText(song.name, Modifier.padding(top = (12 * scale).dp), size = 14f, weight = FontWeight.SemiBold, maxLines = 1, lineHeight = 14f)
@@ -214,7 +214,7 @@ import coil3.compose.AsyncImage
 
 @Composable private fun WeeklyCurrentFriends(items: List<ListeningMonthlyFriendSong>, onAction: (ListeningMonthlyAction) -> Unit) {
     val scale = LocalFootprintScale.current
-    WeeklyCard("本周好友在听", "current_friends") {
+    WeeklyCard("Bạn bè đang nghe tuần này", "current_friends") {
         Column(Modifier.padding(horizontal = (20 * scale).dp), verticalArrangement = Arrangement.spacedBy((18 * scale).dp)) {
             items.take(3).forEach { song ->
                 Column {
@@ -229,7 +229,7 @@ import coil3.compose.AsyncImage
                     Row(Modifier.padding(top = (9 * scale).dp).weeklyAction(song.friend.action, onAction), verticalAlignment = Alignment.CenterVertically) {
                         FootprintCover(song.friend.avatar, song.friend.name, Modifier.size((16.667f * scale).dp).clip(CircleShape))
                         FootprintText(song.friend.name, Modifier.padding(start = (7.333f * scale).dp).weight(1f, fill = false), size = 12f, maxLines = 1)
-                        FootprintText("最近在听", Modifier.padding(start = (4.667f * scale).dp), size = 12f, color = FootprintMuted)
+                        FootprintText("Nghe gần đây", Modifier.padding(start = (4.667f * scale).dp), size = 12f, color = FootprintMuted)
                     }
                 }
             }
@@ -246,14 +246,14 @@ import coil3.compose.AsyncImage
             HorizontalPager(pager, Modifier.fillMaxWidth().testTag("listening_week_audio_pager")) { index ->
                 val audio = items[index]
                 val podcast = audio.type == "podcast"
-                val label = if (podcast) "播客" else "有声书"
+                val label = if (podcast) "Podcast" else "Sách nói"
                 Column(Modifier.fillMaxWidth()) {
-                    WeeklyTitle("本周$label")
+                    WeeklyTitle("$label tuần này")
                     Row(Modifier.fillMaxWidth().padding(top = (15 * scale).dp, bottom = (16 * scale).dp), verticalAlignment = Alignment.CenterVertically) {
-                        WeeklyAudioMetric(weeklyDuration(audio.durationMs), "${label}收听时长", Modifier.weight(1f))
+                        WeeklyAudioMetric(weeklyDuration(audio.durationMs), "Thời lượng nghe $label", Modifier.weight(1f))
                         Box(Modifier.width((.667f * scale).dp).height((40 * scale).dp).background(FootprintInk.copy(alpha = .1f)))
-                        WeeklyAudioMetric("${if (audio.episodes > 999) "999+" else audio.episodes}${if (podcast) "期" else "集"}",
-                            "${label}收听${if (podcast) "期数" else "集数"}", Modifier.weight(1f))
+                        WeeklyAudioMetric("${if (audio.episodes > 999) "999+" else audio.episodes}${if (podcast) "tập" else "chương"}",
+                            "${if (podcast) "Số tập" else "Số chương"} $label đã nghe", Modifier.weight(1f))
                     }
                 }
             }
@@ -309,6 +309,6 @@ private fun Modifier.weeklyShadow(scale: Float) = dropShadow(RoundedCornerShape(
 private fun weeklyPercent(value: Double): String = java.math.BigDecimal.valueOf(value).stripTrailingZeros().toPlainString()
 private fun weeklyDuration(ms: Long): String {
     val minutes = ms / 60_000
-    return when { minutes / 60 > 999 -> "999+小时"; minutes >= 60 -> "${minutes / 60}小时${minutes % 60}分"; else -> "${minutes}分钟" }
+    return when { minutes / 60 > 999 -> "999+ giờ"; minutes >= 60 -> "${minutes / 60} giờ ${minutes % 60} phút"; else -> "${minutes} phút" }
 }
 private const val WeeklyMedia = "https://sg.music.163.com/st/listen-home/static/media/"

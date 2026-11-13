@@ -55,7 +55,7 @@ private val LocalPlaceholderPulse = staticCompositionLocalOf<State<Float>?> { nu
     modifier: Modifier = Modifier) {
     val density = androidx.compose.ui.platform.LocalDensity.current
     Box(modifier.fillMaxWidth()) {
-        top.yukonga.miuix.kmp.basic.Text(List(widths.size) { "音乐" }.joinToString("\n"),
+        top.yukonga.miuix.kmp.basic.Text(List(widths.size) { "Âm nhạc" }.joinToString("\n"),
             Modifier.clearAndSetSemantics { }, fontSize = fontSize, lineHeight = lineHeight, fontWeight = weight,
             color = androidx.compose.ui.graphics.Color.Transparent, minLines = widths.size, maxLines = widths.size)
         Column(Modifier.matchParentSize(), verticalArrangement = Arrangement.SpaceAround) {
@@ -79,7 +79,7 @@ private fun Modifier.loadingState(label: String) = clearAndSetSemantics {
 
 @Composable fun LoadingSongList(count: Int = 3, modifier: Modifier = Modifier, searchActions: Boolean = false) {
     MusicPlaceholderScope {
-        Column(modifier.fillMaxWidth().testTag("music_loading").loadingState("正在加载歌曲")) {
+        Column(modifier.fillMaxWidth().testTag("music_loading").loadingState("Đang tải bài hát")) {
             repeat(count) { index ->
                 Row(Modifier.fillMaxWidth().padding(vertical = if (searchActions) 10.dp else 8.dp),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -101,7 +101,7 @@ private fun Modifier.loadingState(label: String) = clearAndSetSemantics {
 /** Same frame, inset and two-line title allocation as MusicArtworkCard. */
 @Composable internal fun LoadingArtworkCard(modifier: Modifier = Modifier) {
     MusicPlaceholderScope {
-        SettingsGroup(modifier.loadingState("正在加载封面")) {
+         SettingsGroup(modifier.loadingState("Đang tải ảnh bìa")) {
             Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 MusicPlaceholder(Modifier.fillMaxWidth().aspectRatio(1f), shape = RoundedCornerShape(12.dp))
                 LoadingTextBlock(listOf(.88f, .55f), 15.sp, 20.sp, androidx.compose.ui.text.font.FontWeight.Medium)
@@ -115,7 +115,7 @@ private fun Modifier.loadingState(label: String) = clearAndSetSemantics {
 @Composable internal fun LoadingCoverTile(modifier: Modifier = Modifier,
     cornerRadius: androidx.compose.ui.unit.Dp = 18.dp, titleGap: androidx.compose.ui.unit.Dp = 10.dp) {
     MusicPlaceholderScope {
-        Column(modifier.loadingState("正在加载封面")) {
+         Column(modifier.loadingState("Đang tải ảnh bìa")) {
             MusicPlaceholder(Modifier.fillMaxWidth().aspectRatio(1f), shape = RoundedCornerShape(cornerRadius))
             Spacer(Modifier.height(titleGap))
             LoadingTextBlock(listOf(.85f, .5f), 15.sp, 20.sp, androidx.compose.ui.text.font.FontWeight.Medium)
@@ -127,7 +127,7 @@ private fun Modifier.loadingState(label: String) = clearAndSetSemantics {
 
 @Composable internal fun LoadingArtworkCards(cardWidth: androidx.compose.ui.unit.Dp, modifier: Modifier = Modifier) {
     MusicPlaceholderScope {
-        androidx.compose.foundation.lazy.LazyRow(modifier.testTag("artwork_loading").loadingState("正在加载封面列表"),
+         androidx.compose.foundation.lazy.LazyRow(modifier.testTag("artwork_loading").loadingState("Đang tải danh sách ảnh bìa"),
             userScrollEnabled = false, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             items(3) { LoadingArtworkCard(Modifier.width(cardWidth)) }
         }
@@ -136,7 +136,7 @@ private fun Modifier.loadingState(label: String) = clearAndSetSemantics {
 
 @Composable internal fun LoadingTextList(count: Int = 3, modifier: Modifier = Modifier, leading: Boolean = false) {
     MusicPlaceholderScope {
-        Column(modifier.fillMaxWidth().loadingState("正在加载内容")) {
+         Column(modifier.fillMaxWidth().loadingState("Đang tải nội dung")) {
             repeat(count) { index ->
                 Row(Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(horizontal = 4.dp),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -150,7 +150,7 @@ private fun Modifier.loadingState(label: String) = clearAndSetSemantics {
 
 @Composable internal fun LoadingProfileCard(modifier: Modifier = Modifier) {
     MusicPlaceholderScope {
-        SettingsGroup(modifier.testTag("profile_loading").loadingState("正在加载个人资料")) {
+         SettingsGroup(modifier.testTag("profile_loading").loadingState("Đang tải hồ sơ cá nhân")) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     MusicPlaceholder(Modifier.size(64.dp), shape = CircleShape)
@@ -170,7 +170,7 @@ private fun Modifier.loadingState(label: String) = clearAndSetSemantics {
 
 @Composable internal fun LoadingPostList(count: Int = 2, modifier: Modifier = Modifier) {
     MusicPlaceholderScope {
-        Column(modifier.testTag("posts_loading").loadingState("正在加载帖子"), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+         Column(modifier.testTag("posts_loading").loadingState("Đang tải bài đăng"), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             repeat(count) {
                 SettingsGroup {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
