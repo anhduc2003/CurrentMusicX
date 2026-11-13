@@ -19,13 +19,18 @@ class YouTubeHomeRepository(private val client: OkHttpClient = OkHttpClient.Buil
     suspend fun daily(): Daily = withContext(Dispatchers.IO) {
         try {
             val root = browse() ?: return@withContext Daily(emptyList(), emptyList(), emptyList())
-            val shelves = shelves(root)
-            val daily = shelves.firstOrNull { it.songs.isNotEmpty() }?.songs.orEmpty()
-            val forYou = shelves.drop(1).flatMap { it.songs }.distinctBy { it.id }.ifEmpty { shelves.flatMap { it.songs } }
-            Daily(daily, forYou.distinctBy { it.id }, daily.take(20).map { it.artists })
+            parseDaily(root)
         } catch (_: Exception) {
             Daily(emptyList(), emptyList(), emptyList())
         }
+    }
+
+    internal fun parseDaily(root: JsonObject): Daily {
+        val shelves = shelves(root)
+        val daily = shelves.firstOrNull { it.songs.isNotEmpty() }?.songs.orEmpty()
+        val forYou = shelves.drop(1).flatMap { it.songs }.distinctBy { it.id }
+            .ifEmpty { shelves.flatMap { it.songs } }
+        return Daily(daily, forYou.distinctBy { it.id }, daily.take(20).map { it.artists })
     }
 
     private suspend fun browse(): JsonObject? {
@@ -60,6 +65,7 @@ class YouTubeHomeRepository(private val client: OkHttpClient = OkHttpClient.Buil
             when (node) {
                 is JsonObject -> {
                     (node["musicShelfRenderer"] as? JsonObject)?.let { parseShelf(it, out) }
+                    (node["musicCarouselShelfRenderer"] as? JsonObject)?.let { parseShelf(it, out) }
                     node.values.forEach { visit(it) }
                 }
                 is JsonArray -> node.forEach { visit(it) }
@@ -74,7 +80,10 @@ class YouTubeHomeRepository(private val client: OkHttpClient = OkHttpClient.Buil
         val title = shelf["title"]?.textOf().orEmpty()
         val contents = (shelf["contents"] as? JsonArray).orEmpty()
         val songs = contents.mapNotNull { element ->
-            val renderer = (element as? JsonObject)?.get("musicResponsiveListItemRenderer") as? JsonObject ?: return@mapNotNull null
+            val item = element as? JsonObject ?: return@mapNotNull null
+            val renderer = (item["musicResponsiveListItemRenderer"] as? JsonObject)
+                ?: (item["musicTwoRowItemRenderer"] as? JsonObject)
+                ?: return@mapNotNull null
             song(renderer)
         }
         if (songs.isNotEmpty()) out += Shelf(title, songs)
@@ -83,9 +92,12 @@ class YouTubeHomeRepository(private val client: OkHttpClient = OkHttpClient.Buil
     private fun song(renderer: JsonObject): Song? {
         val videoId = renderer.videoId() ?: return null
         val columns = (renderer["flexColumns"] as? JsonArray).orEmpty()
-        val title = columns.getOrNull(0)?.runs()?.filterNot { it.isBlank() || it in SEPARATORS }?.joinToString(" ")?.trim().orEmpty()
+        val title = columns.getOrNull(0)?.runs()?.filterNot { it.isBlank() || it in SEPARATORS }
+            ?.joinToString(" ")?.trim().orEmpty().ifBlank { renderer["title"]?.textOf().orEmpty() }
         if (title.isBlank()) return null
-        val meta = columns.getOrNull(1)?.runs().orEmpty()
+        val meta = columns.getOrNull(1)?.runs().orEmpty().ifEmpty {
+            renderer["subtitle"]?.textOf()?.split(Regex("\\s*[•·|]\\s*"))?.filter(String::isNotBlank).orEmpty()
+        }
         val artists = meta.filterNot { it.isBlank() || it in SEPARATORS || it in KINDS }.joinToString(" ").trim()
         val duration = (columns + (renderer["fixedColumns"] as? JsonArray).orEmpty())
             .firstNotNullOfOrNull { element -> (element as? JsonObject)?.runs()?.firstNotNullOfOrNull { timestamp(it) } } ?: 0L
@@ -105,17 +117,30 @@ class YouTubeHomeRepository(private val client: OkHttpClient = OkHttpClient.Buil
     }
 
     private fun JsonObject.cover(): String {
-        val thumbnails = ((this["thumbnail"] as? JsonObject)?.get("musicThumbnailRenderer") as? JsonObject)
-            ?.get("thumbnail")?.let { it as? JsonObject }?.get("thumbnails") as? JsonArray
-            ?: (this["thumbnail"] as? JsonObject)?.get("thumbnails") as? JsonArray
+        fun findThumbnails(node: JsonElement?): JsonArray? = when (node) {
+            is JsonObject -> (node["thumbnails"] as? JsonArray) ?: node.values.firstNotNullOfOrNull(::findThumbnails)
+            is JsonArray -> node.firstNotNullOfOrNull(::findThumbnails)
+            else -> null
+        }
+        val thumbnails = findThumbnails(this)
         val url = thumbnails?.lastOrNull()?.let { (it as? JsonObject)?.get("url")?.let { url -> (url as? JsonPrimitive)?.contentOrNull } }.orEmpty()
         return url.replace(Regex("w\\d+-h\\d+"), "w544-h544")
     }
 
     private fun JsonElement.runs(): List<String> {
         val renderer = (this as? JsonObject)?.get("musicResponsiveListItemFlexColumnRenderer") as? JsonObject ?: return emptyList()
-        return ((renderer["text"] as? JsonObject)?.get("runs") as? JsonArray).orEmpty()
-            .mapNotNull { (it as? JsonPrimitive)?.contentOrNull }
+        val text = renderer["text"] ?: return emptyList()
+        return when (text) {
+            is JsonObject -> (text["runs"] as? JsonArray).orEmpty().mapNotNull { run ->
+                when (run) {
+                    is JsonObject -> (run["text"] as? JsonPrimitive)?.contentOrNull
+                    is JsonPrimitive -> run.contentOrNull
+                    else -> null
+                }
+            }
+            is JsonPrimitive -> text.contentOrNull?.let(::listOf).orEmpty()
+            else -> emptyList()
+        }
     }
 
     private fun timestamp(value: String): Long? {
@@ -137,9 +162,9 @@ class YouTubeHomeRepository(private val client: OkHttpClient = OkHttpClient.Buil
     private fun JsonElement.textOf(): String = when (this) {
         is JsonPrimitive -> contentOrNull.orEmpty()
         is JsonObject -> (get("simpleText") as? JsonPrimitive)?.contentOrNull
-            ?: ((get("runs") as? JsonArray)?.firstOrNull() as? JsonObject)?.get("text")?.textOf()
-            ?: (get("text") as? JsonElement)?.textOf().orEmpty()
-        is JsonArray -> firstOrNull()?.textOf().orEmpty()
+            ?: (get("runs") as? JsonArray)?.mapNotNull { (it as? JsonObject)?.get("text")?.textOf() }
+                ?.joinToString("").orEmpty().ifBlank { (get("text") as? JsonElement)?.textOf().orEmpty() }
+        is JsonArray -> mapNotNull { it.textOf().takeIf(String::isNotBlank) }.joinToString("")
         else -> ""
     }
 
