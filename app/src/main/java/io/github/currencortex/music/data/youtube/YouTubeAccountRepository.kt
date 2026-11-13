@@ -23,7 +23,7 @@ class YouTubeAccountRepository(private val sessions: YouTubeSessionStore,
             val jar = cookies.mapValues { it.value.trim() }.filterValues { it.isNotBlank() }
             if (jar.none { it.key in AUTH_COOKIES }) return@withContext AppResult.Failure(ErrorKind.Unauthorized)
             val expected = sessions.snapshot()
-            val profile = profile(jar) ?: return@withContext AppResult.Failure(ErrorKind.Unauthorized)
+            val profile = profile(jar) ?: YouTubeProfile()
             sessions.login(jar, profile, expected)
             AppResult.Success(sessions.state.value)
         } catch (e: CancellationException) { throw e }

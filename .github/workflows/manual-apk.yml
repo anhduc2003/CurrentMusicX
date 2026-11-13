@@ -1,25 +1,20 @@
-name: Manual signed APK
+name: Manual debug APK
 
 on:
   workflow_dispatch:
     inputs:
-      run_id:
-        description: Android CI run id that produced the ci-unsigned artifact
-        required: false
-        default: "43360988553"
       tag:
-        description: Release tag for the signed test build
+        description: Release tag for the debug build
         required: false
         default: "v1.3.5-youtube"
 
 permissions:
   contents: write
-  actions: read
 
 jobs:
-  sign:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -31,32 +26,25 @@ jobs:
           cmdline-tools-version: '12266719'
           packages: platform-tools
           log-accepted-android-sdk-licenses: false
-      - run: sdkmanager "build-tools;35.0.0"
-      - uses: actions/download-artifact@v4
-        with:
-          name: ci-unsigned
-          path: ci-dist
-          run-id: ${{ inputs.run_id }}
-          github-token: ${{ github.token }}
-      - name: Sign the CI APK with a debug certificate
+      - name: Install Android SDK
+        run: sdkmanager "platforms;android-37.0" "build-tools;35.0.0" "ndk;30.0.16248370" "cmake;4.1.2"
+      - name: Build debug APK
         run: |
           set -euo pipefail
-          keytool -genkeypair -v -keystore "$RUNNER_TEMP/debug.jks" -alias debug -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=CurrentMusic Debug, OU=CI, O=CurrentMusicX, L=NA, ST=NA, C=NA"
-          apk=$(find ci-dist -maxdepth 1 -name '*.apk' | head -1)
-          test -n "$apk"
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign --ks "$RUNNER_TEMP/debug.jks" --ks-key-alias debug --ks-pass pass:android --key-pass pass:android "$apk"
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --min-sdk-version 26 "$apk"
+          ./gradlew :app:assembleDebug --no-daemon --stacktrace
+          apk=app/build/outputs/apk/debug/app-debug.apk
+          test -f "$apk"
           cp "$apk" "CurrentMusic-${{ inputs.tag }}-debug.apk"
           sha256sum "CurrentMusic-${{ inputs.tag }}-debug.apk" > SHA256SUMS.txt
-      - name: Publish signed test build
+      - name: Publish debug build
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.tag }}
           name: CurrentMusic ${{ inputs.tag }} (debug-signed)
           body: |
-            Bản dựng thử nghiệm từ nhánh main, ký bằng chứng chỉ debug (không phải bản phát hành chính thức).
+            Bản dựng debug từ nhánh main (đã sửa luồng đăng nhập Google/YouTube).
 
-            Cài đặt trực tiếp để thử YouTube / YouTube Music. Không dùng để cập nhật đè lên bản phát hành chính thức.
+            APK ký bằng debug certificate, chỉ dùng để thử nghiệm. Không dùng để cập nhật đè lên bản phát hành chính thức.
           files: |
             CurrentMusic-${{ inputs.tag }}-debug.apk
             SHA256SUMS.txt

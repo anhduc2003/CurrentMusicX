@@ -97,18 +97,14 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String) {
                         if (reported) return
-                        val jar = readCookies(view)
-                        if (jar.values.any { it in AUTH_KEYS }) {
+                        val jar = readCookies()
+                        if (!jar["SAPISID"].isNullOrBlank() || !jar["__Secure-1PAPISID"].isNullOrBlank() ||
+                            !jar["__Secure-3PAPISID"].isNullOrBlank()) {
                             reported = true
                             onCookies(jar)
                         }
                     }
-                    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                        val host = request.url.host.orEmpty()
-                        return !(host.endsWith("google.com") || host.endsWith("youtube.com") ||
-                            host.endsWith("youtube-nocookie.com") || host.endsWith("gstatic.com") ||
-                            host.endsWith("googleusercontent.com"))
-                    }
+                    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean = false
                 }
                 loadUrl(LOGIN_URL)
             }
@@ -116,13 +112,13 @@ import top.yukonga.miuix.kmp.theme.MiuixTheme
     }
 }
 
-private fun readCookies(view: WebView): Map<String, String> {
+private fun readCookies(): Map<String, String> {
     val manager = CookieManager.getInstance()
-    val raw = listOf("https://www.youtube.com", "https://music.youtube.com", "https://accounts.google.com")
+    manager.flush()
+    val raw = listOf("https://music.youtube.com", "https://www.youtube.com", "https://accounts.google.com")
         .joinToString("; ") { manager.getCookie(it).orEmpty() }
     return YouTubeAccountViewModel.parseCookies(raw)
 }
 
-private const val LOGIN_URL = "https://accounts.google.com/ServiceLogin?service=youtube&continue=https://www.youtube.com/&hl=vi"
-private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
-private val AUTH_KEYS = setOf("SID", "__Secure-1PSID", "__Secure-3PSID", "SAPISID")
+private const val LOGIN_URL = "https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fmusic.youtube.com&hl=vi"
+private const val USER_AGENT = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
