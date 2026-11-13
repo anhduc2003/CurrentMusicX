@@ -19,6 +19,7 @@ class MusicSettingsViewModel(private val container: AppContainer) : ViewModel() 
     val cacheState = MutableStateFlow(AudioCacheSettingsState())
     val audioProvider = container.audioSettings.state
     val audioState = MutableStateFlow(NetworkSettingsState())
+    val youtubeAccount = container.youtubeSessions.state
     val lxSources = container.lxSources.state
     val lxHealth = container.lxSources.health
     val lxResolveTimes = container.lxSources.resolveTimes

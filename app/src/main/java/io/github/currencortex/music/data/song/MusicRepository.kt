@@ -15,7 +15,8 @@ class MusicRepository(private val api: ApiClient,
     private val leiz: LeizAudioClient = LeizAudioClient(),
     private val navidrome: io.github.currencortex.music.data.navidrome.NavidromeRepository? = null,
     private val lx: io.github.currencortex.music.data.lx.LxSourceStore? = null,
-    private val emby: io.github.currencortex.music.data.emby.EmbyRepository? = null) {
+    private val emby: io.github.currencortex.music.data.emby.EmbyRepository? = null,
+    private val youtube: YouTubeAudioClient = YouTubeAudioClient()) {
     val insights = SongInsightsRepository(api)
     suspend fun previewClip(song: Song): SongPreviewClip {
         val id = NeteaseSongActionsRepository.songId(song)
@@ -41,8 +42,16 @@ class MusicRepository(private val api: ApiClient,
         if (song.musicSource == MusicSource.NAVIDROME) return requireNotNull(navidrome).source(song, quality)
         if (song.musicSource == MusicSource.EMBY) return requireNotNull(emby).source(song)
         val access = audioAccess()
-        return if (access.provider == AudioProvider.LX) lxSource(song, quality, access)
-        else source(song.id, quality, session, refresh, supportsDolby)
+        return when (access.provider) {
+            AudioProvider.LX -> lxSource(song, quality, access)
+            AudioProvider.YOUTUBE, AudioProvider.YOUTUBE_MUSIC -> youtubeSource(song, quality, access)
+            else -> source(song.id, quality, session, refresh, supportsDolby)
+        }
+    }
+    private suspend fun youtubeSource(song: Song, quality: AudioQuality, access: AudioSourceAccess): AudioSource {
+        val source = youtube.source(song, quality, access.provider == AudioProvider.YOUTUBE_MUSIC)
+        if (audioAccess().identity != access.identity) throw ApiException(ErrorKind.AudioSourceChanged)
+        return source
     }
     private suspend fun lxSource(song: Song, quality: AudioQuality, access: AudioSourceAccess): AudioSource {
         val result = try { requireNotNull(lx) { "Nguồn nhạc Lx chưa được khởi tạo" }.source(song, quality, access.lxSourceId, access.lxSmartSwitch) }
@@ -185,6 +194,8 @@ class MusicRepository(private val api: ApiClient,
         supportsDolby: Boolean = false): AudioSource {
         val access = audioAccess()
         if (access.provider == AudioProvider.LX) return lxSource(Song(id, ""), quality, access)
+        if (access.provider == AudioProvider.YOUTUBE || access.provider == AudioProvider.YOUTUBE_MUSIC)
+            return youtubeSource(detail(id), quality, access)
         if (access.provider == AudioProvider.LEIZ) {
             val source = leiz.source(id, quality, access.key)
             if (audioAccess().identity != access.identity) throw ApiException(ErrorKind.AudioSourceChanged)

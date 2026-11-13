@@ -21,12 +21,14 @@ import io.github.currencortex.music.ui.component.nativeui.*
 import top.yukonga.miuix.kmp.basic.TextField
 
 /** Sources and connections only; playback and other settings each have one owner. */
-@Composable fun MusicSettingsScreen(vm: MusicSettingsViewModel, onNavidrome: () -> Unit = {}, onEmby: () -> Unit = {}) {
+@Composable fun MusicSettingsScreen(vm: MusicSettingsViewModel, onNavidrome: () -> Unit = {}, onEmby: () -> Unit = {},
+    onYouTubeAccount: () -> Unit = {}) {
     SettingsUiScope {
     val settings by vm.settings.collectAsStateWithLifecycle()
     val state by vm.state.collectAsStateWithLifecycle()
     val provider by vm.audioProvider.collectAsStateWithLifecycle()
     val audioState by vm.audioState.collectAsStateWithLifecycle()
+    val youtubeAccount by vm.youtubeAccount.collectAsStateWithLifecycle()
     val automatic by vm.automaticServer.collectAsStateWithLifecycle()
     // Never save a credential in a Bundle.
     var audioKey by remember { mutableStateOf("") }
@@ -55,6 +57,18 @@ import top.yukonga.miuix.kmp.basic.TextField
                 }
             }
             if (provider.provider != AudioProvider.LX) audioState.message?.let { SettingsHint(it, error = !audioState.busy) }
+            AnimatedVisibility(provider.provider == AudioProvider.YOUTUBE || provider.provider == AudioProvider.YOUTUBE_MUSIC,
+                enter = fadeIn() + expandVertically(), exit = fadeOut() + shrinkVertically()) {
+                Column {
+                    SettingsHint("YouTube ghép bài hát theo tên và ca sĩ, luồng âm thanh tối đa khoảng 160 kbps")
+                    MusicDestinationRow("Tài khoản YouTube", onYouTubeAccount, Modifier.testTag("open_youtube_account"),
+                        summary = if (youtubeAccount.loggedIn)
+                            youtubeAccount.profile?.name?.takeIf { it.isNotBlank() }
+                                ?: youtubeAccount.profile?.email?.takeIf { it.isNotBlank() }
+                                ?: "Đã đăng nhập"
+                        else "Chưa đăng nhập · mở để đăng nhập Google")
+                }
+            }
         } }
         if (provider.provider == AudioProvider.LX) item("lx_sources") { LxSourceSettings(vm) }
         item("lyrics") { SettingsSection("Nguồn lời bài hát", MusicIcons.File) {

@@ -119,6 +119,9 @@ class AppContainer(context: Context, storageNamespace: String = "", externalPlay
     val accountVault = EncryptedAccountVault.create(context, storageSuffix, settingsStore, appScope)
     val accountRepository = AccountRepository(SecureTokenStore(context, storageSuffix), appScope, accountVault)
     val neteaseSessions = NeteaseSessionStore(SecureTokenStore(context, ".netease$storageSuffix"), appScope)
+    val youtubeSessions = io.github.currencortex.music.data.youtube.YouTubeSessionStore(
+        SecureTokenStore(context, ".youtube$storageSuffix"), appScope)
+    val youtubeAccount = io.github.currencortex.music.data.youtube.YouTubeAccountRepository(youtubeSessions)
     private val neteaseTransport = NeteaseTransport(neteaseSessions, neteaseEndpoints,
         log = { logger.info("Network", it) })
     val nativeNetease = if (useNativeNetease) NeteaseGateway(neteaseTransport) else null
@@ -165,7 +168,8 @@ class AppContainer(context: Context, storageNamespace: String = "", externalPlay
     val navidrome = io.github.currencortex.music.data.navidrome.NavidromeRepository(SecureTokenStore(context, ".navidrome$storageSuffix"), appScope)
     val emby = io.github.currencortex.music.data.emby.EmbyRepository(SecureTokenStore(context, ".emby$storageSuffix"), appScope)
     val navidromeMedia = okhttp3.OkHttpClient.Builder().addInterceptor(navidrome.client.mediaInterceptor()).addInterceptor(emby.client.mediaInterceptor()).build()
-    val musicRepository = MusicRepository(apiClient, audioSettings::access, navidrome = navidrome, lx = lxSources, emby = emby)
+    val musicRepository = MusicRepository(apiClient, audioSettings::access, navidrome = navidrome, lx = lxSources, emby = emby,
+        youtube = io.github.currencortex.music.data.song.YouTubeAudioClient(cookies = { youtubeSessions.snapshot().credential.cookies }))
     fun audioRequest(song: io.github.currencortex.music.data.song.Song, quality: AudioQuality, supportsDolby: Boolean = false): AudioRequest {
         if (song.musicSource == io.github.currencortex.music.data.song.MusicSource.NAVIDROME)
             return AudioRequest(song.id, quality, 0L, navidrome.session(), "navidrome:" + navidrome.state.value.identity, song)

@@ -674,7 +674,7 @@ val labels = listOf("Trang chủ", "Khám phá", "Của tôi", "Cài đặt")
                             onSupport = { navigateLibrary(SupportConfig.route) })
                     }
                 }
-                entry(NETWORK.toString()) { MusicSettingsScreen(musicSettingsVm, onNavidrome = { navigateLibrary("navidrome") }, onEmby = { navigateLibrary("emby") }) }
+                entry(NETWORK.toString()) { MusicSettingsScreen(musicSettingsVm, onNavidrome = { navigateLibrary("navidrome") }, onEmby = { navigateLibrary("emby") }, onYouTubeAccount = { navigateLibrary("user/youtube-account") }) }
                 entry("playback-settings") { io.github.currencortex.music.feature.settings.PlaybackSettingsScreen(musicSettingsVm) }
                 entry("audio-output") { io.github.currencortex.music.feature.settings.AudioOutputScreen(container) }
                 entry("desktop-lyrics") { io.github.currencortex.music.feature.lyrics.desktop.DesktopLyricsSettingsScreen(container) }
@@ -806,6 +806,11 @@ roomName = if (nativeTogether.active) "Nghe cùng nhau trên Nhạc Vân NetEase
                                 route == "user/binding" -> {
                                     val vm: BindingViewModel = viewModel(key = route, factory = viewModelFactory { BindingViewModel(container) })
                                     BindingScreen(vm, ::navigateBack) { authVm.begin(); navigateLibrary("user/login") }
+                                }
+                                route == "user/youtube-account" -> {
+                                    val vm: io.github.currencortex.music.feature.youtube.YouTubeAccountViewModel =
+                                        viewModel(key = route, factory = viewModelFactory { io.github.currencortex.music.feature.youtube.YouTubeAccountViewModel(container) })
+                                    io.github.currencortex.music.feature.youtube.YouTubeAccountScreen(vm, ::navigateBack)
                                 }
                                 route == "user/netease-tasks" -> {
                                     val vm: io.github.currencortex.music.feature.tasks.NeteaseTasksViewModel = viewModel(key = route,

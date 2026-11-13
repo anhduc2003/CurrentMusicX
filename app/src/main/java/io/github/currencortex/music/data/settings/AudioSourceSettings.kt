@@ -9,9 +9,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.security.MessageDigest
 
-enum class AudioProvider(val label: String) { CURRENT_MUSIC("CurrentMusic"), NETEASE("Nhạc Vân NetEase nguyên bản"), LEIZ("LeiZ API"), LX("Nguồn nhạc Luoxue") }
-data class AudioProviderState(val provider: AudioProvider = AudioProvider.CURRENT_MUSIC,
-    val keyConfigured: Boolean = false, val identity: String = "currentmusic", val lxSourceId: String = "", val lxSmartSwitch: Boolean = false)
+enum class AudioProvider(val label: String) { CURRENT_MUSIC("CurrentMusic"), NETEASE("Nhạc Vân NetEase nguyên bản"), LEIZ("LeiZ API"), LX("Nguồn nhạc Luoxue"), YOUTUBE("YouTube"), YOUTUBE_MUSIC("YouTube Music") }
+data class AudioProviderState(val provider: AudioProvider = AudioProvider.YOUTUBE_MUSIC,
+    val keyConfigured: Boolean = false, val identity: String = "ytmusic", val lxSourceId: String = "", val lxSmartSwitch: Boolean = false)
 
 /** Immutable request credentials. Never include credentials in generated toString/equals/logs. */
 class AudioSourceAccess(val provider: AudioProvider, internal val key: String = "", val lxSourceId: String = "", val lxSmartSwitch: Boolean = false) {
@@ -20,6 +20,8 @@ class AudioSourceAccess(val provider: AudioProvider, internal val key: String = 
         AudioProvider.NETEASE -> "netease"
         AudioProvider.LEIZ -> "leiz:" + MessageDigest.getInstance("SHA-256").digest(key.toByteArray()).joinToString("") { "%02x".format(it) }
         AudioProvider.LX -> if (lxSmartSwitch) "lx:$lxSourceId:smart" else "lx:$lxSourceId"
+        AudioProvider.YOUTUBE -> "youtube"
+        AudioProvider.YOUTUBE_MUSIC -> "ytmusic"
     }
     override fun toString() = "AudioSourceAccess($provider, key=[redacted])"
 }
@@ -30,7 +32,7 @@ class AudioSourceSettings(private val store: DataStore<Preferences>, private val
     private val smartPreference = booleanPreferencesKey("music.lxSmartSwitch")
     private var savedSmartSwitch = false
     private val lock = Mutex()
-    @Volatile private var current = AudioSourceAccess(AudioProvider.CURRENT_MUSIC)
+    @Volatile     private var current = AudioSourceAccess(AudioProvider.YOUTUBE_MUSIC)
     private var savedKey = ""
     private var savedLxSource = ""
     val state = MutableStateFlow(AudioProviderState())
@@ -41,7 +43,7 @@ class AudioSourceSettings(private val store: DataStore<Preferences>, private val
             savedLxSource = store.data.first()[lxPreference].orEmpty().takeIf { it.matches(Regex("[a-f0-9]{64}")) }.orEmpty()
             savedSmartSwitch = store.data.first()[smartPreference] ?: false
             val provider = runCatching { AudioProvider.valueOf(store.data.first()[preference].orEmpty()) }
-                .getOrDefault(AudioProvider.CURRENT_MUSIC)
+                .getOrDefault(AudioProvider.YOUTUBE_MUSIC)
             publish(provider)
             ready.complete(Unit)
         }
